@@ -17,4 +17,5 @@ depend: [ProtocolLib]
 commands:
     setskin:
         description: 'Sets a new skin'
+        aliases: [${project.artifactId}]
         permission: ${project.artifactId}.command.setskin

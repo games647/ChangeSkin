@@ -15,6 +15,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONArray;
@@ -84,5 +86,10 @@ public class ChangeSkin extends JavaPlugin {
         }
 
         return null;
+    }
+
+    public void setSkin(Player player, UUID targetSkin) {
+        userPreferences.put(player.getUniqueId(), targetSkin);
+        Bukkit.getScheduler().runTaskAsynchronously(this, new SkinDownloader(this, player, targetSkin));
     }
 }
