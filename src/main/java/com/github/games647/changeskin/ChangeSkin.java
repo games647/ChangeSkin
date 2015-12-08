@@ -15,9 +15,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -27,13 +27,15 @@ import org.json.simple.parser.ParseException;
 public class ChangeSkin extends JavaPlugin {
 
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
+    private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
     private final Map<UUID, UUID> userPreferences = Maps.newHashMap();
 
+    //this is thread-safe in order to save and load from different threads like the skin download
     private final ConcurrentMap<UUID, WrappedSignedProperty> skinCache = SafeCacheBuilder
             .<UUID, WrappedSignedProperty>newBuilder()
-            .maximumSize(1024)
-            .expireAfterWrite(1, TimeUnit.HOURS)
+            .maximumSize(1024 * 5)
+            .expireAfterWrite(3, TimeUnit.HOURS)
             .build(new CacheLoader<UUID, WrappedSignedProperty>() {
 
                 @Override
@@ -88,8 +90,42 @@ public class ChangeSkin extends JavaPlugin {
         return null;
     }
 
+    public UUID getUUID(String playerName) throws ParseException {
+        try {
+            HttpURLConnection httpConnection = (HttpURLConnection) new URL(UUID_URL + playerName).openConnection();
+            httpConnection.addRequestProperty("Content-Type", "application/json");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+            String line = reader.readLine();
+            if (line != null && !line.equals("null")) {
+                JSONArray profiles = (JSONArray) JSONValue.parseWithException(line);
+                JSONObject profile = (JSONObject) profiles.get(0);
+
+
+                String id = (String) profile.get("id");
+                String name = (String) profile.get("name");
+                return parseId(id);
+            }
+        } catch (IOException iOException) {
+            getLogger().log(Level.SEVERE, "Tried downloading skin data from Mojang", iOException);
+        }
+
+        return null;
+    }
+
     public void setSkin(Player player, UUID targetSkin) {
         userPreferences.put(player.getUniqueId(), targetSkin);
-        Bukkit.getScheduler().runTaskAsynchronously(this, new SkinDownloader(this, player, targetSkin));
+        if (!skinCache.containsKey(targetSkin)) {
+            //download the skin only if it's not already in the cache
+            Bukkit.getScheduler().runTaskAsynchronously(this, new SkinDownloader(this, player, targetSkin));
+        }
+    }
+
+    private UUID parseId(String withoutDashes) {
+        return UUID.fromString(withoutDashes.substring(0, 8)
+                + "-" + withoutDashes.substring(8, 12)
+                + "-" + withoutDashes.substring(12, 16)
+                + "-" + withoutDashes.substring(16, 20)
+                + "-" + withoutDashes.substring(20, 32));
     }
 }
