@@ -25,8 +25,13 @@ public class PlayerLoginListener implements Listener {
     }
 
     //we are making an blocking request it might be better to ignore it if normal priority events cancelled it
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent preLoginEvent) {
+        if (preLoginEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            //in this event isCancelled option in the annotation doesn't work
+            return;
+        }
+
         String name = preLoginEvent.getName();
         UUID playerUuid = preLoginEvent.getUniqueId();
 
@@ -41,8 +46,13 @@ public class PlayerLoginListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
+        if (loginEvent.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+            //in this event isCancelled option in the annotation doesn't work
+            return;
+        }
+
         Player player = loginEvent.getPlayer();
 
         //try to use the existing and put it in the cache so we use it for others
