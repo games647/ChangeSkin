@@ -6,10 +6,13 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Maps;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
@@ -47,9 +50,20 @@ public class ChangeSkin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        loadPreferences();
+
         getCommand("setskin").setExecutor(new SetSkinCommand(this));
 
         getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
+    }
+
+    @Override
+    public void onDisable() {
+        savePreferences();
+
+        //clean up
+        userPreferences.clear();
+        skinCache.clear();
     }
 
     public ConcurrentMap<UUID, WrappedSignedProperty> getSkinCache() {
@@ -73,8 +87,8 @@ public class ChangeSkin extends JavaPlugin {
                 JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
 
                 JSONArray properties = (JSONArray) userData.get("properties");
-
                 JSONObject skinData = (JSONObject) properties.get(0);
+
                 //base64 encoded skin data
                 String encodedSkin = (String) skinData.get("value");
                 String signature = (String) skinData.get("signature");
@@ -101,13 +115,13 @@ public class ChangeSkin extends JavaPlugin {
                 JSONArray profiles = (JSONArray) JSONValue.parseWithException(line);
                 JSONObject profile = (JSONObject) profiles.get(0);
 
-
                 String id = (String) profile.get("id");
-                String name = (String) profile.get("name");
                 return parseId(id);
             }
         } catch (IOException iOException) {
             getLogger().log(Level.SEVERE, "Tried downloading skin data from Mojang", iOException);
+        } catch (ParseException parseException) {
+            getLogger().log(Level.SEVERE, "Tried parsing json from Mojang", parseException);
         }
 
         return null;
@@ -127,5 +141,70 @@ public class ChangeSkin extends JavaPlugin {
                 + "-" + withoutDashes.substring(12, 16)
                 + "-" + withoutDashes.substring(16, 20)
                 + "-" + withoutDashes.substring(20, 32));
+    }
+
+    private void savePreferences() {
+        getDataFolder().mkdir();
+        File file = new File(getDataFolder(), "preferences.txt");
+
+        BufferedWriter bufferedWriter = null;
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            bufferedWriter = Files.newBufferedWriter(file.toPath());
+            for (Map.Entry<UUID, UUID> entry : userPreferences.entrySet()) {
+                bufferedWriter.write(entry.getKey().toString());
+                bufferedWriter.write(':');
+                bufferedWriter.write(entry.getValue().toString());
+                bufferedWriter.write(System.lineSeparator());
+            }
+
+            bufferedWriter.flush();
+        } catch (IOException ioExc) {
+            getLogger().log(Level.SEVERE, "Failed to save skin prefernces", ioExc);
+        } finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException ioExc) {
+                    getLogger().log(Level.SEVERE, "Failed to close the file handle", ioExc);
+                }
+            }
+        }
+    }
+
+    private void loadPreferences() {
+        getDataFolder().mkdir();
+        File file = new File(getDataFolder(), "preferences.txt");
+
+        BufferedReader bufferedReader = null;
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            bufferedReader = Files.newBufferedReader(file.toPath());
+            String currentLine = bufferedReader.readLine();
+            while (currentLine != null && !currentLine.isEmpty()) {
+                String[] parts = currentLine.split(":");
+                UUID player = UUID.fromString(parts[0]);
+                UUID target = UUID.fromString(parts[1]);
+                userPreferences.put(player, target);
+
+                currentLine = bufferedReader.readLine();
+            }
+        } catch (IOException ioExc) {
+            getLogger().log(Level.SEVERE, "Failed to load preferences", ioExc);
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException ioExc) {
+                    getLogger().log(Level.SEVERE, "Failed to close the file handle", ioExc);
+                }
+            }
+        }
     }
 }

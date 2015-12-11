@@ -10,6 +10,8 @@ Moreover it will be possible to set a custom standard skin. If you want to, this
 
 ## Features
 
+* Skins for offline mode
+* Change your skin - Every skin which has ever uploaded to Mojang is allowed
 * Lightweight
 * Easy to use
 * Implemented cache to benefit performance
@@ -19,7 +21,7 @@ Moreover it will be possible to set a custom standard skin. If you want to, this
 
 ## Commands
 
-* /setskin <uuid> - Sets your skin to be equal to the player with the selected uuid
+* /setskin [uuid] - Sets your skin to be equal to the player with the selected uuid
 
 ## Permissions
 

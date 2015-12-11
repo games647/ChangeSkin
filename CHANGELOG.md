@@ -1,5 +1,11 @@
 #Changelog
 
+##### 0.3
+
+* [Fix] Properly ignore cancelled login events
+* Clean up saved data on plugin disable
+* Save user preferences
+
 ##### 0.2
 
 * Added /changeskin as an alias for setskin
