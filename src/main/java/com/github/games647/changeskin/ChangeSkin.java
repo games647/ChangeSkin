@@ -2,8 +2,10 @@ package com.github.games647.changeskin;
 
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.google.common.base.Charsets;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
@@ -153,7 +154,7 @@ public class ChangeSkin extends JavaPlugin {
                 file.createNewFile();
             }
 
-            bufferedWriter = Files.newBufferedWriter(file.toPath());
+            bufferedWriter = Files.newWriter(file, Charsets.UTF_8);
             for (Map.Entry<UUID, UUID> entry : userPreferences.entrySet()) {
                 bufferedWriter.write(entry.getKey().toString());
                 bufferedWriter.write(':');
@@ -185,7 +186,7 @@ public class ChangeSkin extends JavaPlugin {
                 file.createNewFile();
             }
 
-            bufferedReader = Files.newBufferedReader(file.toPath());
+            bufferedReader = Files.newReader(file, Charsets.UTF_8);
             String currentLine = bufferedReader.readLine();
             while (currentLine != null && !currentLine.isEmpty()) {
                 String[] parts = currentLine.split(":");
