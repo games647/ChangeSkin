@@ -105,7 +105,7 @@ public class ChangeSkin extends JavaPlugin {
         return null;
     }
 
-    public UUID getUUID(String playerName) throws ParseException {
+    public UUID getUUID(String playerName) {
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(UUID_URL + playerName).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
@@ -113,9 +113,7 @@ public class ChangeSkin extends JavaPlugin {
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();
             if (line != null && !line.equals("null")) {
-                JSONArray profiles = (JSONArray) JSONValue.parseWithException(line);
-                JSONObject profile = (JSONObject) profiles.get(0);
-
+                JSONObject profile = (JSONObject) JSONValue.parseWithException(line);
                 String id = (String) profile.get("id");
                 return parseId(id);
             }

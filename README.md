@@ -22,6 +22,7 @@ Moreover it will be possible to set a custom standard skin. If you want to, this
 ## Commands
 
 * /setskin [uuid] - Sets your skin to be equal to the player with the selected uuid
+* /setskin [playerName]
 
 ## Permissions
 

@@ -2,6 +2,7 @@ package com.github.games647.changeskin;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +21,13 @@ public class SetSkinCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             if (args.length > 0) {
-                setSkinUUID((Player) sender, args[0]);
+                String targetSource = args[0];
+                //minecraft player names has the max length of 16 characters
+                if (targetSource.length() > 16) {
+                    setSkinUUID((Player) sender, targetSource);
+                } else {
+                    setSkinName((Player) sender, targetSource);
+                }
             } else {
                 sender.sendMessage(ChatColor.DARK_RED + "You have to provide the skin you want to change to");
             }
@@ -31,14 +38,19 @@ public class SetSkinCommand implements CommandExecutor {
         return true;
     }
 
-    private void setSkinUUID(Player player, String targetSource) {
+    private void setSkinUUID(Player player, String targetUUID) {
         try {
-            UUID uuid = UUID.fromString(targetSource);
-            player.sendMessage("Queued Skin change");
+            UUID uuid = UUID.fromString(targetUUID);
+            player.sendMessage(ChatColor.GOLD + "Queued Skin change");
             plugin.getUserPreferences().put(player.getUniqueId(), uuid);
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new SkinDownloader(plugin, player, uuid));
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinDownloader(plugin, player, uuid));
         } catch (IllegalArgumentException illegalArgumentException) {
             player.sendMessage(ChatColor.DARK_RED + "Invalid uuid");
         }
+    }
+
+    private void setSkinName(Player player, String targetName) {
+        player.sendMessage(ChatColor.GOLD + "Queued name to uuid resolve");
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new NameResolver(plugin, targetName, player));
     }
 }

@@ -67,6 +67,7 @@ public class PlayerLoginListener implements Listener {
             }
         }
 
+        //updates to the chosen one
         UUID targetUUID = plugin.getUserPreferences().get(player.getUniqueId());
         if (targetUUID != null) {
             WrappedSignedProperty cachedSkin = plugin.getSkinCache().get(targetUUID);
