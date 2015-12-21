@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import javafx.util.Pair;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,7 +40,7 @@ public class PlayerLoginListener implements Listener {
 
         UUID targetUuid = plugin.getUserPreferences().get(playerUuid);
         if (targetUuid != null && !playerUuid.equals(targetUuid) && !plugin.getSkinCache().containsKey(targetUuid)) {
-            //player selected a custom skin which isn't in the cache. Try to redownload it
+            //player selected a custom skin which isn't in the cache. Try to download it
             WrappedSignedProperty downloadedSkin = plugin.downloadSkin(targetUuid);
             if (downloadedSkin != null) {
                 //run it blocking because we don't know how it takes, so it won't end into a race condition
@@ -83,15 +82,15 @@ public class PlayerLoginListener implements Listener {
             }
         } else if (!skinFound) {
             //skin wasn't found and there are no preferences so set a default skin
-            List<Pair<UUID, WrappedSignedProperty>> defaultSkins = plugin.getDefaultSkins();
+            List<SkinData> defaultSkins = plugin.getDefaultSkins();
             if (!defaultSkins.isEmpty()) {
                 int randomIndex = random.nextInt(defaultSkins.size());
 
-                Pair<UUID, WrappedSignedProperty> targetSkin = defaultSkins.get(randomIndex);
+                SkinData targetSkin = defaultSkins.get(randomIndex);
                 if (targetSkin != null) {
-                    plugin.getUserPreferences().put(player.getUniqueId(), targetSkin.getKey());
-                    plugin.getSkinCache().put(targetSkin.getKey(), targetSkin.getValue());
-                    properties.put(SKIN_KEY, targetSkin.getValue());
+                    plugin.getUserPreferences().put(player.getUniqueId(), targetSkin.getSkinOwner());
+                    plugin.getSkinCache().put(targetSkin.getSkinOwner(), targetSkin.getSkinValue());
+                    properties.put(SKIN_KEY, targetSkin.getSkinValue());
                 }
             }
         }

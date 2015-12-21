@@ -22,7 +22,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import javafx.util.Pair;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,7 +35,7 @@ public class ChangeSkin extends JavaPlugin {
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
-    private final List<Pair<UUID, WrappedSignedProperty>> defaultSkins = Lists.newArrayList();
+    private final List<SkinData> defaultSkins = Lists.newArrayList();
     private final ConcurrentMap<UUID, UUID> userPreferences = Maps.newConcurrentMap();
 
     //this is thread-safe in order to save and load from different threads like the skin download
@@ -56,6 +55,7 @@ public class ChangeSkin extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+
         loadDefaultSkins();
         loadPreferences();
 
@@ -82,7 +82,7 @@ public class ChangeSkin extends JavaPlugin {
         return userPreferences;
     }
 
-    public List<Pair<UUID, WrappedSignedProperty>> getDefaultSkins() {
+    public List<SkinData> getDefaultSkins() {
         return defaultSkins;
     }
 
@@ -223,7 +223,7 @@ public class ChangeSkin extends JavaPlugin {
         for (String uuidString : defaultList) {
             UUID ownerUUID = UUID.fromString(uuidString);
             WrappedSignedProperty skinData = downloadSkin(ownerUUID);
-            defaultSkins.add(new Pair<UUID, WrappedSignedProperty>(ownerUUID, skinData));
+            defaultSkins.add(new SkinData(skinData, ownerUUID));
         }
     }
 }
