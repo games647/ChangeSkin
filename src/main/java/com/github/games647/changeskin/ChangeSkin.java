@@ -2,8 +2,10 @@ package com.github.games647.changeskin;
 
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.github.games647.changeskin.tasks.SkinDownloader;
 import com.google.common.base.Charsets;
 import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
@@ -14,13 +16,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import javafx.util.Pair;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONArray;
@@ -33,7 +36,8 @@ public class ChangeSkin extends JavaPlugin {
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
-    private final Map<UUID, UUID> userPreferences = Maps.newHashMap();
+    private final List<Pair<UUID, WrappedSignedProperty>> defaultSkins = Lists.newArrayList();
+    private final ConcurrentMap<UUID, UUID> userPreferences = Maps.newConcurrentMap();
 
     //this is thread-safe in order to save and load from different threads like the skin download
     private final ConcurrentMap<UUID, WrappedSignedProperty> skinCache = SafeCacheBuilder
@@ -51,6 +55,8 @@ public class ChangeSkin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+        loadDefaultSkins();
         loadPreferences();
 
         getCommand("setskin").setExecutor(new SetSkinCommand(this));
@@ -65,19 +71,24 @@ public class ChangeSkin extends JavaPlugin {
         //clean up
         userPreferences.clear();
         skinCache.clear();
+        defaultSkins.clear();
     }
 
     public ConcurrentMap<UUID, WrappedSignedProperty> getSkinCache() {
         return skinCache;
     }
 
-    public Map<UUID, UUID> getUserPreferences() {
+    public ConcurrentMap<UUID, UUID> getUserPreferences() {
         return userPreferences;
     }
 
-    public WrappedSignedProperty downloadSkin(UUID uuid) {
+    public List<Pair<UUID, WrappedSignedProperty>> getDefaultSkins() {
+        return defaultSkins;
+    }
+
+    public WrappedSignedProperty downloadSkin(UUID ownerUUID) {
         //unsigned is needed in order to receive the signature
-        String uuidString = uuid.toString().replace("-", "") + "?unsigned=false";
+        String uuidString = ownerUUID.toString().replace("-", "") + "?unsigned=false";
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(SKIN_URL + uuidString).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
@@ -130,7 +141,7 @@ public class ChangeSkin extends JavaPlugin {
         userPreferences.put(player.getUniqueId(), targetSkin);
         if (!skinCache.containsKey(targetSkin)) {
             //download the skin only if it's not already in the cache
-            Bukkit.getScheduler().runTaskAsynchronously(this, new SkinDownloader(this, player, targetSkin));
+            getServer().getScheduler().runTaskAsynchronously(this, new SkinDownloader(this, player, targetSkin));
         }
     }
 
@@ -204,6 +215,15 @@ public class ChangeSkin extends JavaPlugin {
                     getLogger().log(Level.SEVERE, "Failed to close the file handle", ioExc);
                 }
             }
+        }
+    }
+
+    private void loadDefaultSkins() {
+        List<String> defaultList = getConfig().getStringList("default-skins");
+        for (String uuidString : defaultList) {
+            UUID ownerUUID = UUID.fromString(uuidString);
+            WrappedSignedProperty skinData = downloadSkin(ownerUUID);
+            defaultSkins.add(new Pair<UUID, WrappedSignedProperty>(ownerUUID, skinData));
         }
     }
 }

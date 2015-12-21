@@ -1,0 +1,12 @@
+# ChangeSkin config
+
+# Here you can specify default skins for player who do not have a skin
+# The entries from this list will be selected in random order
+#
+# Lists are created like this:
+#default-skins:
+#    - 0aaa2c13-922a-411b-b655-9b8c08404695
+#    - 069a79f4-44e9-4726-a5be-fca90e38aaf5
+#
+# If this list is empty no skin will be selected
+default-skins: []

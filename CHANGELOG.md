@@ -1,5 +1,12 @@
 #Changelog
 
+##### 0.4
+
+* Add /setskin <playerName> command
+* Player skin can now be resolved also by their names
+* Add default skins
+* If you set it to your own UUID your preferences will be reseted
+
 ##### 0.3
 
 * [Fix] Properly ignore cancelled login events

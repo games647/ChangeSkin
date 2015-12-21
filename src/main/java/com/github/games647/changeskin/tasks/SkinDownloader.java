@@ -1,6 +1,7 @@
-package com.github.games647.changeskin;
+package com.github.games647.changeskin.tasks;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.github.games647.changeskin.ChangeSkin;
 
 import java.util.UUID;
 

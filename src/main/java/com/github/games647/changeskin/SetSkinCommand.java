@@ -1,5 +1,8 @@
 package com.github.games647.changeskin;
 
+import com.github.games647.changeskin.tasks.NameResolver;
+import com.github.games647.changeskin.tasks.SkinDownloader;
+
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -41,9 +44,14 @@ public class SetSkinCommand implements CommandExecutor {
     private void setSkinUUID(Player player, String targetUUID) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
-            player.sendMessage(ChatColor.GOLD + "Queued Skin change");
-            plugin.getUserPreferences().put(player.getUniqueId(), uuid);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinDownloader(plugin, player, uuid));
+            if (player.getUniqueId().equals(uuid)) {
+                player.sendMessage(ChatColor.DARK_GREEN + "Reseting your preferences");
+                plugin.getUserPreferences().remove(player.getUniqueId());
+            } else {
+                player.sendMessage(ChatColor.GOLD + "Queued Skin change");
+                plugin.getUserPreferences().put(player.getUniqueId(), uuid);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinDownloader(plugin, player, uuid));
+            }
         } catch (IllegalArgumentException illegalArgumentException) {
             player.sendMessage(ChatColor.DARK_RED + "Invalid uuid");
         }

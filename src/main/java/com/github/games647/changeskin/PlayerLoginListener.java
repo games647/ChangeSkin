@@ -5,7 +5,10 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+import javafx.util.Pair;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,6 +22,7 @@ public class PlayerLoginListener implements Listener {
     private static final String SKIN_KEY = "textures";
 
     private final ChangeSkin plugin;
+    private final Random random = new Random();
 
     public PlayerLoginListener(ChangeSkin plugin) {
         this.plugin = plugin;
@@ -55,6 +59,8 @@ public class PlayerLoginListener implements Listener {
 
         Player player = loginEvent.getPlayer();
 
+        boolean skinFound = false;
+
         //try to use the existing and put it in the cache so we use it for others
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
         Multimap<String, WrappedSignedProperty> properties = gameProfile.getProperties();
@@ -63,6 +69,7 @@ public class PlayerLoginListener implements Listener {
             if (value.hasSignature()) {
                 //found a skin
                 plugin.getSkinCache().put(player.getUniqueId(), value);
+                skinFound = true;
                 break;
             }
         }
@@ -73,6 +80,19 @@ public class PlayerLoginListener implements Listener {
             WrappedSignedProperty cachedSkin = plugin.getSkinCache().get(targetUUID);
             if (cachedSkin != null) {
                 properties.put(SKIN_KEY, cachedSkin);
+            }
+        } else if (!skinFound) {
+            //skin wasn't found and there are no preferences so set a default skin
+            List<Pair<UUID, WrappedSignedProperty>> defaultSkins = plugin.getDefaultSkins();
+            if (!defaultSkins.isEmpty()) {
+                int randomIndex = random.nextInt(defaultSkins.size());
+
+                Pair<UUID, WrappedSignedProperty> targetSkin = defaultSkins.get(randomIndex);
+                if (targetSkin != null) {
+                    plugin.getUserPreferences().put(player.getUniqueId(), targetSkin.getKey());
+                    plugin.getSkinCache().put(targetSkin.getKey(), targetSkin.getValue());
+                    properties.put(SKIN_KEY, targetSkin.getValue());
+                }
             }
         }
     }

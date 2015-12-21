@@ -1,4 +1,6 @@
-package com.github.games647.changeskin;
+package com.github.games647.changeskin.tasks;
+
+import com.github.games647.changeskin.ChangeSkin;
 
 import java.util.UUID;
 
