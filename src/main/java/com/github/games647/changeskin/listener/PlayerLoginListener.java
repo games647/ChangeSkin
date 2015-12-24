@@ -1,7 +1,9 @@
-package com.github.games647.changeskin;
+package com.github.games647.changeskin.listener;
 
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.github.games647.changeskin.ChangeSkin;
+import com.github.games647.changeskin.SkinData;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
@@ -35,7 +37,6 @@ public class PlayerLoginListener implements Listener {
             return;
         }
 
-        String name = preLoginEvent.getName();
         UUID playerUuid = preLoginEvent.getUniqueId();
 
         UUID targetUuid = plugin.getUserPreferences().get(playerUuid);

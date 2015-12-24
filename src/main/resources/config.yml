@@ -10,3 +10,7 @@
 #
 # If this list is empty no skin will be selected
 default-skins: []
+
+# If the player does not have a skin and hasn't chosen one wiht /setskin
+# this will try to redownload using the username of the player
+restoreSkins: true

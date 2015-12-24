@@ -1,5 +1,9 @@
 #Changelog
 
+##### 0.5
+
+* Re fetch skins for player who don't have one
+
 ##### 0.4
 
 * Add /setskin <playerName> command
