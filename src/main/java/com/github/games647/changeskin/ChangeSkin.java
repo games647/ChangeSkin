@@ -55,6 +55,20 @@ public class ChangeSkin extends JavaPlugin {
                 }
             });
 
+    //this is thread-safe in order to save and load from different threads like the skin download
+    private final ConcurrentMap<String, UUID> uuidCache = SafeCacheBuilder
+            .<String, UUID>newBuilder()
+            .maximumSize(1024 * 5)
+            .expireAfterWrite(3, TimeUnit.HOURS)
+            .build(new CacheLoader<String, UUID>() {
+
+                @Override
+                public UUID load(String playerName) throws Exception {
+                    //A key should be inserted manually on start packet
+                    throw new UnsupportedOperationException("Not supported");
+                }
+            });
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -79,6 +93,7 @@ public class ChangeSkin extends JavaPlugin {
         userPreferences.clear();
         skinCache.clear();
         defaultSkins.clear();
+        uuidCache.clear();
     }
 
     public ConcurrentMap<UUID, WrappedSignedProperty> getSkinCache() {
@@ -91,6 +106,10 @@ public class ChangeSkin extends JavaPlugin {
 
     public List<SkinData> getDefaultSkins() {
         return defaultSkins;
+    }
+
+    public ConcurrentMap<String, UUID> getUuidCache() {
+        return uuidCache;
     }
 
     public WrappedSignedProperty downloadSkin(UUID ownerUUID) {

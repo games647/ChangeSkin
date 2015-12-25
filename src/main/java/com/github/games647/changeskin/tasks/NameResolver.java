@@ -21,15 +21,22 @@ public class NameResolver implements Runnable {
 
     @Override
     public void run() {
-        UUID uuid = plugin.getUUID(targetName);
-        if (uuid != null) {
+        UUID cachedUUID = plugin.getUuidCache().get(targetName);
+        if (cachedUUID == null) {
+            cachedUUID = plugin.getUUID(targetName);
+            if (cachedUUID != null) {
+                plugin.getUuidCache().put(targetName, cachedUUID);
+            }
+        }
+
+        if (cachedUUID != null) {
             //Save the target uuid from the requesting player source
-            plugin.getUserPreferences().put(player.getUniqueId(), uuid);
+            plugin.getUserPreferences().put(player.getUniqueId(), cachedUUID);
 
             player.sendMessage(ChatColor.DARK_GREEN + "UUID was successfull resolved from the player name");
             player.sendMessage(ChatColor.DARK_GREEN + "The skin is now downloading");
             //run this is the same thread
-            new SkinDownloader(plugin, player, uuid).run();
+            new SkinDownloader(plugin, player, cachedUUID).run();
         }
     }
 }

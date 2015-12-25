@@ -2,7 +2,8 @@
 
 ##### 0.5
 
-* Re fetch skins for player who don't have one
+* [Experimental] Re fetch skins for player who don't have one
+* Add UUID cache
 
 ##### 0.4
 
