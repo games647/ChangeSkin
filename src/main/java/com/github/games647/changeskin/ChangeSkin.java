@@ -3,7 +3,7 @@ package com.github.games647.changeskin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.github.games647.changeskin.listener.LoginStartListener;
+import com.github.games647.changeskin.listener.PlayerInfoListener;
 import com.github.games647.changeskin.listener.PlayerLoginListener;
 import com.github.games647.changeskin.tasks.SkinDownloader;
 import com.google.common.base.Charsets;
@@ -80,8 +80,7 @@ public class ChangeSkin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
         if (getConfig().getBoolean("restoreSkins")) {
-            ProtocolLibrary.getProtocolManager().getAsynchronousManager()
-                    .registerAsyncHandler(new LoginStartListener(this)).start(4);
+            ProtocolLibrary.getProtocolManager().addPacketListener(new PlayerInfoListener(this));
         }
     }
 

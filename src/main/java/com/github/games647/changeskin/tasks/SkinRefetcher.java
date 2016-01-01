@@ -1,7 +1,5 @@
 package com.github.games647.changeskin.tasks;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.async.AsyncMarker;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
@@ -58,8 +56,8 @@ public class SkinRefetcher implements Runnable {
                 }
             }
         } finally {
-            ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-            protocolManager.getAsynchronousManager().signalPacketTransmission(packetEvent);
+//            ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+//            protocolManager.getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
     }
 }
