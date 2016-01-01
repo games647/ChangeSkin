@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 public class PlayerLoginListener implements Listener {
@@ -29,28 +28,7 @@ public class PlayerLoginListener implements Listener {
         this.plugin = plugin;
     }
 
-    //we are making an blocking request it might be better to ignore it if normal priority events cancelled it
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPreLogin(AsyncPlayerPreLoginEvent preLoginEvent) {
-        if (preLoginEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            //in this event isCancelled option in the annotation doesn't work
-            return;
-        }
-
-        UUID playerUuid = preLoginEvent.getUniqueId();
-
-        UUID targetUuid = plugin.getUserPreferences().get(playerUuid);
-        if (targetUuid != null && !playerUuid.equals(targetUuid) && !plugin.getSkinCache().containsKey(targetUuid)) {
-            //player selected a custom skin which isn't in the cache. Try to download it
-            WrappedSignedProperty downloadedSkin = plugin.downloadSkin(targetUuid);
-            if (downloadedSkin != null) {
-                //run it blocking because we don't know how it takes, so it won't end into a race condition
-                plugin.getSkinCache().put(targetUuid, downloadedSkin);
-            }
-        }
-    }
-
-    @EventHandler
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
         if (loginEvent.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             //in this event isCancelled option in the annotation doesn't work

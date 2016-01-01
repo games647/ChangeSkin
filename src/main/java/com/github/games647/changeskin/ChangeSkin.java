@@ -1,9 +1,8 @@
 package com.github.games647.changeskin;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.github.games647.changeskin.listener.PlayerInfoListener;
+import com.github.games647.changeskin.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.listener.PlayerLoginListener;
 import com.github.games647.changeskin.tasks.SkinDownloader;
 import com.google.common.base.Charsets;
@@ -45,7 +44,7 @@ public class ChangeSkin extends JavaPlugin {
     private final ConcurrentMap<UUID, WrappedSignedProperty> skinCache = SafeCacheBuilder
             .<UUID, WrappedSignedProperty>newBuilder()
             .maximumSize(1024 * 5)
-            .expireAfterWrite(3, TimeUnit.HOURS)
+            .expireAfterWrite(5, TimeUnit.HOURS)
             .build(new CacheLoader<UUID, WrappedSignedProperty>() {
 
                 @Override
@@ -79,9 +78,7 @@ public class ChangeSkin extends JavaPlugin {
         getCommand("setskin").setExecutor(new SetSkinCommand(this));
 
         getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
-        if (getConfig().getBoolean("restoreSkins")) {
-            ProtocolLibrary.getProtocolManager().addPacketListener(new PlayerInfoListener(this));
-        }
+        getServer().getPluginManager().registerEvents(new AsyncPlayerLoginListener(this), this);
     }
 
     @Override
