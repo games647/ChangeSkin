@@ -17,5 +17,18 @@ depend: [ProtocolLib]
 commands:
     setskin:
         description: 'Sets a new skin'
+        usage: /<command> [player] <name/uuid>
         aliases: [${project.artifactId}]
         permission: ${project.artifactId}.command.setskin
+
+permissions:
+    ${project.artifactId}.command.setskin.other.*:
+        children:
+            ${project.artifactId}.command.setskin: true
+            ${project.artifactId}.command.setskin.other: true
+    ${project.artifactId}.command.setskin:
+        description: 'Sets a new skin for yourself'
+    ${project.artifactId}.command.setskin.other:
+        description: 'Sets a skin for another player'
+        children:
+            ${project.artifactId}.command.setskin: true

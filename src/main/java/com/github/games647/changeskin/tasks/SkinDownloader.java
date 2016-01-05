@@ -6,17 +6,17 @@ import com.github.games647.changeskin.ChangeSkin;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 public class SkinDownloader implements Runnable {
 
     private final ChangeSkin plugin;
-    private final Player source;
+    private final CommandSender invoker;
     private final UUID targetSkin;
 
-    public SkinDownloader(ChangeSkin plugin, Player source, UUID targetSkin) {
+    public SkinDownloader(ChangeSkin plugin, CommandSender invoker, UUID targetSkin) {
         this.plugin = plugin;
-        this.source = source;
+        this.invoker = invoker;
         this.targetSkin = targetSkin;
     }
 
@@ -31,6 +31,8 @@ public class SkinDownloader implements Runnable {
         }
 
         //if user is online notify the player
-        source.sendMessage(ChatColor.DARK_GREEN + "Your skin was changed. Please relogin to see the changes");
+        if (invoker != null) {
+            invoker.sendMessage(ChatColor.DARK_GREEN + "Skin was changed. Relogin to see the changes");
+        }
     }
 }

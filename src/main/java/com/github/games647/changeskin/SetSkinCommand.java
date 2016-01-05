@@ -22,15 +22,19 @@ public class SetSkinCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            if (args.length > 0) {
-                String targetSource = args[0];
-                //minecraft player names has the max length of 16 characters
-                if (targetSource.length() > 16) {
-                    setSkinUUID((Player) sender, targetSource);
-                } else {
-                    setSkinName((Player) sender, targetSource);
-                }
+        if (args.length > 1) {
+            String targetPlayerName = args[0];
+            String toSkin = args[1];
+
+            Player targetPlayer = Bukkit.getPlayerExact(targetPlayerName);
+            if (targetPlayer == null) {
+                sender.sendMessage(ChatColor.DARK_RED + "This player isn't online");
+            } else {
+                setSkinOther(sender, targetPlayer, toSkin);
+            }
+        } else if (sender instanceof Player) {
+            if (args.length == 0) {
+                setSkinOther(sender, (Player) sender, args[0]);
             } else {
                 sender.sendMessage(ChatColor.DARK_RED + "You have to provide the skin you want to change to");
             }
@@ -41,24 +45,30 @@ public class SetSkinCommand implements CommandExecutor {
         return true;
     }
 
-    private void setSkinUUID(Player player, String targetUUID) {
-        try {
-            UUID uuid = UUID.fromString(targetUUID);
-            if (player.getUniqueId().equals(uuid)) {
-                player.sendMessage(ChatColor.DARK_GREEN + "Reseting your preferences");
-                plugin.getUserPreferences().remove(player.getUniqueId());
-            } else {
-                player.sendMessage(ChatColor.GOLD + "Queued Skin change");
-                plugin.getUserPreferences().put(player.getUniqueId(), uuid);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinDownloader(plugin, player, uuid));
-            }
-        } catch (IllegalArgumentException illegalArgumentException) {
-            player.sendMessage(ChatColor.DARK_RED + "Invalid uuid");
+    private void setSkinOther(CommandSender sender, Player targetPlayer, String toSkin) {
+        //minecraft player names has the max length of 16 characters so it could be the uuid
+        if (toSkin.length() > 16) {
+            setSkinUUID(sender, targetPlayer, toSkin);
+        } else {
+            sender.sendMessage(ChatColor.GOLD + "Queued name to uuid resolve");
+            Bukkit.getScheduler()
+                    .runTaskAsynchronously(plugin, new NameResolver(plugin, sender, toSkin, targetPlayer));
         }
     }
 
-    private void setSkinName(Player player, String targetName) {
-        player.sendMessage(ChatColor.GOLD + "Queued name to uuid resolve");
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new NameResolver(plugin, targetName, player));
+    private void setSkinUUID(CommandSender sender, Player targetPlayer, String targetUUID) {
+        try {
+            UUID uuid = UUID.fromString(targetUUID);
+            if (targetPlayer.getUniqueId().equals(uuid)) {
+                sender.sendMessage(ChatColor.DARK_GREEN + "Reseting preferences to the default value");
+                plugin.getUserPreferences().remove(targetPlayer.getUniqueId());
+            } else {
+                sender.sendMessage(ChatColor.GOLD + "Queued Skin change");
+                plugin.getUserPreferences().put(targetPlayer.getUniqueId(), uuid);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinDownloader(plugin, sender, uuid));
+            }
+        } catch (IllegalArgumentException illegalArgumentException) {
+            sender.sendMessage(ChatColor.DARK_RED + "Invalid uuid");
+        }
     }
 }

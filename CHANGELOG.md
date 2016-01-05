@@ -1,5 +1,11 @@
 #Changelog
 
+##### 0.6
+
+* Added command to set skin for other players /setskin player <uuid/name>
+* Added permissions to the plugin.yml
+* Added child permissions
+
 ##### 0.5
 
 * [Experimental] Re fetch skins for player who don't have one
