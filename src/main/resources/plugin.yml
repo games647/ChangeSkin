@@ -18,11 +18,11 @@ commands:
     setskin:
         description: 'Sets a new skin'
         usage: /<command> [player] <name/uuid>
-        aliases: [${project.artifactId}]
+        aliases: ${project.artifactId}
         permission: ${project.artifactId}.command.setskin
 
 permissions:
-    ${project.artifactId}.command.setskin.other.*:
+    ${project.artifactId}.command.setskin.*:
         children:
             ${project.artifactId}.command.setskin: true
             ${project.artifactId}.command.setskin.other: true

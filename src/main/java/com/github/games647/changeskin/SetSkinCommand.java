@@ -33,7 +33,7 @@ public class SetSkinCommand implements CommandExecutor {
                 setSkinOther(sender, targetPlayer, toSkin);
             }
         } else if (sender instanceof Player) {
-            if (args.length == 0) {
+            if (args.length == 1) {
                 setSkinOther(sender, (Player) sender, args[0]);
             } else {
                 sender.sendMessage(ChatColor.DARK_RED + "You have to provide the skin you want to change to");

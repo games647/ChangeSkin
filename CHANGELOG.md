@@ -1,5 +1,9 @@
 #Changelog
 
+##### 0.7
+
+* Minimize preferences size if you choose your own profile
+
 ##### 0.6
 
 * Added command to set skin for other players /setskin player <uuid/name>

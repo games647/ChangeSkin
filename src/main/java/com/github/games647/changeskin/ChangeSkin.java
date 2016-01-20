@@ -187,10 +187,14 @@ public class ChangeSkin extends JavaPlugin {
 
             bufferedWriter = Files.newWriter(file, Charsets.UTF_8);
             for (Map.Entry<UUID, UUID> entry : userPreferences.entrySet()) {
+                if (entry.getKey().equals(entry.getValue())) {
+                    continue;
+                }
+
                 bufferedWriter.write(entry.getKey().toString());
                 bufferedWriter.write(':');
                 bufferedWriter.write(entry.getValue().toString());
-                bufferedWriter.write(System.lineSeparator());
+                bufferedWriter.newLine();
             }
 
             bufferedWriter.flush();
