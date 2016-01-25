@@ -14,3 +14,7 @@ default-skins: []
 # If the player does not have a skin and hasn't chosen one wiht /setskin
 # this will try to redownload using the username of the player
 restoreSkins: false
+
+# Should the skins apply instantly without relogins
+# The player will be invisible for a shorten time
+instantSkinChange: false

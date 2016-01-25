@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class SkinDownloader implements Runnable {
 
@@ -33,6 +34,9 @@ public class SkinDownloader implements Runnable {
         //if user is online notify the player
         if (invoker != null) {
             invoker.sendMessage(ChatColor.DARK_GREEN + "Skin was changed. Relogin to see the changes");
+            if (plugin.getConfig().getBoolean("instantSkinChange") && invoker instanceof Player) {
+                plugin.getServer().getScheduler().runTask(plugin, new ApplySkin(plugin, (Player) invoker));
+            }
         }
     }
 }

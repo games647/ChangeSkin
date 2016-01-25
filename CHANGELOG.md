@@ -3,6 +3,7 @@
 ##### 0.7
 
 * Minimize preferences size if you choose your own profile
+* Add instant skin changes (skin changes work without relogs)
 
 ##### 0.6
 
