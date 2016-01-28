@@ -163,7 +163,7 @@ public class ChangeSkin extends JavaPlugin {
         userPreferences.put(player.getUniqueId(), targetSkin);
         if (!skinCache.containsKey(targetSkin)) {
             //download the skin only if it's not already in the cache
-            getServer().getScheduler().runTaskAsynchronously(this, new SkinDownloader(this, null, targetSkin));
+            getServer().getScheduler().runTaskAsynchronously(this, new SkinDownloader(this, null, player, targetSkin));
         }
     }
 

@@ -65,7 +65,9 @@ public class SetSkinCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(ChatColor.GOLD + "Queued Skin change");
                 plugin.getUserPreferences().put(targetPlayer.getUniqueId(), uuid);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinDownloader(plugin, sender, uuid));
+                
+                SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, targetPlayer, uuid);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
             }
         } catch (IllegalArgumentException illegalArgumentException) {
             sender.sendMessage(ChatColor.DARK_RED + "Invalid uuid");

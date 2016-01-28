@@ -1,5 +1,9 @@
 #Changelog
 
+##### 0.7.1
+
+* Added native bukkit support
+
 ##### 0.7
 
 * Minimize preferences size if you choose your own profile

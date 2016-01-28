@@ -13,11 +13,13 @@ public class SkinDownloader implements Runnable {
 
     private final ChangeSkin plugin;
     private final CommandSender invoker;
+    private final Player receiver;
     private final UUID targetSkin;
 
-    public SkinDownloader(ChangeSkin plugin, CommandSender invoker, UUID targetSkin) {
+    public SkinDownloader(ChangeSkin plugin, CommandSender invoker, Player receiver, UUID targetSkin) {
         this.plugin = plugin;
         this.invoker = invoker;
+        this.receiver = receiver;
         this.targetSkin = targetSkin;
     }
 
@@ -34,9 +36,10 @@ public class SkinDownloader implements Runnable {
         //if user is online notify the player
         if (invoker != null) {
             invoker.sendMessage(ChatColor.DARK_GREEN + "Skin was changed. Relogin to see the changes");
-            if (plugin.getConfig().getBoolean("instantSkinChange") && invoker instanceof Player) {
-                plugin.getServer().getScheduler().runTask(plugin, new ApplySkin(plugin, (Player) invoker));
-            }
+        }
+
+        if (receiver != null && plugin.getConfig().getBoolean("instantSkinChange") && invoker instanceof Player) {
+            plugin.getServer().getScheduler().runTask(plugin, new SkinUpdater(plugin, receiver));
         }
     }
 }

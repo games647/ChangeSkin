@@ -15,11 +15,11 @@ public class NameResolver implements Runnable {
     private final String targetName;
     private final Player player;
 
-    public NameResolver(ChangeSkin plugin, CommandSender invoker, String targetName, Player player) {
+    public NameResolver(ChangeSkin plugin, CommandSender invoker, String targetName, Player targetPlayer) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.targetName = targetName;
-        this.player = player;
+        this.player = targetPlayer;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class NameResolver implements Runnable {
             }
 
             //run this is the same thread
-            new SkinDownloader(plugin, invoker, cachedUUID).run();
+            new SkinDownloader(plugin, invoker, player, cachedUUID).run();
         }
     }
 }

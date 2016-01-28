@@ -22,18 +22,22 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class ApplySkin implements Runnable {
+public class SkinUpdater implements Runnable {
 
     private final ChangeSkin plugin;
     private final Player receiver;
 
-    public ApplySkin(ChangeSkin changeSkin, Player receiver) {
+    public SkinUpdater(ChangeSkin changeSkin, Player receiver) {
         this.plugin = changeSkin;
         this.receiver = receiver;
     }
 
     @Override
     public void run() {
+        if (receiver.isOnline()) {
+            return;
+        }
+
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
 
         UUID targetUuid = plugin.getUserPreferences().get(receiver.getUniqueId());
