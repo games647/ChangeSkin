@@ -33,13 +33,11 @@ public class SkinDownloader implements Runnable {
             }
         }
 
-        //if user is online notify the player
-        if (invoker != null) {
-            invoker.sendMessage(ChatColor.DARK_GREEN + "Skin was changed. Relogin to see the changes");
-        }
-
-        if (receiver != null && plugin.getConfig().getBoolean("instantSkinChange") && invoker instanceof Player) {
+        if (receiver != null && plugin.getConfig().getBoolean("instantSkinChange")) {
             plugin.getServer().getScheduler().runTask(plugin, new SkinUpdater(plugin, receiver));
+        } else if (invoker != null) {
+            //if user is online notify the player
+            invoker.sendMessage(ChatColor.DARK_GREEN + "Skin was changed. Relogin to see the changes");
         }
     }
 }

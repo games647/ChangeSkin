@@ -24,7 +24,7 @@ public class PlayerLoginListener implements Listener {
     private static final String SKIN_KEY = "textures";
 
     private final ChangeSkin plugin;
-    private final boolean isSpigot = Bukkit.getServer().getVersion().contains("Spigot");
+    private final boolean isSpigot = firesAsyncPreLoginEvent();
     private final Random random = new Random();
 
     public PlayerLoginListener(ChangeSkin plugin) {
@@ -41,7 +41,6 @@ public class PlayerLoginListener implements Listener {
         Player player = loginEvent.getPlayer();
 
         boolean skinFound = false;
-
         //try to use the existing and put it in the cache so we use it for others
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
         Multimap<String, WrappedSignedProperty> properties = gameProfile.getProperties();
@@ -94,12 +93,18 @@ public class PlayerLoginListener implements Listener {
             } else {
                 setRandomSkin(player, properties);
             }
-        } else if (!plugin.getSkinCache().containsKey(targetUUID)) {
-            //player selected a custom skin which isn't in the cache. Try to download it
-            WrappedSignedProperty downloadedSkin = plugin.downloadSkin(targetUUID);
-            if (downloadedSkin != null) {
-                //run it blocking because we don't know how it takes, so it won't end into a race condition
-                plugin.getSkinCache().put(targetUUID, downloadedSkin);
+        } else {
+            WrappedSignedProperty cachedSkin = plugin.getSkinCache().get(targetUUID);
+            if (cachedSkin == null) {
+                //player selected a custom skin which isn't in the cache. Try to download it
+                WrappedSignedProperty downloadedSkin = plugin.downloadSkin(targetUUID);
+                if (downloadedSkin != null) {
+                    //run it blocking because we don't know how it takes, so it won't end into a race condition
+                    plugin.getSkinCache().put(targetUUID, downloadedSkin);
+                    properties.put(SKIN_KEY, downloadedSkin);
+                }
+            } else {
+                properties.put(SKIN_KEY, cachedSkin);
             }
         }
     }
@@ -109,5 +114,10 @@ public class PlayerLoginListener implements Listener {
             Bukkit.getScheduler()
                     .runTaskAsynchronously(plugin, new NameResolver(plugin, null, player.getName(), player));
         }
+    }
+
+    private boolean firesAsyncPreLoginEvent() {
+        String version = Bukkit.getServer().getVersion();
+        return version.contains("Paper") || version.contains("Spigot") || version.contains("Taco");
     }
 }

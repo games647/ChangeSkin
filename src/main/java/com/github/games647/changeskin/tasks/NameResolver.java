@@ -27,7 +27,11 @@ public class NameResolver implements Runnable {
         UUID cachedUUID = plugin.getUuidCache().get(targetName);
         if (cachedUUID == null) {
             cachedUUID = plugin.getUUID(targetName);
-            if (cachedUUID != null) {
+            if (cachedUUID == null) {
+                if (invoker != null) {
+                    invoker.sendMessage(ChatColor.DARK_RED + "UUID couldn't be resolved");
+                }
+            } else {
                 plugin.getUuidCache().put(targetName, cachedUUID);
             }
         }

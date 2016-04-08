@@ -1,5 +1,11 @@
 #Changelog
 
+##### 0.7.2
+
+* Fixed support for PaperSpigot and TacoSpigot
+* Fixed support for Craftbukkit servers
+* Fixed instant skin apply
+
 ##### 0.7.1
 
 * Added native bukkit support

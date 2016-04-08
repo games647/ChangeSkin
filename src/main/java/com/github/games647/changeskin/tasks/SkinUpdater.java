@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class SkinUpdater implements Runnable {
@@ -34,7 +35,7 @@ public class SkinUpdater implements Runnable {
 
     @Override
     public void run() {
-        if (receiver.isOnline()) {
+        if (!receiver.isOnline()) {
             return;
         }
 
@@ -49,6 +50,7 @@ public class SkinUpdater implements Runnable {
                 gameProfile.getProperties().put("textures", targetSkin);
 
                 sendUpdate(gameProfile);
+                receiver.sendMessage(ChatColor.DARK_GREEN + "You received a new skin");
             }
         }
     }
