@@ -30,11 +30,16 @@ public class SetSkinCommand implements CommandExecutor {
             if (targetPlayer == null) {
                 sender.sendMessage(ChatColor.DARK_RED + "This player isn't online");
             } else {
-                setSkinOther(sender, targetPlayer, toSkin);
+                setSkin(sender, targetPlayer, toSkin);
             }
         } else if (sender instanceof Player) {
             if (args.length == 1) {
-                setSkinOther(sender, (Player) sender, args[0]);
+                if ("reset".equalsIgnoreCase(args[0])) {
+                    setSkinUUID(sender, (Player) sender, ((Player) sender).getUniqueId().toString());
+                    return true;
+                }
+
+                setSkin(sender, (Player) sender, args[0]);
             } else {
                 sender.sendMessage(ChatColor.DARK_RED + "You have to provide the skin you want to change to");
             }
@@ -45,12 +50,19 @@ public class SetSkinCommand implements CommandExecutor {
         return true;
     }
 
-    private void setSkinOther(CommandSender sender, Player targetPlayer, String toSkin) {
+    private void setSkin(CommandSender sender, Player targetPlayer, String toSkin) {
         //minecraft player names has the max length of 16 characters so it could be the uuid
         if (toSkin.length() > 16) {
             setSkinUUID(sender, targetPlayer, toSkin);
         } else {
             sender.sendMessage(ChatColor.GOLD + "Queued name to uuid resolve");
+            if (plugin.getConfig().getBoolean("skinPermission")
+                    && !sender.hasPermission(plugin.getName().toLowerCase() + ".skin." + toSkin)
+                    && !sender.hasPermission(plugin.getName().toLowerCase() + ".skin.*")) {
+                sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
+                return;
+            }
+
             Bukkit.getScheduler()
                     .runTaskAsynchronously(plugin, new NameResolver(plugin, sender, toSkin, targetPlayer));
         }
@@ -59,13 +71,20 @@ public class SetSkinCommand implements CommandExecutor {
     private void setSkinUUID(CommandSender sender, Player targetPlayer, String targetUUID) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
+            if (plugin.getConfig().getBoolean("skinPermission")
+                    && !sender.hasPermission(plugin.getName().toLowerCase() + ".skin." + uuid.toString())
+                    && !sender.hasPermission(plugin.getName().toLowerCase() + ".skin.*")) {
+                sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
+                return;
+            }
+
             if (targetPlayer.getUniqueId().equals(uuid)) {
                 sender.sendMessage(ChatColor.DARK_GREEN + "Reseting preferences to the default value");
                 plugin.getUserPreferences().remove(targetPlayer.getUniqueId());
             } else {
                 sender.sendMessage(ChatColor.GOLD + "Queued Skin change");
                 plugin.getUserPreferences().put(targetPlayer.getUniqueId(), uuid);
-                
+
                 SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, targetPlayer, uuid);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
             }

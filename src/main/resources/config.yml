@@ -18,3 +18,9 @@ restoreSkins: false
 # Should the skins apply instantly without relogins
 # The player will be invisible for a shorten time
 instantSkinChange: true
+
+# Should the plugin check for skin specific permissions nodes like
+# changeskin.skin.playername or changeskin.skin.uuid
+# changeskin.skin.* allows all skins
+# The plugin checks only if the player has one of these and will not check all of them
+skinPermission: false

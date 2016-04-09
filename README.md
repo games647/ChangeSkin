@@ -24,9 +24,18 @@ all players who still have the default steve or alex skin.
 
 ## Commands
 
-* /setskin [uuid] - Sets your skin to be equal to the player with the selected uuid
-* /setskin [playerName]
+* /setskin <uuid > - Sets your skin to be equal to the player with the selected uuid
+* /setskin < playerName>
+* /setskin < onlinePlayer > < newSkinUUID/newSkinPlayerName >
 
 ## Permissions
 
-* changeskin.command.setskin - Permission to use the setskin command
+* changeskin.command.setskin.* - All the commands below
+* changeskin.command.setskin - Set your own skin
+* changeskin.command.setskin.other - Set the skin of other players
+
+Skin specific permission. Activate it in the config
+
+* changeskin.skin.*
+* changeskin.skin.playerName
+* changeskin.skin.uuid

@@ -41,6 +41,13 @@ public class NameResolver implements Runnable {
             plugin.getUserPreferences().put(player.getUniqueId(), cachedUUID);
             if (invoker != null) {
                 invoker.sendMessage(ChatColor.DARK_GREEN + "UUID was successfull resolved from the player name");
+                if (plugin.getConfig().getBoolean("skinPermission")
+                        && !invoker.hasPermission(plugin.getName().toLowerCase() + ".skin." + cachedUUID.toString())
+                        && !invoker.hasPermission(plugin.getName().toLowerCase() + ".skin.*")) {
+                    invoker.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
+                    return;
+                }
+
                 invoker.sendMessage(ChatColor.DARK_GREEN + "The skin is now downloading");
             }
 
