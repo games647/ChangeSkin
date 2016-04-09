@@ -60,7 +60,7 @@ public class SkinUpdater implements Runnable {
 
         //triggers an update for others player to see the new skin
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (onlinePlayer.equals(receiver)) {
+            if (onlinePlayer.equals(receiver) || !onlinePlayer.canSee(receiver)) {
                 continue;
             }
 
