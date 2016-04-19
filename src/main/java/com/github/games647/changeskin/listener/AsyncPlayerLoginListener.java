@@ -1,9 +1,11 @@
 package com.github.games647.changeskin.listener;
 
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.ChangeSkin;
+import com.github.games647.changeskin.SkinData;
+import com.github.games647.changeskin.UserPreferences;
 
 import java.util.UUID;
+import org.bukkit.Bukkit;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,7 +14,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
 public class AsyncPlayerLoginListener implements Listener {
 
-    private final ChangeSkin plugin;
+    protected final ChangeSkin plugin;
 
     public AsyncPlayerLoginListener(ChangeSkin plugin) {
         this.plugin = plugin;
@@ -29,22 +31,15 @@ public class AsyncPlayerLoginListener implements Listener {
         UUID playerUuid = preLoginEvent.getUniqueId();
         String playerName = preLoginEvent.getName();
 
-        UUID targetUuid = plugin.getUserPreferences().get(playerUuid);
-        if (targetUuid == null) {
-            if (plugin.getConfig().getBoolean("restoreSkins") && !plugin.getSkinCache().containsKey(playerUuid)) {
+        UserPreferences preferences = plugin.getStorage().getPreferences(playerUuid, true);
+        if (preferences.getTargetSkin() == null) {
+            if (plugin.getConfig().getBoolean("restoreSkins")) {
                 refetchSkin(playerName, playerUuid);
-            }
-        } else if (!plugin.getSkinCache().containsKey(targetUuid)) {
-            //player selected a custom skin which isn't in the cache. Try to download it
-            WrappedSignedProperty downloadedSkin = plugin.downloadSkin(targetUuid);
-            if (downloadedSkin != null) {
-                //run it blocking because we don't know how it takes, so it won't end into a race condition
-                plugin.getSkinCache().put(targetUuid, downloadedSkin);
             }
         }
     }
 
-    private void refetchSkin(String playerName, UUID playerUUID) {
+    private void refetchSkin(String playerName, UUID receiverUUID) {
         UUID ownerUUID = plugin.getUuidCache().get(playerName);
         if (ownerUUID == null) {
             ownerUUID = plugin.getUUID(playerName);
@@ -54,14 +49,30 @@ public class AsyncPlayerLoginListener implements Listener {
         }
 
         if (ownerUUID != null) {
-            WrappedSignedProperty cachedSkin = plugin.getSkinCache().get(ownerUUID);
+            SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID, true);
             if (cachedSkin == null) {
                 cachedSkin = plugin.downloadSkin(ownerUUID);
                 if (cachedSkin != null) {
-                    plugin.getSkinCache().put(ownerUUID, cachedSkin);
-                    plugin.getUserPreferences().put(playerUUID, ownerUUID);
+                    final SkinData skin = cachedSkin;
+
+                    plugin.getStorage().getSkinUUIDCache().put(ownerUUID, skin);
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            plugin.getStorage().save(skin);
+                        }
+                    });
                 }
             }
+
+            final UserPreferences preferences = plugin.getStorage().getPreferences(receiverUUID, true);
+            preferences.setTargetSkin(cachedSkin);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    plugin.getStorage().save(preferences);
+                }
+            });
         }
     }
 }

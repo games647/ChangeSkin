@@ -13,10 +13,11 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.ChangeSkin;
+import com.github.games647.changeskin.SkinData;
+import com.github.games647.changeskin.UserPreferences;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -41,17 +42,18 @@ public class SkinUpdater implements Runnable {
 
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
 
-        UUID targetUuid = plugin.getUserPreferences().get(receiver.getUniqueId());
-        if (targetUuid != null) {
-            WrappedSignedProperty targetSkin = plugin.getSkinCache().get(targetUuid);
-            if (targetSkin != null) {
-                //remove existing skins
-                gameProfile.getProperties().removeAll("textures");
-                gameProfile.getProperties().put("textures", targetSkin);
+        UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId(), false);
+        SkinData targetSkin = preferences.getTargetSkin();
+        if (targetSkin != null) {
+            //remove existing skins
+            gameProfile.getProperties().removeAll("textures");
 
-                sendUpdate(gameProfile);
-                receiver.sendMessage(ChatColor.DARK_GREEN + "You received a new skin");
-            }
+            WrappedSignedProperty skin = WrappedSignedProperty
+                    .fromValues("textures", targetSkin.getEncodedData(), targetSkin.getEncodedSignature());
+            gameProfile.getProperties().put("textures", skin);
+
+            sendUpdate(gameProfile);
+            receiver.sendMessage(ChatColor.DARK_GREEN + "You received a new skin");
         }
     }
 

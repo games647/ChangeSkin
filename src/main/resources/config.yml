@@ -24,3 +24,18 @@ instantSkinChange: true
 # changeskin.skin.* allows all skins
 # The plugin checks only if the player has one of these and will not check all of them
 skinPermission: false
+
+# Database configuration
+storage:
+# Single file SQLite database
+    driver: org.sqlite.JDBC
+    # File location
+    database: '{pluginDir}/ChangeSkin.db'
+
+# MySQL
+#    driver: com.mysql.jdbc.Driver
+#    host: localhost
+#    port: 3306
+#    database: ChangeSkin
+#    username: myUser
+#    password: myPassword

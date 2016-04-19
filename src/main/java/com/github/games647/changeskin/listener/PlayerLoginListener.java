@@ -4,13 +4,13 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.ChangeSkin;
 import com.github.games647.changeskin.SkinData;
+import com.github.games647.changeskin.UserPreferences;
 import com.github.games647.changeskin.tasks.NameResolver;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public class PlayerLoginListener implements Listener {
 
     private static final String SKIN_KEY = "textures";
 
-    private final ChangeSkin plugin;
+    protected final ChangeSkin plugin;
     private final boolean isSpigot = firesAsyncPreLoginEvent();
     private final Random random = new Random();
 
@@ -45,28 +45,27 @@ public class PlayerLoginListener implements Listener {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
         Multimap<String, WrappedSignedProperty> properties = gameProfile.getProperties();
         Collection<WrappedSignedProperty> values = properties.get(SKIN_KEY);
-        for (WrappedSignedProperty value : values) {
-            if (value.hasSignature()) {
+        for (WrappedSignedProperty property : values) {
+            if (property.hasSignature()) {
                 //found a skin
-                plugin.getSkinCache().put(player.getUniqueId(), value);
+                SkinData skinData = new SkinData(property.getValue(), property.getSignature());
+                plugin.getStorage().getSkinUUIDCache().put(player.getUniqueId(), skinData);
                 skinFound = true;
                 break;
             }
         }
 
         //updates to the chosen one
-        UUID targetUUID = plugin.getUserPreferences().get(player.getUniqueId());
+        UserPreferences preferences = plugin.getStorage().getPreferences(player.getUniqueId(), true);
         if (isSpigot) {
-            if (targetUUID != null) {
-                WrappedSignedProperty cachedSkin = plugin.getSkinCache().get(targetUUID);
-                if (cachedSkin != null) {
-                    properties.put(SKIN_KEY, cachedSkin);
-                }
+            SkinData targetSkin = preferences.getTargetSkin();
+            if (targetSkin != null) {
+                properties.put(SKIN_KEY, targetSkin.convertToProperty());
             } else if (!skinFound) {
                 setRandomSkin(player, properties);
             }
         } else {
-            fallbackBukkit(player, targetUUID, properties);
+            fallbackBukkit(player, preferences, properties);
         }
     }
 
@@ -76,43 +75,33 @@ public class PlayerLoginListener implements Listener {
         if (!defaultSkins.isEmpty()) {
             int randomIndex = random.nextInt(defaultSkins.size());
 
-            SkinData targetSkin = defaultSkins.get(randomIndex);
+            final SkinData targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
-                plugin.getUserPreferences().put(player.getUniqueId(), targetSkin.getSkinOwner());
-                plugin.getSkinCache().put(targetSkin.getSkinOwner(), targetSkin.getSkinValue());
-                properties.put(SKIN_KEY, targetSkin.getSkinValue());
+                plugin.getStorage().getPreferences(player.getUniqueId(), false).setTargetSkin(targetSkin);
+                properties.put(SKIN_KEY, targetSkin.convertToProperty());
+
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        plugin.getStorage().save(targetSkin);
+                    }
+                });
             }
         }
     }
 
-    private void fallbackBukkit(Player player, UUID targetUUID, Multimap<String, WrappedSignedProperty> properties) {
-        UUID playerUUID = player.getUniqueId();
-        if (targetUUID == null) {
+    private void fallbackBukkit(Player player, UserPreferences preferences
+            , Multimap<String, WrappedSignedProperty> properties) {
+        if (preferences.getTargetSkin() == null) {
             if (plugin.getConfig().getBoolean("restoreSkins")) {
-                refetch(player, playerUUID);
+                //refetch
+                Bukkit.getScheduler()
+                        .runTaskAsynchronously(plugin, new NameResolver(plugin, null, player.getName(), player));
             } else {
                 setRandomSkin(player, properties);
             }
         } else {
-            WrappedSignedProperty cachedSkin = plugin.getSkinCache().get(targetUUID);
-            if (cachedSkin == null) {
-                //player selected a custom skin which isn't in the cache. Try to download it
-                WrappedSignedProperty downloadedSkin = plugin.downloadSkin(targetUUID);
-                if (downloadedSkin != null) {
-                    //run it blocking because we don't know how it takes, so it won't end into a race condition
-                    plugin.getSkinCache().put(targetUUID, downloadedSkin);
-                    properties.put(SKIN_KEY, downloadedSkin);
-                }
-            } else {
-                properties.put(SKIN_KEY, cachedSkin);
-            }
-        }
-    }
-
-    private void refetch(Player player, UUID playerUUID) {
-        if (!plugin.getSkinCache().containsKey(playerUUID)) {
-            Bukkit.getScheduler()
-                    .runTaskAsynchronously(plugin, new NameResolver(plugin, null, player.getName(), player));
+            properties.put(SKIN_KEY, preferences.getTargetSkin().convertToProperty());
         }
     }
 

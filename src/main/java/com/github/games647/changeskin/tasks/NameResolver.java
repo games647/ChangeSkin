@@ -37,8 +37,6 @@ public class NameResolver implements Runnable {
         }
 
         if (cachedUUID != null) {
-            //Save the target uuid from the requesting player source
-            plugin.getUserPreferences().put(player.getUniqueId(), cachedUUID);
             if (invoker != null) {
                 invoker.sendMessage(ChatColor.DARK_GREEN + "UUID was successfull resolved from the player name");
                 if (plugin.getConfig().getBoolean("skinPermission")

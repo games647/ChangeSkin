@@ -68,7 +68,7 @@ public class SetSkinCommand implements CommandExecutor {
         }
     }
 
-    private void setSkinUUID(CommandSender sender, Player targetPlayer, String targetUUID) {
+    private void setSkinUUID(CommandSender sender, Player receiverPayer, String targetUUID) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
             if (plugin.getConfig().getBoolean("skinPermission")
@@ -78,14 +78,21 @@ public class SetSkinCommand implements CommandExecutor {
                 return;
             }
 
-            if (targetPlayer.getUniqueId().equals(uuid)) {
+            if (receiverPayer.getUniqueId().equals(uuid)) {
                 sender.sendMessage(ChatColor.DARK_GREEN + "Reseting preferences to the default value");
-                plugin.getUserPreferences().remove(targetPlayer.getUniqueId());
+
+                final UserPreferences preferences = plugin.getStorage().getPreferences(uuid, false);
+                preferences.setTargetSkin(null);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        plugin.getStorage().save(preferences);
+                    }
+                });
             } else {
                 sender.sendMessage(ChatColor.GOLD + "Queued Skin change");
-                plugin.getUserPreferences().put(targetPlayer.getUniqueId(), uuid);
 
-                SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, targetPlayer, uuid);
+                SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
             }
         } catch (IllegalArgumentException illegalArgumentException) {
