@@ -1,0 +1,47 @@
+package com.github.games647.changeskin.model;
+
+public class SkinModel {
+
+    private long timestamp;
+
+    private String profileId;
+
+    private String profileName;
+
+    private boolean signatureRequired = true;
+
+    private TexturesModel textures;
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
+    }
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
+    }
+
+    public TexturesModel getTextures() {
+        return textures;
+    }
+
+    public void setTextures(TexturesModel textures) {
+        this.textures = textures;
+    }
+
+}

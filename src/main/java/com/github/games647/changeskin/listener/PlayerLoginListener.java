@@ -77,13 +77,14 @@ public class PlayerLoginListener implements Listener {
 
             final SkinData targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
-                plugin.getStorage().getPreferences(player.getUniqueId(), false).setTargetSkin(targetSkin);
+                final UserPreferences preferences = plugin.getStorage().getPreferences(player.getUniqueId(), false);
+                preferences.setTargetSkin(targetSkin);
                 properties.put(SKIN_KEY, targetSkin.convertToProperty());
 
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        plugin.getStorage().save(targetSkin);
+                        plugin.getStorage().save(preferences);
                     }
                 });
             }

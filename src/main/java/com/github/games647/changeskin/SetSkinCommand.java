@@ -89,6 +89,9 @@ public class SetSkinCommand implements CommandExecutor {
                         plugin.getStorage().save(preferences);
                     }
                 });
+
+                SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
             } else {
                 sender.sendMessage(ChatColor.GOLD + "Queued Skin change");
 

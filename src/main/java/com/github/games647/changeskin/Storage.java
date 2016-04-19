@@ -81,7 +81,7 @@ public class Storage {
                     + "`CapeURL` VARCHAR(255), "
                     + "`Signature` BINARY(512) NOT NULL"
                     //SQLite doesn't support this on a create table statement
-//                    + "INDEX(`UUID`)"
+                    //                    + "INDEX(`UUID`)"
                     + ")");
         } finally {
             closeQuietly(con);
@@ -142,13 +142,13 @@ public class Storage {
                 statement.setInt(1, targetSkinId);
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
-                    long timestamp = resultSet.getTimestamp(1).getTime();
-                    UUID uuid = ChangeSkin.parseId(resultSet.getString(2));
-                    String name = resultSet.getString(3);
-                    String skinUrl = resultSet.getString(4);
-                    String capeUrl = resultSet.getString(5);
+                    long timestamp = resultSet.getTimestamp(2).getTime();
+                    UUID uuid = ChangeSkin.parseId(resultSet.getString(3));
+                    String name = resultSet.getString(4);
+                    String skinUrl = resultSet.getString(5);
+                    String capeUrl = resultSet.getString(6);
 
-                    String signature = BaseEncoding.base64().encode(resultSet.getBytes(1));
+                    String signature = BaseEncoding.base64().encode(resultSet.getBytes(7));
                     SkinData skinData = new SkinData(targetSkinId, timestamp, uuid, name, skinUrl, capeUrl, signature);
                     skinCache.put(targetSkinId, skinData);
                     skinUUIDCache.put(uuid, skinData);
@@ -179,13 +179,13 @@ public class Storage {
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
                     int skinId = resultSet.getInt(1);
-                    long timestamp = resultSet.getTimestamp(1).getTime();
-                    UUID uuid = ChangeSkin.parseId(resultSet.getString(2));
-                    String name = resultSet.getString(3);
-                    String skinUrl = resultSet.getString(4);
-                    String capeUrl = resultSet.getString(5);
+                    long timestamp = resultSet.getTimestamp(2).getTime();
+                    UUID uuid = ChangeSkin.parseId(resultSet.getString(3));
+                    String name = resultSet.getString(4);
+                    String skinUrl = resultSet.getString(5);
+                    String capeUrl = resultSet.getString(6);
 
-                    String signature = BaseEncoding.base64().encode(resultSet.getBytes(1));
+                    String signature = BaseEncoding.base64().encode(resultSet.getBytes(7));
                     SkinData skinData = new SkinData(skinId, timestamp, uuid, name, skinUrl, capeUrl, signature);
                     skinCache.put(skinId, skinData);
                     skinUUIDCache.put(uuid, skinData);
@@ -203,7 +203,7 @@ public class Storage {
 
     public void save(UserPreferences preferences) {
         SkinData targetSkin = preferences.getTargetSkin();
-        if (targetSkin == null || targetSkin.getSkinId() == -1) {
+        if (targetSkin != null && targetSkin.getSkinId() == -1) {
             plugin.getLogger().warning("Tried saving preferences without target skin. "
                     + "Please report this to the author");
             return;
@@ -212,14 +212,19 @@ public class Storage {
         Connection con = null;
         try {
             con = DriverManager.getConnection(jdbcUrl, username, pass);
+            if (targetSkin == null) {
+                PreparedStatement statement = con.prepareStatement("DELETE FROM " + PREFERENCES_TABLE
+                        + " WHERE UUID=?");
+                statement.setString(1, preferences.getUuid().toString().replace("-", ""));
+                statement.executeUpdate();
+            } else {
+                PreparedStatement statement = con.prepareStatement("INSERT OR REPLACE INTO " + PREFERENCES_TABLE
+                        + " (UUID, TargetSkin) VALUES (?, ?)");
+                statement.setString(1, preferences.getUuid().toString().replace("-", ""));
+                statement.setInt(2, targetSkin.getSkinId());
 
-            PreparedStatement statement = con.prepareStatement("INSERT INTO " + PREFERENCES_TABLE + " WHERE UUID=? "
-                    + "(UUID, TargetSkin) VALUES (?, ?) ON DUPLICATE KEY UPDATE TargetSkin=?");
-            statement.setString(1, preferences.getUuid().toString().replace("-", ""));
-            statement.setInt(2, targetSkin.getSkinId());
-            statement.setInt(3, targetSkin.getSkinId());
-
-            statement.executeUpdate();
+                statement.executeUpdate();
+            }
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save preferences", sqlEx);
         } finally {
@@ -239,7 +244,7 @@ public class Storage {
 
             PreparedStatement statement = con.prepareStatement("INSERT INTO " + DATA_TABLE
                     + " (Timestamp, UUID, Name, SkinURL, CapeURL, Signature) VALUES"
-                    + " (?, ?, ?, ?, ?, ?)");
+                    + " (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
             statement.setTimestamp(1, new Timestamp(skinData.getTimestamp()));
             statement.setString(2, skinData.getUuid().toString().replace("-", ""));
@@ -247,7 +252,13 @@ public class Storage {
             statement.setString(4, skinData.getSkinURL());
             statement.setString(5, skinData.getCapeURL());
             statement.setBytes(6, BaseEncoding.base64().decode(skinData.getEncodedSignature()));
+
             statement.executeUpdate();
+
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys != null && generatedKeys.next()) {
+                skinData.setSkinId(generatedKeys.getInt(1));
+            }
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query skin data", sqlEx);
         } finally {

@@ -1,8 +1,12 @@
 package com.github.games647.changeskin;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.github.games647.changeskin.model.SkinModel;
+import com.github.games647.changeskin.model.TextureModel;
+import com.github.games647.changeskin.model.TexturesModel;
 import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
+import com.google.gson.Gson;
 
 import java.util.UUID;
 
@@ -98,24 +102,26 @@ public class SkinData {
     }
 
     private String serializeData() {
-        JSONObject data = new JSONObject();
-        data.put("timestamp", timestamp);
-        data.put("profileId", uuid.toString().replace('-', ' '));
-        data.put("profileName", name);
-        data.put("signatureRequired", true);
+        SkinModel dataModel = new SkinModel();
+        dataModel.setTimestamp(timestamp);
+        dataModel.setProfileId(uuid.toString().replace("-", ""));
+        dataModel.setProfileName(name);
 
-        JSONObject textures = new JSONObject();
-        JSONObject skinData = new JSONObject();
-        skinData.put("url", skinURL);
-        textures.put("SKIN", skinData);
+        TexturesModel texturesModel = new TexturesModel();
 
-        JSONObject capeData = new JSONObject();
-        capeData.put("url", capeURL);
-        textures.put("CAPE", capeData);
+        TextureModel skinModel = new TextureModel();
+        texturesModel.setSKIN(skinModel);
+        skinModel.setUrl(skinURL);
 
-        data.put("textures", textures);
+        if (capeURL != null) {
+            TextureModel capeModel = new TextureModel();
+            capeModel.setUrl(capeURL);
+            texturesModel.setCAPE(capeModel);
+        }
 
-        String json = data.toJSONString();
+        dataModel.setTextures(texturesModel);
+
+        String json = new Gson().toJson(dataModel);
         return BaseEncoding.base64().encode(json.getBytes(Charsets.UTF_8));
     }
 
