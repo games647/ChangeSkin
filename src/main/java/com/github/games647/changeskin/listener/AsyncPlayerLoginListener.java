@@ -53,23 +53,18 @@ public class AsyncPlayerLoginListener implements Listener {
             if (cachedSkin == null) {
                 cachedSkin = plugin.downloadSkin(ownerUUID);
                 if (cachedSkin != null) {
-                    final SkinData skin = cachedSkin;
-
-                    plugin.getStorage().getSkinUUIDCache().put(ownerUUID, skin);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            plugin.getStorage().save(skin);
-                        }
-                    });
+                    plugin.getStorage().getSkinUUIDCache().put(ownerUUID, cachedSkin);
                 }
             }
 
             final UserPreferences preferences = plugin.getStorage().getPreferences(receiverUUID, true);
             preferences.setTargetSkin(cachedSkin);
+
+            final SkinData skin = cachedSkin;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
+                    plugin.getStorage().save(skin);
                     plugin.getStorage().save(preferences);
                 }
             });

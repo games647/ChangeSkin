@@ -63,17 +63,17 @@ public class Storage {
         try {
             con = DriverManager.getConnection(jdbcUrl, username, pass);
             Statement statement = con.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + PREFERENCES_TABLE + " ("
-                    + "`UserID` INTEGER PRIMARY KEY AUTOINCREMENT, "
+            String createPreferencesStmt = "CREATE TABLE IF NOT EXISTS " + PREFERENCES_TABLE + " ("
+                    + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "`UUID` CHAR(36) NOT NULL, "
                     + "`TargetSkin` Integer NOT NULL, "
                     + "UNIQUE (`UUID`), "
                     + "FOREIGN KEY (`TargetSkin`) "
                     + "     REFERENCES " + DATA_TABLE + "(`SkinID`) "
                     + "     ON DELETE CASCADE "
-                    + ")");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + DATA_TABLE + " ("
-                    + "`SkinID` INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + ")";
+            String createDataStmt = "CREATE TABLE IF NOT EXISTS " + DATA_TABLE + " ("
+                    + "`SkinID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "`Timestamp` TIMESTAMP NOT NULL, "
                     + "`UUID` CHAR(36) NOT NULL, "
                     + "`Name` VARCHAR(16) NOT NULL, "
@@ -82,7 +82,15 @@ public class Storage {
                     + "`Signature` BINARY(512) NOT NULL"
                     //SQLite doesn't support this on a create table statement
                     //                    + "INDEX(`UUID`)"
-                    + ")");
+                    + ")";
+
+            if (jdbcUrl.contains("sqlite")) {
+                createPreferencesStmt = createPreferencesStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
+                createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
+            }
+
+            statement.executeUpdate(createPreferencesStmt);
+            statement.executeUpdate(createDataStmt);
         } finally {
             closeQuietly(con);
         }
@@ -234,7 +242,7 @@ public class Storage {
 
     public void save(SkinData skinData) {
         if (skinData.getSkinId() != -1) {
-            plugin.getLogger().warning("SkinId already set");
+            //skin already set
             return;
         }
 

@@ -31,23 +31,19 @@ public class SkinDownloader implements Runnable {
         if (skin == null) {
             skin = plugin.downloadSkin(targetUUID);
             if (skin != null) {
-                final SkinData newSkin = skin;
-                plugin.getStorage().getSkinUUIDCache().put(targetUUID, newSkin);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.getStorage().save(newSkin);
-                    }
-                });
+                plugin.getStorage().getSkinUUIDCache().put(targetUUID, skin);
             }
         }
 
         //Save the target uuid from the requesting player source
         final UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId(), false);
         preferences.setTargetSkin(skin);
+
+        final SkinData newSkin = skin;
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
+                plugin.getStorage().save(newSkin);
                 plugin.getStorage().save(preferences);
             }
         });

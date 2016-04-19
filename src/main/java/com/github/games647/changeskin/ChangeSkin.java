@@ -147,12 +147,13 @@ public class ChangeSkin extends JavaPlugin {
     }
 
     //you should call this method async
-    public void setSkin(Player player, SkinData newSkin, boolean applyNow) {
+    public void setSkin(Player player, final SkinData newSkin, boolean applyNow) {
         final UserPreferences preferences = storage.getPreferences(player.getUniqueId(), false);
         preferences.setTargetSkin(newSkin);
         getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
             @Override
             public void run() {
+                storage.save(newSkin);
                 storage.save(preferences);
             }
         });
@@ -163,14 +164,6 @@ public class ChangeSkin extends JavaPlugin {
         SkinData newSkin = storage.getSkin(targetSkin, true);
         if (newSkin == null) {
             newSkin = downloadSkin(targetSkin);
-
-            final SkinData skin = newSkin;
-            getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
-                @Override
-                public void run() {
-                    storage.save(skin);
-                }
-            });
         }
 
         setSkin(player, newSkin, applyNow);
