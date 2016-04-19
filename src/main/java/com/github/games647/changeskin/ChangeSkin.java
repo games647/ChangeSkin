@@ -27,6 +27,8 @@ import org.json.simple.parser.ParseException;
 
 public class ChangeSkin extends JavaPlugin {
 
+    private static final String VALID_USERNAME = "^\\w{2,16}$";
+
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
@@ -126,6 +128,10 @@ public class ChangeSkin extends JavaPlugin {
     }
 
     public UUID getUUID(String playerName) {
+        if (!playerName.matches(VALID_USERNAME)) {
+            return null;
+        }
+
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(UUID_URL + playerName).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
