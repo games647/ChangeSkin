@@ -120,6 +120,8 @@ public class Storage {
                 if (resultSet.next()) {
                     int targetSkinId = resultSet.getInt(1);
                     SkinData skinData = getSkin(targetSkinId, true);
+                    UserPreferences userPreferences = new UserPreferences(uuid, skinData);
+                    preferencesCache.put(uuid, userPreferences);
                     return new UserPreferences(uuid, skinData);
                 } else {
                     UserPreferences userPreferences = new UserPreferences(uuid);
@@ -241,7 +243,7 @@ public class Storage {
     }
 
     public void save(SkinData skinData) {
-        if (skinData.getSkinId() != -1) {
+        if (skinData == null || skinData.getSkinId() != -1) {
             //skin already set
             return;
         }

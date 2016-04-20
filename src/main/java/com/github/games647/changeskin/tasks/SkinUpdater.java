@@ -44,17 +44,17 @@ public class SkinUpdater implements Runnable {
 
         UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId(), false);
         SkinData targetSkin = preferences.getTargetSkin();
-        if (targetSkin != null) {
-            //remove existing skins
-            gameProfile.getProperties().removeAll("textures");
 
+        //remove existing skins
+        gameProfile.getProperties().removeAll("textures");
+        if (targetSkin != null) {
             WrappedSignedProperty skin = WrappedSignedProperty
                     .fromValues("textures", targetSkin.getEncodedData(), targetSkin.getEncodedSignature());
             gameProfile.getProperties().put("textures", skin);
-
-            sendUpdate(gameProfile);
-            receiver.sendMessage(ChatColor.DARK_GREEN + "You received a new skin");
         }
+
+        sendUpdate(gameProfile);
+        receiver.sendMessage(ChatColor.DARK_GREEN + "You received a new skin");
     }
 
     private void sendUpdate(WrappedGameProfile gameProfile) throws FieldAccessException {

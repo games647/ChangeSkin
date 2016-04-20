@@ -6,6 +6,7 @@
 * Added reset command /skin reset
 * Added specific skin permssions. You can use changeskin.skin.* changeskin.skin.playerName changeskin.skin.uuid
 * Fixed invisible players will be make visible
+* Ignore invalid usernames
 
 ##### 0.7.2
 
