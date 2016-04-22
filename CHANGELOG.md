@@ -1,5 +1,9 @@
 #Changelog
 
+##### 0.9
+
+* Fixed support for user who doesn't have a skin set in their Mojang account.
+
 ##### 0.8
 
 * Added database storage

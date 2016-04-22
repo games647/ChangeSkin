@@ -1,7 +1,6 @@
 package com.github.games647.changeskin;
 
 import com.comphenix.protocol.utility.SafeCacheBuilder;
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.listener.PlayerLoginListener;
 import com.google.common.cache.CacheLoader;
@@ -113,9 +112,7 @@ public class ChangeSkin extends JavaPlugin {
                 String encodedSkin = (String) data.get("value");
                 String signature = (String) data.get("signature");
 
-                WrappedSignedProperty property = WrappedSignedProperty.fromValues("textures", encodedSkin, signature);
-                SkinData skinData = new SkinData(property.getValue(), property.getSignature());
-
+                SkinData skinData = new SkinData(encodedSkin, signature);
                 return skinData;
             }
         } catch (IOException ioException) {

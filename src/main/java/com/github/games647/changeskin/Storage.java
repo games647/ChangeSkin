@@ -81,7 +81,7 @@ public class Storage {
                     + "`CapeURL` VARCHAR(255), "
                     + "`Signature` BINARY(512) NOT NULL"
                     //SQLite doesn't support this on a create table statement
-                    //                    + "INDEX(`UUID`)"
+                    //+ "INDEX(`UUID`)"
                     + ")";
 
             if (jdbcUrl.contains("sqlite")) {
@@ -213,10 +213,15 @@ public class Storage {
 
     public void save(UserPreferences preferences) {
         SkinData targetSkin = preferences.getTargetSkin();
-        if (targetSkin != null && targetSkin.getSkinId() == -1) {
-            plugin.getLogger().warning("Tried saving preferences without target skin. "
+        if (targetSkin != null) {
+            if (targetSkin.getSkinId() == -1) {
+                plugin.getLogger().warning("Tried saving preferences without target skin. "
                     + "Please report this to the author");
-            return;
+                return;
+            } else if (targetSkin.getSkinURL() == null) {
+                //ignore if the user has no skin
+                return;
+            }
         }
 
         Connection con = null;

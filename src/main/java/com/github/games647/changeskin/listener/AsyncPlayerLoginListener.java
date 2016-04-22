@@ -5,8 +5,8 @@ import com.github.games647.changeskin.SkinData;
 import com.github.games647.changeskin.UserPreferences;
 
 import java.util.UUID;
-import org.bukkit.Bukkit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

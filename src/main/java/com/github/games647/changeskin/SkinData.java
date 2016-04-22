@@ -51,7 +51,11 @@ public class SkinData {
         JSONObject textures = (JSONObject) data.get("textures");
 
         JSONObject skinData = (JSONObject) textures.get("SKIN");
-        this.skinURL = (String) skinData.get("url");
+        if (skinData == null) {
+            this.skinURL = null;
+        } else {
+            this.skinURL = (String) skinData.get("url");
+        }
 
         JSONObject capeData = (JSONObject) textures.get("CAPE");
         if (capeData == null) {
@@ -107,19 +111,20 @@ public class SkinData {
         dataModel.setProfileId(uuid.toString().replace("-", ""));
         dataModel.setProfileName(name);
 
-        TexturesModel texturesModel = new TexturesModel();
+        if (skinURL != null) {
+            TexturesModel texturesModel = new TexturesModel();
+            TextureModel skinModel = new TextureModel();
+            texturesModel.setSKIN(skinModel);
+            skinModel.setUrl(skinURL);
 
-        TextureModel skinModel = new TextureModel();
-        texturesModel.setSKIN(skinModel);
-        skinModel.setUrl(skinURL);
+            if (capeURL != null) {
+                TextureModel capeModel = new TextureModel();
+                capeModel.setUrl(capeURL);
+                texturesModel.setCAPE(capeModel);
+            }
 
-        if (capeURL != null) {
-            TextureModel capeModel = new TextureModel();
-            capeModel.setUrl(capeURL);
-            texturesModel.setCAPE(capeModel);
+            dataModel.setTextures(texturesModel);
         }
-
-        dataModel.setTextures(texturesModel);
 
         String json = new Gson().toJson(dataModel);
         return BaseEncoding.base64().encode(json.getBytes(Charsets.UTF_8));
