@@ -1,0 +1,34 @@
+# project informations for Bukkit in order to register our plugin with all it components
+# ${-} are variables from Maven (pom.xml) which will be replaced after the build
+name: ${project.parent.name}
+version: ${project.version}
+main: ${project.groupId}.${project.artifactId}.${project.name}
+
+# meta informations for plugin managers
+authors: [games647, 'https://github.com/games647/ChangeSkin/graphs/contributors']
+description: |
+    ${project.description}
+website: ${project.url}
+dev-url: ${project.url}
+
+# Without Protocollib the plugin does not work at all
+depend: [ProtocolLib]
+
+commands:
+    setskin:
+        description: 'Sets a new skin'
+        usage: /<command> [player] <name/uuid>
+        aliases: [${project.parent.artifactId}, skin]
+        permission: ${project.parent.artifactId}.command.setskin
+
+permissions:
+    ${project.parent.artifactId}.command.setskin.*:
+        children:
+            ${project.parent.artifactId}.command.setskin: true
+            ${project.parent.artifactId}.command.setskin.other: true
+    ${project.parent.artifactId}.command.setskin:
+        description: 'Sets a new skin for yourself'
+    ${project.parent.artifactId}.command.setskin.other:
+        description: 'Sets a skin for another player'
+        children:
+            ${project.parent.artifactId}.command.setskin: true

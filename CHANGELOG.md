@@ -2,6 +2,9 @@
 
 ##### 0.9
 
+* Added BungeeCord support
+* Fixed support for MySQL
+* Fixed support for default skins, so that they will be stored in the database too
 * Fixed support for user who doesn't have a skin set in their Mojang account.
 
 ##### 0.8

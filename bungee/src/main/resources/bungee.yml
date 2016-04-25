@@ -1,0 +1,16 @@
+# project informations for BungeeCord
+# This file will be prioritised over plugin.yml which can be also used for Bungee
+# This make it easy to combine BungeeCord and Bukkit support in one plugin
+name: ${project.parent.name}
+# ${-} will be automatically replaced by Maven
+main: ${project.groupId}.${project.artifactId}.${project.name}
+
+version: ${project.version}
+author: games647, http://github.com/games647/ChangeSkin/graphs/contributors
+
+description: |
+    ${project.description}
+
+softdepends:
+    # BungeeCord protocollib
+    - Test

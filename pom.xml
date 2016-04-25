@@ -4,8 +4,8 @@
 
     <groupId>com.github.games647</groupId>
     <!--This have to be in lowercase because it's used by plugin.yml-->
-    <artifactId>changeskin</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>changeskin-parent</artifactId>
+    <packaging>pom</packaging>
 
     <name>ChangeSkin</name>
     <version>0.9</version>
@@ -20,6 +20,13 @@
         <!--Possibility to deploy directly to the plugins folder-->
         <outputDir>${basedir}/target</outputDir>
     </properties>
+
+    <modules>
+        <module>core</module>
+        <module>bukkit</module>
+        <module>bungee</module>
+        <module>universal</module>
+    </modules>
 
     <issueManagement>
         <system>GitHub</system>
@@ -41,14 +48,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.5.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
-                    <!--false means actual true http://jira.codehaus.org/browse/MCOMPILER-209-->
-                    <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
 
@@ -78,36 +83,4 @@
             </resource>
         </resources>
     </build>
-
-    <repositories>
-        <!--Bukkit-Server-API -->
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-
-        <!--ProtocolLib-->
-        <repository>
-            <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
-        </repository>
-    </repositories>
-
-    <dependencies>
-        <!--Server API-->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--Library for listening and sending Minecraft packets-->
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>3.6.5-SNAPSHOT</version>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
 </project>
