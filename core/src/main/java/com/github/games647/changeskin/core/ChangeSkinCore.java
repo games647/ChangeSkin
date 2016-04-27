@@ -56,7 +56,7 @@ public class ChangeSkinCore {
     private final Logger logger;
     private final File pluginFolder;
 
-    private Storage storage;
+    private SkinStorage storage;
 
     private final List<SkinData> defaultSkins = Lists.newArrayList();
 
@@ -162,11 +162,11 @@ public class ChangeSkinCore {
         uuidCache.clear();
     }
 
-    public void setStorage(Storage storage) {
+    public void setStorage(SkinStorage storage) {
         this.storage = storage;
     }
 
-    public Storage getStorage() {
+    public SkinStorage getStorage() {
         return storage;
     }
 }

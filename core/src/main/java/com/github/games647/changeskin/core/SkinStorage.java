@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-public class Storage {
+public class SkinStorage {
 
     private static final String PREFERENCES_TABLE = "preferences";
     private static final String DATA_TABLE = "skinData";
@@ -33,7 +33,7 @@ public class Storage {
     private final ConcurrentMap<Integer, SkinData> skinCache = buildCache();
     private final ConcurrentMap<UUID, SkinData> skinUUIDCache = buildCache();
 
-    public Storage(ChangeSkinCore plugin
+    public SkinStorage(ChangeSkinCore plugin
             , String driver, String host, int port, String databasePath, String user, String pass) {
         this.plugin = plugin;
 

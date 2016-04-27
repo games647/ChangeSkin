@@ -18,12 +18,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class ChangeSkinBukkit extends JavaPlugin {
 
-    private final boolean bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
+    private boolean bungeeCord;
 
     protected ChangeSkinCore core;
 
     @Override
     public void onEnable() {
+        try {
+            bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
+        } catch (Exception ex) {
+            getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
+        }
+
         if (bungeeCord) {
             getLogger().info("BungeeCord detected. Activating BungeeCord support");
             getLogger().info("Make sure you installed the plugin on BungeeCord too");

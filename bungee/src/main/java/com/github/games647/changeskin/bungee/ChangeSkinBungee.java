@@ -46,7 +46,6 @@ public class ChangeSkinBungee extends Plugin {
         }
 
         core = new ChangeSkinCore(getLogger(), getDataFolder());
-
         try {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
@@ -66,7 +65,6 @@ public class ChangeSkinBungee extends Plugin {
                 return;
             }
 
-            core.setStorage(storage);
             core.loadDefaultSkins(configuration.getStringList("default-skins"));
         } catch (IOException ioExc) {
             getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ioExc);
