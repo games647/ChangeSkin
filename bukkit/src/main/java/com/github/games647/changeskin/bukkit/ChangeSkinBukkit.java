@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.core.UserPreferences;
-import com.github.games647.changeskin.core.Storage;
+import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
@@ -47,7 +47,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
             String password = getConfig().getString("storage.password", "");
 
             this.core = new ChangeSkinCore(getLogger(), getDataFolder());
-            Storage storage = new Storage(core, driver, host, port, database, username, password);
+            SkinStorage storage = new SkinStorage(core, driver, host, port, database, username, password);
             core.setStorage(storage);
             try {
                 storage.createTables();
@@ -80,7 +80,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
         this.core.onDisable();
     }
 
-    public Storage getStorage() {
+    public SkinStorage getStorage() {
         return core.getStorage();
     }
 
