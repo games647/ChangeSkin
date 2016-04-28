@@ -4,7 +4,7 @@ import com.github.games647.changeskin.bungee.listener.JoinListener;
 import com.github.games647.changeskin.bungee.listener.PreLoginListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.Storage;
+import com.github.games647.changeskin.core.SkinStorage;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -56,7 +56,7 @@ public class ChangeSkinBungee extends Plugin {
 
             String username = configuration.getString("storage.username", "");
             String password = configuration.getString("storage.password", "");
-            Storage storage = new Storage(core, driver, host, port, database, username, password);
+            SkinStorage storage = new SkinStorage(core, driver, host, port, database, username, password);
             core.setStorage(storage);
             try {
                 storage.createTables();
@@ -110,7 +110,7 @@ public class ChangeSkinBungee extends Plugin {
         return configuration;
     }
 
-    public Storage getStorage() {
+    public SkinStorage getStorage() {
         return core.getStorage();
     }
 
