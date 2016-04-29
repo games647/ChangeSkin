@@ -43,8 +43,9 @@ public class SkinDownloader implements Runnable {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                plugin.getStorage().save(newSkin);
-                plugin.getStorage().save(preferences);
+                if (plugin.getStorage().save(newSkin)) {
+                    plugin.getStorage().save(preferences);
+                }
             }
         });
 

@@ -212,15 +212,10 @@ public class SkinStorage {
 
     public void save(UserPreferences preferences) {
         SkinData targetSkin = preferences.getTargetSkin();
-        if (targetSkin != null) {
-            if (targetSkin.getSkinId() == -1) {
-                plugin.getLogger().warning("Tried saving preferences without target skin. "
+        if (targetSkin != null && targetSkin.getSkinId() == -1) {
+            plugin.getLogger().warning("Tried saving preferences without target skin. "
                     + "Please report this to the author");
-                return;
-            } else if (targetSkin.getSkinURL() == null) {
-                //ignore if the user has no skin
-                return;
-            }
+            return;
         }
 
         Connection con = null;
@@ -246,10 +241,10 @@ public class SkinStorage {
         }
     }
 
-    public void save(SkinData skinData) {
-        if (skinData == null || skinData.getSkinId() != -1) {
+    public boolean save(SkinData skinData) {
+        if (skinData == null || skinData.getSkinId() != -1 || skinData.getSkinURL() == null) {
             //skin already set
-            return;
+            return false;
         }
 
         Connection con = null;
@@ -272,12 +267,15 @@ public class SkinStorage {
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys != null && generatedKeys.next()) {
                 skinData.setSkinId(generatedKeys.getInt(1));
+                return true;
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query skin data", sqlEx);
         } finally {
             closeQuietly(con);
         }
+
+        return false;
     }
 
     public void close() {

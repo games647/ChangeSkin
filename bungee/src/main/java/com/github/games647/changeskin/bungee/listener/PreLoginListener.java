@@ -80,8 +80,9 @@ public class PreLoginListener implements Listener {
             BungeeCord.getInstance().getScheduler().runAsync(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    plugin.getStorage().save(skin);
-                    plugin.getStorage().save(preferences);
+                    if (plugin.getStorage().save(skin)) {
+                        plugin.getStorage().save(preferences);
+                    }
                 }
             });
         }

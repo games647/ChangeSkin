@@ -91,8 +91,9 @@ public class ChangeSkinBukkit extends JavaPlugin {
         getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
             @Override
             public void run() {
-                core.getStorage().save(newSkin);
-                core.getStorage().save(preferences);
+                if (core.getStorage().save(newSkin)) {
+                    core.getStorage().save(preferences);
+                }
             }
         });
     }

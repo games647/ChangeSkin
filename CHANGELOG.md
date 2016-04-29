@@ -1,5 +1,9 @@
 #Changelog
 
+##### 0.9.1
+
+* Try to fix the save process for players who doesn't have a skin set
+
 ##### 0.9
 
 * Added BungeeCord support
