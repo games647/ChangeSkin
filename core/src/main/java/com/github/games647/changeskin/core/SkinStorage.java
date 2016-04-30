@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +62,7 @@ public class SkinStorage {
             Statement statement = con.createStatement();
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + DATA_TABLE + " ("
                     + "`SkinID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
-                    + "`Timestamp` TIMESTAMP NOT NULL, "
+                    + "`Timestamp` BIGINT NOT NULL, "
                     + "`UUID` CHAR(36) NOT NULL, "
                     + "`Name` VARCHAR(16) NOT NULL, "
                     + "`SkinURL` VARCHAR(255) NOT NULL, "
@@ -151,7 +150,7 @@ public class SkinStorage {
                 statement.setInt(1, targetSkinId);
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
-                    long timestamp = resultSet.getTimestamp(2).getTime();
+                    long timestamp = resultSet.getLong(2);
                     UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
                     String name = resultSet.getString(4);
                     String skinUrl = resultSet.getString(5);
@@ -188,7 +187,7 @@ public class SkinStorage {
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
                     int skinId = resultSet.getInt(1);
-                    long timestamp = resultSet.getTimestamp(2).getTime();
+                    long timestamp = resultSet.getLong(2);
                     UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
                     String name = resultSet.getString(4);
                     String skinUrl = resultSet.getString(5);
@@ -255,7 +254,7 @@ public class SkinStorage {
                     + " (Timestamp, UUID, Name, SkinURL, CapeURL, Signature) VALUES"
                     + " (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
-            statement.setTimestamp(1, new Timestamp(skinData.getTimestamp()));
+            statement.setLong(1, skinData.getTimestamp());
             statement.setString(2, skinData.getUuid().toString().replace("-", ""));
             statement.setString(3, skinData.getName());
             statement.setString(4, skinData.getSkinURL());

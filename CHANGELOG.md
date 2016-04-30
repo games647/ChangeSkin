@@ -3,6 +3,8 @@
 ##### 0.9.1
 
 * Try to fix the save process for players who doesn't have a skin set
+* Restore bukkit compatibility
+* Fix skin loading from a mySQL database
 
 ##### 0.9
 

@@ -39,7 +39,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
             saveDefaultConfig();
 
             String driver = getConfig().getString("storage.driver");
-            String host =  getConfig().getString("storage.host", "");
+            String host = getConfig().getString("storage.host", "");
             int port = getConfig().getInt("storage.port", 3306);
             String database = getConfig().getString("storage.database");
 
@@ -77,10 +77,16 @@ public class ChangeSkinBukkit extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        this.core.onDisable();
+        if (core != null) {
+            this.core.onDisable();
+        }
     }
 
     public SkinStorage getStorage() {
+        if (core == null) {
+            return null;
+        }
+
         return core.getStorage();
     }
 
