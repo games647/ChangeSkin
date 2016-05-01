@@ -241,9 +241,14 @@ public class SkinStorage {
     }
 
     public boolean save(SkinData skinData) {
-        if (skinData == null || skinData.getSkinId() != -1 || skinData.getSkinURL() == null) {
-            //skin already set
+        if (skinData == null || skinData.getSkinURL() == null) {
+            //invalid skin
             return false;
+        }
+
+        if (skinData.getSkinId() != -1) {
+            //skin already set
+            return true;
         }
 
         Connection con = null;
