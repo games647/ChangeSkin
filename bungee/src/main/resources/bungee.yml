@@ -10,7 +10,3 @@ author: games647, http://github.com/games647/ChangeSkin/graphs/contributors
 
 description: |
     ${project.description}
-
-softdepends:
-    # BungeeCord protocollib
-    - Test
