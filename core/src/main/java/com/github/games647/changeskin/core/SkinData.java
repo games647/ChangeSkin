@@ -4,6 +4,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinModel;
 import com.github.games647.changeskin.core.model.TextureSourceModel;
 import com.github.games647.changeskin.core.model.DataModel;
+import com.github.games647.changeskin.core.model.MetadataModel;
 import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 
@@ -17,6 +18,7 @@ public class SkinData {
     private final long timestamp;
     private final UUID uuid;
     private final String name;
+    private final boolean slimModel;
     private final String skinURL;
     private final String capeURL;
     private final String encodedSignature;
@@ -24,12 +26,13 @@ public class SkinData {
     private final transient String encodedData;
 
     public SkinData(int skinId, long timestamp, UUID uuid, String name
-            , String skinURL, String capeURL, String signature) {
+            , boolean slimModel, String skinURL, String capeURL, String signature) {
         this.skinId = skinId;
 
         this.timestamp = timestamp;
         this.uuid = uuid;
         this.name = name;
+        this.slimModel = slimModel;
         this.skinURL = skinURL;
         this.capeURL = capeURL;
         this.encodedSignature = signature;
@@ -48,8 +51,10 @@ public class SkinData {
         DataModel textures = data.getTextures();
         if (textures != null && textures.getSKIN() != null) {
             this.skinURL = textures.getSKIN().getUrl();
+            this.slimModel = textures.getSKIN().getMetadata() != null;
         } else {
             this.skinURL = null;
+            this.slimModel = false;
         }
 
         if (textures != null && textures.getCAPE() != null) {
@@ -79,6 +84,10 @@ public class SkinData {
         return name;
     }
 
+    public boolean isSlimModel() {
+        return slimModel;
+    }
+
     public String getSkinURL() {
         return skinURL;
     }
@@ -104,8 +113,12 @@ public class SkinData {
         if (skinURL != null) {
             DataModel texturesModel = new DataModel();
             TextureSourceModel skinModel = new TextureSourceModel();
-            texturesModel.setSKIN(skinModel);
             skinModel.setUrl(skinURL);
+            if (slimModel) {
+                skinModel.setMetadata(new MetadataModel());
+            }
+
+            texturesModel.setSKIN(skinModel);
 
             if (capeURL != null) {
                 TextureSourceModel capeModel = new TextureSourceModel();

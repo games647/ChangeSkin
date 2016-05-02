@@ -65,6 +65,7 @@ public class SkinStorage {
                     + "`Timestamp` BIGINT NOT NULL, "
                     + "`UUID` CHAR(36) NOT NULL, "
                     + "`Name` VARCHAR(16) NOT NULL, "
+                    + "`SlimModel` BIT DEFAULT 0 NOT NULL, "
                     + "`SkinURL` VARCHAR(255) NOT NULL, "
                     + "`CapeURL` VARCHAR(255), "
                     + "`Signature` BLOB NOT NULL"
@@ -153,11 +154,15 @@ public class SkinStorage {
                     long timestamp = resultSet.getLong(2);
                     UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
                     String name = resultSet.getString(4);
-                    String skinUrl = resultSet.getString(5);
-                    String capeUrl = resultSet.getString(6);
 
-                    String signature = BaseEncoding.base64().encode(resultSet.getBytes(7));
-                    SkinData skinData = new SkinData(targetSkinId, timestamp, uuid, name, skinUrl, capeUrl, signature);
+                    boolean slimModel = resultSet.getBoolean(5);
+
+                    String skinUrl = resultSet.getString(6);
+                    String capeUrl = resultSet.getString(7);
+
+                    String signature = BaseEncoding.base64().encode(resultSet.getBytes(8));
+                    SkinData skinData = new SkinData(targetSkinId, timestamp, uuid, name, slimModel
+                            , skinUrl, capeUrl, signature);
                     skinCache.put(targetSkinId, skinData);
                     skinUUIDCache.put(uuid, skinData);
                     return skinData;
@@ -190,11 +195,15 @@ public class SkinStorage {
                     long timestamp = resultSet.getLong(2);
                     UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
                     String name = resultSet.getString(4);
-                    String skinUrl = resultSet.getString(5);
-                    String capeUrl = resultSet.getString(6);
 
-                    String signature = BaseEncoding.base64().encode(resultSet.getBytes(7));
-                    SkinData skinData = new SkinData(skinId, timestamp, uuid, name, skinUrl, capeUrl, signature);
+                    boolean slimModel = resultSet.getBoolean(5);
+
+                    String skinUrl = resultSet.getString(6);
+                    String capeUrl = resultSet.getString(7);
+
+                    String signature = BaseEncoding.base64().encode(resultSet.getBytes(8));
+                    SkinData skinData = new SkinData(skinId, timestamp, uuid, name, slimModel
+                            , skinUrl, capeUrl, signature);
                     skinCache.put(skinId, skinData);
                     skinUUIDCache.put(uuid, skinData);
                     return skinData;
@@ -256,15 +265,16 @@ public class SkinStorage {
             con = DriverManager.getConnection(jdbcUrl, username, pass);
 
             PreparedStatement statement = con.prepareStatement("INSERT INTO " + DATA_TABLE
-                    + " (Timestamp, UUID, Name, SkinURL, CapeURL, Signature) VALUES"
-                    + " (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                    + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
+                    + " (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
             statement.setLong(1, skinData.getTimestamp());
             statement.setString(2, skinData.getUuid().toString().replace("-", ""));
             statement.setString(3, skinData.getName());
-            statement.setString(4, skinData.getSkinURL());
-            statement.setString(5, skinData.getCapeURL());
-            statement.setBytes(6, BaseEncoding.base64().decode(skinData.getEncodedSignature()));
+            statement.setBoolean(4, skinData.isSlimModel());
+            statement.setString(5, skinData.getSkinURL());
+            statement.setString(6, skinData.getCapeURL());
+            statement.setBytes(7, BaseEncoding.base64().decode(skinData.getEncodedSignature()));
 
             statement.executeUpdate();
 
