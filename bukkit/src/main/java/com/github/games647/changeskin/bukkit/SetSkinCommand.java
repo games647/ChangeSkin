@@ -57,26 +57,29 @@ public class SetSkinCommand implements CommandExecutor {
             setSkinUUID(sender, targetPlayer, toSkin);
         } else {
             sender.sendMessage(ChatColor.GOLD + "Queued name to uuid resolve");
-            if (plugin.getConfig().getBoolean("skinPermission")
-                    && !sender.hasPermission(plugin.getName().toLowerCase() + ".skin." + toSkin)
-                    && !sender.hasPermission(plugin.getName().toLowerCase() + ".skin.*")) {
-                sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
-                return;
-            }
-
-            Bukkit.getScheduler()
-                    .runTaskAsynchronously(plugin, new NameResolver(plugin, sender, toSkin, targetPlayer));
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new NameResolver(plugin, sender, toSkin, targetPlayer));
         }
     }
 
     private void setSkinUUID(CommandSender sender, Player receiverPayer, String targetUUID) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
-            if (plugin.getConfig().getBoolean("skinPermission")
-                    && !sender.hasPermission(plugin.getName().toLowerCase() + ".skin." + uuid.toString())
-                    && !sender.hasPermission(plugin.getName().toLowerCase() + ".skin.*")) {
-                sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
-                return;
+            if (plugin.getConfig().getBoolean("skinPermission")) {
+                if (sender.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+                    //allow - is whitelist
+                } else if (sender.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist.*")) {
+                    if (sender.hasPermission(plugin.getName().toLowerCase() + ".skin.blacklist." + uuid.toString())) {
+                        //dissallow - blacklisted
+                        sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
+                        return;
+                    } else {
+                        //allow - wildcard whitelisted
+                    }
+                } else {
+                    //disallow - not whitelisted
+                    sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
+                    return;
+                }
             }
 
             if (receiverPayer.getUniqueId().equals(uuid)) {

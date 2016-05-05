@@ -3,7 +3,9 @@ package com.github.games647.changeskin.bungee.tasks;
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.UserPreferences;
+
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class SkinUpdater implements Runnable {
@@ -29,6 +31,7 @@ public class SkinUpdater implements Runnable {
             plugin.applySkin(receiver, targetSkin);
         }
 
-        receiver.sendMessage(ChatColor.DARK_GREEN + "You received a new skin");
+       
+        receiver.sendMessage(new ComponentBuilder("You received a new skin").color(ChatColor.DARK_GREEN).create());
     }
 }

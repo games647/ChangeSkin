@@ -9,6 +9,7 @@ import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -31,7 +32,7 @@ public class SetSkinCommand extends Command {
 
             ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(targetPlayerName);
             if (targetPlayer == null) {
-                sender.sendMessage(ChatColor.DARK_RED + "This player isn't online");
+                sender.sendMessage(new ComponentBuilder("This player isn't online").color(ChatColor.DARK_RED).create());
             } else {
                 setSkin(sender, targetPlayer, toSkin);
             }
@@ -44,10 +45,12 @@ public class SetSkinCommand extends Command {
 
                 setSkin(sender, (ProxiedPlayer) sender, args[0]);
             } else {
-                sender.sendMessage(ChatColor.DARK_RED + "You have to provide the skin you want to change to");
+                sender.sendMessage(new ComponentBuilder("You have to provide the skin you want to change to")
+                        .color(ChatColor.DARK_RED).create());
             }
         } else {
-            sender.sendMessage(ChatColor.DARK_RED + "You have to be a player to set your own skin");
+            sender.sendMessage(new ComponentBuilder("You have to be a player to set your own skin")
+                        .color(ChatColor.DARK_RED).create());
         }
     }
 
@@ -56,14 +59,7 @@ public class SetSkinCommand extends Command {
         if (toSkin.length() > 16) {
             setSkinUUID(sender, targetPlayer, toSkin);
         } else {
-            sender.sendMessage(ChatColor.GOLD + "Queued name to uuid resolve");
-            if (plugin.getConfiguration().getBoolean("skinPermission")
-                    && !sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".skin." + toSkin)
-                    && !sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".skin.*")) {
-                sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
-                return;
-            }
-
+            sender.sendMessage(new ComponentBuilder("Queued name to uuid resolve").color(ChatColor.GOLD).create());
             NameResolver nameResolver = new NameResolver(plugin, sender, toSkin, targetPlayer);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, nameResolver);
         }
@@ -72,16 +68,29 @@ public class SetSkinCommand extends Command {
     private void setSkinUUID(CommandSender sender, ProxiedPlayer receiverPayer, String targetUUID) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
-            if (plugin.getConfiguration().getBoolean("skinPermission")
-                    && !sender.hasPermission(plugin.getDescription().getName().toLowerCase()
-                            + ".skin." + uuid.toString())
-                    && !sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".skin.*")) {
-                sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
-                return;
+            if (plugin.getConfiguration().getBoolean("skinPermission")) {
+                if (sender.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+                    //allow - is whitelist
+                } else if (sender.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist.*")) {
+                    if (sender.hasPermission(plugin.getName().toLowerCase() + ".skin.blacklist." + uuid.toString())) {
+                        //dissallow - blacklisted
+                        sender.sendMessage(new ComponentBuilder("You don't have the permission to set this skin")
+                                .color(ChatColor.DARK_RED).create());
+                        return;
+                    } else {
+                        //allow - wildcard whitelisted
+                    }
+                } else {
+                    //disallow - not whitelisted
+                    sender.sendMessage(new ComponentBuilder("You don't have the permission to set this skin")
+                                .color(ChatColor.DARK_RED).create());
+                    return;
+                }
             }
 
             if (receiverPayer.getUniqueId().equals(uuid)) {
-                sender.sendMessage(ChatColor.DARK_GREEN + "Reseting preferences to the default value");
+                sender.sendMessage(new ComponentBuilder("Reseting preferences to the default value")
+                        .color(ChatColor.DARK_GREEN).create());
 
                 final UserPreferences preferences = plugin.getStorage().getPreferences(uuid, false);
                 preferences.setTargetSkin(null);
@@ -95,13 +104,13 @@ public class SetSkinCommand extends Command {
                 SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
                 ProxyServer.getInstance().getScheduler().runAsync(plugin, skinDownloader);
             } else {
-                sender.sendMessage(ChatColor.GOLD + "Queued Skin change");
+                sender.sendMessage(new ComponentBuilder("Queued Skin change").color(ChatColor.GOLD).create());
 
                 SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
                 ProxyServer.getInstance().getScheduler().runAsync(plugin, skinDownloader);
             }
         } catch (IllegalArgumentException illegalArgumentException) {
-            sender.sendMessage(ChatColor.DARK_RED + "Invalid uuid");
+            sender.sendMessage(new ComponentBuilder("Invalid uuid").color(ChatColor.DARK_RED).create());
         }
     }
 }

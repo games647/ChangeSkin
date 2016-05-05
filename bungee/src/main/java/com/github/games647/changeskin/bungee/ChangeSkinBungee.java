@@ -76,6 +76,10 @@ public class ChangeSkinBungee extends Plugin {
         getProxy().getPluginManager().registerCommand(this, new SetSkinCommand(this));
     }
 
+    public String getName() {
+        return getDescription().getName();
+    }
+
     public void applySkin(ProxiedPlayer player, SkinData skinData) {
         Property textures = convertToProperty(skinData);
 
@@ -86,7 +90,8 @@ public class ChangeSkinBungee extends Plugin {
             try {
                 Field profileField = initialHandler.getClass().getDeclaredField("loginProfile");
                 profileField.setAccessible(true);
-                profileField.set(initialHandler, new LoginResult(player.getUUID(), new Property[]{textures}));
+                LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), new Property[]{textures});
+                profileField.set(initialHandler, loginResult);
             } catch (NoSuchFieldException | IllegalAccessException ex) {
                 getLogger().log(Level.SEVERE, null, ex);
             }

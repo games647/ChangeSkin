@@ -20,9 +20,22 @@ restoreSkins: false
 instantSkinChange: true
 
 # Should the plugin check for skin specific permissions nodes like
-# changeskin.skin.playername or changeskin.skin.uuid
-# changeskin.skin.* allows all skins
+# changeskin.skin.whitelist.uuid
+# changeskin.skin.whitelist.* allows all skins
+#
+# changeskin.skin.blacklist.uuid
+#
 # The plugin checks only if the player has one of these and will not check all of them
+# Examples:
+#   Whitelist:
+#       Give the players the permission changeskin.skin.whitelist.uuid
+#       or changeskin.skin.whitelist.* for all skins
+#
+#   Blacklist:
+#       Give your players this permission changeskin.skin.whitelist.*
+#       and changeskin.skin.blacklist.uuid
+#       |-> This means all skins are allowed except the ones with the uuid in the blacklist list
+#       |-> Warning: If the player has also a changeskin.skin.whitelist.uuid permission it will override the blacklist
 skinPermission: false
 
 # Database configuration

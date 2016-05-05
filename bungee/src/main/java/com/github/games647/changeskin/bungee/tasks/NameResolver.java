@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class NameResolver implements Runnable {
@@ -24,34 +25,51 @@ public class NameResolver implements Runnable {
 
     @Override
     public void run() {
-        UUID cachedUUID = plugin.getCore().getUuidCache().get(targetName);
-        if (cachedUUID == null) {
-            cachedUUID = plugin.getCore().getUUID(targetName);
-            if (cachedUUID == null) {
+        UUID uuid = plugin.getCore().getUuidCache().get(targetName);
+        if (uuid == null) {
+            uuid = plugin.getCore().getUUID(targetName);
+            if (uuid == null) {
                 if (invoker != null) {
-                    invoker.sendMessage(ChatColor.DARK_RED + "UUID couldn't be resolved");
+                    invoker.sendMessage(new ComponentBuilder("UUID couldn't be resolved")
+                        .color(ChatColor.DARK_RED).create());
                 }
             } else {
-                plugin.getCore().getUuidCache().put(targetName, cachedUUID);
+                plugin.getCore().getUuidCache().put(targetName, uuid);
             }
         }
 
-        if (cachedUUID != null) {
+        if (uuid != null) {
             if (invoker != null) {
-                invoker.sendMessage(ChatColor.DARK_GREEN + "UUID was successfull resolved from the player name");
-                if (plugin.getConfiguration().getBoolean("skinPermission")
-                        && !invoker.hasPermission(plugin.getDescription().getName().toLowerCase()
-                                + ".skin." + cachedUUID.toString())
-                        && !invoker.hasPermission(plugin.getDescription().getName().toLowerCase() + ".skin.*")) {
-                    invoker.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
-                    return;
+                invoker.sendMessage(new ComponentBuilder("UUID was successfull resolved from the player name")
+                        .color(ChatColor.DARK_GREEN).create());
+
+                if (plugin.getConfiguration().getBoolean("skinPermission")) {
+                    if (invoker.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+                        //allow - is whitelist
+                    } else if (invoker.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist.*")) {
+                        if (invoker.hasPermission(plugin.getName().toLowerCase() + ".skin.blacklist."
+                                + uuid.toString())) {
+                            //dissallow - blacklisted
+                            invoker.sendMessage(new ComponentBuilder("You have to provide the skin you want to change to")
+                                    .color(ChatColor.DARK_RED).create());
+                            return;
+                        } else {
+                            //allow - wildcard whitelisted
+                        }
+                    } else {
+                        //disallow - not whitelisted
+                        invoker.sendMessage(new ComponentBuilder("You have to provide the skin you want to change to")
+                                .color(ChatColor.DARK_RED).create());
+                        return;
+                    }
                 }
 
-                invoker.sendMessage(ChatColor.DARK_GREEN + "The skin is now downloading");
+                invoker.sendMessage(new ComponentBuilder("The skin is now downloading")
+                        .color(ChatColor.DARK_GREEN).create());
             }
 
             //run this is the same thread
-            new SkinDownloader(plugin, invoker, player, cachedUUID).run();
+            new SkinDownloader(plugin, invoker, player, uuid).run();
         }
     }
 }

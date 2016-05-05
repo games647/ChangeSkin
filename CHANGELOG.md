@@ -1,5 +1,27 @@
 #Changelog
 
+##### 0.9.4
+
+* Add blacklist and whitelist permission nodes
+* Introduced new permissions
+    * changeskin.skin.whitelist.*
+    * changeskin.skin.whitelist.uuid
+    * changeskin.skin.blacklist.uuid
+* Removed deprecated methods from the BungeeCord module
+* Removed player name specific permissions. Use the uuids ones
+
+##### 0.9.4
+
+* Fix support for slim skin models
+
+##### 0.9.3
+
+* Fix preference saving if the same skin is already in the database
+
+##### 0.9.2
+
+* Fix Bukkit command permission node
+
 ##### 0.9.1
 
 * Try to fix the save process for players who doesn't have a skin set
