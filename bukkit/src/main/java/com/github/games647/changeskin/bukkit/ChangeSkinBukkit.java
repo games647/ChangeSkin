@@ -1,13 +1,13 @@
 package com.github.games647.changeskin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.github.games647.changeskin.core.UserPreferences;
-import com.github.games647.changeskin.core.SkinStorage;
-import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
 import com.github.games647.changeskin.bukkit.listener.PlayerLoginListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
+import com.github.games647.changeskin.core.SkinData;
+import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.UserPreferences;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -26,7 +26,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
     public void onEnable() {
         try {
             bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
-        } catch (Exception ex) {
+        } catch (Exception | NoSuchMethodError ex) {
             getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
         }
 
