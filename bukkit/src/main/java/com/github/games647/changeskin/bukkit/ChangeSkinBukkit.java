@@ -13,6 +13,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -112,5 +114,15 @@ public class ChangeSkinBukkit extends JavaPlugin {
         }
 
         setSkin(player, newSkin, applyNow);
+    }
+
+    public boolean checkPermission(CommandSender invoker, UUID uuid) {
+        if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+            return true;
+        }
+        
+        //disallow - not whitelisted or blacklisted
+        invoker.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
+        return false;
     }
 }

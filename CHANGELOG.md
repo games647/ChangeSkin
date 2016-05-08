@@ -1,6 +1,16 @@
 #Changelog
 
-##### 0.9.4
+##### 1.2
+
+* Fixed blacklist permissions
+    * Changed from an extra blacklist permission to a negative one
+    * Sorry for that change it wasn't possible otherwise
+
+##### 1.1
+
+* Fix bungeecord detection error on Craftbukkit
+
+##### 1.0
 
 * Add blacklist and whitelist permission nodes
 * Introduced new permissions

@@ -36,8 +36,16 @@ all players who still have the default steve or alex skin.
 * changeskin.command.setskin - Set your own skin
 * changeskin.command.setskin.other - Set the skin of other players
 
-Skin specific permission. Activate it in the config
+Whitelist and blacklist permissions
 
-* changeskin.skin.*
-* changeskin.skin.playerName
-* changeskin.skin.uuid
+Whitelist
+
+* changeskin.skin.whitelist.uuid - Allow this specific skin
+* changeskin.skin.whitelist.* - allows all skins
+
+Blacklist
+
+* changeskin.skin.whitelist.*
+* -changeskin.skin.whitelist.uuid
+
+=> This means all skins are allowed except the ones with the uuid in the blacklist list

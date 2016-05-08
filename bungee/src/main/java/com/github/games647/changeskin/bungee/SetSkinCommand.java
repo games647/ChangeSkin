@@ -68,24 +68,8 @@ public class SetSkinCommand extends Command {
     private void setSkinUUID(CommandSender sender, ProxiedPlayer receiverPayer, String targetUUID) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
-            if (plugin.getConfiguration().getBoolean("skinPermission")) {
-                if (sender.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
-                    //allow - is whitelist
-                } else if (sender.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist.*")) {
-                    if (sender.hasPermission(plugin.getName().toLowerCase() + ".skin.blacklist." + uuid.toString())) {
-                        //dissallow - blacklisted
-                        sender.sendMessage(new ComponentBuilder("You don't have the permission to set this skin")
-                                .color(ChatColor.DARK_RED).create());
-                        return;
-                    } else {
-                        //allow - wildcard whitelisted
-                    }
-                } else {
-                    //disallow - not whitelisted
-                    sender.sendMessage(new ComponentBuilder("You don't have the permission to set this skin")
-                                .color(ChatColor.DARK_RED).create());
-                    return;
-                }
+            if (plugin.getConfiguration().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid)) {
+                return;
             }
 
             if (receiverPayer.getUniqueId().equals(uuid)) {

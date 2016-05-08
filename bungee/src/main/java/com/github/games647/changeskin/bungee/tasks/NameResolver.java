@@ -43,25 +43,8 @@ public class NameResolver implements Runnable {
                 invoker.sendMessage(new ComponentBuilder("UUID was successfull resolved from the player name")
                         .color(ChatColor.DARK_GREEN).create());
 
-                if (plugin.getConfiguration().getBoolean("skinPermission")) {
-                    if (invoker.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
-                        //allow - is whitelist
-                    } else if (invoker.hasPermission(plugin.getName().toLowerCase() + ".skin.whitelist.*")) {
-                        if (invoker.hasPermission(plugin.getName().toLowerCase() + ".skin.blacklist."
-                                + uuid.toString())) {
-                            //dissallow - blacklisted
-                            invoker.sendMessage(new ComponentBuilder("You have to provide the skin you want to change to")
-                                    .color(ChatColor.DARK_RED).create());
-                            return;
-                        } else {
-                            //allow - wildcard whitelisted
-                        }
-                    } else {
-                        //disallow - not whitelisted
-                        invoker.sendMessage(new ComponentBuilder("You have to provide the skin you want to change to")
-                                .color(ChatColor.DARK_RED).create());
-                        return;
-                    }
+                if (plugin.getConfiguration().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid)) {
+                    return;
                 }
 
                 invoker.sendMessage(new ComponentBuilder("The skin is now downloading")

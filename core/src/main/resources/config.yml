@@ -23,8 +23,6 @@ instantSkinChange: true
 # changeskin.skin.whitelist.uuid
 # changeskin.skin.whitelist.* allows all skins
 #
-# changeskin.skin.blacklist.uuid
-#
 # The plugin checks only if the player has one of these and will not check all of them
 # Examples:
 #   Whitelist:
@@ -33,9 +31,8 @@ instantSkinChange: true
 #
 #   Blacklist:
 #       Give your players this permission changeskin.skin.whitelist.*
-#       and changeskin.skin.blacklist.uuid
+#       and a negative (- before the permission) permission: '-changeskin.skin.whitelist.uuid'
 #       |-> This means all skins are allowed except the ones with the uuid in the blacklist list
-#       |-> Warning: If the player has also a changeskin.skin.whitelist.uuid permission it will override the blacklist
 skinPermission: false
 
 # Database configuration
