@@ -60,6 +60,7 @@ public class PlayerLoginListener implements Listener {
         if (isSpigot) {
             SkinData targetSkin = preferences.getTargetSkin();
             if (targetSkin != null) {
+                properties.clear();
                 properties.put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
             } else if (!skinFound) {
                 setRandomSkin(player, properties);
@@ -79,6 +80,7 @@ public class PlayerLoginListener implements Listener {
             if (targetSkin != null) {
                 final UserPreferences preferences = plugin.getStorage().getPreferences(player.getUniqueId(), false);
                 preferences.setTargetSkin(targetSkin);
+                properties.clear();
                 properties.put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
 
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
@@ -103,6 +105,7 @@ public class PlayerLoginListener implements Listener {
                 setRandomSkin(player, properties);
             }
         } else {
+            properties.clear();
             properties.put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
         }
     }

@@ -31,7 +31,6 @@ public class SkinUpdater implements Runnable {
             plugin.applySkin(receiver, targetSkin);
         }
 
-       
         receiver.sendMessage(new ComponentBuilder("You received a new skin").color(ChatColor.DARK_GREEN).create());
     }
 }

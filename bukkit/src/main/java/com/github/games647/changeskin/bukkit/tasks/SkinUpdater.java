@@ -12,6 +12,7 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
+import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.UserPreferences;
 
@@ -46,9 +47,9 @@ public class SkinUpdater implements Runnable {
             SkinData targetSkin = preferences.getTargetSkin();
 
             //remove existing skins
-            gameProfile.getProperties().removeAll("textures");
+            gameProfile.getProperties().clear();
             if (targetSkin != null) {
-                gameProfile.getProperties().put("textures", plugin.convertToProperty(targetSkin));
+                gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
             }
         }
 

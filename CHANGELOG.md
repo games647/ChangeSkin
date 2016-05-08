@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.3
+
+* Fixed skin apply if the player has already a skin (for example: online mode)
+
 ##### 1.2
 
 * Fixed blacklist permissions
