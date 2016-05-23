@@ -24,6 +24,11 @@ public class SetSkinCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 1) {
+            if (!sender.hasPermission(command.getPermission() + ".other")) {
+                sender.sendMessage(ChatColor.DARK_RED + "No permission to change other skins");
+                return true;
+            }
+
             String targetPlayerName = args[0];
             String toSkin = args[1];
 

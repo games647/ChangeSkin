@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.3.1
+
+* Fixed command permission other not working
+
 ##### 1.3
 
 * Fixed skin apply if the player has already a skin (for example: online mode)

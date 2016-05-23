@@ -27,6 +27,11 @@ public class SetSkinCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length > 1) {
+            if (!sender.hasPermission( plugin.getDescription().getName().toLowerCase() + ".command.setskin.other")) {
+                sender.sendMessage(ChatColor.DARK_RED + "No permission to change other skins");
+                return;
+            }
+
             String targetPlayerName = args[0];
             String toSkin = args[1];
 
