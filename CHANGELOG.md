@@ -1,5 +1,13 @@
 #Changelog
 
+##### 1.4
+
+* Added skin cooldown
+
+##### 1.3.2
+
+* Fixed saving for empty skins
+
 ##### 1.3.1
 
 * Fixed command permission other not working

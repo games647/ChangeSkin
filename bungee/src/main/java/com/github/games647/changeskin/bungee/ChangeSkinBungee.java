@@ -5,6 +5,8 @@ import com.github.games647.changeskin.bungee.listener.PreLoginListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -14,6 +16,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -32,6 +35,8 @@ public class ChangeSkinBungee extends Plugin {
 
     private ChangeSkinCore core;
     private Configuration configuration;
+
+    private Cache<UUID, Object> cooldowns;
 
     @Override
     public void onEnable() {
@@ -52,6 +57,10 @@ public class ChangeSkinBungee extends Plugin {
         core = new ChangeSkinCore(getLogger(), getDataFolder());
         try {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+
+            cooldowns = CacheBuilder.newBuilder()
+                    .expireAfterWrite(configuration.getInt("cooldown"), TimeUnit.SECONDS)
+                    .<UUID, Object>build();
 
             String driver = configuration.getString("storage.driver");
             String host = configuration.getString("storage.host", "");
@@ -115,6 +124,14 @@ public class ChangeSkinBungee extends Plugin {
         return new Property(ChangeSkinCore.SKIN_KEY, skinData.getEncodedData(), skinData.getEncodedSignature());
     }
 
+    public void addCooldown(UUID invoker) {
+        cooldowns.put(invoker, new Object());
+    }
+
+    public boolean isCooldown(UUID invoker) {
+        return cooldowns.asMap().containsKey(invoker);
+    }
+
     public Configuration getConfiguration() {
         return configuration;
     }
@@ -134,7 +151,7 @@ public class ChangeSkinBungee extends Plugin {
 
         //disallow - not whitelisted or blacklisted
         invoker.sendMessage(new ComponentBuilder("You don't have the permission to set this skin")
-                                .color(ChatColor.DARK_RED).create());
+                .color(ChatColor.DARK_RED).create());
         return false;
     }
 }

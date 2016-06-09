@@ -36,6 +36,11 @@ public class SkinDownloader implements Runnable {
             }
         }
 
+        //uuid was successfull resolved, we could now make a cooldown check
+        if (invoker instanceof ProxiedPlayer) {
+            plugin.addCooldown(((ProxiedPlayer) invoker).getUniqueId());
+        }
+
         //Save the target uuid from the requesting player source
         final UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId(), false);
         preferences.setTargetSkin(skin);

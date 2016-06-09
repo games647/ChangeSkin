@@ -35,6 +35,11 @@ public class SkinDownloader implements Runnable {
             }
         }
 
+        //uuid was successfull resolved, we could now make a cooldown check
+        if (invoker instanceof Player) {
+            plugin.addCooldown(((Player) invoker).getUniqueId());
+        }
+
         //Save the target uuid from the requesting player source
         final UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId(), false);
         preferences.setTargetSkin(skin);
@@ -50,7 +55,7 @@ public class SkinDownloader implements Runnable {
         });
 
         if (plugin.getConfig().getBoolean("instantSkinChange")) {
-            plugin.getServer().getScheduler().runTask(plugin, new SkinUpdater(plugin, receiver));
+            plugin.getServer().getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver));
         } else if (invoker != null) {
             //if user is online notify the player
             invoker.sendMessage(ChatColor.DARK_GREEN + "Skin was changed. Relogin to see the changes");

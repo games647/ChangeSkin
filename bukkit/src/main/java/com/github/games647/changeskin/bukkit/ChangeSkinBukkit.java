@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.bukkit;
 
+import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
@@ -8,8 +9,11 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.UserPreferences;
+import com.google.common.cache.CacheLoader;
 
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -24,6 +28,8 @@ public class ChangeSkinBukkit extends JavaPlugin {
 
     protected ChangeSkinCore core;
 
+    private ConcurrentMap<UUID, Object> cooldowns;
+    
     @Override
     public void onEnable() {
         try {
@@ -39,6 +45,15 @@ public class ChangeSkinBukkit extends JavaPlugin {
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
         } else {
             saveDefaultConfig();
+          
+            cooldowns = SafeCacheBuilder.<UUID, Object>newBuilder()
+                    .expireAfterWrite(getConfig().getInt("cooldown"), TimeUnit.SECONDS)
+                    .build(new CacheLoader<UUID, Object>() {
+                        @Override
+                        public Object load(UUID key) throws Exception {
+                            throw new UnsupportedOperationException("Not supported yet.");
+                        }
+                    });
 
             String driver = getConfig().getString("storage.driver");
             String host = getConfig().getString("storage.host", "");
@@ -71,6 +86,14 @@ public class ChangeSkinBukkit extends JavaPlugin {
     public WrappedSignedProperty convertToProperty(SkinData skinData) {
         return WrappedSignedProperty.fromValues(ChangeSkinCore.SKIN_KEY
                 , skinData.getEncodedData(), skinData.getEncodedSignature());
+    }
+
+    public void addCooldown(UUID invoker) {
+        cooldowns.put(invoker, new Object());
+    }
+
+    public boolean isCooldown(UUID invoker) {
+        return cooldowns.containsKey(invoker);
     }
 
     public ChangeSkinCore getCore() {

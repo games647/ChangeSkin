@@ -26,8 +26,13 @@ public class SetSkinCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        if (sender instanceof ProxiedPlayer && plugin.isCooldown(((ProxiedPlayer) sender).getUniqueId())) {
+            sender.sendMessage(ChatColor.DARK_RED + "Please wait. You cannot change the skin so fast");
+            return;
+        }
+
         if (args.length > 1) {
-            if (!sender.hasPermission( plugin.getDescription().getName().toLowerCase() + ".command.setskin.other")) {
+            if (!sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".command.setskin.other")) {
                 sender.sendMessage(ChatColor.DARK_RED + "No permission to change other skins");
                 return;
             }

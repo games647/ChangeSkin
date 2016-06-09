@@ -35,6 +35,9 @@ instantSkinChange: true
 #       |-> This means all skins are allowed except the ones with the uuid in the blacklist list
 skinPermission: false
 
+# A number in seconds which the player have to wait before changing the skin again
+cooldown: 0
+
 # Database configuration
 storage:
 # Single file SQLite database

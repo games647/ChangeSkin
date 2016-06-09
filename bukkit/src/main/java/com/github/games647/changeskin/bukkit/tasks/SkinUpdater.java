@@ -22,15 +22,18 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class SkinUpdater implements Runnable {
 
     private final ChangeSkinBukkit plugin;
+    private final CommandSender invoker;
     private final Player receiver;
 
-    public SkinUpdater(ChangeSkinBukkit changeSkin, Player receiver) {
-        this.plugin = changeSkin;
+    public SkinUpdater(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver) {
+        this.plugin = plugin;
+        this.invoker = invoker;
         this.receiver = receiver;
     }
 
@@ -54,7 +57,9 @@ public class SkinUpdater implements Runnable {
         }
 
         sendUpdate(gameProfile);
-        receiver.sendMessage(ChatColor.DARK_GREEN + "You received a new skin");
+        if (invoker != null) {
+            receiver.sendMessage(ChatColor.DARK_GREEN + "Skin was updated");
+        }
     }
 
     private void sendUpdate(WrappedGameProfile gameProfile) throws FieldAccessException {

@@ -23,6 +23,11 @@ public class SetSkinCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (isCooldown(sender)) {
+            sender.sendMessage(ChatColor.DARK_RED + "Please wait. You cannot change the skin so fast");
+            return true;
+        }
+
         if (args.length > 1) {
             if (!sender.hasPermission(command.getPermission() + ".other")) {
                 sender.sendMessage(ChatColor.DARK_RED + "No permission to change other skins");
@@ -54,6 +59,10 @@ public class SetSkinCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    private boolean isCooldown(CommandSender sender) {
+        return sender instanceof Player && plugin.isCooldown(((Player) sender).getUniqueId());
     }
 
     private void setSkin(CommandSender sender, Player targetPlayer, String toSkin) {
