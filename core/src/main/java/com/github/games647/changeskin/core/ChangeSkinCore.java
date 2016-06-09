@@ -30,6 +30,14 @@ public class ChangeSkinCore {
 
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
+    
+    public static UUID parseId(String withoutDashes) {
+        return UUID.fromString(withoutDashes.substring(0, 8)
+                + "-" + withoutDashes.substring(8, 12)
+                + "-" + withoutDashes.substring(12, 16)
+                + "-" + withoutDashes.substring(16, 20)
+                + "-" + withoutDashes.substring(20, 32));
+    }
 
     private final Gson gson = new Gson();
 
@@ -45,13 +53,6 @@ public class ChangeSkinCore {
                 }
             }).asMap();
 
-    public static UUID parseId(String withoutDashes) {
-        return UUID.fromString(withoutDashes.substring(0, 8)
-                + "-" + withoutDashes.substring(8, 12)
-                + "-" + withoutDashes.substring(12, 16)
-                + "-" + withoutDashes.substring(16, 20)
-                + "-" + withoutDashes.substring(20, 32));
-    }
 
     private final Logger logger;
     private final File pluginFolder;

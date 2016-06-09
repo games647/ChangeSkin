@@ -110,7 +110,7 @@ public class SkinData {
         dataModel.setProfileId(uuid.toString().replace("-", ""));
         dataModel.setProfileName(name);
 
-        if (skinURL != null) {
+        if (skinURL != null && !skinURL.isEmpty()) {
             DataModel texturesModel = new DataModel();
             TextureSourceModel skinModel = new TextureSourceModel();
             skinModel.setUrl(skinURL);

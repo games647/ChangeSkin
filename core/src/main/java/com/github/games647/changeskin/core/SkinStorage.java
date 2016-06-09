@@ -250,7 +250,7 @@ public class SkinStorage {
     }
 
     public boolean save(SkinData skinData) {
-        if (skinData == null || skinData.getSkinURL() == null) {
+        if (skinData == null) {
             //invalid skin
             return false;
         }
@@ -258,6 +258,11 @@ public class SkinStorage {
         if (skinData.getSkinId() != -1) {
             //skin already set
             return true;
+        }
+
+        String skinUrl = skinData.getSkinURL();
+        if (skinUrl == null) {
+            skinUrl = "";
         }
 
         Connection con = null;
@@ -272,7 +277,7 @@ public class SkinStorage {
             statement.setString(2, skinData.getUuid().toString().replace("-", ""));
             statement.setString(3, skinData.getName());
             statement.setBoolean(4, skinData.isSlimModel());
-            statement.setString(5, skinData.getSkinURL());
+            statement.setString(5, skinUrl);
             statement.setString(6, skinData.getCapeURL());
             statement.setBytes(7, BaseEncoding.base64().decode(skinData.getEncodedSignature()));
 
