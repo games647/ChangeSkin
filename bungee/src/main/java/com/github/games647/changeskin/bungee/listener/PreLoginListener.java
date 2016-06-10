@@ -33,27 +33,30 @@ public class PreLoginListener implements Listener {
         UUID playerUuid = connection.getUniqueId();
         String playerName = connection.getName();
 
-        UserPreferences preferences = plugin.getStorage().getPreferences(playerUuid, true);
-        if (preferences.getTargetSkin() == null) {
-            if (plugin.getConfiguration().getBoolean("restoreSkins")) {
-                refetchSkin(playerName, playerUuid, loginEvent);
-            }
+        UserPreferences preferences = plugin.getStorage().getPreferences(playerUuid);
+        plugin.getCore().startSession(playerUuid, preferences);
+        if (preferences.getTargetSkin() == null && plugin.getConfiguration().getBoolean("restoreSkins")) {
+            refetchSkin(preferences, playerName, loginEvent);
         }
     }
 
-     private void refetchSkin(final String playerName, final UUID receiverUUID, final AsyncEvent<?> preLoginEvent) {
+     private void refetchSkin(final UserPreferences prefereces, final String playerName
+             , final AsyncEvent<?> preLoginEvent) {
         preLoginEvent.registerIntent(plugin);
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
             @Override
             public void run() {
-                refetch(playerName, receiverUUID);
-                preLoginEvent.completeIntent(plugin);
+                try {
+                    refetch(prefereces, playerName);
+                } finally {
+                    preLoginEvent.completeIntent(plugin);
+                }
             }
         });
     }
 
-    private void refetch(String playerName, UUID receiverUUID) {
+    private void refetch(final UserPreferences preferences, String playerName) {
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
         if (ownerUUID == null) {
             ownerUUID = plugin.getCore().getUUID(playerName);
@@ -63,15 +66,11 @@ public class PreLoginListener implements Listener {
         }
 
         if (ownerUUID != null) {
-            SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID, true);
+            SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID);
             if (cachedSkin == null) {
                 cachedSkin = plugin.getCore().downloadSkin(ownerUUID);
-                if (cachedSkin != null) {
-                    plugin.getStorage().getSkinUUIDCache().put(ownerUUID, cachedSkin);
-                }
             }
 
-            final UserPreferences preferences = plugin.getStorage().getPreferences(receiverUUID, true);
             preferences.setTargetSkin(cachedSkin);
 
             final SkinData skin = cachedSkin;

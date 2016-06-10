@@ -31,15 +31,14 @@ public class AsyncPlayerLoginListener implements Listener {
         UUID playerUuid = preLoginEvent.getUniqueId();
         String playerName = preLoginEvent.getName();
 
-        UserPreferences preferences = plugin.getStorage().getPreferences(playerUuid, true);
-        if (preferences.getTargetSkin() == null) {
-            if (plugin.getConfig().getBoolean("restoreSkins")) {
-                refetchSkin(playerName, playerUuid);
-            }
+        UserPreferences preferences = plugin.getStorage().getPreferences(playerUuid);
+        plugin.getCore().startSession(playerUuid, preferences);
+        if (preferences.getTargetSkin() == null && plugin.getConfig().getBoolean("restoreSkins")) {
+            refetchSkin(playerName, preferences);
         }
     }
 
-    private void refetchSkin(String playerName, UUID receiverUUID) {
+    private void refetchSkin(String playerName, final UserPreferences preferences) {
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
         if (ownerUUID == null) {
             ownerUUID = plugin.getCore().getUUID(playerName);
@@ -49,15 +48,11 @@ public class AsyncPlayerLoginListener implements Listener {
         }
 
         if (ownerUUID != null) {
-            SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID, true);
+            SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID);
             if (cachedSkin == null) {
                 cachedSkin = plugin.getCore().downloadSkin(ownerUUID);
-                if (cachedSkin != null) {
-                    plugin.getStorage().getSkinUUIDCache().put(ownerUUID, cachedSkin);
-                }
             }
 
-            final UserPreferences preferences = plugin.getStorage().getPreferences(receiverUUID, true);
             preferences.setTargetSkin(cachedSkin);
 
             final SkinData skin = cachedSkin;

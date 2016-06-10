@@ -1,5 +1,12 @@
 #Changelog
 
+##### 1.5
+
+* Added support for multiple BungeeCord proxies
+* Fixed skin set if the player is longer online than 3 hours
+* Fixed missing translations in BungeeCord
+* Removed database cache as the sql cache is powerful enough
+
 ##### 1.4.1
 
 * Fixed instant updates for BungeeCord servers

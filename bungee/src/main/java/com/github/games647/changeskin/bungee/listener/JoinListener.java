@@ -19,7 +19,7 @@ import net.md_5.bungee.event.EventPriority;
 
 public class JoinListener implements Listener {
 
-    private final ChangeSkinBungee plugin;
+    protected final ChangeSkinBungee plugin;
     private final Random random = new Random();
 
     public JoinListener(ChangeSkinBungee plugin) {
@@ -30,7 +30,31 @@ public class JoinListener implements Listener {
     public void onPlayerLogin(PostLoginEvent postLoginEvent) {
         ProxiedPlayer player = postLoginEvent.getPlayer();
 
-        boolean skinFound = false;
+        //updates to the chosen one
+        final UserPreferences preferences = plugin.getCore().getLoginSession(player.getUniqueId());
+        SkinData targetSkin = preferences.getTargetSkin();
+        if (targetSkin == null) {
+            final SkinData skinData = getSkinIfPresent(player);
+            if (skinData == null) {
+                setRandomSkin(preferences, player);
+            } else {
+                preferences.setTargetSkin(targetSkin);
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        plugin.getStorage().save(skinData);
+                        plugin.getStorage().save(preferences);
+                    }
+                });
+            }
+        } else {
+            plugin.applySkin(player, targetSkin);
+        }
+
+        plugin.getCore().endSession(player.getUniqueId());
+    }
+
+    private SkinData getSkinIfPresent(ProxiedPlayer player) {
         //try to use the existing and put it in the cache so we use it for others
         InitialHandler initialHandler = (InitialHandler) player.getPendingConnection();
         LoginResult loginProfile = initialHandler.getLoginProfile();
@@ -39,24 +63,14 @@ public class JoinListener implements Listener {
             Property[] properties = loginProfile.getProperties();
             for (Property property : properties) {
                 //found a skin
-                SkinData skinData = new SkinData(property.getValue(), property.getSignature());
-                plugin.getStorage().getSkinUUIDCache().put(player.getUniqueId(), skinData);
-                skinFound = true;
-                break;
+                return new SkinData(property.getValue(), property.getSignature());
             }
         }
 
-        //updates to the chosen one
-        UserPreferences preferences = plugin.getStorage().getPreferences(player.getUniqueId(), true);
-        SkinData targetSkin = preferences.getTargetSkin();
-        if (targetSkin != null) {
-            plugin.applySkin(player, targetSkin);
-        } else if (!skinFound) {
-            setRandomSkin(player);
-        }
+        return null;
     }
 
-    private void setRandomSkin(ProxiedPlayer player) {
+    private void setRandomSkin(final UserPreferences preferences, ProxiedPlayer player) {
         //skin wasn't found and there are no preferences so set a default skin
         List<SkinData> defaultSkins = plugin.getCore().getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
@@ -64,7 +78,6 @@ public class JoinListener implements Listener {
 
             final SkinData targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
-                final UserPreferences preferences = plugin.getStorage().getPreferences(player.getUniqueId(), false);
                 preferences.setTargetSkin(targetSkin);
                 plugin.applySkin(player, targetSkin);
 

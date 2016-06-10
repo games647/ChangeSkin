@@ -121,7 +121,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
 
     //you should call this method async
     public void setSkin(Player player, final SkinData newSkin, boolean applyNow) {
-        final UserPreferences preferences = core.getStorage().getPreferences(player.getUniqueId(), false);
+        final UserPreferences preferences = core.getStorage().getPreferences(player.getUniqueId());
         preferences.setTargetSkin(newSkin);
         getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
             @Override
@@ -135,7 +135,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
 
     //you should call this method async
     public void setSkin(Player player, UUID targetSkin, boolean applyNow) {
-        SkinData newSkin = core.getStorage().getSkin(targetSkin, true);
+        SkinData newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
             newSkin = core.downloadSkin(targetSkin);
         }

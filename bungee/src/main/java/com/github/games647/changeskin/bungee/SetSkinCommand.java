@@ -2,14 +2,11 @@ package com.github.games647.changeskin.bungee;
 
 import com.github.games647.changeskin.bungee.tasks.NameResolver;
 import com.github.games647.changeskin.bungee.tasks.SkinDownloader;
-import com.github.games647.changeskin.core.UserPreferences;
 
 import java.util.UUID;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -27,13 +24,13 @@ public class SetSkinCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer && plugin.isCooldown(((ProxiedPlayer) sender).getUniqueId())) {
-            sender.sendMessage(ChatColor.DARK_RED + "Please wait. You cannot change the skin so fast");
+            plugin.sendMessage(sender, "cooldown");
             return;
         }
 
         if (args.length > 1) {
             if (!sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".command.setskin.other")) {
-                sender.sendMessage(ChatColor.DARK_RED + "No permission to change other skins");
+                plugin.sendMessage(sender, "no-permission-other");
                 return;
             }
 
@@ -42,7 +39,7 @@ public class SetSkinCommand extends Command {
 
             ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(targetPlayerName);
             if (targetPlayer == null) {
-                sender.sendMessage(new ComponentBuilder("This player isn't online").color(ChatColor.DARK_RED).create());
+                plugin.sendMessage(sender, "not-online");
             } else {
                 setSkin(sender, targetPlayer, toSkin);
             }
@@ -55,12 +52,10 @@ public class SetSkinCommand extends Command {
 
                 setSkin(sender, (ProxiedPlayer) sender, args[0]);
             } else {
-                sender.sendMessage(new ComponentBuilder("You have to provide the skin you want to change to")
-                        .color(ChatColor.DARK_RED).create());
+                plugin.sendMessage(sender, "no-skin");
             }
         } else {
-            sender.sendMessage(new ComponentBuilder("You have to be a player to set your own skin")
-                        .color(ChatColor.DARK_RED).create());
+            plugin.sendMessage(sender, "no-console");
         }
     }
 
@@ -69,7 +64,7 @@ public class SetSkinCommand extends Command {
         if (toSkin.length() > 16) {
             setSkinUUID(sender, targetPlayer, toSkin);
         } else {
-            sender.sendMessage(new ComponentBuilder("Queued name to uuid resolve").color(ChatColor.GOLD).create());
+            plugin.sendMessage(sender, "queue-name-resolve");
             NameResolver nameResolver = new NameResolver(plugin, sender, toSkin, targetPlayer);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, nameResolver);
         }
@@ -82,29 +77,12 @@ public class SetSkinCommand extends Command {
                 return;
             }
 
-            if (receiverPayer.getUniqueId().equals(uuid)) {
-                sender.sendMessage(new ComponentBuilder("Reseting preferences to the default value")
-                        .color(ChatColor.DARK_GREEN).create());
+            plugin.sendMessage(sender, "skin-change-queue");
 
-                final UserPreferences preferences = plugin.getStorage().getPreferences(uuid, false);
-                preferences.setTargetSkin(null);
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.getStorage().save(preferences);
-                    }
-                });
-
-                SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, skinDownloader);
-            } else {
-                sender.sendMessage(new ComponentBuilder("Queued Skin change").color(ChatColor.GOLD).create());
-
-                SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, skinDownloader);
-            }
+            SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
+            ProxyServer.getInstance().getScheduler().runAsync(plugin, skinDownloader);
         } catch (IllegalArgumentException illegalArgumentException) {
-            sender.sendMessage(new ComponentBuilder("Invalid uuid").color(ChatColor.DARK_RED).create());
+            plugin.sendMessage(sender, "invalid-uuid");
         }
     }
 }

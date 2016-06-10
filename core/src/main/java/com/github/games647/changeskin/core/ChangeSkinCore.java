@@ -56,6 +56,16 @@ public class ChangeSkinCore {
                 }
             }).asMap();
 
+    private final ConcurrentMap<UUID, UserPreferences> loginSession = CacheBuilder
+            .newBuilder()
+            //prevent memory leaks, because we don't if the player disconected during a login
+            .expireAfterWrite(2, TimeUnit.MINUTES)
+            .build(new CacheLoader<UUID, UserPreferences>() {
+                @Override
+                public UserPreferences load(UUID key) throws Exception {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+            }).asMap();
 
     private final Logger logger;
     private final File pluginFolder;
@@ -87,6 +97,18 @@ public class ChangeSkinCore {
 
     public void addMessage(String key, String message) {
         localeMessages.put(key, message);
+    }
+
+    public UserPreferences getLoginSession(UUID id) {
+        return loginSession.get(id);
+    }
+
+    public void startSession(UUID id, UserPreferences preferences) {
+        loginSession.put(id, preferences);
+    }
+
+    public void endSession(UUID id) {
+        loginSession.remove(id);
     }
 
     public UUID getUUID(String playerName) {
@@ -154,7 +176,7 @@ public class ChangeSkinCore {
     public void loadDefaultSkins(List<String> defaults) {
         for (String uuidString : defaults) {
             UUID ownerUUID = UUID.fromString(uuidString);
-            SkinData skinData = storage.getSkin(ownerUUID, true);
+            SkinData skinData = storage.getSkin(ownerUUID);
             if (skinData == null) {
                 skinData = downloadSkin(ownerUUID);
                 storage.save(skinData);
@@ -165,11 +187,6 @@ public class ChangeSkinCore {
     }
 
     public void onDisable() {
-        //clean up
-        if (storage != null) {
-            storage.close();
-        }
-
         defaultSkins.clear();
         uuidCache.clear();
     }

@@ -14,7 +14,6 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreferences;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -30,11 +29,13 @@ public class SkinUpdater implements Runnable {
     private final ChangeSkinBukkit plugin;
     private final CommandSender invoker;
     private final Player receiver;
+    private final SkinData targetSkin;
 
-    public SkinUpdater(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver) {
+    public SkinUpdater(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver, SkinData targetSkin) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
+        this.targetSkin = targetSkin;
     }
 
     @Override
@@ -44,15 +45,10 @@ public class SkinUpdater implements Runnable {
         }
 
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
-        if (plugin.getStorage() != null) {
-            UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId(), false);
-            SkinData targetSkin = preferences.getTargetSkin();
-
+        if (targetSkin != null) {
             //remove existing skins
             gameProfile.getProperties().clear();
-            if (targetSkin != null) {
-                gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
-            }
+            gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
         }
 
         sendUpdate(gameProfile);

@@ -1,6 +1,5 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinModel;
 import com.github.games647.changeskin.core.model.TextureSourceModel;
 import com.github.games647.changeskin.core.model.DataModel;

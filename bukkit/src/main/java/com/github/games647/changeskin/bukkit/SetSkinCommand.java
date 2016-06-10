@@ -2,7 +2,6 @@ package com.github.games647.changeskin.bukkit;
 
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
 import com.github.games647.changeskin.bukkit.tasks.SkinDownloader;
-import com.github.games647.changeskin.core.UserPreferences;
 
 import java.util.UUID;
 
@@ -81,26 +80,10 @@ public class SetSkinCommand implements CommandExecutor {
                 return;
             }
 
-            if (receiverPayer.getUniqueId().equals(uuid)) {
-                plugin.sendMessage(sender, "reset");
+            plugin.sendMessage(sender, "skin-change-queue");
 
-                final UserPreferences preferences = plugin.getStorage().getPreferences(uuid, false);
-                preferences.setTargetSkin(null);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.getStorage().save(preferences);
-                    }
-                });
-
-                SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
-            } else {
-                plugin.sendMessage(sender, "skin-change-queue");
-
-                SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
-            }
+            SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
         } catch (IllegalArgumentException illegalArgumentException) {
             plugin.sendMessage(sender, "invalid-uuid");
         }

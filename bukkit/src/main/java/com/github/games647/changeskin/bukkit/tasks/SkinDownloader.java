@@ -26,12 +26,9 @@ public class SkinDownloader implements Runnable {
 
     @Override
     public void run() {
-        SkinData skin = plugin.getStorage().getSkin(targetUUID, true);
+        SkinData skin = plugin.getStorage().getSkin(targetUUID);
         if (skin == null) {
             skin = plugin.getCore().downloadSkin(targetUUID);
-            if (skin != null) {
-                plugin.getStorage().getSkinUUIDCache().put(targetUUID, skin);
-            }
         }
 
         //uuid was successfull resolved, we could now make a cooldown check
@@ -40,7 +37,7 @@ public class SkinDownloader implements Runnable {
         }
 
         //Save the target uuid from the requesting player source
-        final UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId(), false);
+        final UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
         preferences.setTargetSkin(skin);
 
         final SkinData newSkin = skin;
@@ -53,8 +50,12 @@ public class SkinDownloader implements Runnable {
             }
         });
 
+        if (targetUUID.equals(receiver.getUniqueId())) {
+            plugin.sendMessage(invoker, "reset");
+        }
+
         if (plugin.getConfig().getBoolean("instantSkinChange")) {
-            plugin.getServer().getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver));
+            plugin.getServer().getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, newSkin));
         } else if (invoker != null) {
             //if user is online notify the player
             plugin.sendMessage(invoker, "skin-changed-no-instant");
