@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.4.1
+
+* Fixed instant updates for BungeeCord servers
+
 ##### 1.4
 
 * Added skin cooldown

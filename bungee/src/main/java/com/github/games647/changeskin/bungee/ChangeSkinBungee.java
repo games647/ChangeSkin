@@ -18,10 +18,10 @@ import java.nio.file.Files;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
-
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -124,7 +124,9 @@ public class ChangeSkinBungee extends Plugin {
         if (player.getServer() != null) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("UpdateSkin");
-            player.getServer().sendData(this.getDescription().getName(), out.toByteArray());
+            out.writeUTF(skinData.getEncodedData());
+            out.writeUTF(skinData.getEncodedSignature());
+            player.getServer().sendData(getDescription().getName(), out.toByteArray());
         }
     }
 

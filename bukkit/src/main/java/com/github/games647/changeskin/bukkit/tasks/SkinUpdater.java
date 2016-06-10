@@ -43,7 +43,6 @@ public class SkinUpdater implements Runnable {
         }
 
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
-
         if (plugin.getStorage() != null) {
             UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId(), false);
             SkinData targetSkin = preferences.getTargetSkin();
