@@ -3,6 +3,7 @@
 ##### 1.4
 
 * Added skin cooldown
+* Added localization
 
 ##### 1.3.2
 

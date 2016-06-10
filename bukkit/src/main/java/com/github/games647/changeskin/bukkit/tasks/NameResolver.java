@@ -4,7 +4,6 @@ import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,7 +28,7 @@ public class NameResolver implements Runnable {
             uuid = plugin.getCore().getUUID(targetName);
             if (uuid == null) {
                 if (invoker != null) {
-                    invoker.sendMessage(ChatColor.DARK_RED + "UUID couldn't be resolved");
+                    plugin.sendMessage(invoker, "no-resolve");
                 }
             } else {
                 plugin.getCore().getUuidCache().put(targetName, uuid);
@@ -38,12 +37,12 @@ public class NameResolver implements Runnable {
 
         if (uuid != null) {
             if (invoker != null) {
-                invoker.sendMessage(ChatColor.DARK_GREEN + "UUID was successfull resolved from the player name");
+                plugin.sendMessage(invoker, "uuid-resolved");
                 if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid)) {
                     return;
                 }
 
-                invoker.sendMessage(ChatColor.DARK_GREEN + "The skin is now downloading");
+                plugin.sendMessage(invoker, "skin-downloading");
             }
 
             //run this is the same thread

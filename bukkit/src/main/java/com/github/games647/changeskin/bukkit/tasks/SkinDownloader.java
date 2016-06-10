@@ -7,7 +7,6 @@ import com.github.games647.changeskin.core.UserPreferences;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -58,7 +57,7 @@ public class SkinDownloader implements Runnable {
             plugin.getServer().getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver));
         } else if (invoker != null) {
             //if user is online notify the player
-            invoker.sendMessage(ChatColor.DARK_GREEN + "Skin was changed. Relogin to see the changes");
+            plugin.sendMessage(invoker, "skin-changed-no-instant");
         }
     }
 }

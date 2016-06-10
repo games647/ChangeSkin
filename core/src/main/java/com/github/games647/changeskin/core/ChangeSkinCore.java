@@ -6,6 +6,7 @@ import com.github.games647.changeskin.core.model.TexturesModel;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -16,6 +17,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +42,7 @@ public class ChangeSkinCore {
     }
 
     private final Gson gson = new Gson();
+    private final Map<String, String> localeMessages = Maps.newConcurrentMap();
 
     //this is thread-safe in order to save and load from different threads like the skin download
     private final ConcurrentMap<String, UUID> uuidCache = CacheBuilder
@@ -76,6 +79,14 @@ public class ChangeSkinCore {
 
     public ConcurrentMap<String, UUID> getUuidCache() {
         return uuidCache;
+    }
+
+    public String getMessage(String key) {
+        return localeMessages.get(key);
+    }
+
+    public void addMessage(String key, String message) {
+        localeMessages.put(key, message);
     }
 
     public UUID getUUID(String playerName) {

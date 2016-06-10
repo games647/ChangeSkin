@@ -4,9 +4,7 @@ import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 
 import java.util.UUID;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class NameResolver implements Runnable {
@@ -30,8 +28,7 @@ public class NameResolver implements Runnable {
             uuid = plugin.getCore().getUUID(targetName);
             if (uuid == null) {
                 if (invoker != null) {
-                    invoker.sendMessage(new ComponentBuilder("UUID couldn't be resolved")
-                        .color(ChatColor.DARK_RED).create());
+                    plugin.sendMessage(invoker, "no-resolve");
                 }
             } else {
                 plugin.getCore().getUuidCache().put(targetName, uuid);
@@ -40,15 +37,12 @@ public class NameResolver implements Runnable {
 
         if (uuid != null) {
             if (invoker != null) {
-                invoker.sendMessage(new ComponentBuilder("UUID was successfull resolved from the player name")
-                        .color(ChatColor.DARK_GREEN).create());
-
+                plugin.sendMessage(invoker, "uuid-resolved");
                 if (plugin.getConfiguration().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid)) {
                     return;
                 }
 
-                invoker.sendMessage(new ComponentBuilder("The skin is now downloading")
-                        .color(ChatColor.DARK_GREEN).create());
+                plugin.sendMessage(invoker, "skin-downloading");
             }
 
             //run this is the same thread

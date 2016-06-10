@@ -1,13 +1,12 @@
 package com.github.games647.changeskin.bukkit;
 
-import com.github.games647.changeskin.core.UserPreferences;
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
 import com.github.games647.changeskin.bukkit.tasks.SkinDownloader;
+import com.github.games647.changeskin.core.UserPreferences;
 
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,13 +23,13 @@ public class SetSkinCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (isCooldown(sender)) {
-            sender.sendMessage(ChatColor.DARK_RED + "Please wait. You cannot change the skin so fast");
+            plugin.sendMessage(sender, "cooldown");
             return true;
         }
 
         if (args.length > 1) {
             if (!sender.hasPermission(command.getPermission() + ".other")) {
-                sender.sendMessage(ChatColor.DARK_RED + "No permission to change other skins");
+                plugin.sendMessage(sender, "no-permission-other");
                 return true;
             }
 
@@ -39,7 +38,7 @@ public class SetSkinCommand implements CommandExecutor {
 
             Player targetPlayer = Bukkit.getPlayerExact(targetPlayerName);
             if (targetPlayer == null) {
-                sender.sendMessage(ChatColor.DARK_RED + "This player isn't online");
+                plugin.sendMessage(sender, "not-online");
             } else {
                 setSkin(sender, targetPlayer, toSkin);
             }
@@ -52,10 +51,10 @@ public class SetSkinCommand implements CommandExecutor {
 
                 setSkin(sender, (Player) sender, args[0]);
             } else {
-                sender.sendMessage(ChatColor.DARK_RED + "You have to provide the skin you want to change to");
+                plugin.sendMessage(sender, "no-skin");
             }
         } else {
-            sender.sendMessage(ChatColor.DARK_RED + "You have to be a player to set your own skin");
+            plugin.sendMessage(sender, "no-console");
         }
 
         return true;
@@ -70,7 +69,7 @@ public class SetSkinCommand implements CommandExecutor {
         if (toSkin.length() > 16) {
             setSkinUUID(sender, targetPlayer, toSkin);
         } else {
-            sender.sendMessage(ChatColor.GOLD + "Queued name to uuid resolve");
+            plugin.sendMessage(sender, "queue-name-resolve");
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new NameResolver(plugin, sender, toSkin, targetPlayer));
         }
     }
@@ -83,7 +82,7 @@ public class SetSkinCommand implements CommandExecutor {
             }
 
             if (receiverPayer.getUniqueId().equals(uuid)) {
-                sender.sendMessage(ChatColor.DARK_GREEN + "Reseting preferences to the default value");
+                plugin.sendMessage(sender, "reset");
 
                 final UserPreferences preferences = plugin.getStorage().getPreferences(uuid, false);
                 preferences.setTargetSkin(null);
@@ -97,13 +96,13 @@ public class SetSkinCommand implements CommandExecutor {
                 SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
             } else {
-                sender.sendMessage(ChatColor.GOLD + "Queued Skin change");
+                plugin.sendMessage(sender, "skin-change-queue");
 
                 SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
             }
         } catch (IllegalArgumentException illegalArgumentException) {
-            sender.sendMessage(ChatColor.DARK_RED + "Invalid uuid");
+            plugin.sendMessage(sender, "invalid-uuid");
         }
     }
 }

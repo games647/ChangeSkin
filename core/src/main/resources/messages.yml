@@ -1,0 +1,59 @@
+# ChangeSkin locale
+# You can access the newest locale here:
+# https://github.com/games647/ChangeSkin/blob/master/core/src/main/resources/messages.yml
+
+# In order to split a message into seperate lines you could just make a new line, but keep the '
+# Example:
+# bla: '&aFirst line
+# Second line
+# Third line'
+
+# If you want to disable a message, you can just set it to a empty value.
+# In this case no message will be sent
+# Example:
+# bla: ''
+
+# Cooldown is activated and the user typed in the changeskin command too fast
+cooldown: '&4Please wait. You cannot change the skin so fast'
+
+# Specific skin permissions are activated and the user doesn't have the permission for the supplied skin
+no-permission: "&4You don't have the permission to set this skin"
+
+# User has no permission to set the skin of other players
+no-permission-other: '&4No permission to change other skins'
+
+# User wanted to set the skin of another player who isn't online
+not-online: "&4This player isn't online"
+
+# The command invoker just invoked /changeskin, but didn't supplied to the target skin
+no-skin: '&4You have to provide the skin you want to change to'
+
+# Only players can have ingame skins
+no-console: '&4You have to be a player to set your own skin'
+
+# UUID resolve request was sent to the mojang servers and is waiting for a response
+queue-name-resolve: '&6Queued name to uuid resolve'
+
+# Supplied username is not premium or cannot be resolved
+no-resolve: "&4UUID couldn't be resolved"
+
+# UUID was successfull resolved
+uuid-resolved: '&2UUID was successfull resolved from the player name'
+
+# Skin preferences was reset to the default value
+reset: '&2Reseting preferences to the default value'
+
+# Queuing skin change
+skin-change-queue: '&6Queued Skin change'
+
+# The supplied UUID is not in the correct format Example: 550e8400-e29b-11d4-a716-446655440000
+invalid-uuid: '&2Invalid UUID'
+
+# Skin is downloading form the mojang servers
+skin-downloading: '&2The skin is now downloading'
+
+# Instant updates was disabled, so the players have to relogin
+skin-changed-no-instant: '&2Skin was changed. Relogin to see the changes'
+
+# Skin was successfull updates
+skin-changed: '&2You received a new skin'

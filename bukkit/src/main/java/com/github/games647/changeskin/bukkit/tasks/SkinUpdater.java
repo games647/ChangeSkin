@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -58,7 +57,7 @@ public class SkinUpdater implements Runnable {
 
         sendUpdate(gameProfile);
         if (invoker != null) {
-            receiver.sendMessage(ChatColor.DARK_GREEN + "Skin was updated");
+            plugin.sendMessage(invoker, "skin-changed");
         }
     }
 

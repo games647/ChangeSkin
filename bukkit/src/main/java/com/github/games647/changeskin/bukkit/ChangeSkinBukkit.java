@@ -11,6 +11,7 @@ import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.UserPreferences;
 import com.google.common.cache.CacheLoader;
 
+import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +20,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -45,7 +47,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
         } else {
             saveDefaultConfig();
-          
+
             cooldowns = SafeCacheBuilder.<UUID, Object>newBuilder()
                     .expireAfterWrite(getConfig().getInt("cooldown"), TimeUnit.SECONDS)
                     .build(new CacheLoader<UUID, Object>() {
@@ -75,6 +77,8 @@ public class ChangeSkinBukkit extends JavaPlugin {
             }
 
             core.loadDefaultSkins(getConfig().getStringList("default-skins"));
+
+            loadLocale();
 
             getCommand("setskin").setExecutor(new SetSkinCommand(this));
 
@@ -145,7 +149,27 @@ public class ChangeSkinBukkit extends JavaPlugin {
         }
         
         //disallow - not whitelisted or blacklisted
-        invoker.sendMessage(ChatColor.DARK_RED + "You don't have the permission to set this skin");
+        sendMessage(invoker, "no-permission");
         return false;
+    }
+
+    public void sendMessage(CommandSender sender, String key) {
+        String message = core.getMessage(key);
+        if (message != null) {
+            sender.sendMessage(message);
+        }
+    }
+
+    private void loadLocale() {
+        saveResource("messages.yml", false);
+
+        File messageFile = new File(getDataFolder(), "messages.yml");
+        YamlConfiguration messageConfig = YamlConfiguration.loadConfiguration(messageFile);
+        for (String key : messageConfig.getKeys(false)) {
+            String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
+            if (!message.isEmpty()) {
+                core.addMessage(key, message);
+            }
+        }
     }
 }

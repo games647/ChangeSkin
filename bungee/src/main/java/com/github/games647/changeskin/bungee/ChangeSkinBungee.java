@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -45,18 +45,13 @@ public class ChangeSkinBungee extends Plugin {
             getDataFolder().mkdir();
         }
 
-        File configFile = new File(getDataFolder(), "config.yml");
-        if (!configFile.exists()) {
-            try (InputStream in = getResourceAsStream("config.yml")) {
-                Files.copy(in, configFile.toPath());
-            } catch (IOException ioExc) {
-                getLogger().log(Level.SEVERE, "Error saving default config", ioExc);
-            }
-        }
+        File configFile = saveDefaultResource("config.yml");
 
         core = new ChangeSkinCore(getLogger(), getDataFolder());
         try {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+
+            loadLocale();
 
             cooldowns = CacheBuilder.newBuilder()
                     .expireAfterWrite(configuration.getInt("cooldown"), TimeUnit.SECONDS)
@@ -87,6 +82,19 @@ public class ChangeSkinBungee extends Plugin {
         getProxy().getPluginManager().registerListener(this, new PreLoginListener(this));
         getProxy().getPluginManager().registerListener(this, new JoinListener(this));
         getProxy().getPluginManager().registerCommand(this, new SetSkinCommand(this));
+    }
+
+    private File saveDefaultResource(String file) {
+        File configFile = new File(getDataFolder(), file);
+        if (!configFile.exists()) {
+            try (InputStream in = getResourceAsStream(file)) {
+                Files.copy(in, configFile.toPath());
+            } catch (IOException ioExc) {
+                getLogger().log(Level.SEVERE, "Error saving default " + file, ioExc);
+            }
+        }
+
+        return configFile;
     }
 
     public String getName() {
@@ -150,8 +158,29 @@ public class ChangeSkinBungee extends Plugin {
         }
 
         //disallow - not whitelisted or blacklisted
-        invoker.sendMessage(new ComponentBuilder("You don't have the permission to set this skin")
-                .color(ChatColor.DARK_RED).create());
+        sendMessage(invoker, "no-permission");
         return false;
+    }
+
+    public void sendMessage(CommandSender sender, String key) {
+        String message = core.getMessage(key);
+        if (message != null) {
+            sender.sendMessage(TextComponent.fromLegacyText(message));
+        }
+    }
+
+    private void loadLocale() {
+        try {
+            File messageFile = saveDefaultResource("messages.yml");
+            Configuration messageConf = ConfigurationProvider.getProvider(YamlConfiguration.class).load(messageFile);
+            for (String key : messageConf.getKeys()) {
+                String message = ChatColor.translateAlternateColorCodes('&', messageConf.getString(key));
+                if (!message.isEmpty()) {
+                    core.addMessage(key, message);
+                }
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.SEVERE, "Error loading locale", ex);
+        }
     }
 }

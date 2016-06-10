@@ -5,11 +5,9 @@ import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.UserPreferences;
 
 import java.util.UUID;
-import net.md_5.bungee.api.ChatColor;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class SkinDownloader implements Runnable {
@@ -59,8 +57,7 @@ public class SkinDownloader implements Runnable {
             ProxyServer.getInstance().getScheduler().runAsync(plugin, new SkinUpdater(plugin, receiver));
         } else if (invoker != null) {
             //if user is online notify the player
-            invoker.sendMessage(new ComponentBuilder("Skin was changed. Relogin to see the changes")
-                    .color(ChatColor.DARK_GREEN).create());
+            plugin.sendMessage(invoker, "skin-changed-no-instant");
         }
     }
 }
