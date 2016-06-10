@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -100,6 +100,18 @@ public class SkinUpdater implements Runnable {
         respawn.getGameModes().write(0, gamemode);
         respawn.getWorldTypeModifier().write(0, receiver.getWorld().getWorldType());
 
+        Location location = receiver.getLocation().clone();
+
+        PacketContainer teleport = protocolManager.createPacket(PacketType.Play.Server.POSITION);
+        teleport.getModifier().writeDefaults();
+        teleport.getDoubles().write(0, location.getX());
+        teleport.getDoubles().write(1, location.getY());
+        teleport.getDoubles().write(2, location.getZ());
+        teleport.getFloat().write(0, location.getYaw());
+        teleport.getFloat().write(1, location.getPitch());
+        //send an invalid teleport id in order to let bukkit ignore the incoming confirm packet
+        teleport.getIntegers().writeSafely(0, -1);
+
         try {
             //remove the old skin - client updates it only on a complete remove and add
             protocolManager.sendServerPacket(receiver, removeInfo);
@@ -108,12 +120,8 @@ public class SkinUpdater implements Runnable {
             //notify the client that it should update the own skin
             protocolManager.sendServerPacket(receiver, respawn);
 
-            //refresh the chunk
-            Chunk chunk = receiver.getWorld().getChunkAt(receiver.getLocation());
-            receiver.getWorld().refreshChunk(chunk.getX(), chunk.getZ());
-
             //prevent the moved too quickly message
-            receiver.teleport(receiver.getLocation().clone());
+            protocolManager.sendServerPacket(receiver, teleport);
 
             //send the current inventory - otherwise player would have an empty inventory
             receiver.updateInventory();

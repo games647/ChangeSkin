@@ -69,8 +69,6 @@ public class SkinStorage {
                     + "`SkinURL` VARCHAR(255) NOT NULL, "
                     + "`CapeURL` VARCHAR(255), "
                     + "`Signature` BLOB NOT NULL"
-                    //SQLite doesn't support this on a create table statement
-                    //+ "INDEX(`UUID`)"
                     + ")";
 
             String createPreferencesStmt = "CREATE TABLE IF NOT EXISTS " + PREFERENCES_TABLE + " ("

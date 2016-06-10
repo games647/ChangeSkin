@@ -3,6 +3,7 @@
 ##### 1.4.1
 
 * Fixed instant updates for BungeeCord servers
+* Fix chunk loading issues on instant updates
 
 ##### 1.4
 
