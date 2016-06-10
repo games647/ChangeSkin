@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -107,8 +108,12 @@ public class SkinUpdater implements Runnable {
             //notify the client that it should update the own skin
             protocolManager.sendServerPacket(receiver, respawn);
 
+            //refresh the chunk
+            Chunk chunk = receiver.getWorld().getChunkAt(receiver.getLocation());
+            receiver.getWorld().refreshChunk(chunk.getX(), chunk.getZ());
+
             //prevent the moved too quickly message
-            receiver.teleport(receiver);
+            receiver.teleport(receiver.getLocation().clone());
 
             //send the current inventory - otherwise player would have an empty inventory
             receiver.updateInventory();
