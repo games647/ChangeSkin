@@ -128,7 +128,7 @@ public class ChangeSkinCore {
                 return ChangeSkinCore.parseId(id);
             }
         } catch (IOException iOException) {
-            getLogger().log(Level.SEVERE, "Tried downloading skin data from Mojang", iOException);
+            getLogger().log(Level.SEVERE, "Tried converting player name to uuid", iOException);
         } catch (JsonParseException parseException) {
             getLogger().log(Level.SEVERE, "Tried parsing json from Mojang", parseException);
         }

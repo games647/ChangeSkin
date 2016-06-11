@@ -131,7 +131,8 @@ public class SkinStorage {
                 String capeUrl = resultSet.getString(7);
 
                 String signature = BaseEncoding.base64().encode(resultSet.getBytes(8));
-                SkinData skinData = new SkinData(targetSkinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
+                SkinData skinData = new SkinData(targetSkinId, timestamp, uuid, name, slimModel, skinUrl
+                        , capeUrl, signature);
                 return skinData;
             }
         } catch (SQLException sqlEx) {
@@ -148,8 +149,7 @@ public class SkinStorage {
         try {
             con = DriverManager.getConnection(jdbcUrl, username, pass);
 
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM " + DATA_TABLE
-                    + " WHERE UUID=? LIMIT 1");
+            PreparedStatement statement = con.prepareStatement("SELECT * FROM " + DATA_TABLE + " WHERE UUID=? LIMIT 1");
 
             statement.setString(1, skinUUID.toString().replace("-", ""));
             ResultSet resultSet = statement.executeQuery();
@@ -180,7 +180,7 @@ public class SkinStorage {
     public void save(UserPreferences preferences) {
         SkinData targetSkin = preferences.getTargetSkin();
         if (targetSkin != null && targetSkin.getSkinId() == -1) {
-            plugin.getLogger().warning("Tried saving preferences without target skin. "
+            plugin.getLogger().warning("Tried saving preferences without target skin."
                     + "Please report this to the author");
             return;
         }

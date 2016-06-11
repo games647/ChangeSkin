@@ -5,6 +5,7 @@
 * Added support for multiple BungeeCord proxies
 * Fixed skin set if the player is longer online than 3 hours
 * Fixed missing translations in BungeeCord
+* Fixed error messages text on uuid rate-limiting. (It's not a skin downloading rate-limit)
 * Removed database cache as the sql cache is powerful enough
 
 ##### 1.4.1
