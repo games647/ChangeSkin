@@ -2,6 +2,7 @@ package com.github.games647.changeskin.bungee;
 
 import com.github.games647.changeskin.bungee.listener.JoinListener;
 import com.github.games647.changeskin.bungee.listener.PreLoginListener;
+import com.github.games647.changeskin.bungee.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
@@ -99,6 +100,22 @@ public class ChangeSkinBungee extends Plugin {
 
     public String getName() {
         return getDescription().getName();
+    }
+
+    //you should call this method async
+    public void setSkin(ProxiedPlayer player, final SkinData newSkin, boolean applyNow) {
+        new SkinUpdater(this, null, player, newSkin).run();
+    }
+
+    //you should call this method async
+    public void setSkin(ProxiedPlayer player, UUID targetSkin, boolean applyNow) {
+        SkinData newSkin = core.getStorage().getSkin(targetSkin);
+        if (newSkin == null) {
+            newSkin = core.downloadSkin(targetSkin);
+            core.getUuidCache().put(newSkin.getName(), newSkin.getUuid());
+        }
+
+        setSkin(player, newSkin, applyNow);
     }
 
     public void applySkin(ProxiedPlayer player, SkinData skinData) {
