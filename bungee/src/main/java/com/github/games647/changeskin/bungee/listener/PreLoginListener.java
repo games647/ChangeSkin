@@ -62,6 +62,14 @@ public class PreLoginListener implements Listener {
     private void refetch(final UserPreferences preferences, String playerName) {
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
         if (ownerUUID == null) {
+            SkinData skin = plugin.getStorage().getSkin(playerName);
+            if (skin != null) {
+                plugin.getCore().getUuidCache().put(skin.getName(), skin.getUuid());
+                preferences.setTargetSkin(skin);
+                save(skin, preferences);
+                return;
+            }
+
             try {
                 ownerUUID = plugin.getCore().getUUID(playerName);
                 if (ownerUUID != null) {
@@ -81,18 +89,19 @@ public class PreLoginListener implements Listener {
             }
 
             preferences.setTargetSkin(cachedSkin);
-
-            final SkinData skin = cachedSkin;
-
-            //this can run in the background
-            BungeeCord.getInstance().getScheduler().runAsync(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    if (plugin.getStorage().save(skin)) {
-                        plugin.getStorage().save(preferences);
-                    }
-                }
-            });
+            save(cachedSkin, preferences);
         }
+    }
+
+    private void save(final SkinData skin, final UserPreferences preferences) {
+        //this can run in the background
+        BungeeCord.getInstance().getScheduler().runAsync(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (plugin.getStorage().save(skin)) {
+                    plugin.getStorage().save(preferences);
+                }
+            }
+        });
     }
 }

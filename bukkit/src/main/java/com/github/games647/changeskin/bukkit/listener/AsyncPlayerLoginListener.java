@@ -41,9 +41,17 @@ public class AsyncPlayerLoginListener implements Listener {
         }
     }
 
-    private void refetchSkin(String playerName, final UserPreferences preferences) {
+    private void refetchSkin(String playerName, UserPreferences preferences) {
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
         if (ownerUUID == null) {
+            SkinData skin = plugin.getStorage().getSkin(playerName);
+            if (skin != null) {
+                plugin.getCore().getUuidCache().put(skin.getName(), skin.getUuid());
+                preferences.setTargetSkin(skin);
+                save(skin, preferences);
+                return;
+            }
+
             try {
                 ownerUUID = plugin.getCore().getUUID(playerName);
                 if (ownerUUID != null) {
@@ -64,16 +72,18 @@ public class AsyncPlayerLoginListener implements Listener {
             }
 
             preferences.setTargetSkin(cachedSkin);
-
-            final SkinData skin = cachedSkin;
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    if (plugin.getStorage().save(skin)) {
-                        plugin.getStorage().save(preferences);
-                    }
-                }
-            });
+            save(cachedSkin, preferences);
         }
+    }
+
+    private void save(final SkinData skin, final UserPreferences preferences) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (plugin.getStorage().save(skin)) {
+                    plugin.getStorage().save(preferences);
+                }
+            }
+        });
     }
 }

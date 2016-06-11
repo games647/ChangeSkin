@@ -14,6 +14,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
+import com.github.games647.changeskin.core.UserPreferences;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -44,6 +45,34 @@ public class SkinUpdater implements Runnable {
             return;
         }
 
+        //uuid was successfull resolved, we could now make a cooldown check
+        if (invoker instanceof Player) {
+            plugin.addCooldown(((Player) invoker).getUniqueId());
+        }
+
+        if (plugin.getStorage() != null) {
+            //Save the target uuid from the requesting player source
+            final UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
+            preferences.setTargetSkin(targetSkin);
+
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    if (plugin.getStorage().save(targetSkin)) {
+                        plugin.getStorage().save(preferences);
+                    }
+                }
+            });
+        }
+
+        if (plugin.getConfig().getBoolean("instantSkinChange")) {
+            onInstantUpdate();
+        } else if (invoker != null) {
+            plugin.sendMessage(invoker, "skin-changed-no-instant");
+        }
+    }
+
+    private void onInstantUpdate() {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
         if (targetSkin != null) {
             //remove existing skins

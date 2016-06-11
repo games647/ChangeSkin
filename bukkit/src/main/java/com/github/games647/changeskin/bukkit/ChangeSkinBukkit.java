@@ -5,10 +5,10 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
 import com.github.games647.changeskin.bukkit.listener.PlayerLoginListener;
+import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
-import com.github.games647.changeskin.core.UserPreferences;
 import com.google.common.cache.CacheLoader;
 
 import java.io.File;
@@ -121,16 +121,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
 
     //you should call this method async
     public void setSkin(Player player, final SkinData newSkin, boolean applyNow) {
-        final UserPreferences preferences = core.getStorage().getPreferences(player.getUniqueId());
-        preferences.setTargetSkin(newSkin);
-        getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
-            @Override
-            public void run() {
-                if (core.getStorage().save(newSkin)) {
-                    core.getStorage().save(preferences);
-                }
-            }
-        });
+        new SkinUpdater(this, null, player, newSkin).run();
     }
 
     //you should call this method async

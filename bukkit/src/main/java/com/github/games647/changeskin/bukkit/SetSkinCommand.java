@@ -77,6 +77,7 @@ public class SetSkinCommand implements CommandExecutor {
         try {
             UUID uuid = UUID.fromString(targetUUID);
             if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid)) {
+                plugin.sendMessage(sender, "no-permission");
                 return;
             }
 
