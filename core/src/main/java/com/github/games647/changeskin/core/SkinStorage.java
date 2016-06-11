@@ -121,22 +121,10 @@ public class SkinStorage {
             statement.setInt(1, targetSkinId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                long timestamp = resultSet.getLong(2);
-                UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
-                String name = resultSet.getString(4);
-
-                boolean slimModel = resultSet.getBoolean(5);
-
-                String skinUrl = resultSet.getString(6);
-                String capeUrl = resultSet.getString(7);
-
-                String signature = BaseEncoding.base64().encode(resultSet.getBytes(8));
-                SkinData skinData = new SkinData(targetSkinId, timestamp, uuid, name, slimModel, skinUrl
-                        , capeUrl, signature);
-                return skinData;
+                return parseSkinData(resultSet);
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to query skin data", sqlEx);
+            plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from row id", sqlEx);
         } finally {
             closeQuietly(con);
         }
@@ -154,22 +142,31 @@ public class SkinStorage {
             statement.setString(1, skinUUID.toString().replace("-", ""));
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                int skinId = resultSet.getInt(1);
-                long timestamp = resultSet.getLong(2);
-                UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
-                String name = resultSet.getString(4);
-
-                boolean slimModel = resultSet.getBoolean(5);
-
-                String skinUrl = resultSet.getString(6);
-                String capeUrl = resultSet.getString(7);
-
-                String signature = BaseEncoding.base64().encode(resultSet.getBytes(8));
-                SkinData skinData = new SkinData(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
-                return skinData;
+                return parseSkinData(resultSet);
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to query skin data", sqlEx);
+            plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from uuid", sqlEx);
+        } finally {
+            closeQuietly(con);
+        }
+
+        return null;
+    }
+
+    public SkinData getSkin(String playerName) {
+        Connection con = null;
+        try {
+            con = DriverManager.getConnection(jdbcUrl, username, pass);
+
+            PreparedStatement statement = con.prepareStatement("SELECT * FROM " + DATA_TABLE + " WHERE Name=? LIMIT 1");
+
+            statement.setString(1, playerName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return parseSkinData(resultSet);
+            }
+        } catch (SQLException sqlEx) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from playername", sqlEx);
         } finally {
             closeQuietly(con);
         }
@@ -254,6 +251,21 @@ public class SkinStorage {
         }
 
         return false;
+    }
+
+    private SkinData parseSkinData(ResultSet resultSet) {
+        int skinId = resultSet.getInt(1);
+        long timestamp = resultSet.getLong(2);
+        UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
+        String name = resultSet.getString(4);
+
+        boolean slimModel = resultSet.getBoolean(5);
+
+        String skinUrl = resultSet.getString(6);
+        String capeUrl = resultSet.getString(7);
+
+        String signature = BaseEncoding.base64().encode(resultSet.getBytes(8));
+        return new SkinData(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
     }
 
     private void closeQuietly(Connection con) {

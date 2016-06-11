@@ -51,6 +51,7 @@ public class AsyncPlayerLoginListener implements Listener {
             SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID);
             if (cachedSkin == null) {
                 cachedSkin = plugin.getCore().downloadSkin(ownerUUID);
+                plugin.getCore().getUuidCache().put(cachedSkin.getName(), cachedSkin.getUuid());
             }
 
             preferences.setTargetSkin(cachedSkin);

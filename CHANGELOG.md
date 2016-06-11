@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.6
+
+* More aggressive uuid caching
+
 ##### 1.5
 
 * Added support for multiple BungeeCord proxies

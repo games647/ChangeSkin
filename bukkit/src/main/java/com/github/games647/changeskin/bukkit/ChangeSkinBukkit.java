@@ -138,6 +138,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
         SkinData newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
             newSkin = core.downloadSkin(targetSkin);
+            core.getUuidCache().put(newSkin.getName(), newSkin.getUuid());
         }
 
         setSkin(player, newSkin, applyNow);

@@ -179,6 +179,7 @@ public class ChangeSkinCore {
             SkinData skinData = storage.getSkin(ownerUUID);
             if (skinData == null) {
                 skinData = downloadSkin(ownerUUID);
+                uuidCache.put(skinData.getName(), skinData.getUuid());
                 storage.save(skinData);
             }
 

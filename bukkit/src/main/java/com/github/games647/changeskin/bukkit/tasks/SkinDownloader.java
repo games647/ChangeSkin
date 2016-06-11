@@ -29,6 +29,7 @@ public class SkinDownloader implements Runnable {
         SkinData skin = plugin.getStorage().getSkin(targetUUID);
         if (skin == null) {
             skin = plugin.getCore().downloadSkin(targetUUID);
+            plugin.getCore().getUuidCache().put(skin.getName(), skin.getUuid());
         }
 
         //uuid was successfull resolved, we could now make a cooldown check
