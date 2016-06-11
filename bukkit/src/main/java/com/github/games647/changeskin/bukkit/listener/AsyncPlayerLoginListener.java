@@ -1,10 +1,13 @@
 package com.github.games647.changeskin.bukkit.listener;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
+import com.github.games647.changeskin.core.NotPremiumException;
+import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.UserPreferences;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -41,9 +44,15 @@ public class AsyncPlayerLoginListener implements Listener {
     private void refetchSkin(String playerName, final UserPreferences preferences) {
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
         if (ownerUUID == null) {
-            ownerUUID = plugin.getCore().getUUID(playerName);
-            if (ownerUUID != null) {
-                plugin.getCore().getUuidCache().put(playerName, ownerUUID);
+            try {
+                ownerUUID = plugin.getCore().getUUID(playerName);
+                if (ownerUUID != null) {
+                    plugin.getCore().getUuidCache().put(playerName, ownerUUID);
+                }
+            } catch (NotPremiumException ex) {
+                plugin.getLogger().log(Level.FINE, "Username is not premium on refetch", ex);
+            } catch (RateLimitException ex) {
+                plugin.getLogger().log(Level.SEVERE, "Rate limit reached on refetch", ex);
             }
         }
 

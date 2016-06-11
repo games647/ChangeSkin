@@ -253,7 +253,7 @@ public class SkinStorage {
         return false;
     }
 
-    private SkinData parseSkinData(ResultSet resultSet) {
+    private SkinData parseSkinData(ResultSet resultSet) throws SQLException {
         int skinId = resultSet.getInt(1);
         long timestamp = resultSet.getLong(2);
         UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));

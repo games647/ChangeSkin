@@ -34,7 +34,7 @@ no-console: '&4You have to be a player to set your own skin'
 # UUID resolve request was sent to the mojang servers and is waiting for a response
 queue-name-resolve: '&6Queued name to uuid resolve'
 
-# Supplied username is not premium or cannot be resolved
+# Supplied username is cannot be resolved because of connection problems
 no-resolve: "&4UUID couldn't be resolved"
 
 # UUID was successfull resolved
@@ -57,3 +57,9 @@ skin-changed-no-instant: '&2Skin was changed. Relogin to see the changes'
 
 # Skin was successfull updates
 skin-changed: '&2You received a new skin'
+
+# On name to username rate-limiting
+rate-limit: '&4Name to UUID rate-limit reached. Please wait some time or submit the uuid of your target skin'
+
+# On name to username and the username is not premium
+not-premium: '&4This is not the username of a paid account'

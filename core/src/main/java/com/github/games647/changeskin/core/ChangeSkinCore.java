@@ -32,6 +32,8 @@ public class ChangeSkinCore {
 
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
+
+    private static final int RATE_LIMIT_ID = 429;
     
     public static UUID parseId(String withoutDashes) {
         return UUID.fromString(withoutDashes.substring(0, 8)
@@ -111,7 +113,7 @@ public class ChangeSkinCore {
         loginSession.remove(id);
     }
 
-    public UUID getUUID(String playerName) {
+    public UUID getUUID(String playerName) throws NotPremiumException, RateLimitException {
         if (!playerName.matches(VALID_USERNAME)) {
             return null;
         }
@@ -119,6 +121,12 @@ public class ChangeSkinCore {
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(UUID_URL + playerName).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
+
+            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
+                throw new NotPremiumException(playerName);
+            } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
+                throw new RateLimitException(playerName);
+            }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();

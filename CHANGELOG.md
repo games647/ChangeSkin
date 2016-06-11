@@ -2,6 +2,7 @@
 
 ##### 1.6
 
+* More user friendly messages on rate-limiting (added new locale messages)
 * More aggressive uuid caching
 
 ##### 1.5

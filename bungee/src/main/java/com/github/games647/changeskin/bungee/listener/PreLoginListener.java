@@ -1,10 +1,13 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
+import com.github.games647.changeskin.core.NotPremiumException;
+import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.UserPreferences;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ProxyServer;
@@ -59,9 +62,15 @@ public class PreLoginListener implements Listener {
     private void refetch(final UserPreferences preferences, String playerName) {
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
         if (ownerUUID == null) {
-            ownerUUID = plugin.getCore().getUUID(playerName);
-            if (ownerUUID != null) {
-                plugin.getCore().getUuidCache().put(playerName, ownerUUID);
+            try {
+                ownerUUID = plugin.getCore().getUUID(playerName);
+                if (ownerUUID != null) {
+                    plugin.getCore().getUuidCache().put(playerName, ownerUUID);
+                }
+            } catch (NotPremiumException ex) {
+                plugin.getLogger().log(Level.FINE, "Username is not premium on refetch", ex);
+            } catch (RateLimitException ex) {
+                plugin.getLogger().log(Level.SEVERE, "Rate limit reached on refetch", ex);
             }
         }
 
