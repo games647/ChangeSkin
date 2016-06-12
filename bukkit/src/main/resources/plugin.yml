@@ -21,6 +21,10 @@ commands:
         aliases: [${project.parent.artifactId}, skin]
         permission: ${project.parent.artifactId}.command.setskin
 
+    skinupdate:
+        descriptions: 'Invalidates the database entry and fetches the fresh skin from the Mojang servers'
+        permission: ${project.parent.artifactId}.command.skinupdate
+
 permissions:
     ${project.parent.artifactId}.command.setskin.*:
         children:

@@ -1,5 +1,6 @@
-package com.github.games647.changeskin.bukkit;
+package com.github.games647.changeskin.bukkit.commands;
 
+import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
 import com.github.games647.changeskin.bukkit.tasks.SkinDownloader;
 

@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.7
+
+* skinupdate command to invalidate the database entry (Added new locale messages - you should reset your messages file)
+
 ##### 1.6
 
 * Added Bungee API methods for setting a new skin

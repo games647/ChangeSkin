@@ -1,5 +1,6 @@
-package com.github.games647.changeskin.bungee;
+package com.github.games647.changeskin.bungee.commands;
 
+import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.bungee.tasks.NameResolver;
 import com.github.games647.changeskin.bungee.tasks.SkinDownloader;
 

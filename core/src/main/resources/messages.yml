@@ -63,3 +63,9 @@ rate-limit: '&4Name to UUID rate-limit reached. Please wait some time or submit 
 
 # On name to username and the username is not premium
 not-premium: '&4This is not the username of a paid account'
+
+# User cannot request a skin update if the user doesn't have one
+dont-have-skin: "&4You don't have a skin to invalidate the skin"
+
+# Invalidate request is sent to the database and mojang
+invalidate-request: '&2Invalidate request sent'

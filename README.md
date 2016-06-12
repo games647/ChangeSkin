@@ -29,9 +29,11 @@ all players who still have the default steve or alex skin.
 * /setskin <uuid > - Sets your skin to be equal to the player with the selected uuid
 * /setskin < playerName>
 * /setskin < onlinePlayer > < newSkinUUID/newSkinPlayerName >
+* /skinupdate - Invalidates the database entry and fetches the fresh skin from the Mojang servers
 
 ## Permissions
 
+* changeskin.command.skinupdate - Command to refresh the own skin
 * changeskin.command.setskin.* - All the commands below
 * changeskin.command.setskin - Set your own skin
 * changeskin.command.setskin.other - Set the skin of other players

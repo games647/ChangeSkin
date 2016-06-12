@@ -2,6 +2,8 @@ package com.github.games647.changeskin.bukkit;
 
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.github.games647.changeskin.bukkit.commands.SetSkinCommand;
+import com.github.games647.changeskin.bukkit.commands.SkinInvalidateCommand;
 import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
 import com.github.games647.changeskin.bukkit.listener.PlayerLoginListener;
@@ -81,6 +83,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
             loadLocale();
 
             getCommand("setskin").setExecutor(new SetSkinCommand(this));
+            getCommand("skinupdate").setExecutor(new SkinInvalidateCommand(this));
 
             getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
             getServer().getPluginManager().registerEvents(new AsyncPlayerLoginListener(this), this);
@@ -147,7 +150,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
 
     public void sendMessage(CommandSender sender, String key) {
         String message = core.getMessage(key);
-        if (message != null) {
+        if (message != null && sender != null) {
             sender.sendMessage(message);
         }
     }

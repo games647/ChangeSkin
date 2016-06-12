@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.bungee;
 
+import com.github.games647.changeskin.bungee.commands.SetSkinCommand;
 import com.github.games647.changeskin.bungee.listener.JoinListener;
 import com.github.games647.changeskin.bungee.listener.PreLoginListener;
 import com.github.games647.changeskin.bungee.tasks.SkinUpdater;
@@ -183,7 +184,7 @@ public class ChangeSkinBungee extends Plugin {
 
     public void sendMessage(CommandSender sender, String key) {
         String message = core.getMessage(key);
-        if (message != null) {
+        if (message != null && sender != null) {
             sender.sendMessage(TextComponent.fromLegacyText(message));
         }
     }
