@@ -29,6 +29,14 @@ public class NameResolver implements Runnable {
     public void run() {
         UUID uuid = plugin.getCore().getUuidCache().get(targetName);
         if (uuid == null) {
+            if (plugin.getCore().getCrackedNames().containsKey(targetName)) {
+                if (invoker != null) {
+                    plugin.sendMessage(invoker, "not-premium");
+                }
+
+                return;
+            }
+
             SkinData targetSkin = plugin.getStorage().getSkin(targetName);
             if (targetSkin != null) {
                 onNameResolveDatabase(targetSkin);
@@ -48,6 +56,8 @@ public class NameResolver implements Runnable {
                 }
             } catch (NotPremiumException notPremiumEx) {
                 plugin.getLogger().log(Level.FINE, "Requested not premium", notPremiumEx);
+                plugin.getCore().getCrackedNames().put(targetName, new Object());
+
                 if (invoker != null) {
                     plugin.sendMessage(invoker, "not-premium");
                 }

@@ -58,6 +58,17 @@ public class ChangeSkinCore {
                 }
             }).asMap();
 
+    private final ConcurrentMap<String, Object> crackedNames = CacheBuilder
+            .<String, Object>newBuilder()
+            .maximumSize(1024 * 5)
+            .expireAfterWrite(3, TimeUnit.HOURS)
+            .build(new CacheLoader<String, Object>() {
+                @Override
+                public Object load(String key) throws Exception {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+            }).asMap();
+
     private final ConcurrentMap<UUID, UserPreferences> loginSession = CacheBuilder
             .newBuilder()
             //prevent memory leaks, because we don't if the player disconected during a login
@@ -91,6 +102,10 @@ public class ChangeSkinCore {
 
     public ConcurrentMap<String, UUID> getUuidCache() {
         return uuidCache;
+    }
+
+    public ConcurrentMap<String, Object> getCrackedNames() {
+        return crackedNames;
     }
 
     public String getMessage(String key) {

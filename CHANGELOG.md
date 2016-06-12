@@ -4,6 +4,7 @@
 
 * Added Bungee API methods for setting a new skin
 * Fetch UUIDs from the database first before asking Mojang -> reduce Mojang requests
+* Fix caching of pure cracked players (who don't use a premium username) -> reduce Mojang requests
 * Fixed missing no permission message
 * More user friendly messages on rate-limiting (added new locale messages)
 * More aggressive uuid caching
