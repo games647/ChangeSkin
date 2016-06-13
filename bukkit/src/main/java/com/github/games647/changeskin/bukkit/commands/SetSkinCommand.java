@@ -83,7 +83,6 @@ public class SetSkinCommand implements CommandExecutor {
             }
 
             plugin.sendMessage(sender, "skin-change-queue");
-
             SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
         } catch (IllegalArgumentException illegalArgumentException) {

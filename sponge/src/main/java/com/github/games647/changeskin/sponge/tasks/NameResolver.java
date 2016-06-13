@@ -1,29 +1,27 @@
-package com.github.games647.changeskin.bukkit.tasks;
+package com.github.games647.changeskin.sponge.tasks;
 
-import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.SkinData;
+import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
 import java.util.UUID;
-import java.util.logging.Level;
-import org.bukkit.Bukkit;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
 
 public class NameResolver implements Runnable {
 
-    private final ChangeSkinBukkit plugin;
-    private final CommandSender invoker;
+    private final ChangeSkinSponge plugin;
+    private final CommandSource invoker;
     private final String targetName;
-    private final Player player;
+    private final Player receiver;
 
-    public NameResolver(ChangeSkinBukkit plugin, CommandSender invoker, String targetName, Player targetPlayer) {
+    public NameResolver(ChangeSkinSponge plugin, CommandSource invoker, String targetName, Player receiver) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.targetName = targetName;
-        this.player = targetPlayer;
+        this.receiver = receiver;
     }
 
     @Override
@@ -38,7 +36,7 @@ public class NameResolver implements Runnable {
                 return;
             }
 
-            SkinData targetSkin = plugin.getStorage().getSkin(targetName);
+            SkinData targetSkin = plugin.getCore().getStorage().getSkin(targetName);
             if (targetSkin != null) {
                 onNameResolveDatabase(targetSkin);
                 return;
@@ -55,14 +53,14 @@ public class NameResolver implements Runnable {
                     onNameResolve(uuid);
                 }
             } catch (NotPremiumException notPremiumEx) {
-                plugin.getLogger().log(Level.FINE, "Requested not premium", notPremiumEx);
+                plugin.getLogger().debug("Requested not premium", notPremiumEx);
                 plugin.getCore().getCrackedNames().put(targetName, new Object());
-                
+
                 if (invoker != null) {
                     plugin.sendMessage(invoker, "not-premium");
                 }
             } catch (RateLimitException rateLimitEx) {
-                plugin.getLogger().log(Level.SEVERE, "UUID Rate Limit reached", rateLimitEx);
+                plugin.getLogger().error("UUID Rate Limit reached", rateLimitEx);
                 if (invoker != null) {
                     plugin.sendMessage(invoker, "rate-limit");
                 }
@@ -73,32 +71,22 @@ public class NameResolver implements Runnable {
     }
 
     private void onNameResolveDatabase(SkinData targetSkin) {
-        UUID uuid = targetSkin.getUuid();
         if (invoker != null) {
             plugin.sendMessage(invoker, "uuid-resolved");
-            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid)) {
-                plugin.sendMessage(invoker, "no-permission");
-                return;
-            }
-
             plugin.sendMessage(invoker, "skin-downloading");
         }
 
-        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, player, targetSkin));
+        SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, receiver, targetSkin);
+        plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
     }
 
     private void onNameResolve(UUID uuid) {
         if (invoker != null) {
             plugin.sendMessage(invoker, "uuid-resolved");
-            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid)) {
-                plugin.sendMessage(invoker, "no-permission");
-                return;
-            }
-
             plugin.sendMessage(invoker, "skin-downloading");
         }
-        
+
         //run this is the same thread
-        new SkinDownloader(plugin, invoker, player, uuid).run();
+        new SkinDownloader(plugin, invoker, receiver, uuid).run();
     }
 }

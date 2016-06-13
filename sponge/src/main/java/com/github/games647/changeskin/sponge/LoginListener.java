@@ -36,6 +36,8 @@ public class LoginListener {
         if (preferences.getTargetSkin() == null 
                 && (!plugin.getRootNode().getNode("restoreSkins").getBoolean() || !refetch(preferences, profile))) {
             setDefaultSkin(preferences, profile);
+        } else {
+            applySkin(preferences.getTargetSkin(), profile);
         }
     }
 
