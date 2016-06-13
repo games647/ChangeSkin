@@ -37,6 +37,7 @@ public class ChangeSkinSponge {
     private final Game game;
 
     private ChangeSkinCore core;
+    private ConfigurationNode rootNode;
 
     @Inject
     public ChangeSkinSponge(Logger logger, Game game) {
@@ -67,7 +68,7 @@ public class ChangeSkinSponge {
 
         YAMLConfigurationLoader configLoader = YAMLConfigurationLoader.builder().setFile(defaultConfigFile).build();
         try {
-            ConfigurationNode rootNode = configLoader.load();
+            rootNode = configLoader.load();
 
             ConfigurationNode storageNode = rootNode.getNode("storage");
             String driver = storageNode.getNode("driver").getString();
@@ -91,12 +92,10 @@ public class ChangeSkinSponge {
             }
 
             List<String> defaultSkins = Lists.newArrayList();
-            for (ConfigurationNode configurationNode : rootNode.getNode("default-skins").getChildrenList()) {
-                defaultSkins.add(configurationNode.getString());
-            }
+            rootNode.getNode("default-skins").getChildrenList().stream()
+                    .forEach((configurationNode) -> defaultSkins.add(configurationNode.getString()));
 
             core.loadDefaultSkins(defaultSkins);
-
             loadLocale();
         } catch (IOException ioEx) {
             logger.error("Failed to load config", ioEx);
@@ -125,6 +124,10 @@ public class ChangeSkinSponge {
 
     public ChangeSkinCore getCore() {
         return core;
+    }
+
+    public ConfigurationNode getRootNode() {
+        return rootNode;
     }
 
     public Game getGame() {

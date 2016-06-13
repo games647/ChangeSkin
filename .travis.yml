@@ -8,8 +8,6 @@ language: java
 
 script: mvn compile test
 
-# We run on 7+
+# We could compile with Java 8 because of Sponge
 jdk:
-  - openjdk7
-  - oraclejdk7
   - oraclejdk8

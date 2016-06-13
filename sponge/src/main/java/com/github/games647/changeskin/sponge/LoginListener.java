@@ -7,6 +7,8 @@ import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.UserPreferences;
 
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import org.spongepowered.api.event.Listener;
@@ -18,6 +20,7 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 public class LoginListener {
 
     private final ChangeSkinSponge plugin;
+    private final Random random = new Random();
 
     public LoginListener(ChangeSkinSponge plugin) {
         this.plugin = plugin;
@@ -30,19 +33,33 @@ public class LoginListener {
         UUID playerUUID = profile.getUniqueId();
 
         UserPreferences preferences = storage.getPreferences(playerUUID);
-        if (preferences.getTargetSkin() == null) {
-            SkinData skinData = refetch(preferences, profile);
-            if (skinData != null) {
-                //set the skin
-                GameProfileManager profileManager = plugin.getGame().getServer().getGameProfileManager();
-                ProfileProperty profileProperty = profileManager.createProfileProperty(ChangeSkinCore.SKIN_KEY
-                        , skinData.getEncodedData(), skinData.getEncodedSignature());
-                profile.getPropertyMap().put(ChangeSkinCore.SKIN_KEY, profileProperty);
+        if (preferences.getTargetSkin() == null 
+                && (!plugin.getRootNode().getNode("restoreSkins").getBoolean() || !refetch(preferences, profile))) {
+            setDefaultSkin(preferences, profile);
+        }
+    }
+
+    private void applySkin(SkinData skinData, GameProfile profile) {
+        GameProfileManager profileManager = plugin.getGame().getServer().getGameProfileManager();
+        ProfileProperty profileProperty = profileManager.createProfileProperty(ChangeSkinCore.SKIN_KEY
+                , skinData.getEncodedData(), skinData.getEncodedSignature());
+        profile.getPropertyMap().put(ChangeSkinCore.SKIN_KEY, profileProperty);
+    }
+
+    private void setDefaultSkin(UserPreferences preferences, GameProfile profile) {
+        List<SkinData> defaultSkins = plugin.getCore().getDefaultSkins();
+        if (!defaultSkins.isEmpty()) {
+            int randomIndex = random.nextInt(defaultSkins.size());
+            SkinData defaultSkin = defaultSkins.get(randomIndex);
+            if (defaultSkin != null) {
+                preferences.setTargetSkin(defaultSkin);
+                save(defaultSkin, preferences);
+                applySkin(defaultSkin, profile);
             }
         }
     }
 
-    private SkinData refetch(final UserPreferences preferences, GameProfile profile) {
+    private boolean refetch(UserPreferences preferences, GameProfile profile) {
         String playerName = profile.getName().get();
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
 
@@ -52,7 +69,8 @@ public class LoginListener {
                 plugin.getCore().getUuidCache().put(skin.getName(), skin.getUuid());
                 preferences.setTargetSkin(skin);
                 save(skin, preferences);
-                return skin;
+                applySkin(skin, profile);
+                return true;
             }
 
             try {
@@ -76,10 +94,11 @@ public class LoginListener {
 
             preferences.setTargetSkin(storedSkin);
             save(storedSkin, preferences);
-            return storedSkin;
+            applySkin(storedSkin, profile);
+            return true;
         }
 
-        return null;
+        return false;
     }
 
     private void save(final SkinData skinData, final UserPreferences preferences) {
