@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.core;
 
+import com.github.games647.changeskin.core.model.McAPIProfile;
 import com.github.games647.changeskin.core.model.PlayerProfile;
 import com.github.games647.changeskin.core.model.PropertiesModel;
 import com.github.games647.changeskin.core.model.TexturesModel;
@@ -32,6 +33,7 @@ public class ChangeSkinCore {
 
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
+    private static final String MCAPI_UUID_URL = "https://us.mc-api.net/v3/uuid/";
 
     private static final int RATE_LIMIT_ID = 429;
     
@@ -84,6 +86,7 @@ public class ChangeSkinCore {
     private final File pluginFolder;
 
     private SkinStorage storage;
+    private long lastRateLimit;
 
     private final List<SkinData> defaultSkins = Lists.newArrayList();
 
@@ -133,11 +136,50 @@ public class ChangeSkinCore {
             return null;
         }
 
+        if (System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
+            logger.fine("STILL WAITING FOR RATE_LIMIT - TRYING SECOND API");
+            return getUUIDFromAPI(playerName);
+        }
+
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(UUID_URL + playerName).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
 
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
+                throw new NotPremiumException(playerName);
+            } else if (httpConnection.getResponseCode() != RATE_LIMIT_ID) {
+                logger.info("RATE_LIMIT REACHED - TRYING SECOND API");
+                lastRateLimit = System.currentTimeMillis();
+                return getUUIDFromAPI(playerName);
+//                throw new RateLimitException(playerName);
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+            String line = reader.readLine();
+            if (line != null && !line.equals("null")) {
+                PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile.class);
+                String id = playerProfile.getId();
+                return ChangeSkinCore.parseId(id);
+            }
+        } catch (IOException iOException) {
+            getLogger().log(Level.SEVERE, "Tried converting player name to uuid", iOException);
+        } catch (JsonParseException parseException) {
+            getLogger().log(Level.SEVERE, "Tried parsing json from Mojang", parseException);
+        }
+
+        return null;
+    }
+
+    public UUID getUUIDFromAPI(String playerName) throws NotPremiumException, RateLimitException {
+        if (!playerName.matches(VALID_USERNAME)) {
+            return null;
+        }
+
+        try {
+            HttpURLConnection httpConnection = (HttpURLConnection) new URL(MCAPI_UUID_URL + playerName).openConnection();
+            httpConnection.addRequestProperty("Content-Type", "application/json");
+
+            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 throw new NotPremiumException(playerName);
             } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
                 throw new RateLimitException(playerName);
@@ -146,8 +188,8 @@ public class ChangeSkinCore {
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();
             if (line != null && !line.equals("null")) {
-                PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile.class);
-                String id = playerProfile.getId();
+                McAPIProfile playerProfile = gson.fromJson(line, McAPIProfile.class);
+                String id = playerProfile.getUuid();
                 return ChangeSkinCore.parseId(id);
             }
         } catch (IOException iOException) {
