@@ -43,4 +43,5 @@ gradle-app.setting
 /bungee/target/
 /core/target/
 /bukkit/target/
+/sponge/target/
 /universal/target/

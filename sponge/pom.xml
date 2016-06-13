@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.games647</groupId>
+        <artifactId>changeskin</artifactId>
+        <version>1.7</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <!--This have to be in lowercase because it's used by plugin.yml-->
+    <artifactId>changeskin.sponge</artifactId>
+    <packaging>jar</packaging>
+
+    <name>ChangeSkinSponge</name>
+
+    <properties>
+        <javaVersion>1.8</javaVersion>
+    </properties>
+
+    <repositories>
+        <!--Sponge-API-->
+        <repository>
+            <id>sponge-repo</id>
+            <url>http://repo.spongepowered.org/maven</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.games647</groupId>
+            <artifactId>changeskin.core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--Server API-->
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>spongeapi</artifactId>
+            <version>5.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

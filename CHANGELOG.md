@@ -2,6 +2,7 @@
 
 ##### 1.7
 
+* Added experimental Sponge support
 * skinupdate command to invalidate the database entry (Added new locale messages - you should reset your messages file)
 
 ##### 1.6
