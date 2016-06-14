@@ -147,7 +147,7 @@ public class ChangeSkinCore {
 
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
-            } else if (httpConnection.getResponseCode() != RATE_LIMIT_ID) {
+            } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
                 logger.info("RATE_LIMIT REACHED - TRYING SECOND API");
                 lastRateLimit = System.currentTimeMillis();
                 return getUUIDFromAPI(playerName);
@@ -193,9 +193,9 @@ public class ChangeSkinCore {
                 return ChangeSkinCore.parseId(id);
             }
         } catch (IOException iOException) {
-            getLogger().log(Level.SEVERE, "Tried converting player name to uuid", iOException);
+            getLogger().log(Level.SEVERE, "Tried converting player name to uuid from second api", iOException);
         } catch (JsonParseException parseException) {
-            getLogger().log(Level.SEVERE, "Tried parsing json from Mojang", parseException);
+            getLogger().log(Level.SEVERE, "Tried parsing json from second api", parseException);
         }
 
         return null;
