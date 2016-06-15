@@ -59,7 +59,8 @@ public class SkinStorage {
                     + "`SlimModel` BIT DEFAULT 0 NOT NULL, "
                     + "`SkinURL` VARCHAR(255) NOT NULL, "
                     + "`CapeURL` VARCHAR(255), "
-                    + "`Signature` BLOB NOT NULL"
+                    + "`Signature` BLOB NOT NULL, "
+                    + "INDEX(`Name`, `UUID`)"
                     + ")";
 
             String createPreferencesStmt = "CREATE TABLE IF NOT EXISTS " + PREFERENCES_TABLE + " ("

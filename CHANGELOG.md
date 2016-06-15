@@ -2,12 +2,14 @@
 
 ##### 1.7
 
+* Added skindata index as suggested by @ieti
 * Added experimental Sponge support
 * Added third-party api for fetching the uuid
 * skinupdate command to invalidate the database entry (Added new locale messages - you should reset your messages file)
 * Removed error message if message file already exists
 * Load embed message file per default
 * Fix NPE on skin reset
+* Fix display name is used instead of playerlist name for instant updates
 * Fix self instant update if the player is in a vehicle
 
 ##### 1.6
