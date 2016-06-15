@@ -4,6 +4,8 @@
 
 * Added experimental Sponge support
 * skinupdate command to invalidate the database entry (Added new locale messages - you should reset your messages file)
+* Removed error message if message file already exists
+* Load embed message file per default
 
 ##### 1.6
 

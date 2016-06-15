@@ -192,7 +192,12 @@ public class ChangeSkinBungee extends Plugin {
     private void loadLocale() {
         try {
             File messageFile = saveDefaultResource("messages.yml");
-            Configuration messageConf = ConfigurationProvider.getProvider(YamlConfiguration.class).load(messageFile);
+
+            Configuration defaults = ConfigurationProvider.getProvider(YamlConfiguration.class)
+                    .load(getClass().getResourceAsStream("/messages.yml"));
+
+            Configuration messageConf = ConfigurationProvider.getProvider(YamlConfiguration.class)
+                    .load(messageFile, defaults);
             for (String key : messageConf.getKeys()) {
                 String message = ChatColor.translateAlternateColorCodes('&', messageConf.getString(key));
                 if (!message.isEmpty()) {

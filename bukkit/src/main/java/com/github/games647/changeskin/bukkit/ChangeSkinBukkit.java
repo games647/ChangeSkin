@@ -11,9 +11,11 @@ import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.google.common.base.Charsets;
 import com.google.common.cache.CacheLoader;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +35,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
     protected ChangeSkinCore core;
 
     private ConcurrentMap<UUID, Object> cooldowns;
-    
+
     @Override
     public void onEnable() {
         try {
@@ -91,8 +93,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
     }
 
     public WrappedSignedProperty convertToProperty(SkinData skinData) {
-        return WrappedSignedProperty.fromValues(ChangeSkinCore.SKIN_KEY
-                , skinData.getEncodedData(), skinData.getEncodedSignature());
+        return WrappedSignedProperty.fromValues(ChangeSkinCore.SKIN_KEY, skinData.getEncodedData(), skinData.getEncodedSignature());
     }
 
     public void addCooldown(UUID invoker) {
@@ -142,7 +143,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
         if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
             return true;
         }
-        
+
         //disallow - not whitelisted or blacklisted
         sendMessage(invoker, "no-permission");
         return false;
@@ -156,10 +157,17 @@ public class ChangeSkinBukkit extends JavaPlugin {
     }
 
     private void loadLocale() {
-        saveResource("messages.yml", false);
-
         File messageFile = new File(getDataFolder(), "messages.yml");
+        if (!messageFile.exists()) {
+            saveResource("messages.yml", false);
+        }
+
+        InputStreamReader defaultReader = new InputStreamReader(getResource("messages.yml"), Charsets.UTF_8);
+        YamlConfiguration defaults = YamlConfiguration.loadConfiguration(defaultReader);
+
         YamlConfiguration messageConfig = YamlConfiguration.loadConfiguration(messageFile);
+        messageConfig.setDefaults(defaults);
+
         for (String key : messageConfig.getKeys(false)) {
             String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
             if (!message.isEmpty()) {

@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -157,13 +158,17 @@ public class ChangeSkinSponge {
 
         YAMLConfigurationLoader messageLoader = YAMLConfigurationLoader.builder().setFile(messageFile).build();
         try {
-            ConfigurationNode messageNode = messageLoader.load();
-            for (ConfigurationNode node : messageNode.getChildrenMap().values()) {
+            URL jarConfigFile = this.getClass().getResource("messages.yml");
+            YAMLConfigurationLoader defaultLoader = YAMLConfigurationLoader.builder().setURL(jarConfigFile).build();
+            ConfigurationNode defaultRoot = defaultLoader.load();
+            for (ConfigurationNode node : defaultRoot.getChildrenMap().values()) {
                 core.addMessage((String) node.getKey(), node.getString());
             }
 
-            for (ConfigurationNode configurationNode : messageNode.getChildrenList()) {
-                
+            //overwrite the defaults
+            ConfigurationNode messageNode = messageLoader.load();
+            for (ConfigurationNode node : messageNode.getChildrenMap().values()) {
+                core.addMessage((String) node.getKey(), node.getString());
             }
         } catch (IOException ioEx) {
             logger.error("Failed to load locale", ioEx);
