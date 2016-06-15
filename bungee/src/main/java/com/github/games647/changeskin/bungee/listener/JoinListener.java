@@ -38,6 +38,8 @@ public class JoinListener implements Listener {
             if (skinData == null) {
                 setRandomSkin(preferences, player);
             } else {
+                plugin.applySkin(player, skinData);
+
                 preferences.setTargetSkin(targetSkin);
                 ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
                     @Override

@@ -120,8 +120,6 @@ public class ChangeSkinBungee extends Plugin {
     }
 
     public void applySkin(ProxiedPlayer player, SkinData skinData) {
-        Property textures = convertToProperty(skinData);
-
         InitialHandler initialHandler = (InitialHandler) player.getPendingConnection();
         LoginResult loginProfile = initialHandler.getLoginProfile();
         //this is null on offline mode
@@ -129,21 +127,40 @@ public class ChangeSkinBungee extends Plugin {
             try {
                 Field profileField = initialHandler.getClass().getDeclaredField("loginProfile");
                 profileField.setAccessible(true);
-                LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), new Property[]{textures});
-                profileField.set(initialHandler, loginResult);
+
+                if (skinData == null) {
+                    Property textures = convertToProperty(skinData);
+                    Property[] properties = new Property[]{textures};
+                    LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), properties);
+                    profileField.set(initialHandler, loginResult);
+                } else {
+                    LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), new Property[]{});
+                    profileField.set(initialHandler, loginResult);
+                }
             } catch (NoSuchFieldException | IllegalAccessException ex) {
                 getLogger().log(Level.SEVERE, null, ex);
             }
         } else {
-            loginProfile.setProperties(new Property[]{textures});
+            if (skinData == null) {
+                loginProfile.setProperties(new Property[]{});
+            } else {
+                Property textures = convertToProperty(skinData);
+                loginProfile.setProperties(new Property[]{textures});
+            }
         }
 
         //send plugin channel update request
         if (player.getServer() != null) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("UpdateSkin");
-            out.writeUTF(skinData.getEncodedData());
-            out.writeUTF(skinData.getEncodedSignature());
+
+            if (skinData != null) {
+                out.writeUTF(skinData.getEncodedData());
+                out.writeUTF(skinData.getEncodedSignature());
+            } else {
+                out.writeUTF("null");
+            }
+            
             player.getServer().sendData(getDescription().getName(), out.toByteArray());
         }
     }

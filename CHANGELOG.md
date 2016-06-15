@@ -3,6 +3,7 @@
 ##### 1.7
 
 * Added experimental Sponge support
+* Added third-party api for fetching the uuid
 * skinupdate command to invalidate the database entry (Added new locale messages - you should reset your messages file)
 * Removed error message if message file already exists
 * Load embed message file per default

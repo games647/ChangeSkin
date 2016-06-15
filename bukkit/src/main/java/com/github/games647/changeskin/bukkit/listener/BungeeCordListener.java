@@ -27,7 +27,23 @@ public class BungeeCordListener implements PluginMessageListener {
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(message);
         String subchannel = dataInput.readUTF();
 
-        SkinData skinData = new SkinData(dataInput.readUTF(), dataInput.readUTF());
+//        UUID receiverUUID = UUID.fromString(dataInput.readUTF());
+//        Player receiver = Bukkit.getPlayer(receiverUUID);
+//        if (receiver == null) {
+//            plugin.getLogger().warning("BungeeCord requested Skin update, but receiver player isn't online");
+//            return;
+//        }
+
+        String encodedData = dataInput.readUTF();
+        if (encodedData.equalsIgnoreCase("null")) {
+            Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, player, null));
+            return;
+        }
+
+
+        String signature = dataInput.readUTF();
+        
+        SkinData skinData = new SkinData(encodedData, signature);
         Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, player, skinData));
     }
 }
