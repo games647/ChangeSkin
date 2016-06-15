@@ -76,7 +76,7 @@ public class PreLoginListener implements Listener {
                     plugin.getCore().getUuidCache().put(playerName, ownerUUID);
                 }
             } catch (NotPremiumException ex) {
-                plugin.getLogger().log(Level.FINE, "Username is not premium on refetch", ex);
+                plugin.getLogger().log(Level.FINE, "Username is not premium on refetch");
                 plugin.getCore().getCrackedNames().put(playerName, new Object());
             } catch (RateLimitException ex) {
                 plugin.getLogger().log(Level.SEVERE, "Rate limit reached on refetch", ex);
