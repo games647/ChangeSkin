@@ -7,6 +7,7 @@
 * Removed error message if message file already exists
 * Load embed message file per default
 * Fix NPE on skin reset
+* Fix self instant update if the player is in a vehicle
 
 ##### 1.6
 

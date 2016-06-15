@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public class SkinUpdater implements Runnable {
@@ -102,6 +103,11 @@ public class SkinUpdater implements Runnable {
     }
 
     private void sendUpdateSelf(WrappedGameProfile gameProfile) throws FieldAccessException {
+        Entity vehicle = receiver.getVehicle();
+        if (vehicle != null) {
+            vehicle.eject();
+        }
+
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         NativeGameMode gamemode = NativeGameMode.fromBukkit(receiver.getGameMode());
 
