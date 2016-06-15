@@ -55,7 +55,7 @@ public class NameResolver implements Runnable {
                     onNameResolve(uuid);
                 }
             } catch (NotPremiumException notPremiumEx) {
-                plugin.getLogger().log(Level.FINE, "Requested not premium", notPremiumEx);
+                plugin.getLogger().log(Level.FINE, "Requested not premium");
                 plugin.getCore().getCrackedNames().put(targetName, new Object());
 
                 if (invoker != null) {
