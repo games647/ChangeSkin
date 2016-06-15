@@ -74,9 +74,9 @@ public class SkinUpdater implements Runnable {
 
     private void onInstantUpdate() {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
+        //remove existing skins
+        gameProfile.getProperties().clear();
         if (targetSkin != null) {
-            //remove existing skins
-            gameProfile.getProperties().clear();
             gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
         }
 
@@ -109,7 +109,7 @@ public class SkinUpdater implements Runnable {
         PacketContainer removeInfo = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO);
         removeInfo.getPlayerInfoAction().write(0, PlayerInfoAction.REMOVE_PLAYER);
 
-        WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getDisplayName());
+        WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
         PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
         removeInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
 
