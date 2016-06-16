@@ -1,12 +1,16 @@
 #Changelog
 
+##### 1.8
+
+* Fix table creation in SQLite
+
 ##### 1.7
 
-* Added skindata index as suggested by @ieti
+* Added skindata index (as suggested by @ieti)
 * Added experimental Sponge support
 * Added third-party api for fetching the uuid
-* skinupdate command to invalidate the database entry (Added new locale messages - you should reset your messages file)
-* Removed error message if message file already exists
+* skinupdate command to invalidate the database entry (Added new locale messages)
+* Removed error message if message file already exists (as suggested by @ieti)
 * Load embed message file per default
 * Fix NPE on skin reset
 * Fix display name is used instead of playerlist name for instant updates

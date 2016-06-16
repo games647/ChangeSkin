@@ -59,7 +59,7 @@ public class PreLoginListener implements Listener {
         });
     }
 
-    private void refetch(final UserPreferences preferences, String playerName) {
+    private void refetch(UserPreferences preferences, String playerName) {
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
         if (ownerUUID == null && !plugin.getCore().getCrackedNames().containsKey(playerName)) {
             SkinData skin = plugin.getStorage().getSkin(playerName);
@@ -72,9 +72,6 @@ public class PreLoginListener implements Listener {
 
             try {
                 ownerUUID = plugin.getCore().getUUID(playerName);
-                if (ownerUUID != null) {
-                    plugin.getCore().getUuidCache().put(playerName, ownerUUID);
-                }
             } catch (NotPremiumException ex) {
                 plugin.getLogger().log(Level.FINE, "Username is not premium on refetch");
                 plugin.getCore().getCrackedNames().put(playerName, new Object());
@@ -84,6 +81,7 @@ public class PreLoginListener implements Listener {
         }
 
         if (ownerUUID != null) {
+            plugin.getCore().getUuidCache().put(playerName, ownerUUID);
             SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID);
             if (cachedSkin == null) {
                 cachedSkin = plugin.getCore().downloadSkin(ownerUUID);

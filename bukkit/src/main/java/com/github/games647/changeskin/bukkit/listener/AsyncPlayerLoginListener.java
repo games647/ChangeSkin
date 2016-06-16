@@ -54,9 +54,6 @@ public class AsyncPlayerLoginListener implements Listener {
 
             try {
                 ownerUUID = plugin.getCore().getUUID(playerName);
-                if (ownerUUID != null) {
-                    plugin.getCore().getUuidCache().put(playerName, ownerUUID);
-                }
             } catch (NotPremiumException ex) {
                 plugin.getLogger().log(Level.FINE, "Username is not premium on refetch", ex);
                 plugin.getCore().getCrackedNames().put(playerName, new Object());
@@ -66,6 +63,7 @@ public class AsyncPlayerLoginListener implements Listener {
         }
 
         if (ownerUUID != null) {
+            plugin.getCore().getUuidCache().put(playerName, ownerUUID);
             SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID);
             if (cachedSkin == null) {
                 cachedSkin = plugin.getCore().downloadSkin(ownerUUID);

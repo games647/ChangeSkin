@@ -75,7 +75,8 @@ public class SkinStorage {
 
             if (jdbcUrl.contains("sqlite")) {
                 createPreferencesStmt = createPreferencesStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
-                createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
+                createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT")
+                        .replace(", INDEX(`Name`, `UUID`)", "");
             }
 
             statement.executeUpdate(createDataStmt);
