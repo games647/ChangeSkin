@@ -132,7 +132,7 @@ public class ChangeSkinBungee extends Plugin {
                     LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), new Property[]{});
                     profileField.set(initialHandler, loginResult);
                 } else {
-		    Property textures = convertToProperty(skinData);
+                    Property textures = convertToProperty(skinData);
                     Property[] properties = new Property[]{textures};
 
                     LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), properties);
@@ -192,6 +192,14 @@ public class ChangeSkinBungee extends Plugin {
 
     public boolean checkPermission(CommandSender invoker, UUID uuid) {
         if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+            return true;
+        } else if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist.*")) {
+            if (invoker.hasPermission('-' + getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+                //backlisted explicit
+                sendMessage(invoker, "no-permission");
+                return false;
+            }
+
             return true;
         }
 
