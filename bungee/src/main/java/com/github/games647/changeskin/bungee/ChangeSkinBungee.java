@@ -129,12 +129,13 @@ public class ChangeSkinBungee extends Plugin {
                 profileField.setAccessible(true);
 
                 if (skinData == null) {
-                    Property textures = convertToProperty(skinData);
-                    Property[] properties = new Property[]{textures};
-                    LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), properties);
+                    LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), new Property[]{});
                     profileField.set(initialHandler, loginResult);
                 } else {
-                    LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), new Property[]{});
+		    Property textures = convertToProperty(skinData);
+                    Property[] properties = new Property[]{textures};
+
+                    LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), properties);
                     profileField.set(initialHandler, loginResult);
                 }
             } catch (NoSuchFieldException | IllegalAccessException ex) {
