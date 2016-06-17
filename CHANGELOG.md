@@ -5,6 +5,7 @@
 * Fix table creation in SQLite
 * Fix BungeeCord permissions (Thanks to @FabioZumbi12)
 * Fix duplicate no permission message (Thanks to @FabioZumbi12)
+* Fix skinupdate command in BungeeCord (Thanks to @FabioZumbi12)
 
 ##### 1.7
 
