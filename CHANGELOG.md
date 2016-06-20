@@ -1,5 +1,10 @@
 #Changelog
 
+##### 1.7.2
+
+* Completely clean up database resources
+* Update abilities on instant update
+
 ##### 1.7.1
 
 * Fix table creation in SQLite

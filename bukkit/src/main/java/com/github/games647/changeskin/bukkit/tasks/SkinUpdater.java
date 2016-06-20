@@ -156,6 +156,12 @@ public class SkinUpdater implements Runnable {
 
             //send the current inventory - otherwise player would have an empty inventory
             receiver.updateInventory();
+
+            receiver.setMaxHealth(receiver.getMaxHealth());
+            receiver.setHealth(receiver.getHealth());
+
+//            receiver.setItemInHand(receiver.getItemInHand());
+            receiver.setWalkSpeed(receiver.getWalkSpeed());
         } catch (InvocationTargetException ex) {
             plugin.getLogger().log(Level.SEVERE, "Exception sending instant skin change packet", ex);
         }
