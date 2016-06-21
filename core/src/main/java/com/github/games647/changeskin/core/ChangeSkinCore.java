@@ -49,50 +49,24 @@ public class ChangeSkinCore {
     private final Map<String, String> localeMessages = Maps.newConcurrentMap();
 
     //this is thread-safe in order to save and load from different threads like the skin download
-    private final ConcurrentMap<String, UUID> uuidCache = CacheBuilder
-            .<String, UUID>newBuilder()
-            .maximumSize(1024 * 5)
-            .expireAfterWrite(3, TimeUnit.HOURS)
-            .build(new CacheLoader<String, UUID>() {
-                @Override
-                public UUID load(String key) throws Exception {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-            }).asMap();
-
-    private final ConcurrentMap<String, Object> crackedNames = CacheBuilder
-            .<String, Object>newBuilder()
-            .maximumSize(1024 * 5)
-            .expireAfterWrite(3, TimeUnit.HOURS)
-            .build(new CacheLoader<String, Object>() {
-                @Override
-                public Object load(String key) throws Exception {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-            }).asMap();
-
-    private final ConcurrentMap<UUID, UserPreferences> loginSession = CacheBuilder
-            .newBuilder()
-            //prevent memory leaks, because we don't if the player disconected during a login
-            .expireAfterWrite(2, TimeUnit.MINUTES)
-            .build(new CacheLoader<UUID, UserPreferences>() {
-                @Override
-                public UserPreferences load(UUID key) throws Exception {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-            }).asMap();
+    private final ConcurrentMap<String, UUID> uuidCache = buildCache(3 * 60, 1024 * 5);;
+    private final ConcurrentMap<String, Object> crackedNames = buildCache(3 * 60, 1024 * 5);
+    private final ConcurrentMap<UUID, UserPreferences> loginSession = buildCache(2, -1);
+    private final ConcurrentMap<Object, Object> requests = buildCache(10, -1);
 
     private final Logger logger;
     private final File pluginFolder;
+    private final int rateLimit;
 
     private SkinStorage storage;
     private long lastRateLimit;
 
     private final List<SkinData> defaultSkins = Lists.newArrayList();
 
-    public ChangeSkinCore(Logger logger, File pluginFolder) {
+    public ChangeSkinCore(Logger logger, File pluginFolder, int rateLimit) {
         this.logger = logger;
         this.pluginFolder = pluginFolder;
+        this.rateLimit = rateLimit;
     }
 
     public Logger getLogger() {
@@ -137,17 +111,18 @@ public class ChangeSkinCore {
         }
 
         if (System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
-            logger.fine("STILL WAITING FOR RATE_LIMIT - TRYING SECOND API");
+//            logger.fine("STILL WAITING FOR RATE_LIMIT - TRYING SECOND API");
             return getUUIDFromAPI(playerName);
         }
 
         try {
+            requests.put(new Object(), new Object());
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(UUID_URL + playerName).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
 
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
-            } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
+            } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID || requests.size() >= rateLimit) {
                 logger.info("RATE_LIMIT REACHED - TRYING SECOND API");
                 lastRateLimit = System.currentTimeMillis();
                 return getUUIDFromAPI(playerName);
@@ -263,5 +238,24 @@ public class ChangeSkinCore {
 
     public SkinStorage getStorage() {
         return storage;
+    }
+
+    private <K, V> ConcurrentMap<K, V> buildCache(int minutes, int maxSize) {
+        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
+
+        if (minutes > 0) {
+            builder.expireAfterWrite(minutes, TimeUnit.MINUTES);
+        }
+
+        if (maxSize > 0) {
+            builder.maximumSize(maxSize);
+        }
+
+        return builder.build(new CacheLoader<K, V>() {
+            @Override
+            public V load(K key) throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        }).asMap();
     }
 }

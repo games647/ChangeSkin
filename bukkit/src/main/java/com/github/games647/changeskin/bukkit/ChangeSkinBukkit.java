@@ -69,7 +69,8 @@ public class ChangeSkinBukkit extends JavaPlugin {
             String username = getConfig().getString("storage.username", "");
             String password = getConfig().getString("storage.password", "");
 
-            this.core = new ChangeSkinCore(getLogger(), getDataFolder());
+            int rateLimit = getConfig().getInt("mojang-request-limit");
+            this.core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit);
             SkinStorage storage = new SkinStorage(core, driver, host, port, database, username, password);
             core.setStorage(storage);
             try {

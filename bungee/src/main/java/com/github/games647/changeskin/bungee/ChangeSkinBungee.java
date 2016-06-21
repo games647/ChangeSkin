@@ -50,9 +50,11 @@ public class ChangeSkinBungee extends Plugin {
 
         File configFile = saveDefaultResource("config.yml");
 
-        core = new ChangeSkinCore(getLogger(), getDataFolder());
         try {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+
+            int rateLimit = configuration.getInt("mojang-request-limit");
+            core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit);
 
             loadLocale();
 
@@ -160,8 +162,10 @@ public class ChangeSkinBungee extends Plugin {
             if (skinData != null) {
                 out.writeUTF(skinData.getEncodedData());
                 out.writeUTF(skinData.getEncodedSignature());
+                out.writeUTF(player.getName());
             } else {
                 out.writeUTF("null");
+                out.writeUTF(player.getName());
             }
             
             player.getServer().sendData(getDescription().getName(), out.toByteArray());

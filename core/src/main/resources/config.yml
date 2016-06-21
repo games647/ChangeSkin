@@ -38,6 +38,11 @@ skinPermission: false
 # A number in seconds which the player have to wait before changing the skin again
 cooldown: 0
 
+# How many requests should be established until the plugin uses the third-party API us.mcapi.com
+# Once this number is reached in a range of ten minutes it will start connecting to us.mcapi.com for the next ten minutes
+# This option exists in order to workaround the rate-limiting. Name -> UUID are fetched in the same way like heads
+mojang-request-limit: 600
+
 # Database configuration
 storage:
 # Single file SQLite database

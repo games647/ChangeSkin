@@ -4,6 +4,7 @@
 
 * Completely clean up database resources
 * Update abilities on instant update
+* Added config option about how many requests should be established until the plugin uses the third-party API
 
 ##### 1.7.1
 
