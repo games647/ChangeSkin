@@ -38,6 +38,8 @@ public class BungeeCordListener implements PluginMessageListener {
             return;
         }
 
+        String signature = dataInput.readUTF();
+
         Player receiver = player;
         try {
             String playerName = dataInput.readUTF();
@@ -47,8 +49,6 @@ public class BungeeCordListener implements PluginMessageListener {
             plugin.getLogger().warning("You are using an outdated ChangeSkin spigot version");
         }
 
-        String signature = dataInput.readUTF();
-        
         SkinData skinData = new SkinData(encodedData, signature);
         Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, receiver, skinData));
     }

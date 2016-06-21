@@ -42,7 +42,7 @@ public class SkinUpdater implements Runnable {
 
     @Override
     public void run() {
-        if (!receiver.isOnline()) {
+        if (receiver == null || !receiver.isOnline()) {
             return;
         }
 
