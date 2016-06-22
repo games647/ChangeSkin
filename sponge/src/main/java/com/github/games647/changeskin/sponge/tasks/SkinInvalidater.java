@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.sponge.tasks;
 
 import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreferences;
+import com.github.games647.changeskin.core.UserPreference;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,7 +18,7 @@ public class SkinInvalidater implements Runnable {
 
     @Override
     public void run() {
-        UserPreferences preferences = plugin.getCore().getStorage().getPreferences(invoker.getUniqueId());
+        UserPreference preferences = plugin.getCore().getStorage().getPreferences(invoker.getUniqueId());
         SkinData ownedSkin = preferences.getTargetSkin();
         if (ownedSkin == null) {
             plugin.sendMessage(invoker, "dont-have-skin");

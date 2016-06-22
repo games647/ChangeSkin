@@ -2,7 +2,7 @@ package com.github.games647.changeskin.sponge.tasks;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreferences;
+import com.github.games647.changeskin.core.UserPreference;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
 import org.spongepowered.api.command.CommandSource;
@@ -38,7 +38,7 @@ public class SkinUpdater implements Runnable {
         }
 
         //Save the target uuid from the requesting player source
-        final UserPreferences preferences = plugin.getCore().getStorage().getPreferences(receiver.getUniqueId());
+        final UserPreference preferences = plugin.getCore().getStorage().getPreferences(receiver.getUniqueId());
         preferences.setTargetSkin(targetSkin);
 
         plugin.getGame().getScheduler().createTaskBuilder().async()

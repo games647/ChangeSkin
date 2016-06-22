@@ -5,7 +5,7 @@ import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
-import com.github.games647.changeskin.core.UserPreferences;
+import com.github.games647.changeskin.core.UserPreference;
 
 import java.util.List;
 import java.util.Random;
@@ -32,7 +32,7 @@ public class LoginListener {
         GameProfile profile = preLoginEvent.getProfile();
         UUID playerUUID = profile.getUniqueId();
 
-        UserPreferences preferences = storage.getPreferences(playerUUID);
+        UserPreference preferences = storage.getPreferences(playerUUID);
         if (preferences.getTargetSkin() == null 
                 && (!plugin.getRootNode().getNode("restoreSkins").getBoolean() || !refetch(preferences, profile))) {
             setDefaultSkin(preferences, profile);
@@ -48,7 +48,7 @@ public class LoginListener {
         profile.getPropertyMap().put(ChangeSkinCore.SKIN_KEY, profileProperty);
     }
 
-    private void setDefaultSkin(UserPreferences preferences, GameProfile profile) {
+    private void setDefaultSkin(UserPreference preferences, GameProfile profile) {
         List<SkinData> defaultSkins = plugin.getCore().getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
             int randomIndex = random.nextInt(defaultSkins.size());
@@ -61,7 +61,7 @@ public class LoginListener {
         }
     }
 
-    private boolean refetch(UserPreferences preferences, GameProfile profile) {
+    private boolean refetch(UserPreference preferences, GameProfile profile) {
         String playerName = profile.getName().get();
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
 
@@ -103,7 +103,7 @@ public class LoginListener {
         return false;
     }
 
-    private void save(final SkinData skinData, final UserPreferences preferences) {
+    private void save(final SkinData skinData, final UserPreference preferences) {
         plugin.getGame().getScheduler().createTaskBuilder()
                 .async()
                 .execute(() -> {
