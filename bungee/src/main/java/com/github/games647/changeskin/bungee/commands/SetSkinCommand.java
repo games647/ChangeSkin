@@ -4,6 +4,7 @@ import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.bungee.tasks.NameResolver;
 import com.github.games647.changeskin.bungee.tasks.SkinDownloader;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import net.md_5.bungee.api.CommandSender;
@@ -27,6 +28,10 @@ public class SetSkinCommand extends Command {
         if (sender instanceof ProxiedPlayer && plugin.isCooldown(((ProxiedPlayer) sender).getUniqueId())) {
             plugin.sendMessage(sender, "cooldown");
             return;
+        }
+
+        if (args.length > 0 && args[0].equalsIgnoreCase("set")) {
+            args = Arrays.copyOfRange(args, 1, args.length);
         }
 
         if (args.length > 1) {
@@ -74,7 +79,7 @@ public class SetSkinCommand extends Command {
     private void setSkinUUID(CommandSender sender, ProxiedPlayer receiverPayer, String targetUUID) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
-            if (plugin.getConfiguration().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid)) {
+            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid)) {
                 return;
             }
 

@@ -4,6 +4,7 @@ import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
 import com.github.games647.changeskin.bukkit.tasks.SkinDownloader;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -25,6 +26,10 @@ public class SetSkinCommand implements CommandExecutor {
         if (isCooldown(sender)) {
             plugin.sendMessage(sender, "cooldown");
             return true;
+        }
+
+        if (args.length > 0 && args[0].equalsIgnoreCase("set")) {
+            args = Arrays.copyOfRange(args, 1, args.length);
         }
 
         if (args.length > 1) {
