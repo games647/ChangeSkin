@@ -18,11 +18,11 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-public class PreLoginListener implements Listener {
+public class LoginListener implements Listener {
 
     protected final ChangeSkinBungee plugin;
 
-    public PreLoginListener(ChangeSkinBungee changeSkinBungee) {
+    public LoginListener(ChangeSkinBungee changeSkinBungee) {
         this.plugin = changeSkinBungee;
     }
 

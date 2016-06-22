@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.7.3
+
+* Fix NPE on instant updates for not finding the correct player (Fixes #24)
+
 ##### 1.7.2
 
 * Completely clean up database resources

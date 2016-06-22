@@ -36,6 +36,7 @@ public class ChangeSkinCore {
     private static final String MCAPI_UUID_URL = "https://us.mc-api.net/v3/uuid/";
 
     private static final int RATE_LIMIT_ID = 429;
+    private static final String USER_AGENT = "ChangeSkin-Bukkit-Plugin";
     
     public static UUID parseId(String withoutDashes) {
         return UUID.fromString(withoutDashes.substring(0, 8)
@@ -119,6 +120,7 @@ public class ChangeSkinCore {
             requests.put(new Object(), new Object());
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(UUID_URL + playerName).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
+            httpConnection.setRequestProperty("User-Agent", USER_AGENT);
 
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);

@@ -3,7 +3,7 @@ package com.github.games647.changeskin.bungee;
 import com.github.games647.changeskin.bungee.commands.SetSkinCommand;
 import com.github.games647.changeskin.bungee.commands.SkinInvalidateCommand;
 import com.github.games647.changeskin.bungee.listener.JoinListener;
-import com.github.games647.changeskin.bungee.listener.PreLoginListener;
+import com.github.games647.changeskin.bungee.listener.LoginListener;
 import com.github.games647.changeskin.bungee.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
@@ -84,7 +84,7 @@ public class ChangeSkinBungee extends Plugin {
             return;
         }
 
-        getProxy().getPluginManager().registerListener(this, new PreLoginListener(this));
+        getProxy().getPluginManager().registerListener(this, new LoginListener(this));
         getProxy().getPluginManager().registerListener(this, new JoinListener(this));
         getProxy().getPluginManager().registerCommand(this, new SetSkinCommand(this));
         getProxy().getPluginManager().registerCommand(this, new SkinInvalidateCommand(this));
