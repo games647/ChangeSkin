@@ -1,47 +1,31 @@
-package com.github.games647.changeskin.bukkit.listener;
+package com.github.games647.changeskin.bungee.listener;
 
-import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
+import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.UserPreference;
 
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Listener;
 
-public class AsyncPlayerLoginListener implements Listener {
+public abstract class AbstractSkinListener implements Listener {
 
-    protected final ChangeSkinBukkit plugin;
+    protected final ChangeSkinBungee plugin;
+    private final Random random = new Random();
 
-    public AsyncPlayerLoginListener(ChangeSkinBukkit plugin) {
+    public AbstractSkinListener(ChangeSkinBungee plugin) {
         this.plugin = plugin;
     }
 
-    //we are making an blocking request it might be better to ignore it if normal priority events cancelled it
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPreLogin(AsyncPlayerPreLoginEvent preLoginEvent) {
-        if (preLoginEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            //in this event isCancelled option in the annotation doesn't work
-            return;
-        }
-
-        UUID playerUuid = preLoginEvent.getUniqueId();
-        String playerName = preLoginEvent.getName();
-
-        UserPreference preferences = plugin.getStorage().getPreferences(playerUuid);
-        plugin.startSession(playerUuid, preferences);
-        if (preferences.getTargetSkin() == null && plugin.getConfig().getBoolean("restoreSkins")) {
-            refetchSkin(playerName, preferences);
-        }
-    }
-
-    private void refetchSkin(String playerName, UserPreference preferences) {
+    public void refetch(UserPreference preferences, String playerName) {
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
         if (ownerUUID == null && !plugin.getCore().getCrackedNames().containsKey(playerName)) {
             SkinData skin = plugin.getStorage().getSkin(playerName);
@@ -55,7 +39,7 @@ public class AsyncPlayerLoginListener implements Listener {
             try {
                 ownerUUID = plugin.getCore().getUUID(playerName);
             } catch (NotPremiumException ex) {
-                plugin.getLogger().log(Level.FINE, "Username is not premium on refetch", ex);
+                plugin.getLogger().log(Level.FINE, "Username is not premium on refetch");
                 plugin.getCore().getCrackedNames().put(playerName, new Object());
             } catch (RateLimitException ex) {
                 plugin.getLogger().log(Level.SEVERE, "Rate limit reached on refetch", ex);
@@ -67,7 +51,6 @@ public class AsyncPlayerLoginListener implements Listener {
             SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID);
             if (cachedSkin == null) {
                 cachedSkin = plugin.getCore().downloadSkin(ownerUUID);
-                plugin.getCore().getUuidCache().put(cachedSkin.getName(), cachedSkin.getUuid());
             }
 
             preferences.setTargetSkin(cachedSkin);
@@ -75,8 +58,30 @@ public class AsyncPlayerLoginListener implements Listener {
         }
     }
 
-    private void save(final SkinData skin, final UserPreference preferences) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    public void setRandomSkin(final UserPreference preferences, ProxiedPlayer player) {
+        //skin wasn't found and there are no preferences so set a default skin
+        List<SkinData> defaultSkins = plugin.getCore().getDefaultSkins();
+        if (!defaultSkins.isEmpty()) {
+            int randomIndex = random.nextInt(defaultSkins.size());
+
+            final SkinData targetSkin = defaultSkins.get(randomIndex);
+            if (targetSkin != null) {
+                preferences.setTargetSkin(targetSkin);
+                plugin.applySkin(player, targetSkin);
+
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        plugin.getStorage().save(preferences);
+                    }
+                });
+            }
+        }
+    }
+
+    public void save(final SkinData skin, final UserPreference preferences) {
+        //this can run in the background
+        BungeeCord.getInstance().getScheduler().runAsync(plugin, new Runnable() {
             @Override
             public void run() {
                 if (plugin.getStorage().save(skin)) {

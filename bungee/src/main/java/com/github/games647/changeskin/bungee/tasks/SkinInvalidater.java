@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreferences;
+import com.github.games647.changeskin.core.UserPreference;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -19,7 +19,7 @@ public class SkinInvalidater implements Runnable {
 
     @Override
     public void run() {
-        UserPreferences preferences = plugin.getStorage().getPreferences(invoker.getUniqueId());
+        UserPreference preferences = plugin.getStorage().getPreferences(invoker.getUniqueId());
         SkinData ownedSkin = preferences.getTargetSkin();
         if (ownedSkin == null) {
             plugin.sendMessage(invoker, "dont-have-skin");

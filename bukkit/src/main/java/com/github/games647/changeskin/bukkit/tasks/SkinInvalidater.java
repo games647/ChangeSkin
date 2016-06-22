@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bukkit.tasks;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreferences;
+import com.github.games647.changeskin.core.UserPreference;
 
 import org.bukkit.entity.Player;
 
@@ -18,7 +18,7 @@ public class SkinInvalidater implements Runnable {
 
     @Override
     public void run() {
-        UserPreferences preferences = plugin.getStorage().getPreferences(invoker.getUniqueId());
+        UserPreference preferences = plugin.getStorage().getPreferences(invoker.getUniqueId());
         SkinData ownedSkin = preferences.getTargetSkin();
         if (ownedSkin == null) {
             plugin.sendMessage(invoker, "dont-have-skin");

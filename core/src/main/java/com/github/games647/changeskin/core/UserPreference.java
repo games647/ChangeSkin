@@ -1,25 +1,30 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.SkinData;
-
 import java.util.UUID;
 
-public class UserPreferences {
+public class UserPreference {
 
     private final UUID uuid;
     private SkinData targetSkin;
+    private boolean isNew;
 
-    public UserPreferences(UUID uuid, SkinData targetSkin) {
+    public UserPreference(UUID uuid, SkinData targetSkin) {
         this.uuid = uuid;
         this.targetSkin = targetSkin;
     }
 
-    public UserPreferences(UUID uuid) {
+    public UserPreference(UUID uuid) {
         this(uuid, null);
+
+        this.isNew = true;
     }
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public boolean isNew() {
+        return isNew;
     }
 
     public SkinData getTargetSkin() {

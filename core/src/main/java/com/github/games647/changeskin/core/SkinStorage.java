@@ -88,7 +88,7 @@ public class SkinStorage {
         }
     }
 
-    public UserPreferences getPreferences(UUID uuid) {
+    public UserPreference getPreferences(UUID uuid) {
         Connection con = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -102,9 +102,9 @@ public class SkinStorage {
             if (resultSet.next()) {
                 int targetSkinId = resultSet.getInt(1);
                 SkinData skinData = getSkin(targetSkinId);
-                return new UserPreferences(uuid, skinData);
+                return new UserPreference(uuid, skinData);
             } else {
-                return new UserPreferences(uuid);
+                return new UserPreference(uuid);
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query preferences", sqlEx);
@@ -191,7 +191,7 @@ public class SkinStorage {
         return null;
     }
 
-    public void save(UserPreferences preferences) {
+    public void save(UserPreference preferences) {
         SkinData targetSkin = preferences.getTargetSkin();
         if (targetSkin != null && targetSkin.getSkinId() == -1) {
             plugin.getLogger().warning("Tried saving preferences without target skin."

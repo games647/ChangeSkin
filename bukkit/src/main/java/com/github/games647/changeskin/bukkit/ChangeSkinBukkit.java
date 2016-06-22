@@ -11,6 +11,7 @@ import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.UserPreference;
 import com.google.common.base.Charsets;
 import com.google.common.cache.CacheLoader;
 
@@ -35,6 +36,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
     protected ChangeSkinCore core;
 
     private ConcurrentMap<UUID, Object> cooldowns;
+    private final ConcurrentMap<UUID, UserPreference> loginSessions = buildCache(2 * 60, -1);
 
     @Override
     public void onEnable() {
@@ -52,14 +54,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
         } else {
             saveDefaultConfig();
 
-            cooldowns = SafeCacheBuilder.<UUID, Object>newBuilder()
-                    .expireAfterWrite(getConfig().getInt("cooldown"), TimeUnit.SECONDS)
-                    .build(new CacheLoader<UUID, Object>() {
-                        @Override
-                        public Object load(UUID key) throws Exception {
-                            throw new UnsupportedOperationException("Not supported yet.");
-                        }
-                    });
+            cooldowns = buildCache(getConfig().getInt("cooldown"), -1);
 
             String driver = getConfig().getString("storage.driver");
             String host = getConfig().getString("storage.host", "");
@@ -124,6 +119,18 @@ public class ChangeSkinBukkit extends JavaPlugin {
         return core.getStorage();
     }
 
+    public UserPreference getLoginSession(UUID id) {
+        return loginSessions.get(id);
+    }
+
+    public void startSession(UUID id, UserPreference preferences) {
+        loginSessions.put(id, preferences);
+    }
+
+    public void endSession(UUID id) {
+        loginSessions.remove(id);
+    }
+
     //you should call this method async
     public void setSkin(Player player, final SkinData newSkin, boolean applyNow) {
         new SkinUpdater(this, null, player, newSkin).run();
@@ -175,5 +182,25 @@ public class ChangeSkinBukkit extends JavaPlugin {
                 core.addMessage(key, message);
             }
         }
+    }
+
+    private <K, V> ConcurrentMap<K, V> buildCache(int seconds, int maxSize) {
+        SafeCacheBuilder<Object, Object> builder = SafeCacheBuilder.newBuilder();
+
+        if (seconds > 0) {
+            builder.expireAfterWrite(seconds, TimeUnit.SECONDS);
+        }
+
+        if (maxSize > 0) {
+            builder.maximumSize(maxSize);
+        }
+
+        return builder
+                .build(new CacheLoader<K, V>() {
+                    @Override
+                    public V load(K key) throws Exception {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+                });
     }
 }

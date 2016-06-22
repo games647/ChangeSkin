@@ -1,5 +1,12 @@
 #Changelog
 
+##### 1.8
+
+* Allow the command /skin set as alternative command
+* Set a useragent for accessing the third-party API
+* Removed lazy loading if a skin is already present (online-mode)
+* Allow lazy loading for certain servers in a BungeeCord network
+
 ##### 1.7.3
 
 * Fix NPE on instant updates for not finding the correct player (Fixes #24)

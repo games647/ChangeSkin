@@ -1,9 +1,9 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.SkinModel;
-import com.github.games647.changeskin.core.model.TextureSourceModel;
 import com.github.games647.changeskin.core.model.DataModel;
 import com.github.games647.changeskin.core.model.MetadataModel;
+import com.github.games647.changeskin.core.model.SkinModel;
+import com.github.games647.changeskin.core.model.TextureSourceModel;
 import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 

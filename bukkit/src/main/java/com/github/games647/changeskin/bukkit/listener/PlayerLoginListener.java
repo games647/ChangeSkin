@@ -6,10 +6,9 @@ import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreferences;
+import com.github.games647.changeskin.core.UserPreference;
 import com.google.common.collect.Multimap;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -42,48 +41,23 @@ public class PlayerLoginListener implements Listener {
         Multimap<String, WrappedSignedProperty> properties = gameProfile.getProperties();
 
         //updates to the chosen one
-        final UserPreferences preferences = plugin.getCore().getLoginSession(player.getUniqueId());
+        UserPreference preferences = plugin.getLoginSession(player.getUniqueId());
         if (preferences == null) {
             fallbackBukkit(player, properties);
         } else {
             SkinData targetSkin = preferences.getTargetSkin();
             if (targetSkin == null) {
-                final SkinData skinData = getSkinIfPresent(properties);
-                if (skinData == null) {
-                    setRandomSkin(preferences, properties);
-                } else {
-                    preferences.setTargetSkin(targetSkin);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            plugin.getStorage().save(skinData);
-                            plugin.getStorage().save(preferences);
-                        }
-                    });
-                }
+                setRandomSkin(preferences, properties);
             } else {
                 properties.clear();
                 properties.put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
             }
         }
 
-        plugin.getCore().endSession(player.getUniqueId());
+        plugin.endSession(player.getUniqueId());
     }
 
-    private SkinData getSkinIfPresent(Multimap<String, WrappedSignedProperty> properties) {
-        //try to use the existing and put it in the cache so we use it for others
-        Collection<WrappedSignedProperty> values = properties.get(ChangeSkinCore.SKIN_KEY);
-        for (WrappedSignedProperty property : values) {
-            if (property.hasSignature()) {
-                //found a skin
-                return new SkinData(property.getValue(), property.getSignature());
-            }
-        }
-
-        return null;
-    }
-
-    private void setRandomSkin(final UserPreferences preferences, Multimap<String, WrappedSignedProperty> properties) {
+    private void setRandomSkin(final UserPreference preferences, Multimap<String, WrappedSignedProperty> properties) {
         //skin wasn't found and there are no preferences so set a default skin
         List<SkinData> defaultSkins = plugin.getCore().getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
@@ -106,8 +80,8 @@ public class PlayerLoginListener implements Listener {
     }
 
     private void fallbackBukkit(Player player, Multimap<String, WrappedSignedProperty> properties) {
-        UserPreferences preferences = plugin.getStorage().getPreferences(player.getUniqueId());
-        plugin.getCore().startSession(player.getUniqueId(), preferences);
+        UserPreference preferences = plugin.getStorage().getPreferences(player.getUniqueId());
+        plugin.startSession(player.getUniqueId(), preferences);
 
         SkinData targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {

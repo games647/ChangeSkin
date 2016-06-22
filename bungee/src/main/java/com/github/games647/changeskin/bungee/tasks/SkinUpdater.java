@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreferences;
+import com.github.games647.changeskin.core.UserPreference;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -34,7 +34,7 @@ public class SkinUpdater implements Runnable {
         }
 
         //Save the target uuid from the requesting player source
-        final UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
+        final UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
         preferences.setTargetSkin(targetSkin);
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
@@ -46,7 +46,7 @@ public class SkinUpdater implements Runnable {
             }
         });
 
-        if (plugin.getConfiguration().getBoolean("instantSkinChange")) {
+        if (plugin.getConfig().getBoolean("instantSkinChange")) {
             plugin.applySkin(receiver, targetSkin);
             plugin.sendMessage(receiver, "skin-changed");
         } else if (invoker != null) {

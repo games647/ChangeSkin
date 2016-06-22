@@ -2,14 +2,18 @@ package com.github.games647.changeskin.bungee;
 
 import com.github.games647.changeskin.bungee.commands.SetSkinCommand;
 import com.github.games647.changeskin.bungee.commands.SkinInvalidateCommand;
+import com.github.games647.changeskin.bungee.listener.DisconnectListener;
 import com.github.games647.changeskin.bungee.listener.JoinListener;
 import com.github.games647.changeskin.bungee.listener.LoginListener;
+import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
 import com.github.games647.changeskin.bungee.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.UserPreference;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -19,6 +23,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -40,6 +45,7 @@ public class ChangeSkinBungee extends Plugin {
     private Configuration configuration;
 
     private Cache<UUID, Object> cooldowns;
+    private final ConcurrentMap<UUID, UserPreference> loginSessions = Maps.newConcurrentMap();
 
     @Override
     public void onEnable() {
@@ -86,6 +92,8 @@ public class ChangeSkinBungee extends Plugin {
 
         getProxy().getPluginManager().registerListener(this, new LoginListener(this));
         getProxy().getPluginManager().registerListener(this, new JoinListener(this));
+        getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
+        getProxy().getPluginManager().registerListener(this, new DisconnectListener(this));
         getProxy().getPluginManager().registerCommand(this, new SetSkinCommand(this));
         getProxy().getPluginManager().registerCommand(this, new SkinInvalidateCommand(this));
     }
@@ -184,8 +192,20 @@ public class ChangeSkinBungee extends Plugin {
         return cooldowns.asMap().containsKey(invoker);
     }
 
-    public Configuration getConfiguration() {
+    public Configuration getConfig() {
         return configuration;
+    }
+
+    public UserPreference getLoginSession(UUID id) {
+        return loginSessions.get(id);
+    }
+
+    public void startSession(UUID id, UserPreference preferences) {
+        loginSessions.put(id, preferences);
+    }
+
+    public void endSession(UUID id) {
+        loginSessions.remove(id);
     }
 
     public SkinStorage getStorage() {

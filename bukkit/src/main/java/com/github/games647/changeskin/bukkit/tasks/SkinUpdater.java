@@ -14,7 +14,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreferences;
+import com.github.games647.changeskin.core.UserPreference;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public class SkinUpdater implements Runnable {
 
         if (plugin.getStorage() != null) {
             //Save the target uuid from the requesting player source
-            final UserPreferences preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
+            final UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
             preferences.setTargetSkin(targetSkin);
 
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
