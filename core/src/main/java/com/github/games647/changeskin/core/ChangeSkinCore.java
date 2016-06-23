@@ -33,7 +33,9 @@ public class ChangeSkinCore {
 
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
-    private static final String MCAPI_UUID_URL = "https://mcapi.de/api/user/";
+//    private static final String MCAPI_UUID_URL = "https://mcapi.de/api/user/";
+//    private static final String MCAPI_UUID_URL = "https://us.mc-api.net/v3/uuid/";
+    private static final String MCAPI_UUID_URL = "https://craftapi.com/api/user/uuid/";
 
     private static final int RATE_LIMIT_ID = 429;
     private static final String USER_AGENT = "ChangeSkin-Bukkit-Plugin";
