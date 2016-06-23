@@ -100,7 +100,7 @@ public class ChangeSkinCore {
             return null;
         }
 
-        if (System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
+        if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
 //            logger.fine("STILL WAITING FOR RATE_LIMIT - TRYING SECOND API");
             return getUUIDFromAPI(playerName);
         }
@@ -113,7 +113,7 @@ public class ChangeSkinCore {
 
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
-            } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID || requests.size() >= rateLimit) {
+            } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
                 logger.info("RATE_LIMIT REACHED - TRYING SECOND API");
                 lastRateLimit = System.currentTimeMillis();
                 return getUUIDFromAPI(playerName);
