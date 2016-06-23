@@ -11,6 +11,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.UserPreference;
+import com.google.common.base.Charsets;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
@@ -183,6 +184,10 @@ public class ChangeSkinBungee extends Plugin {
 
     public Property convertToProperty(SkinData skinData) {
         return new Property(ChangeSkinCore.SKIN_KEY, skinData.getEncodedData(), skinData.getEncodedSignature());
+    }
+
+    public UUID getOfflineUUID(String name) {
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
     }
 
     public void addCooldown(UUID invoker) {

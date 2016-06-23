@@ -28,7 +28,7 @@ public class LoginListener extends AbstractSkinListener {
         UUID playerUuid = connection.getUniqueId();
         String playerName = connection.getName();
 
-        UserPreference preferences = plugin.getStorage().getPreferences(playerUuid);
+        UserPreference preferences = plugin.getStorage().getPreferences(plugin.getOfflineUUID(playerName));
         plugin.startSession(connection, preferences);
         if (preferences.getTargetSkin() == null && plugin.getConfig().getBoolean("restoreSkins")) {
             refetchSkin(preferences, playerName, loginEvent);
