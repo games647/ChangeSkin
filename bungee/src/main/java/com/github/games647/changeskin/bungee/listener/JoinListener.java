@@ -20,7 +20,7 @@ public class JoinListener extends AbstractSkinListener {
         ProxiedPlayer player = postLoginEvent.getPlayer();
 
         //updates to the chosen one
-        UserPreference preferences = plugin.getLoginSession(player.getUniqueId());
+        UserPreference preferences = plugin.getLoginSession(player.getPendingConnection());
         SkinData targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
             setRandomSkin(preferences, player);

@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -45,7 +46,7 @@ public class ChangeSkinBungee extends Plugin {
     private Configuration configuration;
 
     private Cache<UUID, Object> cooldowns;
-    private final ConcurrentMap<UUID, UserPreference> loginSessions = Maps.newConcurrentMap();
+    private final ConcurrentMap<PendingConnection, UserPreference> loginSessions = Maps.newConcurrentMap();
 
     @Override
     public void onEnable() {
@@ -196,15 +197,15 @@ public class ChangeSkinBungee extends Plugin {
         return configuration;
     }
 
-    public UserPreference getLoginSession(UUID id) {
+    public UserPreference getLoginSession(PendingConnection id) {
         return loginSessions.get(id);
     }
 
-    public void startSession(UUID id, UserPreference preferences) {
+    public void startSession(PendingConnection id, UserPreference preferences) {
         loginSessions.put(id, preferences);
     }
 
-    public void endSession(UUID id) {
+    public void endSession(PendingConnection id) {
         loginSessions.remove(id);
     }
 

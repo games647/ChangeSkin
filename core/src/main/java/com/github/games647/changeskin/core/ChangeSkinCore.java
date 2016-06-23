@@ -1,6 +1,6 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.CraftApiProfile;
+import com.github.games647.changeskin.core.model.McApiProfile;
 import com.github.games647.changeskin.core.model.PlayerProfile;
 import com.github.games647.changeskin.core.model.PropertiesModel;
 import com.github.games647.changeskin.core.model.TexturesModel;
@@ -34,8 +34,8 @@ public class ChangeSkinCore {
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 //    private static final String MCAPI_UUID_URL = "https://mcapi.de/api/user/";
-//    private static final String MCAPI_UUID_URL = "https://us.mc-api.net/v3/uuid/";
-    private static final String MCAPI_UUID_URL = "https://craftapi.com/api/user/uuid/";
+    private static final String MCAPI_UUID_URL = "https://us.mc-api.net/v3/uuid/";
+//    private static final String MCAPI_UUID_URL = "https://craftapi.com/api/user/uuid/";
 
     private static final int RATE_LIMIT_ID = 429;
     private static final String USER_AGENT = "ChangeSkin-Bukkit-Plugin";
@@ -154,8 +154,8 @@ public class ChangeSkinCore {
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();
             if (line != null && !line.equals("null")) {
-//                McApiProfile playerProfile = gson.fromJson(line, McApiProfile.class);
-                CraftApiProfile playerProfile = gson.fromJson(line, CraftApiProfile.class);
+                McApiProfile playerProfile = gson.fromJson(line, McApiProfile.class);
+//                CraftApiProfile playerProfile = gson.fromJson(line, CraftApiProfile.class);
                 String id = playerProfile.getUuid();
                 return ChangeSkinCore.parseId(id);
             }

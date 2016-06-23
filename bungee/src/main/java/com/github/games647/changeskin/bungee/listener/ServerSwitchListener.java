@@ -26,7 +26,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
         List<String> blacklist = plugin.getConfig().getStringList("server-blacklist");
         if (blacklist != null && !blacklist.contains(target.getName())) {
             final ProxiedPlayer player = connectEvent.getPlayer();
-            if (plugin.getLoginSession(player.getUniqueId()) == null) {
+            if (plugin.getLoginSession(player.getPendingConnection()) == null) {
                 ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
                     @Override
                     public void run() {
@@ -41,7 +41,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
         UUID uuid = player.getUniqueId();
 
         UserPreference preferences = plugin.getStorage().getPreferences(uuid);
-        plugin.startSession(uuid, preferences);
+        plugin.startSession(player.getPendingConnection(), preferences);
         if (preferences.getTargetSkin() == null && plugin.getConfig().getBoolean("restoreSkins")) {
             refetch(preferences, player.getName());
             if (preferences.getTargetSkin() == null) {

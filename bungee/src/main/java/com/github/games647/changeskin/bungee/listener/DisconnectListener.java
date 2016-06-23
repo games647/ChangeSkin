@@ -16,6 +16,6 @@ public class DisconnectListener implements Listener {
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent disconnectEvent) {
-        plugin.endSession(disconnectEvent.getPlayer().getUniqueId());
+        plugin.endSession(disconnectEvent.getPlayer().getPendingConnection());
     }
 }
