@@ -160,7 +160,7 @@ public class ChangeSkinSponge {
 
         YAMLConfigurationLoader messageLoader = YAMLConfigurationLoader.builder().setFile(messageFile).build();
         try {
-            URL jarConfigFile = this.getClass().getResource("messages.yml");
+            URL jarConfigFile = this.getClass().getResource("/messages.yml");
             YAMLConfigurationLoader defaultLoader = YAMLConfigurationLoader.builder().setURL(jarConfigFile).build();
             ConfigurationNode defaultRoot = defaultLoader.load();
             for (ConfigurationNode node : defaultRoot.getChildrenMap().values()) {
