@@ -5,6 +5,7 @@
 * Allow the command /skin set as alternative command
 * Set a useragent for accessing the third-party API
 * Added the possibility to limit mojang requests
+* Fixed skin cooldown if it's set to 0 - Fixed memory leak
 * Removed lazy loading if a skin is already present (online-mode)
 * Switch to offline uuid matching (temp)
 * Added bukkit instead of bungee permissions checking (configurable)

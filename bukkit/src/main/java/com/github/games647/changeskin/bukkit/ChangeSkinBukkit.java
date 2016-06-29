@@ -54,7 +54,12 @@ public class ChangeSkinBukkit extends JavaPlugin {
         } else {
             saveDefaultConfig();
 
-            cooldowns = buildCache(getConfig().getInt("cooldown"), -1);
+            int cooldown = getConfig().getInt("cooldown");
+            if (cooldown <= 1) {
+                cooldown = 1;
+            }
+
+            cooldowns = buildCache(cooldown, -1);
 
             String driver = getConfig().getString("storage.driver");
             String host = getConfig().getString("storage.host", "");

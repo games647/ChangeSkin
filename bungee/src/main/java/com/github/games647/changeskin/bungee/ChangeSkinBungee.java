@@ -67,8 +67,13 @@ public class ChangeSkinBungee extends Plugin {
 
             loadLocale();
 
+            int cooldown = configuration.getInt("cooldown");
+            if (cooldown <= 1) {
+                cooldown = 1;
+            }
+
             cooldowns = CacheBuilder.newBuilder()
-                    .expireAfterWrite(configuration.getInt("cooldown"), TimeUnit.SECONDS)
+                    .expireAfterWrite(cooldown, TimeUnit.SECONDS)
                     .<UUID, Object>build();
 
             String driver = configuration.getString("storage.driver");
