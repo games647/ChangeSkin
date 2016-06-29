@@ -6,6 +6,7 @@ import com.github.games647.changeskin.core.SkinData;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import java.util.UUID;
 
 import java.util.logging.Level;
 
@@ -51,7 +52,7 @@ public class BungeeCordListener implements PluginMessageListener {
         try {
             String playerName = dataInput.readUTF();
             receiver = Bukkit.getPlayerExact(playerName);
-            plugin.getLogger().log(Level.INFO, "Instant update for ", playerName);
+            plugin.getLogger().log(Level.INFO, "Instant update for {0}", playerName);
         } catch (Exception ex) {
             plugin.getLogger().warning("You are using an outdated ChangeSkin spigot version");
         }
@@ -66,10 +67,14 @@ public class BungeeCordListener implements PluginMessageListener {
         String encodedData = dataInput.readUTF();
         String encodedSignature = dataInput.readUTF();
 
+        //continue on success only
+        String receiverUUID = dataInput.readUTF();
+
         SkinData targetSkin = new SkinData(encodedData, encodedSignature);
-        if (plugin.checkPermission(player, targetSkin.getUuid())) {
-            //continue on success only
-            String receiverUUID = dataInput.readUTF();
+        if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
+            if (!player.getUniqueId().equals(UUID.fromString(receiverUUID))) {
+
+            }
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("PermissionsSuccess");
@@ -79,6 +84,20 @@ public class BungeeCordListener implements PluginMessageListener {
             out.writeUTF(receiverUUID);
 
             player.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
+        } else {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("PermissionsFailure");
+            player.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
+        }
+    }
+
+    private boolean checkBungeePerms(Player player, UUID receiver, UUID targetSkinUUID) {
+        if (player.getUniqueId().equals(receiver)) {
+            return player.hasPermission(plugin.getName() + ".command.setskin")
+                && plugin.checkPermission(player, targetSkinUUID, false);
+        } else {
+            return player.hasPermission(plugin.getName() + ".command.setskin.other")
+                    && plugin.checkPermission(player, targetSkinUUID, false);
         }
     }
 }

@@ -21,8 +21,12 @@ public class PermissionsMessageListener extends AbstractSkinListener {
 
     @EventHandler
     public void onPluginMessage(PluginMessageEvent messageEvent) {
-        byte[] data = messageEvent.getData();
-        ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
+        String channel = messageEvent.getTag();
+        if (messageEvent.isCancelled() || !plugin.getDescription().getName().equals(channel)) {
+            return;
+        }
+
+        ByteArrayDataInput dataInput = ByteStreams.newDataInput(messageEvent.getData());
         String subChannel = dataInput.readUTF();
 
         ProxiedPlayer invoker = (ProxiedPlayer) messageEvent.getReceiver();
@@ -58,10 +62,12 @@ public class PermissionsMessageListener extends AbstractSkinListener {
 
             if (plugin.getConfig().getBoolean("instantSkinChange")) {
                 plugin.applySkin(receiver, targetSkin);
-                plugin.sendMessage(receiver, "skin-changed");
+                plugin.sendMessage(invoker, "skin-changed");
             } else {
                 plugin.sendMessage(invoker, "skin-changed-no-instant");
             }
+        } else if ("PermissionsFailure".equals(subChannel)) {
+            plugin.sendMessage(invoker, "no-permission");
         }
     }
 }

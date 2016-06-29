@@ -76,7 +76,7 @@ public class NameResolver implements Runnable {
         UUID uuid = targetSkin.getUuid();
         if (invoker != null) {
             plugin.sendMessage(invoker, "uuid-resolved");
-            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid)) {
+            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid, true)) {
                 return;
             }
 
@@ -89,7 +89,7 @@ public class NameResolver implements Runnable {
     private void onNameResolve(UUID uuid) {
         if (invoker != null) {
             plugin.sendMessage(invoker, "uuid-resolved");
-            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid)) {
+            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid, true)) {
                 return;
             }
 

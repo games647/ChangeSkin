@@ -50,6 +50,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
             getLogger().info("BungeeCord detected. Activating BungeeCord support");
             getLogger().info("Make sure you installed the plugin on BungeeCord too");
 
+            getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
         } else {
             saveDefaultConfig();
@@ -152,13 +153,16 @@ public class ChangeSkinBukkit extends JavaPlugin {
         setSkin(player, newSkin, applyNow);
     }
 
-    public boolean checkPermission(CommandSender invoker, UUID uuid) {
+    public boolean checkPermission(CommandSender invoker, UUID uuid, boolean sendMessage) {
         if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
             return true;
         }
 
         //disallow - not whitelisted or blacklisted
-        sendMessage(invoker, "no-permission");
+        if (sendMessage) {
+            sendMessage(invoker, "no-permission");
+        }
+
         return false;
     }
 

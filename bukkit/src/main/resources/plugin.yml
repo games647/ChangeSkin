@@ -32,6 +32,8 @@ permissions:
             ${project.parent.artifactId}.command.setskin.other: true
     ${project.parent.artifactId}.command.setskin:
         description: 'Sets a new skin for yourself'
+    ${project.parent.artifactId}.command.skinupdate:
+        description: 'Updates the current skin'
     ${project.parent.artifactId}.command.setskin.other:
         description: 'Sets a skin for another player'
         children:
