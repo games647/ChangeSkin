@@ -55,7 +55,13 @@ server-blacklist: []
 #    - pvp
 #    - lobby
 
+# If you have a BungeeCord server, this option might be relevant for you.
+# If you activate this option, the permission will be checked on the bukkit server and only on the bukkit server.
+# This requires to install the plugin on the bukkit server too in order to send the response to the bungeecord server
+bukkit-permissions: false
+
 # Database configuration
+# Warning: If you use BungeeCord, you should switch to MySQL, because BungeeCord has only a driver for MySQL
 storage:
 # Single file SQLite database
     driver: org.sqlite.JDBC

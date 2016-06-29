@@ -3,10 +3,13 @@ package com.github.games647.changeskin.bungee.tasks;
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.UserPreference;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 
 public class SkinUpdater implements Runnable {
 
@@ -25,6 +28,21 @@ public class SkinUpdater implements Runnable {
     @Override
     public void run() {
         if (!receiver.isConnected()) {
+            return;
+        }
+
+        if (invoker instanceof ProxiedPlayer && plugin.getConfig().getBoolean("bukkit-permissions")) {
+            Server server = ((ProxiedPlayer) invoker).getServer();
+
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("PermissionsCheck");
+
+            //serialize it to restore on response message
+            out.writeInt(targetSkin.getSkinId());
+            out.writeUTF(targetSkin.getEncodedData());
+            out.writeUTF(targetSkin.getEncodedSignature());
+            out.writeUTF(receiver.getUniqueId().toString());
+            server.sendData(plugin.getName(), out.toByteArray());
             return;
         }
 
