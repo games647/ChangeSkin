@@ -35,6 +35,7 @@ public class ChangeSkinCore {
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 //    private static final String MCAPI_UUID_URL = "https://mcapi.de/api/user/";
     private static final String MCAPI_UUID_URL = "https://us.mc-api.net/v3/uuid/";
+//    private static final String MCAPI_UUID_URL = "https://mcapi.ca/uuid/player/";
 //    private static final String MCAPI_UUID_URL = "https://craftapi.com/api/user/uuid/";
 
     private static final int RATE_LIMIT_ID = 429;
@@ -96,6 +97,7 @@ public class ChangeSkinCore {
     }
 
     public UUID getUUID(String playerName) throws NotPremiumException, RateLimitException {
+        getLogger().log(Level.FINE, "Making UUID->Name request for {0}", playerName);
         if (!playerName.matches(VALID_USERNAME)) {
             return null;
         }
@@ -114,7 +116,7 @@ public class ChangeSkinCore {
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
             } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
-                logger.info("RATE_LIMIT REACHED - TRYING SECOND API");
+                logger.info("RATE_LIMIT REACHED - TRYING THIRD-PARTY API");
                 lastRateLimit = System.currentTimeMillis();
                 return getUUIDFromAPI(playerName);
 //                throw new RateLimitException(playerName);
@@ -160,9 +162,9 @@ public class ChangeSkinCore {
                 return ChangeSkinCore.parseId(id);
             }
         } catch (IOException iOException) {
-            getLogger().log(Level.SEVERE, "Tried converting player name to uuid from second api", iOException);
+            getLogger().log(Level.SEVERE, "Tried converting player name to uuid from third-party api", iOException);
         } catch (JsonParseException parseException) {
-            getLogger().log(Level.SEVERE, "Tried parsing json from second api", parseException);
+            getLogger().log(Level.SEVERE, "Tried parsing json from third-party api", parseException);
         }
 
         return null;

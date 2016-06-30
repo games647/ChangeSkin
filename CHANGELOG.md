@@ -1,8 +1,12 @@
 #Changelog
 
+##### 1.9
+
+* Fix health abilities shown on instant updates
+
 ##### 1.8
 
-* Allow the command /skin set as alternative command
+* Allow the command /skin set name as alternative command
 * Set a useragent for accessing the third-party API
 * Added the possibility to limit mojang requests
 * Fixed skin cooldown if it's set to 0 - Fixed memory leak

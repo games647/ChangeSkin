@@ -72,10 +72,6 @@ public class BungeeCordListener implements PluginMessageListener {
 
         SkinData targetSkin = new SkinData(encodedData, encodedSignature);
         if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
-            if (!player.getUniqueId().equals(UUID.fromString(receiverUUID))) {
-
-            }
-
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("PermissionsSuccess");
             out.writeInt(skinId);
