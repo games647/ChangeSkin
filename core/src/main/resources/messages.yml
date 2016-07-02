@@ -69,3 +69,7 @@ dont-have-skin: "&4You don't have a skin to invalidate the skin"
 
 # Invalidate request is sent to the database and mojang
 invalidate-request: '&2Invalidate request sent'
+
+# The skin of another was updated
+# This message is sent to the invoker of the command if it's not the same person
+skin-updated: '&2Target skin was updated'

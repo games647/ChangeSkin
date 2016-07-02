@@ -82,8 +82,9 @@ public class SkinUpdater implements Runnable {
         }
 
         sendUpdate(gameProfile);
-        if (invoker != null) {
-            plugin.sendMessage(invoker, "skin-changed");
+        plugin.sendMessage(receiver, "skin-changed");
+        if (invoker != null && !receiver.equals(invoker)) {
+            plugin.sendMessage(invoker, "skin-updated");
         }
     }
 

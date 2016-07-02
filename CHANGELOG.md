@@ -3,6 +3,7 @@
 ##### 1.9
 
 * Fix health abilities shown on instant updates
+* Add skinupdate < other > command for console usage
 
 ##### 1.8
 
