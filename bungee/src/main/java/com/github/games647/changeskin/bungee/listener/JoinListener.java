@@ -21,6 +21,10 @@ public class JoinListener extends AbstractSkinListener {
 
         //updates to the chosen one
         UserPreference preferences = plugin.getLoginSession(player.getPendingConnection());
+        if (preferences == null) {
+            return;
+        }
+
         SkinData targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
             setRandomSkin(preferences, player);
