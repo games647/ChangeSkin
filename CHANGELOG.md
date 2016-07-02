@@ -2,8 +2,10 @@
 
 ##### 1.9
 
-* Fix health abilities shown on instant updates
+* Fixed health abilities shown on instant updates
 * Add skinupdate < other > command for console usage
+* Fixed NPE on BungeeCord lazy loading
+* Switch to mcapi.ca as they fixed rate-limiting issues and seems to be better
 
 ##### 1.8
 
