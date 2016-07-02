@@ -45,6 +45,7 @@ public class LoginListener {
         GameProfileManager profileManager = plugin.getGame().getServer().getGameProfileManager();
         ProfileProperty profileProperty = profileManager.createProfileProperty(ChangeSkinCore.SKIN_KEY
                 , skinData.getEncodedData(), skinData.getEncodedSignature());
+        profile.getPropertyMap().clear();
         profile.getPropertyMap().put(ChangeSkinCore.SKIN_KEY, profileProperty);
     }
 
