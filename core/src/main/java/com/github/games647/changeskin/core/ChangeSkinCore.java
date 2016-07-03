@@ -157,7 +157,6 @@ public class ChangeSkinCore {
             String line = reader.readLine();
             if (line != null && !line.equals("null")) {
                 McApiProfile playerProfile = gson.fromJson(line, McApiProfile.class);
-//                CraftApiProfile playerProfile = gson.fromJson(line, CraftApiProfile.class);
                 String id = playerProfile.getUuid();
                 return ChangeSkinCore.parseId(id);
             }

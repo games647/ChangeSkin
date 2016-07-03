@@ -43,4 +43,8 @@ public class SkinModel {
     public void setTextures(DataModel textures) {
         this.textures = textures;
     }
+
+    public boolean isSignatureRequired() {
+        return signatureRequired;
+    }
 }

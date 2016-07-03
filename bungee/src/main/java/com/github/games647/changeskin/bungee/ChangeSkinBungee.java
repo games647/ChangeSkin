@@ -152,15 +152,16 @@ public class ChangeSkinBungee extends Plugin {
             try {
                 Field profileField = initialHandler.getClass().getDeclaredField("loginProfile");
                 profileField.setAccessible(true);
+                String mojangUUID = player.getUniqueId().toString().replace("-", "");
 
                 if (skinData == null) {
-                    LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), new Property[]{});
+                    LoginResult loginResult = new LoginResult(mojangUUID, new Property[]{});
                     profileField.set(initialHandler, loginResult);
                 } else {
                     Property textures = convertToProperty(skinData);
                     Property[] properties = new Property[]{textures};
 
-                    LoginResult loginResult = new LoginResult(player.getUniqueId().toString(), properties);
+                    LoginResult loginResult = new LoginResult(mojangUUID, properties);
                     profileField.set(initialHandler, loginResult);
                 }
             } catch (NoSuchFieldException | IllegalAccessException ex) {
