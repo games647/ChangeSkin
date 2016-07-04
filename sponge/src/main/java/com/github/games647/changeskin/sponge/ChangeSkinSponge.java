@@ -32,7 +32,9 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
@@ -48,15 +50,19 @@ public class ChangeSkinSponge {
 
     private final Logger logger;
     private final Game game;
+    private final PluginContainer pluginContainer;
 
     private Cache<UUID, Object> cooldowns;
     private ChangeSkinCore core;
     private ConfigurationNode rootNode;
 
+    private RawDataChannel pluginChannel;
+
     @Inject
-    public ChangeSkinSponge(Logger logger, Game game) {
+    public ChangeSkinSponge(Logger logger, Game game, PluginContainer pluginContainer) {
         this.logger = logger;
         this.game = game;
+        this.pluginContainer = pluginContainer;
     }
 
     @Listener //load config and database
@@ -135,6 +141,8 @@ public class ChangeSkinSponge {
                 .build(), "skininvalidate");
 
         game.getEventManager().registerListeners(this, new LoginListener(this));
+        pluginChannel = game.getChannelRegistrar().createRawChannel(this, pluginContainer.getId());
+        pluginChannel.addListener(new BungeeCordListener(this));
     }
 
     private void loadLocale() {
@@ -204,6 +212,14 @@ public class ChangeSkinSponge {
         if (sender instanceof Player) {
             cooldowns.put(((Player) sender).getUniqueId(), new Object());
         }
+    }
+
+    public PluginContainer getPluginContainer() {
+        return pluginContainer;
+    }
+
+    public RawDataChannel getPluginChannel() {
+        return pluginChannel;
     }
 
     public Game getGame() {

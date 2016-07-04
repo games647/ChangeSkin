@@ -95,7 +95,8 @@ public class ChangeSkinBukkit extends JavaPlugin {
     }
 
     public WrappedSignedProperty convertToProperty(SkinData skinData) {
-        return WrappedSignedProperty.fromValues(ChangeSkinCore.SKIN_KEY, skinData.getEncodedData(), skinData.getEncodedSignature());
+        return WrappedSignedProperty.fromValues(ChangeSkinCore.SKIN_KEY, skinData.getEncodedData()
+                , skinData.getEncodedSignature());
     }
 
     public void addCooldown(UUID invoker) {

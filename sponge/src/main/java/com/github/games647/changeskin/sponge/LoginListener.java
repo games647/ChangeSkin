@@ -6,6 +6,7 @@ import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.UserPreference;
+import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
 import java.util.List;
 import java.util.Random;
