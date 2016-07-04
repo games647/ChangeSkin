@@ -1,11 +1,12 @@
 #Changelog
 
-##### 1.9.1
+##### 1.10
 
 * Fix NPE on skinupdate bungeecord
 * Fix missing skinupdate < other > command for bungee
 * Fix json parsing from third party api
 * Add BungeeCord support for Sponge servers
+* Add instant update support for sponge
 * Add missing skin permissions for the Sponge server
 
 ##### 1.9

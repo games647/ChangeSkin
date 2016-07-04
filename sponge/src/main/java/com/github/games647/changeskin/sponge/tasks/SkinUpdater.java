@@ -4,6 +4,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.core.UserPreference;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
+import java.util.Optional;
 
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
@@ -11,6 +12,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 public class SkinUpdater implements Runnable {
 
@@ -98,6 +101,15 @@ public class SkinUpdater implements Runnable {
                 .profile(receiver.getProfile())
                 .build());
 
-        receiver.setLocation(receiver.getLocation());
+        Location<World> oldLocation = receiver.getLocation();
+        World receiverWorld = receiver.getWorld();
+        Optional<World> differentWorld = plugin.getGame().getServer().getWorlds().stream()
+                .filter((world) -> !world.equals(receiverWorld))
+                .findFirst();
+
+        Location<World> differentLocation = differentWorld.get().getSpawnLocation();
+
+        receiver.setLocation(differentLocation);
+        receiver.setLocation(oldLocation);
     }
 }
