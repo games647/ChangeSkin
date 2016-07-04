@@ -73,6 +73,11 @@ public class NameResolver implements Runnable {
     private void onNameResolveDatabase(SkinData targetSkin) {
         if (invoker != null) {
             plugin.sendMessage(invoker, "uuid-resolved");
+            if (plugin.getRootNode().getNode("skinPermission").getBoolean()
+                    && !plugin.checkPermission(invoker, targetSkin.getUuid(), true)) {
+                return;
+            }
+
             plugin.sendMessage(invoker, "skin-downloading");
         }
 

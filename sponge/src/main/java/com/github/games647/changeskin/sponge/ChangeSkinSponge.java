@@ -57,6 +57,7 @@ public class ChangeSkinSponge {
     private ConfigurationNode rootNode;
 
     private RawDataChannel pluginChannel;
+    private boolean skinPermissions;
 
     @Inject
     public ChangeSkinSponge(Logger logger, Game game, PluginContainer pluginContainer) {
@@ -201,7 +202,24 @@ public class ChangeSkinSponge {
         return false;
     }
 
+    public boolean checkPermission(CommandSource invoker, UUID uuid, boolean sendMessage) {
+        if (invoker.hasPermission(pluginContainer.getId().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+            return true;
+        }
+
+        //disallow - not whitelisted or blacklisted
+        if (sendMessage) {
+            sendMessage(invoker, "no-permission");
+        }
+
+        return false;
+    }
+
     public void sendMessage(CommandSource sender, String key) {
+        if (core == null) {
+            return;
+        }
+
         String message = core.getMessage(key);
         if (message != null && sender != null) {
             sender.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(message.replace('&', '§')));

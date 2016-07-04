@@ -42,6 +42,11 @@ public class SetSkinCommand implements CommandExecutor {
         if (targetSkin.length() > 16) {
             UUID targetUUID = UUID.fromString(targetSkin);
 
+            if (plugin.getRootNode().getNode("skinPermission").getBoolean()
+                    && !plugin.checkPermission(src, targetUUID, true)) {
+                return CommandResult.empty();
+            }
+
             plugin.sendMessage(src, "skin-change-queue");
             plugin.getGame().getScheduler().createTaskBuilder()
                 .execute(new SkinDownloader(plugin, src, receiver, targetUUID))
