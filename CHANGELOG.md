@@ -2,6 +2,11 @@
 
 ##### 1.9
 
+* Fix NPE on skinupdate bungeecord
+* Fix missing skinupdate < other > command for bungee
+
+##### 1.9
+
 * Fixed health abilities shown on instant updates
 * Add skinupdate < other > command for console usage
 * Fixed NPE on BungeeCord lazy loading

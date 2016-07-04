@@ -20,12 +20,25 @@ public class SkinInvalidateCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        if (args.length > 0) {
+            ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(args[0]);
+            if (targetPlayer == null) {
+                plugin.sendMessage(sender, "not-online");
+                return;
+            }
+
+            SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer);
+            ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidater);
+            return;
+        }
+
         if (!(sender instanceof ProxiedPlayer)) {
             plugin.sendMessage(sender, "no-console");
             return;
         }
 
         ProxiedPlayer receiver = (ProxiedPlayer) sender;
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, new SkinInvalidater(plugin, receiver));
+        SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, receiver);
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidater);
     }
 }
