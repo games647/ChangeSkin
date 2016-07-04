@@ -4,6 +4,8 @@ import com.github.games647.changeskin.core.SkinData;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.SkinUpdater;
 
+import java.util.UUID;
+
 import org.spongepowered.api.Platform.Type;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBuf;
@@ -58,37 +60,36 @@ public class BungeeCordListener implements RawDataListener {
     }
 
     private void checkPermissions(Player player, ChannelBuf dataInput) {
-//        int skinId = dataInput.readInteger();
-//        String encodedData = dataInput.readUTF();
-//        String encodedSignature = dataInput.readUTF();
-//
-//        //continue on success only
-//        String receiverUUID = dataInput.readUTF();
-//
-//        SkinData targetSkin = new SkinData(encodedData, encodedSignature);
-//        if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
-//            ChannelBuf out = Chann
-//            out.writeUTF("PermissionsSuccess");
-//            out.writeInteger(skinId);
-//            out.writeUTF(encodedData);
-//            out.writeUTF(encodedSignature);
-//            out.writeUTF(receiverUUID);
-//
-//            plugin.getPluginChannel().sendTo(player, out);
-//        } else {
-//            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-//            out.writeUTF("PermissionsFailure");
-//            player.sendPluginMessage(plugin, plugin.getPluginContainer().getId(), out.toByteArray());
-//        }
+        int skinId = dataInput.readInteger();
+        String encodedData = dataInput.readUTF();
+        String encodedSignature = dataInput.readUTF();
+
+        //continue on success only
+        String receiverUUID = dataInput.readUTF();
+
+        SkinData targetSkin = new SkinData(encodedData, encodedSignature);
+        if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
+            plugin.getPluginChannel().sendTo(player, (out) -> {
+                out.writeUTF("PermissionsSuccess");
+                out.writeInteger(skinId);
+                out.writeUTF(encodedData);
+                out.writeUTF(encodedSignature);
+                out.writeUTF(receiverUUID);
+            });
+        } else {
+            plugin.getPluginChannel().sendTo(player, (out) -> {
+                out.writeUTF("PermissionsFailure");
+            });
+        }
     }
 
-//    private boolean checkBungeePerms(Player player, UUID receiver, UUID targetSkinUUID) {
-//        if (player.getUniqueId().equals(receiver)) {
-//            return player.hasPermission(plugin.getPluginContainer().getId() + ".command.setskin")
-//                && plugin.checkPermission(player, targetSkinUUID, false);
-//        } else {
-//            return player.hasPermission(plugin.getPluginContainer().getId() + ".command.setskin.other")
-//                    && plugin.checkPermission(player, targetSkinUUID, false);
-//        }
-//    }
+    private boolean checkBungeePerms(Player player, UUID receiver, UUID targetSkinUUID) {
+        if (player.getUniqueId().equals(receiver)) {
+            return player.hasPermission(plugin.getPluginContainer().getId() + ".command.setskin")
+                && plugin.checkPermission(player, targetSkinUUID, false);
+        } else {
+            return player.hasPermission(plugin.getPluginContainer().getId() + ".command.setskin.other")
+                    && plugin.checkPermission(player, targetSkinUUID, false);
+        }
+    }
 }
