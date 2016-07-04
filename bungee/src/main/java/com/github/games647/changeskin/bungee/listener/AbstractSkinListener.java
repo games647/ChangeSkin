@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
@@ -81,7 +80,7 @@ public abstract class AbstractSkinListener implements Listener {
 
     public void save(final SkinData skin, final UserPreference preferences) {
         //this can run in the background
-        BungeeCord.getInstance().getScheduler().runAsync(plugin, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
             @Override
             public void run() {
                 if (plugin.getStorage().save(skin)) {

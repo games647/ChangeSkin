@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.games647</groupId>
         <artifactId>changeskin</artifactId>
-        <version>1.9.1</version>
+        <version>1.10</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -24,8 +24,8 @@
         </repository>-->
         <!--BungeeCord with also the part outside the API-->
         <repository>
-            <id>RYRED-REPO</id>
-            <url>http://mvn.ryred.co/repository/snapshots/</url>
+            <id>myplayplanet-REPO</id>
+            <url>http://maven.myplayplanet.net/</url>
         </repository>
     </repositories>
 
