@@ -1,6 +1,5 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.McApiProfile;
 import com.github.games647.changeskin.core.model.PlayerProfile;
 import com.github.games647.changeskin.core.model.PropertiesModel;
 import com.github.games647.changeskin.core.model.TexturesModel;
@@ -8,6 +7,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.CharStreams;
+import com.google.common.io.Closeables;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -107,6 +108,8 @@ public class ChangeSkinCore {
             return getUUIDFromAPI(playerName);
         }
 
+        BufferedReader reader = null;
+        InputStreamReader inputReader = null;
         try {
             requests.put(new Object(), new Object());
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(UUID_URL + playerName).openConnection();
@@ -122,7 +125,8 @@ public class ChangeSkinCore {
 //                throw new RateLimitException(playerName);
             }
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+            inputReader = new InputStreamReader(httpConnection.getInputStream());
+            reader = new BufferedReader(inputReader);
             String line = reader.readLine();
             if (line != null && !line.equals("null")) {
                 PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile.class);
@@ -133,6 +137,9 @@ public class ChangeSkinCore {
             getLogger().log(Level.SEVERE, "Tried converting player name to uuid", iOException);
         } catch (JsonParseException parseException) {
             getLogger().log(Level.SEVERE, "Tried parsing json from Mojang", parseException);
+        } finally {
+            Closeables.closeQuietly(inputReader);
+            Closeables.closeQuietly(reader);
         }
 
         return null;
@@ -143,14 +150,15 @@ public class ChangeSkinCore {
             return null;
         }
 
+        InputStreamReader inputReader = null;
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(MCAPI_UUID_URL + playerName).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-            String line = reader.readLine();
+            inputReader = new InputStreamReader(httpConnection.getInputStream());
+            String line = CharStreams.toString(inputReader);
             if (line != null && !line.equals("null")) {
-                PlayerProfile playerProfile = gson.fromJson(line, McApiProfile.class).getProfiles()[0];
+                PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile[].class)[0];
                 String id = playerProfile.getId();
                 return ChangeSkinCore.parseId(id);
             }
@@ -158,6 +166,8 @@ public class ChangeSkinCore {
             getLogger().log(Level.SEVERE, "Tried converting player name to uuid from third-party api", iOException);
         } catch (JsonParseException parseException) {
             getLogger().log(Level.SEVERE, "Tried parsing json from third-party api", parseException);
+        } finally {
+            Closeables.closeQuietly(inputReader);
         }
 
         return null;

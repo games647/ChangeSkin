@@ -1,9 +1,10 @@
 #Changelog
 
-##### 1.9
+##### 1.9.1
 
 * Fix NPE on skinupdate bungeecord
 * Fix missing skinupdate < other > command for bungee
+* Fix json parsing from third party api
 
 ##### 1.9
 
