@@ -147,17 +147,11 @@ public class ChangeSkinCore {
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(MCAPI_UUID_URL + playerName).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
 
-            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
-                throw new NotPremiumException(playerName);
-            } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
-                throw new RateLimitException(playerName);
-            }
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();
             if (line != null && !line.equals("null")) {
-                McApiProfile playerProfile = gson.fromJson(line, McApiProfile.class);
-                String id = playerProfile.getUuid();
+                PlayerProfile playerProfile = gson.fromJson(line, McApiProfile.class).getProfiles()[0];
+                String id = playerProfile.getId();
                 return ChangeSkinCore.parseId(id);
             }
         } catch (IOException iOException) {
