@@ -167,6 +167,10 @@ public class ChangeSkinBukkit extends JavaPlugin {
     }
 
     public void sendMessage(CommandSender sender, String key) {
+        if (core == null) {
+            return;
+        }
+
         String message = core.getMessage(key);
         if (message != null && sender != null) {
             sender.sendMessage(message);
