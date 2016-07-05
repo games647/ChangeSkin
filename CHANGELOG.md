@@ -3,6 +3,7 @@
 ##### 1.11.1
 
 * Fix updateabilities results into always flight for incompatibility with other plugins
+* Fixed wrong profile save
 
 ##### 1.11
 
