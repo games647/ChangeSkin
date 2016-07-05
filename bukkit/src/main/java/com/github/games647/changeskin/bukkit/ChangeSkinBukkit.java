@@ -46,6 +46,9 @@ public class ChangeSkinBukkit extends JavaPlugin {
             getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
         }
 
+        getCommand("setskin").setExecutor(new SetSkinCommand(this));
+        getCommand("skinupdate").setExecutor(new SkinInvalidateCommand(this));
+
         if (bungeeCord) {
             getLogger().info("BungeeCord detected. Activating BungeeCord support");
             getLogger().info("Make sure you installed the plugin on BungeeCord too");
@@ -85,9 +88,6 @@ public class ChangeSkinBukkit extends JavaPlugin {
             core.loadDefaultSkins(getConfig().getStringList("default-skins"));
 
             loadLocale();
-
-            getCommand("setskin").setExecutor(new SetSkinCommand(this));
-            getCommand("skinupdate").setExecutor(new SkinInvalidateCommand(this));
 
             getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
             getServer().getPluginManager().registerEvents(new AsyncPlayerLoginListener(this), this);
@@ -196,6 +196,10 @@ public class ChangeSkinBukkit extends JavaPlugin {
                 core.addMessage(key, message);
             }
         }
+    }
+
+    public boolean isBungeeCord() {
+        return bungeeCord;
     }
 
     private <K, V> ConcurrentMap<K, V> buildCache(int seconds, int maxSize) {

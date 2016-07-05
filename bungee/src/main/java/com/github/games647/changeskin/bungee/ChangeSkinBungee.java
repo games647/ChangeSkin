@@ -5,7 +5,7 @@ import com.github.games647.changeskin.bungee.commands.SkinInvalidateCommand;
 import com.github.games647.changeskin.bungee.listener.DisconnectListener;
 import com.github.games647.changeskin.bungee.listener.JoinListener;
 import com.github.games647.changeskin.bungee.listener.LoginListener;
-import com.github.games647.changeskin.bungee.listener.PermissionsMessageListener;
+import com.github.games647.changeskin.bungee.listener.PluginMessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
 import com.github.games647.changeskin.bungee.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
@@ -105,7 +105,7 @@ public class ChangeSkinBungee extends Plugin {
 
         //this is required to listen to messages from the server
         getProxy().registerChannel(getDescription().getName());
-        getProxy().getPluginManager().registerListener(this, new PermissionsMessageListener(this));
+        getProxy().getPluginManager().registerListener(this, new PluginMessageListener(this));
 
         getProxy().getPluginManager().registerCommand(this, new SetSkinCommand(this));
         getProxy().getPluginManager().registerCommand(this, new SkinInvalidateCommand(this));

@@ -2,6 +2,9 @@ package com.github.games647.changeskin.bukkit.commands;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.SkinInvalidater;
+import com.google.common.base.Joiner;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -19,6 +22,11 @@ public class SkinInvalidateCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (plugin.isBungeeCord()) {
+            onBungeeCord(sender, command.getName(), args);
+            return true;
+        }
+
         if (args.length > 0) {
             Player targetPlayer = Bukkit.getPlayerExact(args[0]);
             if (targetPlayer == null) {
@@ -39,5 +47,20 @@ public class SkinInvalidateCommand implements CommandExecutor {
         Player receiver = (Player) sender;
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new SkinInvalidater(plugin, sender, receiver));
         return true;
+    }
+
+    private void onBungeeCord(CommandSender sender, String commandName, String[] args) {
+        if (!(sender instanceof Player)) {
+            plugin.sendMessage(sender, "no-console");
+            return;
+        }
+
+        Player player = (Player) sender;
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("ForwardCmd");
+        out.writeUTF(commandName);
+        out.writeUTF(Joiner.on(' ').join(args));
+
+        player.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
     }
 }

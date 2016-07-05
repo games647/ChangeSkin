@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.11
+
+* Fix command support if the command only runs on the backend server
+
 ##### 1.10
 
 * Fix NPE on skinupdate bungeecord

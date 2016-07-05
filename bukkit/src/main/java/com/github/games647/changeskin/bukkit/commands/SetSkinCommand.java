@@ -3,6 +3,9 @@ package com.github.games647.changeskin.bukkit.commands;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
 import com.github.games647.changeskin.bukkit.tasks.SkinDownloader;
+import com.google.common.base.Joiner;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -23,6 +26,11 @@ public class SetSkinCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (plugin.isBungeeCord()) {
+            onBungeeCord(sender, command.getName(), args);
+            return true;
+        }
+
         if (isCooldown(sender)) {
             plugin.sendMessage(sender, "cooldown");
             return true;
@@ -92,5 +100,20 @@ public class SetSkinCommand implements CommandExecutor {
         } catch (IllegalArgumentException illegalArgumentException) {
             plugin.sendMessage(sender, "invalid-uuid");
         }
+    }
+
+    private void onBungeeCord(CommandSender sender, String commandName, String[] args) {
+        if (!(sender instanceof Player)) {
+            plugin.sendMessage(sender, "no-console");
+            return;
+        }
+
+        Player player = (Player) sender;
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("ForwardCmd");
+        out.writeUTF(commandName);
+        out.writeUTF(Joiner.on(' ').join(args));
+
+        player.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
     }
 }
