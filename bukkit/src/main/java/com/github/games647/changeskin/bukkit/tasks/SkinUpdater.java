@@ -159,15 +159,15 @@ public class SkinUpdater implements Runnable {
             receiver.updateInventory();
 
             //this is sync so should be safe to call
+            //triggers updateHealth
             receiver.setHealth(receiver.getHealth());
             receiver.setMaxHealth(receiver.getMaxHealth() + 1);
             receiver.setMaxHealth(receiver.getMaxHealth() - 1);
 
+            //set to the correct hand position
             receiver.setItemInHand(receiver.getItemInHand());
+            //triggers updateAbilities
             receiver.setWalkSpeed(receiver.getWalkSpeed());
-
-            receiver.setFlySpeed(receiver.getFlySpeed());
-            receiver.setFlying(receiver.getAllowFlight());
         } catch (InvocationTargetException ex) {
             plugin.getLogger().log(Level.SEVERE, "Exception sending instant skin change packet", ex);
         }

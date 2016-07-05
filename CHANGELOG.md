@@ -1,8 +1,12 @@
 #Changelog
 
+##### 1.11.1
+
+* Fix updateabilities results into always flight for incompatibility with other plugins
+
 ##### 1.11
 
-* Fix command support if the command only runs on the backend server
+* Add command forward support if the command only runs on the backend server
 
 ##### 1.10
 
