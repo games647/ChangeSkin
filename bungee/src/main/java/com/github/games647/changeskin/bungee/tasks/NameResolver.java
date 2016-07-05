@@ -40,7 +40,6 @@ public class NameResolver implements Runnable {
             SkinData targetSkin = plugin.getStorage().getSkin(targetName);
             if (targetSkin != null) {
                 onNameResolveDatabase(targetSkin);
-
                 return;
             }
 

@@ -1,9 +1,13 @@
 #Changelog
 
+##### 1.11.2
+
+* Fix wildcard other permission in BungeeCord
+
 ##### 1.11.1
 
 * Fix updateabilities results into always flight for incompatibility with other plugins
-* Fixed wrong profile save
+* Fixed wrong profile save on BungeeCord
 
 ##### 1.11
 

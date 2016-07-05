@@ -35,7 +35,8 @@ public class SetSkinCommand extends Command {
         }
 
         if (args.length > 1) {
-            if (!sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".command.setskin.other")) {
+            if (!sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".command.setskin.other")
+                    && !sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".command.setskin.*")) {
                 plugin.sendMessage(sender, "no-permission-other");
                 return;
             }
