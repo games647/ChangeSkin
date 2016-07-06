@@ -225,7 +225,7 @@ public class SkinStorage {
     public boolean save(SkinData skinData) {
         if (skinData == null) {
             //invalid skin
-            return false;
+            return true;
         }
 
         if (skinData.getSkinId() != -1) {

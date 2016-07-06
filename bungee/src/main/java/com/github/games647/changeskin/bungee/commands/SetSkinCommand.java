@@ -53,7 +53,7 @@ public class SetSkinCommand extends Command {
         } else if (sender instanceof ProxiedPlayer) {
             if (args.length == 1) {
                 if ("reset".equalsIgnoreCase(args[0])) {
-                    setSkinUUID(sender, (ProxiedPlayer) sender, ((ProxiedPlayer) sender).getUniqueId().toString());
+                    onReset(sender);
                     return;
                 }
 
@@ -64,6 +64,10 @@ public class SetSkinCommand extends Command {
         } else {
             plugin.sendMessage(sender, "no-console");
         }
+    }
+
+    private void onReset(CommandSender sender) {
+        setSkinUUID(sender, (ProxiedPlayer) sender, ((ProxiedPlayer) sender).getUniqueId().toString());
     }
 
     private void setSkin(CommandSender sender, ProxiedPlayer targetPlayer, String toSkin) {

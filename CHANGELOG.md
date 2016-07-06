@@ -3,6 +3,8 @@
 ##### 1.11.2
 
 * Fix wildcard other permission in BungeeCord
+* Fix reset command not working
+* Fix NPE on bukkit perm check and skin reset
 
 ##### 1.11.1
 

@@ -31,7 +31,8 @@ public class SkinUpdater implements Runnable {
             return;
         }
 
-        if (invoker instanceof ProxiedPlayer && plugin.getConfig().getBoolean("bukkit-permissions")) {
+        if (invoker instanceof ProxiedPlayer && targetSkin != null
+                && plugin.getConfig().getBoolean("bukkit-permissions")) {
             Server server = ((ProxiedPlayer) invoker).getServer();
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
