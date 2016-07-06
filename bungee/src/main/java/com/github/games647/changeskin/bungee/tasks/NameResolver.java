@@ -3,7 +3,7 @@ package com.github.games647.changeskin.bungee.tasks;
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
-import com.github.games647.changeskin.core.SkinData;
+import com.github.games647.changeskin.core.model.SkinData;
 
 import java.util.UUID;
 import java.util.logging.Level;

@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreference;
+import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 

@@ -9,9 +9,9 @@ import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
 import com.github.games647.changeskin.bukkit.listener.PlayerLoginListener;
 import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.SkinData;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
-import com.github.games647.changeskin.core.UserPreference;
+import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.base.Charsets;
 import com.google.common.cache.CacheLoader;
 

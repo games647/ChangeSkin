@@ -1,5 +1,7 @@
 package com.github.games647.changeskin.core;
 
+import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.google.common.io.BaseEncoding;
 
 import java.sql.Connection;

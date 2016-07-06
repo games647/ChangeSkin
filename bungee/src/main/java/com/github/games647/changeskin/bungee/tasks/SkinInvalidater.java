@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreference;
+import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.UserPreference;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;

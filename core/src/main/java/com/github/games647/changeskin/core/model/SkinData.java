@@ -1,5 +1,6 @@
-package com.github.games647.changeskin.core;
+package com.github.games647.changeskin.core.model;
 
+import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.mojang.DataModel;
 import com.github.games647.changeskin.core.model.mojang.MetadataModel;
 import com.github.games647.changeskin.core.model.mojang.SkinModel;

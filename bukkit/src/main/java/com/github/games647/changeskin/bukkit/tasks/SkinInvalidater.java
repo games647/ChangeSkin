@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bukkit.tasks;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.core.SkinData;
-import com.github.games647.changeskin.core.UserPreference;
+import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.UserPreference;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

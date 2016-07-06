@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.UserPreference;
+import com.github.games647.changeskin.core.model.UserPreference;
 
 import java.util.UUID;
 

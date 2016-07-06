@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.core;
 
+import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.ApiPropertiesModel;
 import com.github.games647.changeskin.core.model.McApiProfile;
 import com.github.games647.changeskin.core.model.PlayerProfile;
@@ -8,6 +9,7 @@ import com.github.games647.changeskin.core.model.mojang.PropertiesModel;
 import com.github.games647.changeskin.core.model.mojang.TexturesModel;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
+import com.google.common.io.Closer;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -25,7 +27,7 @@ public class MojangSkinApi {
 
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String MCAPI_SKIN_URL = "https://mcapi.de/api/user/";
-
+    private static final String CHANGE_SKIN_URL = "https://api.mojang.com/user/profile/<uuid>/skin";
 
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 //    private static final String MCAPI_UUID_URL = "https://mcapi.de/api/user/";
@@ -60,8 +62,7 @@ public class MojangSkinApi {
             return getUUIDFromAPI(playerName);
         }
 
-        BufferedReader reader = null;
-        InputStreamReader inputReader = null;
+        Closer closer = Closer.create();
         try {
             requests.put(new Object(), new Object());
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(UUID_URL + playerName).openConnection();
@@ -76,21 +77,22 @@ public class MojangSkinApi {
                 return getUUIDFromAPI(playerName);
             }
 
-            inputReader = new InputStreamReader(httpConnection.getInputStream());
-            reader = new BufferedReader(inputReader);
+            InputStreamReader inputReader = closer.register(new InputStreamReader(httpConnection.getInputStream()));
+            BufferedReader reader = closer.register(new BufferedReader(inputReader));
             String line = reader.readLine();
             if (line != null && !line.equals("null")) {
                 PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile.class);
                 String id = playerProfile.getId();
                 return ChangeSkinCore.parseId(id);
             }
-        } catch (IOException iOException) {
-            logger.log(Level.SEVERE, "Tried converting player name to uuid", iOException);
-        } catch (JsonParseException parseException) {
-            logger.log(Level.SEVERE, "Tried parsing json from Mojang", parseException);
+        } catch (IOException | JsonParseException ex) {
+            logger.log(Level.SEVERE, "Tried converting player name to uuid", ex);
         } finally {
-            Closeables.closeQuietly(inputReader);
-            Closeables.closeQuietly(reader);
+            try {
+                closer.close();
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, "Error closing connection", ex);
+            }
         }
 
         return null;
@@ -109,10 +111,8 @@ public class MojangSkinApi {
                 String id = playerProfile.getId();
                 return ChangeSkinCore.parseId(id);
             }
-        } catch (IOException iOException) {
-            logger.log(Level.SEVERE, "Tried converting player name to uuid from third-party api", iOException);
-        } catch (JsonParseException parseException) {
-            logger.log(Level.SEVERE, "Tried parsing json from third-party api", parseException);
+        } catch (IOException | JsonParseException ex) {
+            logger.log(Level.SEVERE, "Tried converting player name to uuid from third-party api", ex);
         } finally {
             Closeables.closeQuietly(inputReader);
         }
@@ -148,10 +148,8 @@ public class MojangSkinApi {
                     return skinData;
                 }
             }
-        } catch (IOException ioException) {
-            logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ioException);
-        } catch (JsonParseException parseException) {
-            logger.log(Level.SEVERE, "Tried parsing json from Mojang", parseException);
+        } catch (IOException | JsonParseException ex) {
+            logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);
         }
 
         return null;
@@ -181,11 +179,9 @@ public class MojangSkinApi {
                     return skinData;
                 }
             }
-        } catch (IOException ioException) {
-            logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ioException);
-        } catch (JsonParseException parseException) {
-            logger.log(Level.SEVERE, "Tried parsing json from Mojang", parseException);
-        }
+        } catch (IOException | JsonParseException ex) {
+            logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);
+        } 
 
         return null;
     }

@@ -1,4 +1,4 @@
-package com.github.games647.changeskin.core;
+package com.github.games647.changeskin.core.model;
 
 import java.util.UUID;
 

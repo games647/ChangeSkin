@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bukkit.listener;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
-import com.github.games647.changeskin.core.SkinData;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;

@@ -1,6 +1,6 @@
 package com.github.games647.changeskin.sponge;
 
-import com.github.games647.changeskin.core.SkinData;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.SkinUpdater;
 

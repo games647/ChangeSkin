@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.core;
 
+import com.github.games647.changeskin.core.model.SkinData;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
