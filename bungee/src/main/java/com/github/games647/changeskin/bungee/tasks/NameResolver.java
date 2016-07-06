@@ -44,7 +44,7 @@ public class NameResolver implements Runnable {
             }
 
             try {
-                uuid = plugin.getCore().getUUID(targetName);
+                uuid = plugin.getCore().getMojangSkinApi().getUUID(targetName);
                 if (uuid == null) {
                     if (invoker != null) {
                         plugin.sendMessage(invoker, "no-resolve");

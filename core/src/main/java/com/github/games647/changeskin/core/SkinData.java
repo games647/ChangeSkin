@@ -132,6 +132,31 @@ public class SkinData {
         return BaseEncoding.base64().encode(json.getBytes(StandardCharsets.UTF_8));
     }
 
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(this.slimModel, skinURL, capeURL);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+
+        if (other == null) {
+            return false;
+        }
+
+        if (getClass() != other.getClass()) {
+            return false;
+        }
+
+        SkinData otherSkin = (SkinData) other;
+        return this.slimModel != otherSkin.slimModel
+                && com.google.common.base.Objects.equal(this.skinURL, otherSkin.skinURL)
+                && com.google.common.base.Objects.equal(this.capeURL, otherSkin.capeURL);
+    }
+
     private SkinModel deserializeData(String encodedData) {
         byte[] data = BaseEncoding.base64().decode(encodedData);
         String rawJson = new String(data, StandardCharsets.UTF_8);

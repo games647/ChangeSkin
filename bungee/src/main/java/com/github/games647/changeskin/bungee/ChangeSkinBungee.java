@@ -137,7 +137,7 @@ public class ChangeSkinBungee extends Plugin {
     public void setSkin(ProxiedPlayer player, UUID targetSkin, boolean applyNow) {
         SkinData newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
-            newSkin = core.downloadSkin(targetSkin);
+            newSkin = core.getMojangSkinApi().downloadSkin(targetSkin);
             core.getUuidCache().put(newSkin.getName(), newSkin.getUuid());
         }
 

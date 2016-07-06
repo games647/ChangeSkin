@@ -78,7 +78,7 @@ public class LoginListener {
             }
 
             try {
-                ownerUUID = plugin.getCore().getUUID(playerName);
+                ownerUUID = plugin.getCore().getMojangSkinApi().getUUID(playerName);
                 if (ownerUUID != null) {
                     plugin.getCore().getUuidCache().put(playerName, ownerUUID);
                 }
@@ -93,7 +93,7 @@ public class LoginListener {
         if (ownerUUID != null) {
             SkinData storedSkin = plugin.getCore().getStorage().getSkin(ownerUUID);
             if (storedSkin == null) {
-                storedSkin = plugin.getCore().downloadSkin(ownerUUID);
+                storedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
             }
 
             preferences.setTargetSkin(storedSkin);
