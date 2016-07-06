@@ -7,6 +7,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
+import net.md_5.bungee.api.CommandSender;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -80,6 +81,14 @@ public class PluginMessageListener extends AbstractSkinListener {
     private void onCommandForward(ProxiedPlayer invoker, ByteArrayDataInput dataInput) {
         String commandName = dataInput.readUTF();
         String args = dataInput.readUTF();
-        ProxyServer.getInstance().getPluginManager().dispatchCommand(invoker, commandName + ' ' + args);
+        boolean isSource = dataInput.readBoolean();
+
+        if (isSource) {
+            //the proxied player is the actual invoker other it's the console
+            ProxyServer.getInstance().getPluginManager().dispatchCommand(invoker, commandName + ' ' + args);
+        } else {
+            CommandSender console = ProxyServer.getInstance().getConsole();
+            ProxyServer.getInstance().getPluginManager().dispatchCommand(console, commandName + ' ' + args);
+        }
     }
 }
