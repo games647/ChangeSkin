@@ -5,6 +5,7 @@
 * Fix wildcard other permission in BungeeCord
 * Fix reset command not working
 * Fix NPE on bukkit perm check and skin reset
+* Shrink database size by truncating mojang prefix url which is constant
 
 ##### 1.11.1
 

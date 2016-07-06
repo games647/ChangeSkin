@@ -82,6 +82,9 @@ public class SkinStorage {
 
             stmt.executeUpdate(createDataStmt);
             stmt.executeUpdate(createPreferencesStmt);
+            stmt.executeQuery("UPDATE " + DATA_TABLE + " SET "
+                    + "`SkinURL`=REPLACE(`SkinURL`, 'http://textures.minecraft.net/texture/', ''), "
+                    + "`CapeURL`=REPLACE(`CapeURL`, 'http://textures.minecraft.net/texture/', '')");
         } finally {
             closeQuietly(stmt);
             closeQuietly(con);
@@ -238,6 +241,12 @@ public class SkinStorage {
             skinUrl = "";
         }
 
+        skinUrl = skinUrl.replace("http://textures.minecraft.net/texture/", "");
+        String capeUrl = skinData.getCapeURL();
+        if (capeUrl != null) {
+            capeUrl = capeUrl.replace("http://textures.minecraft.net/texture/", "");
+        }
+
         Connection con = null;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
@@ -253,7 +262,7 @@ public class SkinStorage {
             stmt.setString(3, skinData.getName());
             stmt.setBoolean(4, skinData.isSlimModel());
             stmt.setString(5, skinUrl);
-            stmt.setString(6, skinData.getCapeURL());
+            stmt.setString(6, capeUrl);
             stmt.setBytes(7, BaseEncoding.base64().decode(skinData.getEncodedSignature()));
 
             stmt.executeUpdate();
@@ -283,7 +292,14 @@ public class SkinStorage {
         boolean slimModel = resultSet.getBoolean(5);
 
         String skinUrl = resultSet.getString(6);
+        if (skinUrl != null) {
+            skinUrl = "http://textures.minecraft.net/texture/" + skinUrl;
+        }
+
         String capeUrl = resultSet.getString(7);
+        if (capeUrl != null) {
+            capeUrl = "http://textures.minecraft.net/texture/" + capeUrl;
+        }
 
         String signature = BaseEncoding.base64().encode(resultSet.getBytes(8));
         return new SkinData(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
