@@ -39,10 +39,10 @@ public class ChangeSkinCore {
     private final List<SkinData> defaultSkins = Lists.newArrayList();
     private final MojangSkinApi mojangSkinApi;
 
-    public ChangeSkinCore(Logger logger, File pluginFolder, int rateLimit) {
+    public ChangeSkinCore(Logger logger, File pluginFolder, int rateLimit, boolean mojangDownload) {
         this.logger = logger;
         this.pluginFolder = pluginFolder;
-        this.mojangSkinApi = new MojangSkinApi(buildCache(10, -1), rateLimit, logger);
+        this.mojangSkinApi = new MojangSkinApi(buildCache(10, -1), logger, rateLimit, mojangDownload);
     }
 
     public Logger getLogger() {

@@ -1,7 +1,8 @@
 #Changelog
 
-##### 1.11.2
+##### 1.12
 
+* Added Mojang independent skin downloading
 * Fix wildcard other permission in BungeeCord
 * Fix reset command not working
 * Fix NPE on bukkit perm check and skin reset

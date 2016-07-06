@@ -100,10 +100,11 @@ public class ChangeSkinSponge {
             String pass = storageNode.getNode("password").getString();
 
             int rateLimit = storageNode.getNode("mojang-request-limit").getInt();
+            boolean mojangDownload = storageNode.getNode("independent-skin-downloading").getBoolean();
 
             java.util.logging.Logger pluginLogger = java.util.logging.Logger.getLogger("ChangeSkin");
 
-            core = new ChangeSkinCore(pluginLogger, defaultConfigFile.getParentFile(), rateLimit);
+            core = new ChangeSkinCore(pluginLogger, defaultConfigFile.getParentFile(), rateLimit, mojangDownload);
             SkinStorage storage = new SkinStorage(core, driver, host, port, database, user, pass);
             core.setStorage(storage);
 

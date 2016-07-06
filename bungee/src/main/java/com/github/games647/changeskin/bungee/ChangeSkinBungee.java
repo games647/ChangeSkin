@@ -63,7 +63,8 @@ public class ChangeSkinBungee extends Plugin {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
             int rateLimit = configuration.getInt("mojang-request-limit");
-            core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit);
+            boolean mojangDownload = configuration.getBoolean("independent-skin-downloading");
+            core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit, mojangDownload);
 
             loadLocale();
 
