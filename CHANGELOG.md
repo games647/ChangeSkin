@@ -7,6 +7,7 @@
 * Fix reset command not working
 * Fix NPE on bukkit perm check and skin reset
 * Shrink database size by truncating mojang prefix url which is constant
+* Fix database creation 
 
 ##### 1.11.1
 

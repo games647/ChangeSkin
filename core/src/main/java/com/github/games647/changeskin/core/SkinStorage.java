@@ -55,7 +55,7 @@ public class SkinStorage {
             con = DriverManager.getConnection(jdbcUrl, username, pass);
             stmt = con.createStatement();
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + DATA_TABLE + " ("
-                    + "`SkinID` UNSIGNED INTEGER PRIMARY KEY AUTO_INCREMENT, "
+                    + "`SkinID` INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT, "
                     + "`Timestamp` BIGINT NOT NULL, "
                     + "`UUID` CHAR(36) NOT NULL, "
                     + "`Name` VARCHAR(16) NOT NULL, "
@@ -67,7 +67,7 @@ public class SkinStorage {
                     + ")";
 
             String createPreferencesStmt = "CREATE TABLE IF NOT EXISTS " + PREFERENCES_TABLE + " ("
-                    + "`UserID` UNSIGNED INTEGER PRIMARY KEY AUTO_INCREMENT, "
+                    + "`UserID` INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT, "
                     + "`UUID` CHAR(36) NOT NULL, "
                     + "`TargetSkin` INTEGER NOT NULL, "
                     + "UNIQUE (`UUID`), "
