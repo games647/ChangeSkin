@@ -16,11 +16,16 @@ public class SkinDownloader implements Runnable {
     private final ProxiedPlayer receiver;
     private final UUID targetUUID;
 
-    public SkinDownloader(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, UUID targetUUID) {
+    private final boolean bukkitOp;
+
+    public SkinDownloader(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, UUID targetUUID
+            , boolean bukkitOp) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
         this.targetUUID = targetUUID;
+
+        this.bukkitOp = bukkitOp;
     }
 
     @Override
@@ -37,7 +42,7 @@ public class SkinDownloader implements Runnable {
             plugin.sendMessage(invoker, "reset");
         }
 
-        SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, receiver, newSkin);
+        SkinUpdater skinUpdater = new SkinUpdater(plugin, receiver, newSkin, invoker, bukkitOp);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
     }
 }

@@ -69,9 +69,10 @@ public class BungeeCordListener implements PluginMessageListener {
 
         //continue on success only
         String receiverUUID = dataInput.readUTF();
+        boolean isOp = dataInput.readBoolean();
 
         SkinData targetSkin = new SkinData(encodedData, encodedSignature);
-        if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
+        if (isOp || checkBungeePerms(player, targetSkin.getUuid())) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("PermissionsSuccess");
             out.writeInt(skinId);
@@ -87,8 +88,8 @@ public class BungeeCordListener implements PluginMessageListener {
         }
     }
 
-    private boolean checkBungeePerms(Player player, UUID receiver, UUID targetSkinUUID) {
-        if (player.getUniqueId().equals(receiver)) {
+    private boolean checkBungeePerms(Player player, UUID targetSkinUUID) {
+        if (player.getUniqueId().equals(targetSkinUUID)) {
             return player.hasPermission(plugin.getName() + ".command.setskin")
                 && plugin.checkPermission(player, targetSkinUUID, false);
         } else {

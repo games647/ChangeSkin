@@ -82,6 +82,11 @@ public class PluginMessageListener extends AbstractSkinListener {
         String commandName = dataInput.readUTF();
         String args = dataInput.readUTF();
         boolean isSource = dataInput.readBoolean();
+        boolean isOp = dataInput.readBoolean();
+
+        if (isOp) {
+            invoker.addGroups(plugin.getName() + "-OP");
+        }
 
         if (isSource) {
             //the proxied player is the actual invoker other it's the console

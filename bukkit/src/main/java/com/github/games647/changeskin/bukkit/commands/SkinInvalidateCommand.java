@@ -68,6 +68,7 @@ public class SkinInvalidateCommand implements CommandExecutor {
         out.writeUTF(commandName);
         out.writeUTF(Joiner.on(' ').join(args));
         out.writeBoolean(sender instanceof Player);
+        out.writeBoolean(sender.isOp());
 
         proxy.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
     }

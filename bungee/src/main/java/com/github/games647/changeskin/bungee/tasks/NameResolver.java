@@ -18,11 +18,16 @@ public class NameResolver implements Runnable {
     private final String targetName;
     private final ProxiedPlayer player;
 
-    public NameResolver(ChangeSkinBungee plugin, CommandSender invoker, String targetName, ProxiedPlayer targetPlayer) {
+    private final boolean bukkitOp;
+
+    public NameResolver(ChangeSkinBungee plugin, CommandSender invoker, String targetName, ProxiedPlayer targetPlayer
+            , boolean bukkitOp) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.targetName = targetName;
         this.player = targetPlayer;
+
+        this.bukkitOp = bukkitOp;
     }
 
     @Override
@@ -82,7 +87,7 @@ public class NameResolver implements Runnable {
             plugin.sendMessage(invoker, "skin-downloading");
         }
 
-        new SkinUpdater(plugin, invoker, player, targetSkin).run();
+        new SkinUpdater(plugin, player, targetSkin, invoker, bukkitOp).run();
     }
 
     private void onNameResolve(UUID uuid) {
@@ -97,7 +102,7 @@ public class NameResolver implements Runnable {
             }
 
             //run this is the same thread
-            new SkinDownloader(plugin, invoker, player, uuid).run();
+            new SkinDownloader(plugin, invoker, player, uuid, bukkitOp).run();
         }
     }
 }

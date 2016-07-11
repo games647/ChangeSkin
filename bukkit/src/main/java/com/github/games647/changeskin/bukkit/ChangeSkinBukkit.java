@@ -46,6 +46,8 @@ public class ChangeSkinBukkit extends JavaPlugin {
             getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
         }
 
+        saveDefaultConfig();
+
         getCommand("setskin").setExecutor(new SetSkinCommand(this));
         getCommand("skinupdate").setExecutor(new SkinInvalidateCommand(this));
 
@@ -56,8 +58,6 @@ public class ChangeSkinBukkit extends JavaPlugin {
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
         } else {
-            saveDefaultConfig();
-
             int cooldown = getConfig().getInt("cooldown");
             if (cooldown <= 1) {
                 cooldown = 1;

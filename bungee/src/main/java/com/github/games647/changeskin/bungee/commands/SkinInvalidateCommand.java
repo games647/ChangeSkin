@@ -20,6 +20,8 @@ public class SkinInvalidateCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        boolean isOp = sender.getGroups().contains(plugin.getName() + "-OP");
+        
         if (args.length > 0) {
             ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(args[0]);
             if (targetPlayer == null) {
@@ -27,7 +29,7 @@ public class SkinInvalidateCommand extends Command {
                 return;
             }
 
-            SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer);
+            SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer, isOp);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidater);
             return;
         }
@@ -38,7 +40,7 @@ public class SkinInvalidateCommand extends Command {
         }
 
         ProxiedPlayer receiver = (ProxiedPlayer) sender;
-        SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, receiver);
+        SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, receiver, isOp);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidater);
     }
 }

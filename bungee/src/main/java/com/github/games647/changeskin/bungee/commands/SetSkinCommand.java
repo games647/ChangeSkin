@@ -25,6 +25,8 @@ public class SetSkinCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        boolean isOp = sender.getGroups().contains(plugin.getName() + "-OP");
+
         if (sender instanceof ProxiedPlayer && plugin.isCooldown(((ProxiedPlayer) sender).getUniqueId())) {
             plugin.sendMessage(sender, "cooldown");
             return;
@@ -48,16 +50,16 @@ public class SetSkinCommand extends Command {
             if (targetPlayer == null) {
                 plugin.sendMessage(sender, "not-online");
             } else {
-                setSkin(sender, targetPlayer, toSkin);
+                setSkin(sender, targetPlayer, toSkin, isOp);
             }
         } else if (sender instanceof ProxiedPlayer) {
             if (args.length == 1) {
                 if ("reset".equalsIgnoreCase(args[0])) {
-                    onReset(sender);
+                    onReset(sender, isOp);
                     return;
                 }
 
-                setSkin(sender, (ProxiedPlayer) sender, args[0]);
+                setSkin(sender, (ProxiedPlayer) sender, args[0], isOp);
             } else {
                 plugin.sendMessage(sender, "no-skin");
             }
@@ -66,22 +68,22 @@ public class SetSkinCommand extends Command {
         }
     }
 
-    private void onReset(CommandSender sender) {
-        setSkinUUID(sender, (ProxiedPlayer) sender, ((ProxiedPlayer) sender).getUniqueId().toString());
+    private void onReset(CommandSender sender, boolean bukkitOp) {
+        setSkinUUID(sender, (ProxiedPlayer) sender, ((ProxiedPlayer) sender).getUniqueId().toString(), bukkitOp);
     }
 
-    private void setSkin(CommandSender sender, ProxiedPlayer targetPlayer, String toSkin) {
+    private void setSkin(CommandSender sender, ProxiedPlayer targetPlayer, String toSkin, boolean bukkitOp) {
         //minecraft player names has the max length of 16 characters so it could be the uuid
         if (toSkin.length() > 16) {
-            setSkinUUID(sender, targetPlayer, toSkin);
+            setSkinUUID(sender, targetPlayer, toSkin, bukkitOp);
         } else {
             plugin.sendMessage(sender, "queue-name-resolve");
-            NameResolver nameResolver = new NameResolver(plugin, sender, toSkin, targetPlayer);
+            NameResolver nameResolver = new NameResolver(plugin, sender, toSkin, targetPlayer, bukkitOp);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, nameResolver);
         }
     }
 
-    private void setSkinUUID(CommandSender sender, ProxiedPlayer receiverPayer, String targetUUID) {
+    private void setSkinUUID(CommandSender sender, ProxiedPlayer receiverPayer, String targetUUID, boolean bukkitOp) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
             if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid)) {
@@ -90,7 +92,7 @@ public class SetSkinCommand extends Command {
 
             plugin.sendMessage(sender, "skin-change-queue");
 
-            SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
+            SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid, bukkitOp);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, skinDownloader);
         } catch (IllegalArgumentException illegalArgumentException) {
             plugin.sendMessage(sender, "invalid-uuid");

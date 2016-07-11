@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.12.1
+
+* Fixed temporarily permissions forwarding for bukkit permissions
+
 ##### 1.12
 
 * Added Mojang independent skin downloading
@@ -7,7 +11,7 @@
 * Fix reset command not working
 * Fix NPE on bukkit perm check and skin reset
 * Shrink database size by truncating mojang prefix url which is constant
-* Fix database creation 
+* Fix database creation
 
 ##### 1.11.1
 

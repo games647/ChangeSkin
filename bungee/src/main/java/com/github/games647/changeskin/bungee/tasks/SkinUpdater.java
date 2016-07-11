@@ -18,11 +18,16 @@ public class SkinUpdater implements Runnable {
     private final SkinData targetSkin;
     private final CommandSender invoker;
 
-    public SkinUpdater(ChangeSkinBungee changeSkin, CommandSender invoker, ProxiedPlayer receiver, SkinData targetSkin) {
-        this.plugin = changeSkin;
+    private final boolean bukkitOp;
+
+    public SkinUpdater(ChangeSkinBungee plugin, ProxiedPlayer receiver, SkinData targetSkin, CommandSender invoker
+            , boolean bukkitOp) {
+        this.plugin = plugin;
         this.receiver = receiver;
         this.targetSkin = targetSkin;
         this.invoker = invoker;
+
+        this.bukkitOp = bukkitOp;
     }
 
     @Override
@@ -30,6 +35,8 @@ public class SkinUpdater implements Runnable {
         if (!receiver.isConnected()) {
             return;
         }
+
+        plugin.getStorage().save(targetSkin);
 
         if (invoker instanceof ProxiedPlayer && targetSkin != null
                 && plugin.getConfig().getBoolean("bukkit-permissions")) {
@@ -43,9 +50,12 @@ public class SkinUpdater implements Runnable {
             out.writeUTF(targetSkin.getEncodedData());
             out.writeUTF(targetSkin.getEncodedSignature());
             out.writeUTF(receiver.getUniqueId().toString());
+            out.writeBoolean(bukkitOp);
             server.sendData(plugin.getName(), out.toByteArray());
             return;
         }
+
+        invoker.removeGroups(plugin.getName() + "-OP");
 
         //uuid was successfull resolved, we could now make a cooldown check
         if (invoker instanceof ProxiedPlayer) {
@@ -59,9 +69,7 @@ public class SkinUpdater implements Runnable {
         ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
             @Override
             public void run() {
-                if (plugin.getStorage().save(targetSkin)) {
-                    plugin.getStorage().save(preferences);
-                }
+                plugin.getStorage().save(preferences);
             }
         });
 

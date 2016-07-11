@@ -14,10 +14,14 @@ public class SkinInvalidater implements Runnable {
     private final CommandSender invoker;
     private final ProxiedPlayer receiver;
 
-    public SkinInvalidater(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver) {
+    private final boolean bukkitOp;
+
+    public SkinInvalidater(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, boolean bukkitOp) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
+
+        this.bukkitOp = bukkitOp;
     }
 
     @Override
@@ -31,7 +35,8 @@ public class SkinInvalidater implements Runnable {
 
             SkinData skin = plugin.getCore().getMojangSkinApi().downloadSkin(ownedSkin.getUuid());
             plugin.getCore().getUuidCache().put(skin.getName(), skin.getUuid());
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, new SkinUpdater(plugin, invoker, receiver, skin));
+            SkinUpdater skinUpdater = new SkinUpdater(plugin, receiver, skin, invoker, bukkitOp);
+            ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
         }
     }
 }
