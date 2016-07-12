@@ -21,6 +21,7 @@ public class SkinInvalidateCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         boolean isOp = sender.getGroups().contains(plugin.getName() + "-OP");
+        sender.removeGroups(plugin.getName() + "-OP");
         
         if (args.length > 0) {
             ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(args[0]);

@@ -3,6 +3,7 @@
 ##### 1.12.2
 
 * Re-add valid name checking
+* [Security] Fix forwarding permission on bukkitPermissions enabled
 
 ##### 1.12.1
 
