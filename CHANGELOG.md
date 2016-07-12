@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.12.2
+
+* Re-add valid name checking
+
 ##### 1.12.1
 
 * Fixed temporarily permissions forwarding for bukkit permissions
