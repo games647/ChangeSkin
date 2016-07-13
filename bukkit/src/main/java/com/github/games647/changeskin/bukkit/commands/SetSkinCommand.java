@@ -76,7 +76,7 @@ public class SetSkinCommand implements CommandExecutor {
     }
 
     private boolean isCooldown(CommandSender sender) {
-        return sender instanceof Player && plugin.isCooldown(((Player) sender).getUniqueId());
+        return sender instanceof Player && plugin.getCore().isCooldown(((Player) sender).getUniqueId());
     }
 
     private void setSkin(CommandSender sender, Player targetPlayer, String toSkin) {

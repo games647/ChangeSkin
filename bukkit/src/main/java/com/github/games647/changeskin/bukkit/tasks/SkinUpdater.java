@@ -47,8 +47,8 @@ public class SkinUpdater implements Runnable {
         }
 
         //uuid was successfull resolved, we could now make a cooldown check
-        if (invoker instanceof Player) {
-            plugin.addCooldown(((Player) invoker).getUniqueId());
+        if (invoker instanceof Player && plugin.getCore() != null) {
+            plugin.getCore().addCooldown(((Player) invoker).getUniqueId());
         }
 
         if (plugin.getStorage() != null) {

@@ -56,7 +56,7 @@ public class PluginMessageListener extends AbstractSkinListener {
         }
 
         //add cooldown
-        plugin.addCooldown(invoker.getUniqueId());
+        plugin.getCore().addCooldown(invoker.getUniqueId());
         //Save the target uuid from the requesting player source
         final UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
         preferences.setTargetSkin(targetSkin);

@@ -25,12 +25,31 @@ public class ChangeSkinCore {
                 + "-" + withoutDashes.substring(16, 20)
                 + "-" + withoutDashes.substring(20, 32));
     }
+    
+    public static <K, V> ConcurrentMap<K, V> buildCache(int seconds, int maxSize) {
+        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
+
+        if (seconds > 0) {
+            builder.expireAfterWrite(seconds, TimeUnit.SECONDS);
+        }
+
+        if (maxSize > 0) {
+            builder.maximumSize(maxSize);
+        }
+
+        return builder.build(new CacheLoader<K, V>() {
+            @Override
+            public V load(K key) throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        }).asMap();
+    }
 
     private final Map<String, String> localeMessages = Maps.newConcurrentMap();
 
     //this is thread-safe in order to save and load from different threads like the skin download
-    private final ConcurrentMap<String, UUID> uuidCache = buildCache(3 * 60, 1024 * 5);;
-    private final ConcurrentMap<String, Object> crackedNames = buildCache(3 * 60, 1024 * 5);
+    private final ConcurrentMap<String, UUID> uuidCache = buildCache(3 * 60 * 60, 1024 * 5);;
+    private final ConcurrentMap<String, Object> crackedNames = buildCache(3 * 60 * 60, 1024 * 5);
 
     private final Logger logger;
     private final File pluginFolder;
@@ -39,11 +58,18 @@ public class ChangeSkinCore {
 
     private final List<SkinData> defaultSkins = Lists.newArrayList();
     private final MojangSkinApi mojangSkinApi;
+    private ConcurrentMap<UUID, Object> cooldowns;
 
-    public ChangeSkinCore(Logger logger, File pluginFolder, int rateLimit, boolean mojangDownload) {
+    public ChangeSkinCore(Logger logger, File pluginFolder, int rateLimit, boolean mojangDownload, int cooldown) {
         this.logger = logger;
         this.pluginFolder = pluginFolder;
         this.mojangSkinApi = new MojangSkinApi(buildCache(10, -1), logger, rateLimit, mojangDownload);
+
+        if (cooldown <= 0) {
+            cooldown = 1;
+        }
+
+        cooldowns = buildCache(cooldown, -1);
     }
 
     public Logger getLogger() {
@@ -104,23 +130,12 @@ public class ChangeSkinCore {
     public SkinStorage getStorage() {
         return storage;
     }
+    
+    public void addCooldown(UUID invoker) {
+        cooldowns.put(invoker, new Object());
+    }
 
-    private <K, V> ConcurrentMap<K, V> buildCache(int minutes, int maxSize) {
-        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
-
-        if (minutes > 0) {
-            builder.expireAfterWrite(minutes, TimeUnit.MINUTES);
-        }
-
-        if (maxSize > 0) {
-            builder.maximumSize(maxSize);
-        }
-
-        return builder.build(new CacheLoader<K, V>() {
-            @Override
-            public V load(K key) throws Exception {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        }).asMap();
+    public boolean isCooldown(UUID invoker) {
+        return cooldowns.containsKey(invoker);
     }
 }

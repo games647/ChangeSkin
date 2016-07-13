@@ -9,12 +9,10 @@ import com.github.games647.changeskin.bungee.listener.PluginMessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
 import com.github.games647.changeskin.bungee.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.base.Charsets;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -26,7 +24,6 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import net.md_5.bungee.api.ChatColor;
@@ -47,7 +44,6 @@ public class ChangeSkinBungee extends Plugin {
     private ChangeSkinCore core;
     private Configuration configuration;
 
-    private Cache<UUID, Object> cooldowns;
     private final ConcurrentMap<PendingConnection, UserPreference> loginSessions = Maps.newConcurrentMap();
 
     @Override
@@ -64,18 +60,10 @@ public class ChangeSkinBungee extends Plugin {
 
             int rateLimit = configuration.getInt("mojang-request-limit");
             boolean mojangDownload = configuration.getBoolean("independent-skin-downloading");
-            core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit, mojangDownload);
+            int cooldown = configuration.getInt("cooldown");
+            core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit, mojangDownload, cooldown);
 
             loadLocale();
-
-            int cooldown = configuration.getInt("cooldown");
-            if (cooldown <= 1) {
-                cooldown = 1;
-            }
-
-            cooldowns = CacheBuilder.newBuilder()
-                    .expireAfterWrite(cooldown, TimeUnit.SECONDS)
-                    .<UUID, Object>build();
 
             String driver = configuration.getString("storage.driver");
             String host = configuration.getString("storage.host", "");
@@ -201,14 +189,6 @@ public class ChangeSkinBungee extends Plugin {
 
     public UUID getOfflineUUID(String name) {
         return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
-    }
-
-    public void addCooldown(UUID invoker) {
-        cooldowns.put(invoker, new Object());
-    }
-
-    public boolean isCooldown(UUID invoker) {
-        return cooldowns.asMap().containsKey(invoker);
     }
 
     public Configuration getConfig() {

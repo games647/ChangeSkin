@@ -28,7 +28,7 @@ public class SetSkinCommand extends Command {
         boolean isOp = sender.getGroups().contains(plugin.getName() + "-OP");
         sender.removeGroups(plugin.getName() + "-OP");
 
-        if (sender instanceof ProxiedPlayer && plugin.isCooldown(((ProxiedPlayer) sender).getUniqueId())) {
+        if (sender instanceof ProxiedPlayer && plugin.getCore().isCooldown(((ProxiedPlayer) sender).getUniqueId())) {
             plugin.sendMessage(sender, "cooldown");
             return;
         }
