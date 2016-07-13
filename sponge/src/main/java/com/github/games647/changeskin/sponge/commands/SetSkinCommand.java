@@ -28,7 +28,7 @@ public class SetSkinCommand implements CommandExecutor {
             return CommandResult.empty();
         }
 
-        if (plugin.isCooldown(src)) {
+        if (plugin.getCore().isCooldown(((Player) src).getUniqueId())) {
             plugin.sendMessage(src, "cooldown");
             return CommandResult.empty();
         }
