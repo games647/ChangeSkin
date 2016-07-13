@@ -84,7 +84,8 @@ public class PluginMessageListener extends AbstractSkinListener {
         boolean isSource = dataInput.readBoolean();
         boolean isOp = dataInput.readBoolean();
 
-        if (isOp) {
+        if (isOp && !isSource) {
+            //bukkit op and it won't run as bungee console
             invoker.addGroups(plugin.getName() + "-OP");
         }
 
