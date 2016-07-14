@@ -48,14 +48,9 @@ public class BungeeCordListener implements PluginMessageListener {
         }
         
         String signature = dataInput.readUTF();
-        Player receiver = player;
-        try {
-            String playerName = dataInput.readUTF();
-            receiver = Bukkit.getPlayerExact(playerName);
-            plugin.getLogger().log(Level.INFO, "Instant update for {0}", playerName);
-        } catch (Exception ex) {
-            plugin.getLogger().warning("You are using an outdated ChangeSkin spigot version");
-        }
+        String playerName = dataInput.readUTF();
+        Player receiver = Bukkit.getPlayerExact(playerName);
+        plugin.getLogger().log(Level.INFO, "Instant update for {0}", playerName);
 
         SkinData skinData = new SkinData(encodedData, signature);
         Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, receiver, skinData));

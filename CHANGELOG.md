@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.12.3
+
+* Fix Bungee anti bot feature is not applying the skin
+
 ##### 1.12.2
 
 * Re-add valid name checking
