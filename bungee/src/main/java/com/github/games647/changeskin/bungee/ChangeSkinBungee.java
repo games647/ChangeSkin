@@ -139,7 +139,7 @@ public class ChangeSkinBungee extends Plugin {
         //this is null on offline mode
         if (loginProfile == null) {
             try {
-                Field profileField = initialHandler.getClass().getDeclaredField("loginProfile");
+                Field profileField = InitialHandler.class.getDeclaredField("loginProfile");
                 profileField.setAccessible(true);
                 String mojangUUID = player.getUniqueId().toString().replace("-", "");
 
