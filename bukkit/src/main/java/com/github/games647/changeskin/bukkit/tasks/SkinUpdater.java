@@ -142,7 +142,7 @@ public class SkinUpdater implements Runnable {
         teleport.getFloat().write(0, location.getYaw());
         teleport.getFloat().write(1, location.getPitch());
         //send an invalid teleport id in order to let bukkit ignore the incoming confirm packet
-        teleport.getIntegers().writeSafely(0, -1);
+        teleport.getIntegers().writeSafely(0, -1337);
 
         try {
             //remove the old skin - client updates it only on a complete remove and add

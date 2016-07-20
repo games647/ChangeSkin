@@ -81,7 +81,7 @@ public class SetSkinCommand extends Command {
             setSkinUUID(sender, targetPlayer, toSkin, bukkitOp);
         } else {
             plugin.sendMessage(sender, "queue-name-resolve");
-            NameResolver nameResolver = new NameResolver(plugin, sender, toSkin, targetPlayer, bukkitOp);
+            NameResolver nameResolver = new NameResolver(plugin, sender, targetPlayer, toSkin, bukkitOp);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, nameResolver);
         }
     }

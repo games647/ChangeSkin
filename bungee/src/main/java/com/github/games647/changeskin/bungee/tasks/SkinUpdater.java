@@ -20,7 +20,7 @@ public class SkinUpdater implements Runnable {
 
     private final boolean bukkitOp;
 
-    public SkinUpdater(ChangeSkinBungee plugin, ProxiedPlayer receiver, SkinData targetSkin, CommandSender invoker
+    public SkinUpdater(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, SkinData targetSkin
             , boolean bukkitOp) {
         this.plugin = plugin;
         this.receiver = receiver;

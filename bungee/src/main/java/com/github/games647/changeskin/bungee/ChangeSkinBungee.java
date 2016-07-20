@@ -119,7 +119,7 @@ public class ChangeSkinBungee extends Plugin {
 
     //you should call this method async
     public void setSkin(ProxiedPlayer player, final SkinData newSkin, boolean applyNow) {
-        new SkinUpdater(this, player, newSkin, player, false).run();
+        new SkinUpdater(this, player, player, newSkin, false).run();
     }
 
     //you should call this method async
