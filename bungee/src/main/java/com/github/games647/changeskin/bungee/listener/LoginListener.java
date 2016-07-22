@@ -27,25 +27,26 @@ public class LoginListener extends AbstractSkinListener {
         PendingConnection connection = loginEvent.getConnection();
         UUID playerUuid = connection.getUniqueId();
         String playerName = connection.getName();
-
-        UserPreference preferences = plugin.getStorage().getPreferences(plugin.getOfflineUUID(playerName));
-        plugin.startSession(connection, preferences);
-        if (preferences.getTargetSkin() == null && plugin.getConfig().getBoolean("restoreSkins")) {
-            refetchSkin(preferences, playerName, loginEvent);
+        
+        if (plugin.getConfig().getBoolean("restoreSkins")) {
+            refetchSkin(connection, playerName, loginEvent);
         }
     }
 
-    private void refetchSkin(final UserPreference prefereces, final String playerName
-            , final AsyncEvent<?> preLoginEvent) {
-        preLoginEvent.registerIntent(plugin);
+    private void refetchSkin(final PendingConnection conn, final String playerName , final AsyncEvent<?> loginEvent) {
+        loginEvent.registerIntent(plugin);
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
             @Override
             public void run() {
                 try {
-                    refetch(prefereces, playerName);
+                    UserPreference preferences = plugin.getStorage().getPreferences(plugin.getOfflineUUID(playerName));
+                    plugin.startSession(conn, preferences);
+                    if (preferences.getTargetSkin() == null) {
+                        refetch(preferences, playerName);
+                    }
                 } finally {
-                    preLoginEvent.completeIntent(plugin);
+                    loginEvent.completeIntent(plugin);
                 }
             }
         });

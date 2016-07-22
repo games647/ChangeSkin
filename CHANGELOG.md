@@ -1,5 +1,9 @@
 #Changelog
 
+##### 1.13
+
+* Load database record async too for restoring skins in BungeeCord
+
 ##### 1.12.3
 
 * Fix Bungee anti bot feature is not applying the skin
