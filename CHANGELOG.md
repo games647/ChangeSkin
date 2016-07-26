@@ -3,6 +3,8 @@
 ##### 1.13
 
 * Load database record async too for restoring skins in BungeeCord
+* Enforce a specific timeout (Fixes #37)
+* Fix antibot condition
 
 ##### 1.12.3
 

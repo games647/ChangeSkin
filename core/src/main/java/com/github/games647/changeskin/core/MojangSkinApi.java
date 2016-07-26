@@ -1,10 +1,10 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.ApiPropertiesModel;
 import com.github.games647.changeskin.core.model.McApiProfile;
 import com.github.games647.changeskin.core.model.PlayerProfile;
 import com.github.games647.changeskin.core.model.RawPropertiesModel;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.mojang.PropertiesModel;
 import com.github.games647.changeskin.core.model.mojang.TexturesModel;
 import com.google.common.io.CharStreams;
