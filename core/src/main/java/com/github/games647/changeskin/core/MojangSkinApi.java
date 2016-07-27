@@ -65,11 +65,12 @@ public class MojangSkinApi {
             return getUUIDFromAPI(playerName);
         }
 
+        requests.put(new Object(), new Object());
+
         Closer closer = Closer.create();
         try {
-            requests.put(new Object(), new Object());
-            HttpURLConnection httpConnection = getConnection(UUID_URL + playerName);
             
+            HttpURLConnection httpConnection = getConnection(UUID_URL + playerName);
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
             } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
@@ -99,7 +100,7 @@ public class MojangSkinApi {
         return null;
     }
 
-    public UUID getUUIDFromAPI(String playerName) throws NotPremiumException, RateLimitException {
+    public UUID getUUIDFromAPI(String playerName) throws NotPremiumException {
         InputStreamReader inputReader = null;
         try {
             HttpURLConnection httpConnection = getConnection(MCAPI_UUID_URL + playerName);
@@ -109,6 +110,10 @@ public class MojangSkinApi {
             if (line != null && !line.equals("null")) {
                 PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile[].class)[0];
                 String id = playerProfile.getId();
+                if (id == null || id.equalsIgnoreCase("null")) {
+                    throw new NotPremiumException(line);
+                }
+                
                 return ChangeSkinCore.parseId(id);
             }
         } catch (IOException | JsonParseException ex) {
