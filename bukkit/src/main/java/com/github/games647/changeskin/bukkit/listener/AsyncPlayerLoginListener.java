@@ -44,13 +44,6 @@ public class AsyncPlayerLoginListener implements Listener {
     private void refetchSkin(String playerName, UserPreference preferences) {
         UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
         if (ownerUUID == null && !plugin.getCore().getCrackedNames().containsKey(playerName)) {
-            SkinData skin = plugin.getStorage().getSkin(playerName);
-            if (skin != null) {
-                preferences.setTargetSkin(skin);
-                save(skin, preferences);
-                return;
-            }
-
             try {
                 ownerUUID = plugin.getCore().getMojangSkinApi().getUUID(playerName);
             } catch (NotPremiumException ex) {

@@ -3,6 +3,7 @@
 ##### 2.1
 
 * Remove aggressive UUID caching
+* Remove name resolves from database
 
 ##### 2.0
 

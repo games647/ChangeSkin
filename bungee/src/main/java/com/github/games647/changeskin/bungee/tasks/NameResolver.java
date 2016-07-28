@@ -3,7 +3,6 @@ package com.github.games647.changeskin.bungee.tasks;
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
-import com.github.games647.changeskin.core.model.SkinData;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -42,12 +41,6 @@ public class NameResolver implements Runnable {
                 return;
             }
 
-            SkinData targetSkin = plugin.getStorage().getSkin(targetName);
-            if (targetSkin != null) {
-                onNameResolveDatabase(targetSkin);
-                return;
-            }
-
             try {
                 uuid = plugin.getCore().getMojangSkinApi().getUUID(targetName);
                 if (uuid == null) {
@@ -56,7 +49,6 @@ public class NameResolver implements Runnable {
                     }
                 } else {
                     plugin.getCore().getUuidCache().put(targetName, uuid);
-                    onNameResolve(uuid);
                 }
             } catch (NotPremiumException notPremiumEx) {
                 plugin.getLogger().log(Level.FINE, "Requested not premium");
@@ -71,23 +63,11 @@ public class NameResolver implements Runnable {
                     plugin.sendMessage(invoker, "rate-limit");
                 }
             }
-        } else {
+        }
+
+        if (uuid != null) {
             onNameResolve(uuid);
         }
-    }
-
-    private void onNameResolveDatabase(SkinData targetSkin) {
-        UUID uuid = targetSkin.getUuid();
-        if (invoker != null) {
-            plugin.sendMessage(invoker, "uuid-resolved");
-            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(invoker, uuid)) {
-                return;
-            }
-
-            plugin.sendMessage(invoker, "skin-downloading");
-        }
-
-        new SkinUpdater(plugin, invoker, player, targetSkin, bukkitOp).run();
     }
 
     private void onNameResolve(UUID uuid) {

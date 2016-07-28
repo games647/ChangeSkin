@@ -172,31 +172,6 @@ public class SkinStorage {
         return null;
     }
 
-    public SkinData getSkin(String playerName) {
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-        try {
-            con = DriverManager.getConnection(jdbcUrl, username, pass);
-
-            stmt = con.prepareStatement("SELECT * FROM " + DATA_TABLE + " WHERE Name=? LIMIT 1");
-            stmt.setString(1, playerName);
-
-            resultSet = stmt.executeQuery();
-            if (resultSet.next()) {
-                return parseSkinData(resultSet);
-            }
-        } catch (SQLException sqlEx) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from playername", sqlEx);
-        } finally {
-            closeQuietly(stmt);
-            closeQuietly(resultSet);
-            closeQuietly(con);
-        }
-
-        return null;
-    }
-
     public void save(UserPreference preferences) {
         SkinData targetSkin = preferences.getTargetSkin();
         if (targetSkin != null && targetSkin.getSkinId() == -1) {
