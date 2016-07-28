@@ -1,5 +1,11 @@
 #Changelog
 
+##### 2.0
+
+* Correctly catch not premium name resolves from third-party api
+* Added skin upload support for bukkit
+* Added specific skin select command for bukkit
+
 ##### 1.13
 
 * Load database record async too for restoring skins in BungeeCord

@@ -1,4 +1,4 @@
-package com.github.games647.changeskin.core.model.mojang;
+package com.github.games647.changeskin.core.model.mojang.skin;
 
 public class TexturesModel {
 

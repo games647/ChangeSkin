@@ -66,6 +66,15 @@ server-blacklist: []
 #    - pvp
 #    - lobby
 
+# Actually I don't want that you put your credentials here, but it seems there is no easier way to do it.
+# See my statement here: https://www.spigotmc.org/threads/changeskin.138380/page-15#post-1736265
+#
+# Example:
+# upload-accounts:
+#     - EMAIL:PASSWORD
+#     - EMAIL:PASSWORD
+upload-accounts: []
+
 # If you have a BungeeCord server, this option might be relevant for you.
 # If you activate this option, the permission will be checked on the bukkit server and only on the bukkit server.
 #

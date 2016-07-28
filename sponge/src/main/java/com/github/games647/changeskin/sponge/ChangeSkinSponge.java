@@ -34,7 +34,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-@Plugin(id = "changeskin", name = "ChangeSkin", version = "1.10"
+@Plugin(id = "changeskin", name = "ChangeSkin", version = "2.0"
         , url = "https://github.com/games647/ChangeSkin"
         , description = "Sponge plugin to change your skin server side")
 public class ChangeSkinSponge {

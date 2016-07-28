@@ -1,10 +1,10 @@
 package com.github.games647.changeskin.core.model;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.mojang.DataModel;
-import com.github.games647.changeskin.core.model.mojang.MetadataModel;
-import com.github.games647.changeskin.core.model.mojang.SkinModel;
-import com.github.games647.changeskin.core.model.mojang.TextureSourceModel;
+import com.github.games647.changeskin.core.model.mojang.skin.DataModel;
+import com.github.games647.changeskin.core.model.mojang.skin.MetadataModel;
+import com.github.games647.changeskin.core.model.mojang.skin.SkinModel;
+import com.github.games647.changeskin.core.model.mojang.skin.TextureSourceModel;
 import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 

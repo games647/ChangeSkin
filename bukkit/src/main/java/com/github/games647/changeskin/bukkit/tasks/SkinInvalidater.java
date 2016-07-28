@@ -4,6 +4,7 @@ import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -30,7 +31,7 @@ public class SkinInvalidater implements Runnable {
 
             SkinData skin = plugin.getCore().getMojangSkinApi().downloadSkin(ownedSkin.getUuid());
             plugin.getCore().getUuidCache().put(skin.getName(), skin.getUuid());
-            plugin.getServer().getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, skin));
+            Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, skin));
         }
     }
 }

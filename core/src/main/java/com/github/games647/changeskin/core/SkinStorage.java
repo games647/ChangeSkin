@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.io.BaseEncoding;
 
 import java.sql.Connection;
@@ -56,6 +56,7 @@ public class SkinStorage {
             stmt = con.createStatement();
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + DATA_TABLE + " ("
                     + "`SkinID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
+                    + "`DisplayName` VARCHAR(255), "
                     + "`Timestamp` BIGINT NOT NULL, "
                     + "`UUID` CHAR(36) NOT NULL, "
                     + "`Name` VARCHAR(16) NOT NULL, "

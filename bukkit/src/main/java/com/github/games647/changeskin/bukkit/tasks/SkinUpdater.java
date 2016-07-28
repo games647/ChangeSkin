@@ -28,7 +28,7 @@ import org.bukkit.entity.Player;
 
 public class SkinUpdater implements Runnable {
 
-    private final ChangeSkinBukkit plugin;
+    protected final ChangeSkinBukkit plugin;
     private final CommandSender invoker;
     private final Player receiver;
     private final SkinData targetSkin;

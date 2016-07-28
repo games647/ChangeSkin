@@ -3,18 +3,22 @@ package com.github.games647.changeskin.bukkit;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.commands.SetSkinCommand;
 import com.github.games647.changeskin.bukkit.commands.SkinInvalidateCommand;
+import com.github.games647.changeskin.bukkit.commands.SkinNameCommand;
+import com.github.games647.changeskin.bukkit.commands.SkinSelectCommand;
+import com.github.games647.changeskin.bukkit.commands.SkinUploadCommand;
 import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
 import com.github.games647.changeskin.bukkit.listener.PlayerLoginListener;
 import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.base.Charsets;
 
 import java.io.File;
 import java.io.InputStreamReader;
+import java.text.MessageFormat;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
@@ -43,9 +47,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
         }
 
         saveDefaultConfig();
-
-        getCommand("setskin").setExecutor(new SetSkinCommand(this));
-        getCommand("skinupdate").setExecutor(new SkinInvalidateCommand(this));
+        registerCommands();
 
         if (bungeeCord) {
             getLogger().info("BungeeCord detected. Activating BungeeCord support");
@@ -78,6 +80,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
             }
 
             core.loadDefaultSkins(getConfig().getStringList("default-skins"));
+            core.loadAccounts(getConfig().getStringList("upload-accounts"));
 
             loadLocale();
 
@@ -123,7 +126,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
     }
 
     //you should call this method async
-    public void setSkin(Player player, final SkinData newSkin, boolean applyNow) {
+    public void setSkin(Player player, SkinData newSkin, boolean applyNow) {
         new SkinUpdater(this, null, player, newSkin).run();
     }
 
@@ -162,11 +165,29 @@ public class ChangeSkinBukkit extends JavaPlugin {
         }
     }
 
+    public void sendMessage(CommandSender sender, String key, Object... arguments) {
+        if (core == null) {
+            return;
+        }
+
+        String message = core.getMessage(key);
+        if (message != null && sender != null) {
+            sender.sendMessage(MessageFormat.format(message, arguments));
+        }
+    }
+
+    private void registerCommands() {
+        getCommand("setskin").setExecutor(new SetSkinCommand(this));
+        getCommand("skinupdate").setExecutor(new SkinInvalidateCommand(this));
+        getCommand("skinname").setExecutor(new SkinNameCommand(this));
+        getCommand("skinselect").setExecutor(new SkinSelectCommand(this));
+        getCommand("skinupload").setExecutor(new SkinUploadCommand(this));
+     }
+
     private void loadLocale() {
         File messageFile = new File(getDataFolder(), "messages.yml");
-        if (!messageFile.exists()) {
-            saveResource("messages.yml", false);
-        }
+        saveDefaultFile("messages.yml");
+        saveDefaultFile("messages_ru.yml");
 
         InputStreamReader defaultReader = new InputStreamReader(getResource("messages.yml"), Charsets.UTF_8);
         YamlConfiguration defaults = YamlConfiguration.loadConfiguration(defaultReader);
@@ -179,6 +200,13 @@ public class ChangeSkinBukkit extends JavaPlugin {
             if (!message.isEmpty()) {
                 core.addMessage(key, message);
             }
+        }
+    }
+
+    private void saveDefaultFile(String file) {
+        File messageFile = new File(getDataFolder(), file);
+        if (!messageFile.exists()) {
+            saveResource(file, false);
         }
     }
 

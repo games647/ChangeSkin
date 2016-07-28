@@ -37,7 +37,7 @@ public class SkinInvalidateCommand implements CommandExecutor {
             }
 
             SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer);
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, skinInvalidater);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, skinInvalidater);
             return true;
         }
 
@@ -47,7 +47,7 @@ public class SkinInvalidateCommand implements CommandExecutor {
         }
 
         Player receiver = (Player) sender;
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new SkinInvalidater(plugin, sender, receiver));
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinInvalidater(plugin, sender, receiver));
         return true;
     }
 

@@ -18,22 +18,59 @@ commands:
     setskin:
         description: 'Sets a new skin'
         usage: /<command> [player] <name/uuid>
-        aliases: [${project.parent.artifactId}, skin]
+        aliases: [${project.parent.artifactId}, skin, set-skin]
         permission: ${project.parent.artifactId}.command.setskin
 
     skinupdate:
         descriptions: 'Invalidates the database entry and fetches the fresh skin from the Mojang servers'
+        aliases: [skin-update]
         permission: ${project.parent.artifactId}.command.skinupdate
 
+    skinupload:
+        descriptions: 'Upload a skin to a mojang account'
+        permission: ${project.parent.artifactId}.command.skinupload
+        aliases: [skin-upload, uploadskin, upload-skin]
+        usage: /<command> url [name]
+
+    skinname:
+        descriptions: 'Gives your current skin a name'
+        permission: ${project.parent.artifactId}.command.skinname
+        aliases: [skin-name]
+        usage: /<command> name
+
+    skinselect:
+        descriptions: 'Choose a skin from the database which has a specified name'
+        permission: ${project.parent.artifactId}.command.skinselect
+        aliases: [skin-select]
+        usage: /<command> name
+
 permissions:
+    ${project.parent.artifactId}.command.*:
+        children:
+            ${project.parent.artifactId}.command.setskin.*: true
+            ${project.parent.artifactId}.command.skinupdate: true
+            ${project.parent.artifactId}.command.skinupload: true
+            ${project.parent.artifactId}.command.skinupload: true
+            ${project.parent.artifactId}.command.skinname: true
+            ${project.parent.artifactId}.command.skinselect: true
+
+    ${project.parent.artifactId}.command.skinupdate:
+        description: 'Updates the current skin'
+    ${project.parent.artifactId}.command.skinupload:
+        description: 'Upload a skin to a mojang account'
+    ${project.parent.artifactId}.command.skinname:
+        description: 'Gives your current skin a name'
+    ${project.parent.artifactId}.command.skinselect:
+        description: 'Choose a skin from the database which has a specified name'
+
     ${project.parent.artifactId}.command.setskin.*:
         children:
             ${project.parent.artifactId}.command.setskin: true
             ${project.parent.artifactId}.command.setskin.other: true
+
     ${project.parent.artifactId}.command.setskin:
         description: 'Sets a new skin for yourself'
-    ${project.parent.artifactId}.command.skinupdate:
-        description: 'Updates the current skin'
+
     ${project.parent.artifactId}.command.setskin.other:
         description: 'Sets a skin for another player'
         children:

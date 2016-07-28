@@ -5,6 +5,7 @@ import com.github.games647.changeskin.core.model.SkinData;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -36,6 +37,6 @@ public class SkinDownloader implements Runnable {
             plugin.sendMessage(invoker, "reset");
         }
 
-        plugin.getServer().getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, skin));
+        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, skin));
     }
 }

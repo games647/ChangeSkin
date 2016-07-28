@@ -14,7 +14,8 @@ all players who still have the default steve or alex skin.
 ## Features
 
 * Skins for offline mode
-* BungeeCord support
+* Upload custom skins
+* BungeeCord and Sponge support
 * SQL-Storage
 * Change your skin - Every skin which has ever uploaded to Mojang is allowed
 * Lightweight

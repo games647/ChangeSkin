@@ -5,8 +5,8 @@ import com.github.games647.changeskin.core.model.McApiProfile;
 import com.github.games647.changeskin.core.model.PlayerProfile;
 import com.github.games647.changeskin.core.model.RawPropertiesModel;
 import com.github.games647.changeskin.core.model.SkinData;
-import com.github.games647.changeskin.core.model.mojang.PropertiesModel;
-import com.github.games647.changeskin.core.model.mojang.TexturesModel;
+import com.github.games647.changeskin.core.model.mojang.skin.PropertiesModel;
+import com.github.games647.changeskin.core.model.mojang.skin.TexturesModel;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.google.common.io.Closer;
@@ -17,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
@@ -27,7 +26,6 @@ public class MojangSkinApi {
 
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
     private static final String MCAPI_SKIN_URL = "https://mcapi.de/api/user/";
-    private static final String CHANGE_SKIN_URL = "https://api.mojang.com/user/profile/<uuid>/skin";
 
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
     private static final String MCAPI_UUID_URL = "https://mcapi.ca/uuid/player/";
@@ -35,11 +33,9 @@ public class MojangSkinApi {
     private static final String VALID_USERNAME = "^\\w{2,16}$";
 
     private static final int RATE_LIMIT_ID = 429;
-    private static final int TIMEOUT = 3000;
-    private static final String USER_AGENT = "ChangeSkin-Bukkit-Plugin";
 
     private final Gson gson = new Gson();
-
+    
     private final ConcurrentMap<Object, Object> requests;
     private final Logger logger;
     private final int rateLimit;
@@ -70,7 +66,7 @@ public class MojangSkinApi {
         Closer closer = Closer.create();
         try {
             
-            HttpURLConnection httpConnection = getConnection(UUID_URL + playerName);
+            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(UUID_URL + playerName);
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
             } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
@@ -103,7 +99,7 @@ public class MojangSkinApi {
     public UUID getUUIDFromAPI(String playerName) throws NotPremiumException {
         InputStreamReader inputReader = null;
         try {
-            HttpURLConnection httpConnection = getConnection(MCAPI_UUID_URL + playerName);
+            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(MCAPI_UUID_URL + playerName);
 
             inputReader = new InputStreamReader(httpConnection.getInputStream());
             String line = CharStreams.toString(inputReader);
@@ -133,7 +129,7 @@ public class MojangSkinApi {
         //unsigned is needed in order to receive the signature
         String uuidString = ownerUUID.toString().replace("-", "") + "?unsigned=false";
         try {
-            HttpURLConnection httpConnection = getConnection(SKIN_URL + uuidString);
+            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(SKIN_URL + uuidString);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();
@@ -163,38 +159,26 @@ public class MojangSkinApi {
         //unsigned is needed in order to receive the signature
         String uuidStrip = ownerUUID.toString().replace("-", "");
         try {
-            HttpURLConnection httpConnection = getConnection(MCAPI_SKIN_URL + uuidStrip);
+            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(MCAPI_SKIN_URL + uuidStrip);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-            String line = reader.readLine();
-            if (line != null && !line.equals("null")) {
-                McApiProfile profile = gson.fromJson(line, McApiProfile.class);
+            McApiProfile profile = gson.fromJson(reader.readLine(), McApiProfile.class);
 
-                ApiPropertiesModel properties = profile.getProperties();
-                if (properties != null && properties.getRaw().length > 0) {
-                    RawPropertiesModel propertiesModel = properties.getRaw()[0];
+            ApiPropertiesModel properties = profile.getProperties();
+            if (properties != null && properties.getRaw().length > 0) {
+                RawPropertiesModel propertiesModel = properties.getRaw()[0];
 
-                    //base64 encoded skin data
-                    String encodedSkin = propertiesModel.getValue();
-                    String signature = propertiesModel.getSignature();
+                //base64 encoded skin data
+                String encodedSkin = propertiesModel.getValue();
+                String signature = propertiesModel.getSignature();
 
-                    SkinData skinData = new SkinData(encodedSkin, signature);
-                    return skinData;
-                }
+                SkinData skinData = new SkinData(encodedSkin, signature);
+                return skinData;
             }
         } catch (IOException | JsonParseException ex) {
             logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);
         }
 
         return null;
-    }
-
-    private HttpURLConnection getConnection(String url) throws IOException {
-        HttpURLConnection httpConnection = (HttpURLConnection) new URL(url).openConnection();
-        httpConnection.setConnectTimeout(TIMEOUT);
-        httpConnection.setReadTimeout(2 * TIMEOUT);
-        httpConnection.setRequestProperty("Content-Type", "application/json");
-        httpConnection.setRequestProperty("User-Agent", USER_AGENT);
-        return httpConnection;
     }
 }
