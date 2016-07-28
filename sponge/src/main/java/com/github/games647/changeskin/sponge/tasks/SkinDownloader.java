@@ -27,7 +27,6 @@ public class SkinDownloader implements Runnable {
         SkinData skin = plugin.getCore().getStorage().getSkin(targetUUID);
         if (skin == null) {
             skin = plugin.getCore().getMojangSkinApi().downloadSkin(targetUUID);
-            plugin.getCore().getUuidCache().put(skin.getName(), skin.getUuid());
         }
 
         if (targetUUID.equals(receiver.getUniqueId())) {

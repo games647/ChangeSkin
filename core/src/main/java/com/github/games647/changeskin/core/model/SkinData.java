@@ -13,6 +13,8 @@ import java.util.UUID;
 
 public class SkinData {
 
+    public static final String URL_PREFIX = "http://textures.minecraft.net/texture/";
+
     private int skinId = -1;
 
     private final long timestamp;
@@ -26,7 +28,7 @@ public class SkinData {
     private final transient String encodedData;
 
     public SkinData(int skinId, long timestamp, UUID uuid, String name
-            , boolean slimModel, String skinURL, String capeURL, String signature) {
+            , boolean slimModel, String skinURL, String capeURL, byte[] signature) {
         this.skinId = skinId;
 
         this.timestamp = timestamp;
@@ -35,7 +37,7 @@ public class SkinData {
         this.slimModel = slimModel;
         this.skinURL = skinURL;
         this.capeURL = capeURL;
-        this.encodedSignature = signature;
+        this.encodedSignature = BaseEncoding.base64().encode(signature);
         this.encodedData = serializeData();
     }
 
@@ -50,17 +52,17 @@ public class SkinData {
 
         DataModel textures = data.getTextures();
         if (textures != null && textures.getSKIN() != null) {
-            this.skinURL = textures.getSKIN().getUrl();
+            this.skinURL = textures.getSKIN().getUrl().replace(URL_PREFIX, "");
             this.slimModel = textures.getSKIN().getMetadata() != null;
         } else {
-            this.skinURL = null;
+            this.skinURL = "";
             this.slimModel = false;
         }
 
         if (textures != null && textures.getCAPE() != null) {
-            this.capeURL = textures.getCAPE().getUrl();
+            this.capeURL = textures.getCAPE().getUrl().replace(URL_PREFIX, "");
         } else {
-            this.capeURL = null;
+            this.capeURL = "";
         }
     }
 
@@ -113,7 +115,7 @@ public class SkinData {
         if (skinURL != null && !skinURL.isEmpty()) {
             DataModel texturesModel = new DataModel();
             TextureSourceModel skinModel = new TextureSourceModel();
-            skinModel.setUrl(skinURL);
+            skinModel.setUrl(URL_PREFIX + skinURL);
             if (slimModel) {
                 skinModel.setMetadata(new MetadataModel());
             }
@@ -122,7 +124,7 @@ public class SkinData {
 
             if (capeURL != null) {
                 TextureSourceModel capeModel = new TextureSourceModel();
-                capeModel.setUrl(capeURL);
+                capeModel.setUrl(URL_PREFIX + capeURL);
                 texturesModel.setCAPE(capeModel);
             }
 

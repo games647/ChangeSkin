@@ -29,7 +29,6 @@ public abstract class AbstractSkinListener implements Listener {
         if (ownerUUID == null && !plugin.getCore().getCrackedNames().containsKey(playerName)) {
             SkinData skin = plugin.getStorage().getSkin(playerName);
             if (skin != null) {
-                plugin.getCore().getUuidCache().put(skin.getName(), skin.getUuid());
                 preferences.setTargetSkin(skin);
                 save(skin, preferences);
                 return;

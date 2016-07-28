@@ -84,6 +84,10 @@ upload-accounts: []
 # server will verify if the user has the permissions on the backend server too.
 bukkit-permissions: false
 
+# This automatically refetches the skin from Mojang if the skin is older than x minutes
+# -1 disables it
+auto-skin-update: -1
+
 # Database configuration
 # Warning: If you use BungeeCord, you should switch to MySQL, because BungeeCord has only a driver for MySQL
 storage:

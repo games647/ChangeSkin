@@ -1,5 +1,9 @@
 #Changelog
 
+##### 2.1
+
+* Remove aggressive UUID caching
+
 ##### 2.0
 
 * Correctly catch not premium name resolves from third-party api
