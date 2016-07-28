@@ -67,7 +67,8 @@ public class ChangeSkinBukkit extends JavaPlugin {
             int rateLimit = getConfig().getInt("mojang-request-limit");
             boolean mojangDownload = getConfig().getBoolean("independent-skin-downloading");
             int cooldown = getConfig().getInt("cooldown");
-            this.core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit, mojangDownload, cooldown);
+            int updateDiff = getConfig().getInt("auto-skin-update");
+            this.core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit, mojangDownload, cooldown, updateDiff);
 
             SkinStorage storage = new SkinStorage(core, driver, host, port, database, username, password);
             core.setStorage(storage);

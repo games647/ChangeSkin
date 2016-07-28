@@ -78,10 +78,12 @@ public class ChangeSkinCore {
     private final MojangSkinApi mojangSkinApi;
     private final MojangAuthApi mojangAuthApi;
     private ConcurrentMap<UUID, Object> cooldowns;
+    private final int autoUpdateDiff;
 
     private final List<Account> uploadAccounts = Lists.newArrayList();
 
-    public ChangeSkinCore(Logger logger, File pluginFolder, int rateLimit, boolean mojangDownload, int cooldown) {
+    public ChangeSkinCore(Logger logger, File pluginFolder, int rateLimit, boolean mojangDownload
+            , int cooldown, int autoUpdateDiff) {
         this.logger = logger;
         this.pluginFolder = pluginFolder;
         this.mojangSkinApi = new MojangSkinApi(buildCache(10, -1), logger, rateLimit, mojangDownload);
@@ -91,7 +93,8 @@ public class ChangeSkinCore {
             cooldown = 1;
         }
 
-        cooldowns = buildCache(cooldown, -1);
+        this.cooldowns = buildCache(cooldown, -1);
+        this.autoUpdateDiff = autoUpdateDiff * 60 * 1_000;
     }
 
     public Logger getLogger() {
@@ -120,6 +123,10 @@ public class ChangeSkinCore {
 
     public List<SkinData> getDefaultSkins() {
         return defaultSkins;
+    }
+
+    public int getAutoUpdateDiff() {
+        return autoUpdateDiff;
     }
 
     public void loadDefaultSkins(List<String> defaults) {

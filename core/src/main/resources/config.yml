@@ -85,6 +85,7 @@ upload-accounts: []
 bukkit-permissions: false
 
 # This automatically refetches the skin from Mojang if the skin is older than x minutes
+# This value should be at least one minute, because that's the rate-limit by Mojang
 # -1 disables it
 auto-skin-update: -1
 

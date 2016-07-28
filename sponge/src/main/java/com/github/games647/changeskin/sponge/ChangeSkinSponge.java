@@ -101,7 +101,8 @@ public class ChangeSkinSponge {
 
             int cooldown = rootNode.getNode("cooldown").getInt();
             File parentFolder = defaultConfigFile.getParentFile();
-            core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, mojangDownload, cooldown);
+            int updateDiff = rootNode.getNode("auto-skin-update").getInt();
+            core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, mojangDownload, cooldown, updateDiff);
             SkinStorage storage = new SkinStorage(core, driver, host, port, database, user, pass);
             core.setStorage(storage);
 

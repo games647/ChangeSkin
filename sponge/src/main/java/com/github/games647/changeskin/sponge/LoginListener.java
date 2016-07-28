@@ -6,6 +6,7 @@ import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.google.common.base.Objects;
 
 import java.util.List;
 import java.util.Random;
@@ -33,11 +34,15 @@ public class LoginListener {
         UUID playerUUID = profile.getUniqueId();
 
         UserPreference preferences = storage.getPreferences(playerUUID);
-        if (preferences.getTargetSkin() == null 
+        int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
+        SkinData targetSkin = preferences.getTargetSkin();
+        if (targetSkin == null
                 && (!plugin.getRootNode().getNode("restoreSkins").getBoolean() || !refetch(preferences, profile))) {
             setDefaultSkin(preferences, profile);
+        } else if (autoUpdateDiff > 0 && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
+            refetch(preferences, profile);
         } else {
-            applySkin(preferences.getTargetSkin(), profile);
+            applySkin(targetSkin, profile);
         }
     }
 
@@ -82,8 +87,13 @@ public class LoginListener {
 
         if (ownerUUID != null) {
             SkinData storedSkin = plugin.getCore().getStorage().getSkin(ownerUUID);
-            if (storedSkin == null) {
-                storedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
+            int updateDiff = plugin.getCore().getAutoUpdateDiff();
+            if (storedSkin == null
+                    || (updateDiff > 0 && System.currentTimeMillis() - storedSkin.getTimestamp() > updateDiff)) {
+                SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
+                if (!Objects.equal(updatedSkin, storedSkin)) {
+                    storedSkin = updatedSkin;
+                }
             }
 
             preferences.setTargetSkin(storedSkin);

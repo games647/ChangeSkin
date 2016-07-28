@@ -2,6 +2,7 @@ package com.github.games647.changeskin.sponge.tasks;
 
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
+import com.google.common.base.Objects;
 
 import java.util.UUID;
 
@@ -25,8 +26,12 @@ public class SkinDownloader implements Runnable {
     @Override
     public void run() {
         SkinData skin = plugin.getCore().getStorage().getSkin(targetUUID);
-        if (skin == null) {
-            skin = plugin.getCore().getMojangSkinApi().downloadSkin(targetUUID);
+        int updateDiff = plugin.getCore().getAutoUpdateDiff();
+        if (skin == null || (updateDiff > 0 && System.currentTimeMillis() - skin.getTimestamp() > updateDiff)) {
+            SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetUUID);
+            if (!Objects.equal(updatedSkin, skin)) {
+                skin = updatedSkin;
+            }
         }
 
         if (targetUUID.equals(receiver.getUniqueId())) {

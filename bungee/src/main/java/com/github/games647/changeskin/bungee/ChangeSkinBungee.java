@@ -61,7 +61,8 @@ public class ChangeSkinBungee extends Plugin {
             int rateLimit = configuration.getInt("mojang-request-limit");
             boolean mojangDownload = configuration.getBoolean("independent-skin-downloading");
             int cooldown = configuration.getInt("cooldown");
-            core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit, mojangDownload, cooldown);
+            int updateDiff = configuration.getInt("auto-skin-update");
+            core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit, mojangDownload, cooldown, updateDiff);
 
             loadLocale();
 

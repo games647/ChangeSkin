@@ -5,6 +5,7 @@ import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.google.common.base.Objects;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -36,7 +37,13 @@ public class AsyncPlayerLoginListener implements Listener {
 
         UserPreference preferences = plugin.getStorage().getPreferences(playerUuid);
         plugin.startSession(playerUuid, preferences);
-        if (preferences.getTargetSkin() == null && plugin.getConfig().getBoolean("restoreSkins")) {
+
+        SkinData targetSkin = preferences.getTargetSkin();
+        int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
+        if (targetSkin == null && plugin.getConfig().getBoolean("restoreSkins")) {
+            refetchSkin(playerName, preferences);
+        } else if (targetSkin != null
+                && autoUpdateDiff > 0 && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
             refetchSkin(playerName, preferences);
         }
     }
@@ -57,8 +64,14 @@ public class AsyncPlayerLoginListener implements Listener {
         if (ownerUUID != null) {
             plugin.getCore().getUuidCache().put(playerName, ownerUUID);
             SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID);
-            if (cachedSkin == null) {
-                cachedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
+
+            int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
+            if (cachedSkin == null 
+                    || (autoUpdateDiff > 0 && System.currentTimeMillis() - cachedSkin.getTimestamp() > autoUpdateDiff)) {
+                SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
+                if (!Objects.equal(updatedSkin, cachedSkin)) {
+                    cachedSkin = updatedSkin;
+                }
             }
 
             preferences.setTargetSkin(cachedSkin);

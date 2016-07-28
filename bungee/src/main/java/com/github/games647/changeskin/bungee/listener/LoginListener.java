@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 
 import java.util.UUID;
@@ -42,7 +43,13 @@ public class LoginListener extends AbstractSkinListener {
                 try {
                     UserPreference preferences = plugin.getStorage().getPreferences(plugin.getOfflineUUID(playerName));
                     plugin.startSession(conn, preferences);
-                    if (preferences.getTargetSkin() == null) {
+
+                    SkinData targetSkin = preferences.getTargetSkin();
+                    int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
+                    if (targetSkin == null) {
+                        refetch(preferences, playerName);
+                    } else if (autoUpdateDiff > 0
+                            && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
                         refetch(preferences, playerName);
                     }
                 } finally {
