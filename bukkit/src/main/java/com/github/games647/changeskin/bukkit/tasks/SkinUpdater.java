@@ -11,13 +11,14 @@ import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.google.common.collect.Lists;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -79,6 +80,9 @@ public class SkinUpdater implements Runnable {
         gameProfile.getProperties().clear();
         if (targetSkin != null) {
             gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
+        } else {
+            WrappedSignedProperty skin = new WrappedSignedProperty(ChangeSkinCore.SKIN_KEY, "", "");
+            gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, skin);
         }
 
         sendUpdate(gameProfile);
@@ -118,12 +122,12 @@ public class SkinUpdater implements Runnable {
 
         WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
         PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
-        removeInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
+        removeInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
         //add info containing the skin data
         PacketContainer addInfo = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO);
         addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
-        addInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
+        addInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
         //Respawn packet
         PacketContainer respawn = protocolManager.createPacket(PacketType.Play.Server.RESPAWN);

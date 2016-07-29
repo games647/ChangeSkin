@@ -130,7 +130,8 @@ public class SkinStorage {
         try {
             con = DriverManager.getConnection(jdbcUrl, username, pass);
 
-            stmt = con.prepareStatement("SELECT * FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1");
+            stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature "
+                    + "FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1");
             stmt.setInt(1, targetSkinId);
             resultSet = stmt.executeQuery();
             if (resultSet.next()) {
@@ -154,7 +155,8 @@ public class SkinStorage {
         try {
             con = DriverManager.getConnection(jdbcUrl, username, pass);
 
-            stmt = con.prepareStatement("SELECT * FROM " + DATA_TABLE + " WHERE UUID=? LIMIT 1");
+            stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature "
+                    + "FROM " + DATA_TABLE + " WHERE UUID=? LIMIT 1");
             stmt.setString(1, skinUUID.toString().replace("-", ""));
 
             resultSet = stmt.executeQuery();
@@ -201,6 +203,10 @@ public class SkinStorage {
     }
 
     public boolean save(SkinData skinData) {
+        if (skinData == null) {
+            return false;
+        }
+
         if (skinData.getSkinId() != -1) {
             //skin already set
             return true;
@@ -247,16 +253,15 @@ public class SkinStorage {
     private SkinData parseSkinData(ResultSet resultSet) throws SQLException {
         int skinId = resultSet.getInt(1);
         long timestamp = resultSet.getLong(2);
-        String displayName = resultSet.getString(3);
-        UUID uuid = ChangeSkinCore.parseId(resultSet.getString(4));
-        String name = resultSet.getString(5);
+        UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
+        String name = resultSet.getString(4);
 
-        boolean slimModel = resultSet.getBoolean(6);
+        boolean slimModel = resultSet.getBoolean(5);
 
-        String skinUrl = resultSet.getString(7);
-        String capeUrl = resultSet.getString(8);
+        String skinUrl = resultSet.getString(6);
+        String capeUrl = resultSet.getString(7);
 
-        byte[] signature = resultSet.getBytes(9);
+        byte[] signature = resultSet.getBytes(8);
         return new SkinData(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
     }
 
