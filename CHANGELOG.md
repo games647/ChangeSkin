@@ -6,6 +6,7 @@
 * Remove name resolves from database
 * Automatically updates the skin if the stored skin is older than x minutes
 * Fix loading skin for the new database schema
+* Fixed 429 for cracked uuids
 
 ##### 2.0
 

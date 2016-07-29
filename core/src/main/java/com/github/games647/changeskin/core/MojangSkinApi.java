@@ -41,6 +41,8 @@ public class MojangSkinApi {
     private final int rateLimit;
     private final boolean mojangDownload;
 
+    private final ConcurrentMap<UUID, Object> crackedUUID = ChangeSkinCore.buildCache(60, -1);
+
     private long lastRateLimit;
 
     public MojangSkinApi(ConcurrentMap<Object, Object> requests, Logger logger, int rateLimit, boolean mojangDownload) {
@@ -122,6 +124,10 @@ public class MojangSkinApi {
     }
 
     public SkinData downloadSkin(UUID ownerUUID) {
+        if (crackedUUID.containsKey(ownerUUID)) {
+            return null;
+        }
+
         if (mojangDownload) {
             return downloadSkinFromApi(ownerUUID);
         }
@@ -133,7 +139,9 @@ public class MojangSkinApi {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();
-            if (line != null && !line.equals("null")) {
+            if (line == null || line.equals("null")) {
+                crackedUUID.put(ownerUUID, new Object());
+            } else {
                 TexturesModel texturesModel = gson.fromJson(line, TexturesModel.class);
 
                 PropertiesModel[] properties = texturesModel.getProperties();
