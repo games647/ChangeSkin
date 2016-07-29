@@ -247,15 +247,16 @@ public class SkinStorage {
     private SkinData parseSkinData(ResultSet resultSet) throws SQLException {
         int skinId = resultSet.getInt(1);
         long timestamp = resultSet.getLong(2);
-        UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
-        String name = resultSet.getString(4);
+        String displayName = resultSet.getString(3);
+        UUID uuid = ChangeSkinCore.parseId(resultSet.getString(4));
+        String name = resultSet.getString(5);
 
-        boolean slimModel = resultSet.getBoolean(5);
+        boolean slimModel = resultSet.getBoolean(6);
 
-        String skinUrl = resultSet.getString(6);
-        String capeUrl = resultSet.getString(7);
+        String skinUrl = resultSet.getString(7);
+        String capeUrl = resultSet.getString(8);
 
-        byte[] signature = resultSet.getBytes(8);
+        byte[] signature = resultSet.getBytes(9);
         return new SkinData(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
     }
 
