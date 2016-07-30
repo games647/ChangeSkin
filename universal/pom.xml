@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.games647</groupId>
         <artifactId>changeskin</artifactId>
-        <version>2.1</version>
+        <version>2.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -29,6 +29,10 @@
                     <artifactSet>
                         <includes>
                             <include>${project.groupId}:*</include>
+                            <!--Database pooling-->
+                            <include>com.zaxxer:HikariCP</include>
+                            <!--Logging framework implements slf4j which is required by hikari-->
+                            <include>org.slf4j:slf4j-jdk14</include>
                         </includes>
                     </artifactSet>
                 </configuration>

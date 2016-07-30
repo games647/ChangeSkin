@@ -3,14 +3,16 @@ package com.github.games647.changeskin.core;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.io.BaseEncoding;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 
 public class SkinStorage {
@@ -18,41 +20,38 @@ public class SkinStorage {
     private static final String PREFERENCES_TABLE = "preferences";
     private static final String DATA_TABLE = "skinData";
 
-    private final String driver;
-    private final String jdbcUrl;
-    private final String username;
-    private final String pass;
-
     private final ChangeSkinCore plugin;
+    private final HikariDataSource dataSource;
 
-    public SkinStorage(ChangeSkinCore plugin
+    public SkinStorage(ChangeSkinCore core, ThreadFactory threadFactory
             , String driver, String host, int port, String databasePath, String user, String pass) {
-        this.plugin = plugin;
+        this.plugin = core;
 
-        this.driver = driver;
-        databasePath = databasePath.replace("{pluginDir}", plugin.getDataFolder().getAbsolutePath());
+        HikariConfig databaseConfig = new HikariConfig();
+        databaseConfig.setUsername(user);
+        databaseConfig.setPassword(pass);
+        databaseConfig.setDriverClassName(driver);
+        databaseConfig.setThreadFactory(threadFactory);
 
-        String url = "jdbc:";
+        databasePath = databasePath.replace("{pluginDir}", core.getDataFolder().getAbsolutePath());
+
+        String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
-            url += "sqlite" + "://" + databasePath;
+            jdbcUrl += "sqlite" + "://" + databasePath;
+            databaseConfig.setConnectionTestQuery("SELECT 1");
         } else {
-            url += "mysql" + "://" + host + ':' + port + '/' + databasePath;
+            jdbcUrl += "mysql" + "://" + host + ':' + port + '/' + databasePath;
         }
 
-        this.jdbcUrl = url;
-
-        this.username = user;
-        this.pass = pass;
+        databaseConfig.setJdbcUrl(jdbcUrl);
+        this.dataSource = new HikariDataSource(databaseConfig);
     }
 
     public void createTables() throws ClassNotFoundException, SQLException {
-        //load the driver
-        Class.forName(driver);
-
         Connection con = null;
         Statement stmt = null;
         try {
-            con = DriverManager.getConnection(jdbcUrl, username, pass);
+            con = dataSource.getConnection();
             stmt = con.createStatement();
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + DATA_TABLE + " ("
                     + "`SkinID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
@@ -77,7 +76,7 @@ public class SkinStorage {
                     + "     ON DELETE CASCADE "
                     + ")";
 
-            if (jdbcUrl.contains("sqlite")) {
+            if (dataSource.getJdbcUrl().contains("sqlite")) {
                 createPreferencesStmt = createPreferencesStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
                 createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT")
                         .replace(", INDEX(`Name`, `UUID`)", "");
@@ -99,11 +98,11 @@ public class SkinStorage {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            con = DriverManager.getConnection(jdbcUrl, username, pass);
+            con = dataSource.getConnection();
 
             stmt = con.prepareStatement("SELECT TargetSkin FROM " + PREFERENCES_TABLE + " WHERE UUID=? LIMIT 1");
-
             stmt.setString(1, uuid.toString().replace("-", ""));
+
             resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 int targetSkinId = resultSet.getInt(1);
@@ -128,11 +127,12 @@ public class SkinStorage {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            con = DriverManager.getConnection(jdbcUrl, username, pass);
+            con = dataSource.getConnection();
 
             stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature "
                     + "FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1");
             stmt.setInt(1, targetSkinId);
+
             resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 return parseSkinData(resultSet);
@@ -153,7 +153,7 @@ public class SkinStorage {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            con = DriverManager.getConnection(jdbcUrl, username, pass);
+            con = dataSource.getConnection();
 
             stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature "
                     + "FROM " + DATA_TABLE + " WHERE UUID=? LIMIT 1");
@@ -183,7 +183,7 @@ public class SkinStorage {
         Connection con = null;
         PreparedStatement stmt = null;
         try {
-            con = DriverManager.getConnection(jdbcUrl, username, pass);
+            con = dataSource.getConnection();
             if (targetSkin == null) {
                 stmt = con.prepareStatement("DELETE FROM " + PREFERENCES_TABLE + " WHERE UUID=?");
                 stmt.setString(1, preferences.getUuid().toString().replace("-", ""));
@@ -218,7 +218,7 @@ public class SkinStorage {
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
         try {
-            con = DriverManager.getConnection(jdbcUrl, username, pass);
+            con = dataSource.getConnection();
 
             stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
                     + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"

@@ -15,12 +15,14 @@ import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.base.Charsets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -70,7 +72,13 @@ public class ChangeSkinBukkit extends JavaPlugin {
             int updateDiff = getConfig().getInt("auto-skin-update");
             this.core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit, mojangDownload, cooldown, updateDiff);
 
-            SkinStorage storage = new SkinStorage(core, driver, host, port, database, username, password);
+            ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                    .setNameFormat(getName() + " Database Pool Thread #%1$d")
+                    //Hikari create daemons by default
+                    .setDaemon(true)
+                    .build();
+
+            SkinStorage storage = new SkinStorage(core,threadFactory, driver, host, port, database, username, password);
             core.setStorage(storage);
             try {
                 storage.createTables();

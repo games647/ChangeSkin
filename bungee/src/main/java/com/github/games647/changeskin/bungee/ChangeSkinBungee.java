@@ -16,6 +16,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 
 import net.md_5.bungee.api.ChatColor;
@@ -32,6 +34,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -73,7 +76,14 @@ public class ChangeSkinBungee extends Plugin {
 
             String username = configuration.getString("storage.username", "");
             String password = configuration.getString("storage.password", "");
-            SkinStorage storage = new SkinStorage(core, driver, host, port, database, username, password);
+
+            String pluginName = this.getDescription().getName();
+            ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                    .setNameFormat(pluginName + " Database Pool Thread #%1$d")
+                    //Hikari create daemons by default
+                    .setDaemon(true)
+                    .setThreadFactory(new GroupedThreadFactory(this, pluginName)).build();
+            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, username, password);
             core.setStorage(storage);
             try {
                 storage.createTables();
@@ -156,13 +166,11 @@ public class ChangeSkinBungee extends Plugin {
             } catch (NoSuchFieldException | IllegalAccessException ex) {
                 getLogger().log(Level.SEVERE, null, ex);
             }
+        } else if (skinData == null) {
+            loginProfile.setProperties(new Property[]{});
         } else {
-            if (skinData == null) {
-                loginProfile.setProperties(new Property[]{});
-            } else {
-                Property textures = convertToProperty(skinData);
-                loginProfile.setProperties(new Property[]{textures});
-            }
+            Property textures = convertToProperty(skinData);
+            loginProfile.setProperties(new Property[]{textures});
         }
 
         //send plugin channel update request
@@ -178,7 +186,7 @@ public class ChangeSkinBungee extends Plugin {
                 out.writeUTF("null");
                 out.writeUTF(player.getName());
             }
-            
+
             player.getServer().sendData(getDescription().getName(), out.toByteArray());
         }
     }

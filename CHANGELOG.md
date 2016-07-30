@@ -1,5 +1,9 @@
 #Changelog
 
+##### 2.2
+
+* Add Hikari database connection pooling
+
 ##### 2.1
 
 * Remove aggressive UUID caching

@@ -6,6 +6,7 @@ import com.github.games647.changeskin.sponge.commands.SetSkinCommand;
 import com.github.games647.changeskin.sponge.commands.SkinInvalidateCommand;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadFactory;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
@@ -103,7 +105,15 @@ public class ChangeSkinSponge {
             File parentFolder = defaultConfigFile.getParentFile();
             int updateDiff = rootNode.getNode("auto-skin-update").getInt();
             core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, mojangDownload, cooldown, updateDiff);
-            SkinStorage storage = new SkinStorage(core, driver, host, port, database, user, pass);
+
+            String pluginName = "ChangeSkin";
+            ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                    .setNameFormat(pluginName + " Database Pool Thread #%1$d")
+                    //Hikari create daemons by default
+                    .setDaemon(true)
+                    .build();
+
+            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, user, pass);
             core.setStorage(storage);
 
             try {
