@@ -39,6 +39,7 @@ public class SkinStorage {
         if (driver.contains("sqlite")) {
             jdbcUrl += "sqlite" + "://" + databasePath;
             databaseConfig.setConnectionTestQuery("SELECT 1");
+            databaseConfig.setMaximumPoolSize(1);
         } else {
             jdbcUrl += "mysql" + "://" + host + ':' + port + '/' + databasePath;
         }
