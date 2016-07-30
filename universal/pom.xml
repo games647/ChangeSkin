@@ -33,6 +33,7 @@
                             <include>com.zaxxer:HikariCP</include>
                             <!--Logging framework implements slf4j which is required by hikari-->
                             <include>org.slf4j:slf4j-jdk14</include>
+                            <include>org.slf4j:slf4j-api</include>
                         </includes>
                     </artifactSet>
                 </configuration>
