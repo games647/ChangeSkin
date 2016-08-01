@@ -122,7 +122,7 @@ public class SkinData {
 
             texturesModel.setSKIN(skinModel);
 
-            if (capeURL != null) {
+            if (capeURL != null && !capeURL.isEmpty()) {
                 TextureSourceModel capeModel = new TextureSourceModel();
                 capeModel.setUrl(URL_PREFIX + capeURL);
                 texturesModel.setCAPE(capeModel);

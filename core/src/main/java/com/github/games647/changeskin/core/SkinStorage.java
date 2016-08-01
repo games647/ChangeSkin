@@ -103,15 +103,18 @@ public class SkinStorage {
             PreparedStatement stmt = null;
             ResultSet resultSet = null;
             try {
+
                 con = dataSource.getConnection();
 
-                stmt = con.prepareStatement("SELECT TargetSkin FROM " + PREFERENCES_TABLE + " WHERE UUID=? LIMIT 1");
+                stmt = con.prepareStatement("SELECT SkinId, Timestamp, " + DATA_TABLE + ".UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature"
+                        + " FROM " + PREFERENCES_TABLE
+                        + " JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
+                        + " WHERE " + PREFERENCES_TABLE +".UUID=? LIMIT 1");
                 stmt.setString(1, uuid.toString().replace("-", ""));
 
                 resultSet = stmt.executeQuery();
                 if (resultSet.next()) {
-                    int targetSkinId = resultSet.getInt(1);
-                    SkinData skinData = getSkin(targetSkinId);
+                    SkinData skinData = parseSkinData(resultSet);
                     return new UserPreference(uuid, skinData);
                 } else {
                     return new UserPreference(uuid);

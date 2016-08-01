@@ -55,7 +55,7 @@ public class MojangSkinApi {
     public UUID getUUID(String playerName) throws NotPremiumException, RateLimitException {
         logger.log(Level.FINE, "Making UUID->Name request for {0}", playerName);
         if (!playerName.matches(VALID_USERNAME)) {
-            return null;
+            throw new NotPremiumException(playerName);
         }
 
         if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {

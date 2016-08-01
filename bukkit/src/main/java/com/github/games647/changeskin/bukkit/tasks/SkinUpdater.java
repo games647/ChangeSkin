@@ -11,7 +11,6 @@ import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinData;
@@ -81,8 +80,7 @@ public class SkinUpdater implements Runnable {
         if (targetSkin != null) {
             gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
         } else {
-            WrappedSignedProperty skin = new WrappedSignedProperty(ChangeSkinCore.SKIN_KEY, "", "");
-            gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, skin);
+            System.out.println("No-SKIN");
         }
 
         sendUpdate(gameProfile);
