@@ -91,6 +91,7 @@ public class MojangAuthApi {
             writer.flush();
 
             httpConnection.connect();
+            logger.log(Level.FINE, "Response code for uploading {0}", httpConnection.getResponseCode());
 
             return true;
         } catch (IOException ioEx) {
