@@ -36,13 +36,16 @@ public class LoginListener {
         UserPreference preferences = storage.getPreferences(playerUUID);
         int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
         SkinData targetSkin = preferences.getTargetSkin();
-        if (targetSkin == null
-                && (!plugin.getRootNode().getNode("restoreSkins").getBoolean() || !refetch(preferences, profile))) {
-            setDefaultSkin(preferences, profile);
-        } else if (autoUpdateDiff > 0 && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
-            refetch(preferences, profile);
+        if (targetSkin == null) {
+            if (!plugin.getRootNode().getNode("restoreSkins").getBoolean() || !refetch(preferences, profile)) {
+                setDefaultSkin(preferences, profile);
+            }
         } else {
-            applySkin(targetSkin, profile);
+            if (autoUpdateDiff > 0 && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
+
+            } else {
+                applySkin(targetSkin, profile);
+            }
         }
     }
 
