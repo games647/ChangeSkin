@@ -31,12 +31,16 @@ public class SkinDownloader implements Runnable {
 
     @Override
     public void run() {
-        SkinData newSkin = plugin.getStorage().getSkin(targetUUID);
+        SkinData targetSkin = plugin.getStorage().getSkin(targetUUID);
         int updateDiff = plugin.getCore().getAutoUpdateDiff();
-        if (newSkin == null || (updateDiff > 0 && System.currentTimeMillis() - newSkin.getTimestamp() > updateDiff)) {
+        long now = System.currentTimeMillis();
+        if (targetSkin == null || (updateDiff > 0 && now - targetSkin.getTimestamp() > updateDiff)) {
+            System.out.println(now);
+            System.out.println(targetSkin.getTimestamp());
+            System.out.println(now - targetSkin.getTimestamp());
             SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetUUID);
-            if (!Objects.equal(updatedSkin, newSkin)) {
-                newSkin = updatedSkin;
+            if (!Objects.equal(updatedSkin, targetSkin)) {
+                targetSkin = updatedSkin;
             }
         }
 
@@ -44,7 +48,7 @@ public class SkinDownloader implements Runnable {
             plugin.sendMessage(invoker, "reset");
         }
 
-        SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, receiver, newSkin, bukkitOp);
+        SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, receiver, targetSkin, bukkitOp);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
     }
 }

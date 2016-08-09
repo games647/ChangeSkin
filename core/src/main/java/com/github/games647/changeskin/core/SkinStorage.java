@@ -160,7 +160,7 @@ public class SkinStorage {
             con = dataSource.getConnection();
 
             stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature "
-                    + "FROM " + DATA_TABLE + " WHERE UUID=? LIMIT 1");
+                    + "FROM " + DATA_TABLE + " WHERE UUID=? ORDER BY Timestamp DESC LIMIT 1");
             stmt.setString(1, skinUUID.toString().replace("-", ""));
 
             resultSet = stmt.executeQuery();

@@ -178,12 +178,12 @@ public class ChangeSkinBungee extends Plugin {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("UpdateSkin");
 
-            if (skinData != null) {
-                out.writeUTF(skinData.getEncodedData());
-                out.writeUTF(skinData.getEncodedSignature());
+            if (skinData == null) {
+                out.writeUTF("null");
                 out.writeUTF(player.getName());
             } else {
-                out.writeUTF("null");
+                out.writeUTF(skinData.getEncodedData());
+                out.writeUTF(skinData.getEncodedSignature());
                 out.writeUTF(player.getName());
             }
 
