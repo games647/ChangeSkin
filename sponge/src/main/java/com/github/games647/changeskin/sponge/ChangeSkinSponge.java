@@ -2,8 +2,10 @@ package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.sponge.commands.SelectCommand;
 import com.github.games647.changeskin.sponge.commands.SetSkinCommand;
 import com.github.games647.changeskin.sponge.commands.SkinInvalidateCommand;
+import com.github.games647.changeskin.sponge.commands.SkinUploadCommand;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -13,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
@@ -138,13 +141,23 @@ public class ChangeSkinSponge {
     public void onInit(GameInitializationEvent initEvent) {
         CommandManager commandManager = game.getCommandManager();
         commandManager.register(this, CommandSpec.builder()
+                .executor(new SelectCommand(this))
+                .arguments(GenericArguments.string(Text.of("skinName")))
+                .build(), "skin-select");
+
+        commandManager.register(this, CommandSpec.builder()
+                .executor(new SkinUploadCommand(this))
+                .arguments(GenericArguments.string(Text.of("url")))
+                .build(), "skin-upload");
+
+        commandManager.register(this, CommandSpec.builder()
                 .executor(new SetSkinCommand(this))
                 .arguments(GenericArguments.string(Text.of("skin")))
                 .build(), "changeskin", "setskin");
 
         commandManager.register(this, CommandSpec.builder()
                 .executor(new SkinInvalidateCommand(this))
-                .build(), "skininvalidate");
+                .build(), "skininvalidate", "skin-invalidate");
 
         game.getEventManager().registerListeners(this, new LoginListener(this));
         pluginChannel = game.getChannelRegistrar().createRawChannel(this, pluginContainer.getId());
@@ -220,6 +233,18 @@ public class ChangeSkinSponge {
         String message = core.getMessage(key);
         if (message != null && sender != null) {
             sender.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(message.replace('&', '§')));
+        }
+    }
+
+    public void sendMessage(CommandSource sender, String key, Object... arguments) {
+        if (core == null) {
+            return;
+        }
+
+        String message = core.getMessage(key);
+        if (message != null && sender != null) {
+            String formated = MessageFormat.format(message, arguments);
+            sender.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(formated.replace('&', '§')));
         }
     }
 
