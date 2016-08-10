@@ -2,6 +2,8 @@ package com.github.games647.changeskin.bungee;
 
 import com.github.games647.changeskin.bungee.commands.SetSkinCommand;
 import com.github.games647.changeskin.bungee.commands.SkinInvalidateCommand;
+import com.github.games647.changeskin.bungee.commands.SkinSelectCommand;
+import com.github.games647.changeskin.bungee.commands.SkinUploadCommand;
 import com.github.games647.changeskin.bungee.listener.DisconnectListener;
 import com.github.games647.changeskin.bungee.listener.JoinListener;
 import com.github.games647.changeskin.bungee.listener.LoginListener;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
+import java.text.MessageFormat;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
@@ -109,6 +112,8 @@ public class ChangeSkinBungee extends Plugin {
 
         getProxy().getPluginManager().registerCommand(this, new SetSkinCommand(this));
         getProxy().getPluginManager().registerCommand(this, new SkinInvalidateCommand(this));
+        getProxy().getPluginManager().registerCommand(this, new SkinUploadCommand(this));
+        getProxy().getPluginManager().registerCommand(this, new SkinSelectCommand(this));
     }
 
     private File saveDefaultResource(String file) {
@@ -245,6 +250,13 @@ public class ChangeSkinBungee extends Plugin {
         String message = core.getMessage(key);
         if (message != null && sender != null) {
             sender.sendMessage(TextComponent.fromLegacyText(message));
+        }
+    }
+
+    public void sendMessage(CommandSender sender, String key, Object... arguments) {
+        String message = core.getMessage(key);
+        if (message != null && sender != null) {
+            sender.sendMessage(TextComponent.fromLegacyText(MessageFormat.format(message, arguments)));
         }
     }
 

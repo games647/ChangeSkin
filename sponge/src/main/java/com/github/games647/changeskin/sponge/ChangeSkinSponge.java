@@ -36,7 +36,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-@Plugin(id = "changeskin", name = "ChangeSkin", version = "2.0"
+@Plugin(id = "changeskin", name = "ChangeSkin", version = "2.3"
         , url = "https://github.com/games647/ChangeSkin"
         , description = "Sponge plugin to change your skin server side")
 public class ChangeSkinSponge {
@@ -54,7 +54,6 @@ public class ChangeSkinSponge {
     private ConfigurationNode rootNode;
 
     private RawDataChannel pluginChannel;
-    private boolean skinPermissions;
 
     @Inject
     public ChangeSkinSponge(Logger logger, Game game, PluginContainer pluginContainer) {

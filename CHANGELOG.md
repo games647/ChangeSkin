@@ -1,8 +1,16 @@
 #Changelog
 
+##### 2.3
+
+* Added skin upload for Sponge and Bungee
+* Added skin select for Sponge and Bungee
+* Fix NPE on login for sponge
+* Fix skin auto updating by selecting only the newest skin from database
+
 ##### 2.2
 
 * Add Hikari database connection pooling
+* Fix skin uploading
 
 ##### 2.1
 
