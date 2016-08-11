@@ -69,6 +69,9 @@ server-blacklist: []
 # Actually I don't want that you put your credentials here, but it seems there is no easier way to do it.
 # See my statement here: https://www.spigotmc.org/threads/changeskin.138380/page-15#post-1736265
 #
+# You can follow this guide on how to upload and use a skin:
+# https://www.spigotmc.org/threads/changeskin.138380/page-19#post-1792019
+#
 # Example:
 # upload-accounts:
 #     - EMAIL:PASSWORD
