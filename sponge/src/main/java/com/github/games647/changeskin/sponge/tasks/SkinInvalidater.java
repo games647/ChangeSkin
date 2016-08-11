@@ -26,9 +26,8 @@ public class SkinInvalidater implements Runnable {
             plugin.sendMessage(invoker, "invalidate-request");
 
             SkinData skin = plugin.getCore().getMojangSkinApi().downloadSkin(ownedSkin.getUuid());
-            plugin.getGame().getScheduler().createTaskBuilder()
-                    .execute(new SkinUpdater(plugin, invoker, invoker, skin))
-                    .submit(plugin);
+            SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, invoker, skin, false);
+            plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
         }
     }
 }

@@ -7,7 +7,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
@@ -19,15 +18,17 @@ public class SkinUpdater implements Runnable {
     private final CommandSender invoker;
 
     private final boolean bukkitOp;
+    private final boolean keepSkin;
 
     public SkinUpdater(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, SkinData targetSkin
-            , boolean bukkitOp) {
+            , boolean bukkitOp, boolean keepSkin) {
         this.plugin = plugin;
         this.receiver = receiver;
         this.targetSkin = targetSkin;
         this.invoker = invoker;
 
         this.bukkitOp = bukkitOp;
+        this.keepSkin = keepSkin;
     }
 
     @Override
@@ -35,8 +36,6 @@ public class SkinUpdater implements Runnable {
         if (!receiver.isConnected()) {
             return;
         }
-
-        plugin.getStorage().save(targetSkin);
 
         if (invoker instanceof ProxiedPlayer && targetSkin != null
                 && plugin.getConfig().getBoolean("bukkit-permissions")) {
@@ -63,13 +62,10 @@ public class SkinUpdater implements Runnable {
         //Save the target uuid from the requesting player source
         final UserPreference preferences = plugin.getStorage().getPreferences(plugin.getOfflineUUID(receiver.getName()));
         preferences.setTargetSkin(targetSkin);
+        preferences.setKeepSkin(keepSkin);
 
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
-            @Override
-            public void run() {
-                plugin.getStorage().save(preferences);
-            }
-        });
+        plugin.getStorage().save(targetSkin);
+        plugin.getStorage().save(preferences);
 
         if (plugin.getConfig().getBoolean("instantSkinChange")) {
             plugin.applySkin(receiver, targetSkin);

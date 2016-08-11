@@ -55,16 +55,16 @@ public class SetSkinCommand implements CommandExecutor {
             if (targetPlayer == null) {
                 plugin.sendMessage(sender, "not-online");
             } else {
-                setSkin(sender, targetPlayer, toSkin);
+                setSkin(sender, targetPlayer, toSkin, isKeepSkin(args));
             }
         } else if (sender instanceof Player) {
             if (args.length == 1) {
                 if ("reset".equalsIgnoreCase(args[0])) {
-                    setSkinUUID(sender, (Player) sender, ((Player) sender).getUniqueId().toString());
+                    setSkinUUID(sender, (Player) sender, ((Player) sender).getUniqueId().toString(), isKeepSkin(args));
                     return true;
                 }
 
-                setSkin(sender, (Player) sender, args[0]);
+                setSkin(sender, (Player) sender, args[0], isKeepSkin(args));
             } else {
                 plugin.sendMessage(sender, "no-skin");
             }
@@ -79,17 +79,18 @@ public class SetSkinCommand implements CommandExecutor {
         return sender instanceof Player && plugin.getCore().isCooldown(((Player) sender).getUniqueId());
     }
 
-    private void setSkin(CommandSender sender, Player targetPlayer, String toSkin) {
+    private void setSkin(CommandSender sender, Player targetPlayer, String toSkin, boolean keepSkin) {
         //minecraft player names has the max length of 16 characters so it could be the uuid
         if (toSkin.length() > 16) {
-            setSkinUUID(sender, targetPlayer, toSkin);
+            setSkinUUID(sender, targetPlayer, toSkin, keepSkin);
         } else {
             plugin.sendMessage(sender, "queue-name-resolve");
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new NameResolver(plugin, sender, toSkin, targetPlayer));
+            NameResolver nameResolver = new NameResolver(plugin, sender, toSkin, targetPlayer, keepSkin);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, nameResolver);
         }
     }
 
-    private void setSkinUUID(CommandSender sender, Player receiverPayer, String targetUUID) {
+    private void setSkinUUID(CommandSender sender, Player receiverPayer, String targetUUID, boolean keepSkin) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
             if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid, true)) {
@@ -97,7 +98,7 @@ public class SetSkinCommand implements CommandExecutor {
             }
 
             plugin.sendMessage(sender, "skin-change-queue");
-            SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid);
+            SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid, keepSkin);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
         } catch (IllegalArgumentException illegalArgumentException) {
             plugin.sendMessage(sender, "invalid-uuid");
@@ -124,5 +125,14 @@ public class SetSkinCommand implements CommandExecutor {
         out.writeBoolean(sender.isOp());
 
         proxy.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
+    }
+
+    private boolean isKeepSkin(String[] args) {
+        if (args.length > 0) {
+            String lastArg = args[args.length - 1];
+            return "keep".equalsIgnoreCase(lastArg);
+        }
+
+        return false;
     }
 }

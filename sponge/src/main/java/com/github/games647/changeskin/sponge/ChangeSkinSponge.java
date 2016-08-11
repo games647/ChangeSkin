@@ -152,7 +152,8 @@ public class ChangeSkinSponge {
 
         commandManager.register(this, CommandSpec.builder()
                 .executor(new SetSkinCommand(this))
-                .arguments(GenericArguments.string(Text.of("skin")))
+                .arguments(GenericArguments.string(Text.of("skin"))
+                        , GenericArguments.optional(GenericArguments.string(Text.of("keep"))))
                 .build(), "changeskin", "setskin");
 
         commandManager.register(this, CommandSpec.builder()

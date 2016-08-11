@@ -86,7 +86,7 @@ public class PlayerLoginListener implements Listener {
         SkinData targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
             if (plugin.getConfig().getBoolean("restoreSkins")) {
-                NameResolver nameResolver = new NameResolver(plugin, null, player.getName(), player);
+                NameResolver nameResolver = new NameResolver(plugin, null, player.getName(), player, false);
                 //refetch
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, nameResolver);
             } else {

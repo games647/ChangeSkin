@@ -38,8 +38,8 @@ public class BungeeCordListener implements RawDataListener {
     private boolean updateSkin(ChannelBuf data, Player player) throws IllegalArgumentException {
         String encodedData = data.readUTF();
         if (encodedData.equalsIgnoreCase("null")) {
-            plugin.getGame().getScheduler().createTaskBuilder()
-                    .execute(new SkinUpdater(plugin, null, player, null)).submit(plugin);
+            SkinUpdater skinUpdater = new SkinUpdater(plugin, null, player, null, false);
+            plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
             return true;
         }
 
@@ -54,8 +54,8 @@ public class BungeeCordListener implements RawDataListener {
         }
 
         SkinData skinData = new SkinData(encodedData, signature);
-        plugin.getGame().getScheduler().createTaskBuilder()
-                    .execute(new SkinUpdater(plugin, null, receiver, skinData)).submit(plugin);
+        SkinUpdater skinUpdater = new SkinUpdater(plugin, null, receiver, skinData, false);
+        plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
         return false;
     }
 

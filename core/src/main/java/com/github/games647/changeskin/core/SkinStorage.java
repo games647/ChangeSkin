@@ -9,6 +9,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
@@ -22,6 +23,8 @@ public class SkinStorage {
 
     private final ChangeSkinCore plugin;
     private final HikariDataSource dataSource;
+
+    private boolean keepColumnPresent;
 
     public SkinStorage(ChangeSkinCore core, ThreadFactory threadFactory, String driver, String host, int port
             , String databasePath, String user, String pass) {
@@ -49,6 +52,7 @@ public class SkinStorage {
     }
 
     public void createTables() throws ClassNotFoundException, SQLException {
+        ResultSet testResult = null;
         Connection con = null;
         Statement stmt = null;
         try {
@@ -71,6 +75,7 @@ public class SkinStorage {
                     + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "`UUID` CHAR(36) NOT NULL, "
                     + "`TargetSkin` INTEGER NOT NULL, "
+                    + "`KeepSkin` BIT NOT NULL DEFAULT 1, "
                     + "UNIQUE (`UUID`), "
                     + "FOREIGN KEY (`TargetSkin`) "
                     + "     REFERENCES " + DATA_TABLE + " (`SkinID`) "
@@ -88,7 +93,17 @@ public class SkinStorage {
             stmt.executeUpdate("UPDATE " + DATA_TABLE + " SET "
                     + "`SkinURL`=REPLACE(`SkinURL`, 'http://textures.minecraft.net/texture/', ''), "
                     + "`CapeURL`=REPLACE(`CapeURL`, 'http://textures.minecraft.net/texture/', '')");
+
+            testResult = stmt.executeQuery("SELECT * FROM " + DATA_TABLE + " Limit 1");
+            ResultSetMetaData meta = testResult.getMetaData();
+            for (int i = 1; i < meta.getColumnCount() + 1; i++) {
+                if (meta.getColumnName(i).equals("KeepSkin")) {
+                    keepColumnPresent = true;
+                    break;
+                }
+            }
         } finally {
+            closeQuietly(testResult);
             closeQuietly(stmt);
             closeQuietly(con);
         }
@@ -102,7 +117,7 @@ public class SkinStorage {
 
             con = dataSource.getConnection();
 
-            stmt = con.prepareStatement("SELECT SkinId, Timestamp, " + DATA_TABLE + ".UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature"
+            stmt = con.prepareStatement("SELECT SkinId, Timestamp, Name, SlimModel, SkinUrl, CapeUrl, Signature, " + DATA_TABLE + ".*"
                     + " FROM " + PREFERENCES_TABLE
                     + " JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
                     + " WHERE " + PREFERENCES_TABLE + ".UUID=? LIMIT 1");
@@ -111,7 +126,12 @@ public class SkinStorage {
             resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 SkinData skinData = parseSkinData(resultSet);
-                return new UserPreference(uuid, skinData);
+                boolean keepSkin = false;
+                if (keepColumnPresent) {
+                    keepSkin = resultSet.getBoolean(11);
+                }
+                
+                return new UserPreference(uuid, skinData, keepSkin);
             } else {
                 return new UserPreference(uuid);
             }
@@ -193,9 +213,18 @@ public class SkinStorage {
                 stmt.setString(1, preferences.getUuid().toString().replace("-", ""));
                 stmt.executeUpdate();
             } else {
-                stmt = con.prepareStatement("REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin) VALUES (?, ?)");
+                String insertQuery = "REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin) VALUES (?, ?)";
+                if (keepColumnPresent) {
+                    insertQuery = "REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin, KeepSkin) VALUES (?, ?, ?)";
+                }
+
+                stmt = con.prepareStatement(insertQuery);
                 stmt.setString(1, preferences.getUuid().toString().replace("-", ""));
                 stmt.setInt(2, targetSkin.getSkinId());
+                if (keepColumnPresent) {
+                    stmt.setBoolean(3, preferences.isKeepSkin());
+                }
+                
                 stmt.executeUpdate();
             }
         } catch (SQLException sqlEx) {

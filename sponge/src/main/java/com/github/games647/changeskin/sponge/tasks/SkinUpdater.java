@@ -21,12 +21,15 @@ public class SkinUpdater implements Runnable {
     private final CommandSource invoker;
     private final Player receiver;
     private final SkinData targetSkin;
+    private final boolean keepSkin;
 
-    public SkinUpdater(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, SkinData targetSkin) {
+    public SkinUpdater(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, SkinData targetSkin
+            , boolean keepSkin) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
         this.targetSkin = targetSkin;
+        this.keepSkin = keepSkin;
     }
 
     @Override
@@ -43,6 +46,7 @@ public class SkinUpdater implements Runnable {
         //Save the target uuid from the requesting player source
         final UserPreference preferences = plugin.getCore().getStorage().getPreferences(receiver.getUniqueId());
         preferences.setTargetSkin(targetSkin);
+        preferences.setKeepSkin(keepSkin);
 
         plugin.getGame().getScheduler().createTaskBuilder().async()
                 .execute(() -> {

@@ -16,12 +16,15 @@ public class SkinDownloader implements Runnable {
     private final CommandSender invoker;
     private final Player receiver;
     private final UUID targetUUID;
+    private final boolean keepSkin;
 
-    public SkinDownloader(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver, UUID targetSkin) {
+    public SkinDownloader(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver, UUID targetUUID
+            , boolean keepSkin) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
-        this.targetUUID = targetSkin;
+        this.targetUUID = targetUUID;
+        this.keepSkin = keepSkin;
     }
 
     @Override
@@ -41,6 +44,6 @@ public class SkinDownloader implements Runnable {
             plugin.sendMessage(invoker, "reset");
         }
 
-        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, storedSkin));
+        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, storedSkin, keepSkin));
     }
 }

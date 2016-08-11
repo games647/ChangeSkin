@@ -32,12 +32,15 @@ public class SkinUpdater implements Runnable {
     private final CommandSender invoker;
     private final Player receiver;
     private final SkinData targetSkin;
+    private final boolean keepSkin;
 
-    public SkinUpdater(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver, SkinData targetSkin) {
+    public SkinUpdater(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver
+            , SkinData targetSkin, boolean keepSkin) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
         this.targetSkin = targetSkin;
+        this.keepSkin = keepSkin;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class SkinUpdater implements Runnable {
             //Save the target uuid from the requesting player source
             final UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
             preferences.setTargetSkin(targetSkin);
+            preferences.setKeepSkin(keepSkin);
 
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
@@ -80,7 +84,7 @@ public class SkinUpdater implements Runnable {
         if (targetSkin != null) {
             gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
         } else {
-            System.out.println("No-SKIN");
+            plugin.getLogger().info("No-SKIN");
         }
 
         sendUpdate(gameProfile);

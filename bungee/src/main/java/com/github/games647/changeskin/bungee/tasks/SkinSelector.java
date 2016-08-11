@@ -27,6 +27,6 @@ public class SkinSelector implements Runnable {
         }
 
         BungeeCord.getInstance().getScheduler()
-                .runAsync(plugin, new SkinUpdater(plugin, receiver, receiver, targetSkin, false));
+                .runAsync(plugin, new SkinUpdater(plugin, receiver, receiver, targetSkin, false, true));
     }
 }

@@ -2,6 +2,7 @@ package com.github.games647.changeskin.bukkit.tasks;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.SkinData;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -25,6 +26,6 @@ public class SkinSelector implements Runnable {
             plugin.sendMessage(receiver, "skin-not-found");
         }
 
-        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, receiver, receiver, targetSkin));
+        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, receiver, receiver, targetSkin, true));
     }
 }

@@ -6,25 +6,28 @@ public class UserPreference {
 
     private final UUID uuid;
     private SkinData targetSkin;
-    private boolean isNew;
+    private boolean keepSkin;
 
-    public UserPreference(UUID uuid, SkinData targetSkin) {
+    public UserPreference(UUID uuid, SkinData targetSkin, boolean keepSkin) {
         this.uuid = uuid;
         this.targetSkin = targetSkin;
+        this.keepSkin = keepSkin;
     }
 
     public UserPreference(UUID uuid) {
-        this(uuid, null);
-
-        this.isNew = true;
+        this(uuid, null, false);
     }
 
     public UUID getUuid() {
         return uuid;
     }
 
-    public boolean isNew() {
-        return isNew;
+    public boolean isKeepSkin() {
+        return keepSkin;
+    }
+
+    public void setKeepSkin(boolean keepSkin) {
+        this.keepSkin = keepSkin;
     }
 
     public SkinData getTargetSkin() {

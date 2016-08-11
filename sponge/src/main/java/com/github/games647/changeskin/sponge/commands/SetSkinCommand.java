@@ -3,6 +3,7 @@ package com.github.games647.changeskin.sponge.commands;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.NameResolver;
 import com.github.games647.changeskin.sponge.tasks.SkinDownloader;
+import java.util.Optional;
 
 import java.util.UUID;
 
@@ -35,6 +36,12 @@ public class SetSkinCommand implements CommandExecutor {
 
         Player receiver = (Player) src;
         String targetSkin = args.<String>getOne("skin").get();
+        Optional<String> keepOptional = args.<String>getOne("keep");
+        boolean keepSkin = false;
+        if (keepOptional.isPresent() && "keep".equalsIgnoreCase(keepOptional.get())) {
+            keepSkin = true;
+        }
+
         if (targetSkin.equals("reset")) {
             targetSkin = receiver.getUniqueId().toString();
         }
@@ -48,16 +55,14 @@ public class SetSkinCommand implements CommandExecutor {
             }
 
             plugin.sendMessage(src, "skin-change-queue");
-            plugin.getGame().getScheduler().createTaskBuilder()
-                .execute(new SkinDownloader(plugin, src, receiver, targetUUID))
-                .submit(plugin);
+            SkinDownloader skinDownloader = new SkinDownloader(plugin, src, receiver, targetUUID, keepSkin);
+            plugin.getGame().getScheduler().createTaskBuilder().async().execute(skinDownloader).submit(plugin);
             return CommandResult.success();
         }
 
         plugin.sendMessage(src, "queue-name-resolve");
-        plugin.getGame().getScheduler().createTaskBuilder()
-                .execute(new NameResolver(plugin, src, targetSkin, receiver))
-                .submit(plugin);
+        NameResolver nameResolver = new NameResolver(plugin, src, targetSkin, receiver, keepSkin);
+        plugin.getGame().getScheduler().createTaskBuilder().async().execute(nameResolver).submit(plugin);
         return CommandResult.success();
     }
 }

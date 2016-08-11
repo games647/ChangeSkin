@@ -136,7 +136,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
 
     //you should call this method async
     public void setSkin(Player player, SkinData newSkin, boolean applyNow) {
-        new SkinUpdater(this, null, player, newSkin).run();
+        new SkinUpdater(this, null, player, newSkin, true).run();
     }
 
     //you should call this method async

@@ -15,12 +15,15 @@ public class SkinDownloader implements Runnable {
     private final CommandSource invoker;
     private final Player receiver;
     private final UUID targetUUID;
+    private final boolean keepSkin;
 
-    public SkinDownloader(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, UUID targetSkin) {
+    public SkinDownloader(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, UUID targetUUID
+            , boolean keepSkin) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
-        this.targetUUID = targetSkin;
+        this.targetUUID = targetUUID;
+        this.keepSkin = keepSkin;
     }
 
     @Override
@@ -38,8 +41,7 @@ public class SkinDownloader implements Runnable {
             plugin.sendMessage(invoker, "reset");
         }
 
-        plugin.getGame().getScheduler().createTaskBuilder()
-                .execute(new SkinUpdater(plugin, invoker, receiver, skin))
-                .submit(plugin);
+        SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, receiver, skin, keepSkin);
+        plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
     }
 }
