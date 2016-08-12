@@ -4,6 +4,7 @@
 
 * Added skin upload for Sponge and Bungee
 * Added skin select for Sponge and Bungee
+* Keep the held item slot after skin updating
 * Added a keepskin property to ignore auto updating
 * Fix NPE on login for sponge
 * Fix skin auto updating by selecting only the newest skin from database

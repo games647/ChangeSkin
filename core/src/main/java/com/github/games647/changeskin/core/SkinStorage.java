@@ -117,7 +117,8 @@ public class SkinStorage {
 
             con = dataSource.getConnection();
 
-            stmt = con.prepareStatement("SELECT SkinId, Timestamp, Name, SlimModel, SkinUrl, CapeUrl, Signature, " + DATA_TABLE + ".*"
+            stmt = con.prepareStatement("SELECT SkinId, Timestamp, " + DATA_TABLE +".UUID, Name, SlimModel, SkinUrl"
+                    + ", CapeUrl, Signature, " + PREFERENCES_TABLE + ".*"
                     + " FROM " + PREFERENCES_TABLE
                     + " JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
                     + " WHERE " + PREFERENCES_TABLE + ".UUID=? LIMIT 1");

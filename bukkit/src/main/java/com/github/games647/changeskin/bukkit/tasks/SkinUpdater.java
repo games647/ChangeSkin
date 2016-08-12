@@ -25,6 +25,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
 
 public class SkinUpdater implements Runnable {
 
@@ -162,7 +163,12 @@ public class SkinUpdater implements Runnable {
             protocolManager.sendServerPacket(receiver, teleport);
 
             //send the current inventory - otherwise player would have an empty inventory
-            receiver.updateInventory();
+            PlayerInventory inventory = receiver.getInventory();
+            inventory.setHeldItemSlot(inventory.getHeldItemSlot());
+
+            for (int i = 0; i < inventory.getSize(); i++) {
+                inventory.setItem(i, inventory.getItem(i));
+            }
 
             //this is sync so should be safe to call
             //triggers updateHealth
