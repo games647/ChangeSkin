@@ -42,10 +42,13 @@ public class LoginListener {
             }
         } else {
             if (autoUpdateDiff > 0 && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
-
-            } else {
-                applySkin(targetSkin, profile);
+                SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetSkin.getUuid());
+                if (!Objects.equal(updatedSkin, targetSkin)) {
+                    targetSkin = updatedSkin;
+                }
             }
+
+            applySkin(targetSkin, profile);
         }
     }
 
