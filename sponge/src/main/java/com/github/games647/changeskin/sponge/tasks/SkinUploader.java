@@ -43,7 +43,10 @@ public class SkinUploader implements Runnable {
 
         //this could proparly cause issues for uuid resolving to this database entry
         SkinData newSkin = plugin.getCore().getMojangSkinApi().downloadSkin(uuid);
+        plugin.cacheSponge(newSkin);
         plugin.getCore().getStorage().save(newSkin);
+
+        plugin.cacheSponge(newSkin);
 
         plugin.getCore().getMojangAuthApi().changeSkin(uuid, accessToken, oldSkinUrl, false);
         plugin.sendMessage(invoker, "skin-uploaded", owner.getProfile().getName(), "Skin-" + newSkin.getSkinId());

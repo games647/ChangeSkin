@@ -7,6 +7,7 @@
 * Keep the held item slot after skin updating
 * Added a keepskin property to ignore auto updating
 * Fix NPE on login for sponge
+* Cache Sponge name->uuid and skins using the Sponge API
 * Fix skin auto updating by selecting only the newest skin from database
 
 ##### 2.2

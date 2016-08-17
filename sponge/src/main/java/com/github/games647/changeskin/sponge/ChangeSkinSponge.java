@@ -2,6 +2,7 @@ package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.sponge.commands.SelectCommand;
 import com.github.games647.changeskin.sponge.commands.SetSkinCommand;
 import com.github.games647.changeskin.sponge.commands.SkinInvalidateCommand;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
@@ -36,6 +38,9 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.profile.GameProfileCache;
+import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
@@ -247,6 +252,24 @@ public class ChangeSkinSponge {
             String formated = MessageFormat.format(message, arguments);
             sender.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(formated.replace('&', '§')));
         }
+    }
+
+    public void cacheSponge(SkinData skin) {
+        //cache the request for Sponge
+        GameProfileCache profileCache = game.getServer().getGameProfileManager().getCache();
+
+        GameProfile gameProfile = GameProfile.of(skin.getUuid(), skin.getName());
+
+        Optional<GameProfile> cachedProfile = profileCache.getById(skin.getUuid());
+        if (cachedProfile.isPresent()) {
+            gameProfile = cachedProfile.get();
+        } else {
+            profileCache.add(gameProfile);
+        }
+
+        ProfileProperty skinProperty = ProfileProperty
+                .of(ChangeSkinCore.SKIN_KEY, skin.getEncodedData(), skin.getEncodedSignature());
+        gameProfile.getPropertyMap().put(ChangeSkinCore.SKIN_KEY, skinProperty);
     }
 
     public PluginContainer getPluginContainer() {

@@ -43,6 +43,7 @@ public class LoginListener {
         } else {
             if (autoUpdateDiff > 0 && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
                 SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetSkin.getUuid());
+                plugin.cacheSponge(updatedSkin);
                 if (!Objects.equal(updatedSkin, targetSkin)) {
                     targetSkin = updatedSkin;
                 }
@@ -97,6 +98,7 @@ public class LoginListener {
             if (storedSkin == null
                     || (updateDiff > 0 && System.currentTimeMillis() - storedSkin.getTimestamp() > updateDiff)) {
                 SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
+                plugin.cacheSponge(updatedSkin);
                 if (!Objects.equal(updatedSkin, storedSkin)) {
                     storedSkin = updatedSkin;
                 }
