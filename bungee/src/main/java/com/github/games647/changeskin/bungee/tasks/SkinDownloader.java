@@ -37,9 +37,6 @@ public class SkinDownloader implements Runnable {
         int updateDiff = plugin.getCore().getAutoUpdateDiff();
         long now = System.currentTimeMillis();
         if (targetSkin == null || (updateDiff > 0 && now - targetSkin.getTimestamp() > updateDiff)) {
-            System.out.println(now);
-            System.out.println(targetSkin.getTimestamp());
-            System.out.println(now - targetSkin.getTimestamp());
             SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetUUID);
             if (!Objects.equal(updatedSkin, targetSkin)) {
                 targetSkin = updatedSkin;
