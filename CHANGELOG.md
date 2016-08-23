@@ -1,5 +1,13 @@
 #Changelog
 
+##### 2.3.2
+
+* Add permission node for /skinupdate < other >
+
+##### 2.3.1
+
+* Remove debug from SkinDownloader (Fix #42)
+
 ##### 2.3
 
 * Added skin upload for Sponge and Bungee

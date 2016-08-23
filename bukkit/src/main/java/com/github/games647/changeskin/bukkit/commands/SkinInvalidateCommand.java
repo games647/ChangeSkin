@@ -36,6 +36,13 @@ public class SkinInvalidateCommand implements CommandExecutor {
                 return true;
             }
 
+            String permPrefix = plugin.getDescription().getName().toLowerCase() + ".command.skinupdate.other.";
+            if (!sender.hasPermission(permPrefix + targetPlayer.getUniqueId().toString())
+                    && !sender.hasPermission(permPrefix + '*')) {
+                plugin.sendMessage(sender, "no-permission-other");
+                return true;
+            }
+
             SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, skinInvalidater);
             return true;

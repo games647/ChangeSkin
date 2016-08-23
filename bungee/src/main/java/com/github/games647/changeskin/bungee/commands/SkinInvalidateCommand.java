@@ -32,6 +32,13 @@ public class SkinInvalidateCommand extends Command {
                 return;
             }
 
+            String permPrefix = plugin.getDescription().getName().toLowerCase() + ".command.skinupdate.other.";
+            if (!sender.hasPermission(permPrefix + targetPlayer.getUniqueId().toString())
+                    && !sender.hasPermission(permPrefix + '*')) {
+                plugin.sendMessage(sender, "no-permission-other");
+                return;
+            }
+
             SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer, isOp);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidater);
             return;
