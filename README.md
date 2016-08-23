@@ -31,13 +31,19 @@ all players who still have the default steve or alex skin.
 * /setskin < playerName> [keep]
 * /setskin < onlinePlayer > < newSkinUUID/newSkinPlayerName > [keep]
 * /skinupdate [onlinePlayer] - Invalidates the database entry and fetches the fresh skin from the Mojang servers
+* /skinupload < url > Upload a skin to a mojang account
+* /skinselect < name > Choose a skin from the database which has a specified name
 
 ## Permissions
 
 * changeskin.command.skinupdate - Command to refresh the own skin
+* changeskin.command.skinupdate.other.uuid - Allowed to update the skin of that specific user
+* changeskin.command.skinupdate.other.* - Allowed to update all other skins
 * changeskin.command.setskin.* - All the commands below
 * changeskin.command.setskin - Set your own skin
 * changeskin.command.setskin.other - Set the skin of other players
+* changeskin.command.skinselect - Select a skin from the database
+* changeskin.command.skinupload - Upload a skin to one of the configured accounts
 
 Whitelist and blacklist permissions
 
@@ -52,3 +58,11 @@ Blacklist
 * -changeskin.skin.whitelist.uuid
 
 => This means all skins are allowed except the ones with the uuid in the blacklist list
+
+## Upload a skin to the database
+
+1. Put a Minecraft account into the config
+2. Check the logs if it's authenticated correctly (ChangeSkin startup).
+3. /skin-upload < url > example: http://i.imgur.com/4lV1m26.png
+4. Now you see the skin id it's saved as
+5. /skin-select 3 or /skin-select skin-3

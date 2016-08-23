@@ -30,19 +30,19 @@ commands:
         descriptions: 'Upload a skin to a mojang account'
         permission: ${project.parent.artifactId}.command.skinupload
         aliases: [skin-upload, uploadskin, upload-skin]
-        usage: /<command> url [name]
+        usage: /<command> <url> [name]
 
     skinname:
         descriptions: 'Gives your current skin a name'
         permission: ${project.parent.artifactId}.command.skinname
         aliases: [skin-name]
-        usage: /<command> name
+        usage: /<command> <name>
 
     skinselect:
         descriptions: 'Choose a skin from the database which has a specified name'
         permission: ${project.parent.artifactId}.command.skinselect
         aliases: [skin-select]
-        usage: /<command> name
+        usage: /<command> <name>
 
 permissions:
     ${project.parent.artifactId}.command.*:
@@ -50,9 +50,9 @@ permissions:
             ${project.parent.artifactId}.command.setskin.*: true
             ${project.parent.artifactId}.command.skinupdate: true
             ${project.parent.artifactId}.command.skinupload: true
-            ${project.parent.artifactId}.command.skinupload: true
             ${project.parent.artifactId}.command.skinname: true
             ${project.parent.artifactId}.command.skinselect: true
+            ${project.parent.artifactId}.command.skinupdate.other.*: true
 
     ${project.parent.artifactId}.command.skinupdate:
         description: 'Updates the current skin'
@@ -62,6 +62,11 @@ permissions:
         description: 'Gives your current skin a name'
     ${project.parent.artifactId}.command.skinselect:
         description: 'Choose a skin from the database which has a specified name'
+
+    ${project.parent.artifactId}.command.skinupdate.other.*:
+        children:
+            ${project.parent.artifactId}.command.skinupdate: true
+            ${project.parent.artifactId}.command.skinupdate.other: true
 
     ${project.parent.artifactId}.command.setskin.*:
         children:
