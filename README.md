@@ -66,3 +66,9 @@ Blacklist
 3. /skin-upload < url > example: http://i.imgur.com/4lV1m26.png
 4. Now you see the skin id it's saved as
 5. /skin-select 3 or /skin-select skin-3
+
+## How to install on BungeeCord
+1. Install the plugin on both BungeeCord and Bukkit server
+2. Activate BungeeCord support in your spigot configuration
+3. Check the settings of the ChangeSkin config in the BungeeCord instance
+    * For example BungeeCord doesn't support SQLite by default

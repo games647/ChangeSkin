@@ -36,6 +36,10 @@ public class AsyncPlayerLoginListener implements Listener {
         String playerName = preLoginEvent.getName();
 
         UserPreference preferences = plugin.getStorage().getPreferences(playerUuid);
+        if (preferences == null) {
+            return;
+        }
+
         plugin.startSession(playerUuid, preferences);
 
         SkinData targetSkin = preferences.getTargetSkin();
