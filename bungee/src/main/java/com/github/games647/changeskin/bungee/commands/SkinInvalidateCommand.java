@@ -13,7 +13,7 @@ public class SkinInvalidateCommand extends Command {
     private final ChangeSkinBungee plugin;
 
     public SkinInvalidateCommand(ChangeSkinBungee plugin) {
-        super("skinupdate", plugin.getDescription().getName().toLowerCase() + ".command.skinupdate");
+        super("skinupdate", plugin.getDescription().getName().toLowerCase() + ".command.skinupdate", "skin-update");
 
         this.plugin = plugin;
     }

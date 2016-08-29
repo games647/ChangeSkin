@@ -3,9 +3,10 @@ package com.github.games647.changeskin.bungee.commands;
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.bungee.tasks.SkinUploader;
 import com.github.games647.changeskin.core.model.mojang.auth.Account;
-import java.util.List;
-import net.md_5.bungee.BungeeCord;
 
+import java.util.List;
+
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -14,7 +15,7 @@ public class SkinUploadCommand extends Command {
     private final ChangeSkinBungee plugin;
 
     public SkinUploadCommand(ChangeSkinBungee plugin) {
-        super("skin-upload", plugin.getDescription().getName().toLowerCase() + ".command.skinupload");
+        super("skin-upload", plugin.getDescription().getName().toLowerCase() + ".command.skinupload", "skinupload");
 
         this.plugin = plugin;
     }

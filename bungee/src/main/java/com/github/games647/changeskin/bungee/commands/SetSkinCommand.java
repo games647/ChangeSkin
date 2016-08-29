@@ -17,7 +17,8 @@ public class SetSkinCommand extends Command {
     protected final ChangeSkinBungee plugin;
 
     public SetSkinCommand(ChangeSkinBungee plugin) {
-        super("setskin", plugin.getDescription().getName().toLowerCase() + ".command.setskin", "skin", plugin.getDescription().getName());
+        super("setskin", plugin.getDescription().getName().toLowerCase() + ".command.setskin", "skin"
+                , plugin.getDescription().getName(), "skin", "set-skin");
 
         this.plugin = plugin;
     }

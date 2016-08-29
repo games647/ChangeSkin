@@ -1,5 +1,9 @@
 #Changelog
 
+##### 2.3.3
+
+* Fix missing bungeecord aliases
+
 ##### 2.3.2
 
 * Add permission node for /skinupdate < other >
