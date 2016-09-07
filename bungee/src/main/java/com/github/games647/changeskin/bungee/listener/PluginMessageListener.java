@@ -61,12 +61,9 @@ public class PluginMessageListener extends AbstractSkinListener {
         final UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
         preferences.setTargetSkin(targetSkin);
 
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
-            @Override
-            public void run() {
-                if (plugin.getStorage().save(targetSkin)) {
-                    plugin.getStorage().save(preferences);
-                }
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
+            if (plugin.getStorage().save(targetSkin)) {
+                plugin.getStorage().save(preferences);
             }
         });
         

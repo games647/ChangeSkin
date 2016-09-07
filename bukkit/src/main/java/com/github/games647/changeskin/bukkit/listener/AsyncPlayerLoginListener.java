@@ -84,12 +84,9 @@ public class AsyncPlayerLoginListener implements Listener {
     }
 
     private void save(final SkinData skin, final UserPreference preferences) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                if (plugin.getStorage().save(skin)) {
-                    plugin.getStorage().save(preferences);
-                }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (plugin.getStorage().save(skin)) {
+                plugin.getStorage().save(preferences);
             }
         });
     }

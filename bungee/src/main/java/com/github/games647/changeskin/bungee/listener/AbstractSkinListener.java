@@ -67,24 +67,16 @@ public abstract class AbstractSkinListener implements Listener {
                 preferences.setTargetSkin(targetSkin);
                 plugin.applySkin(player, targetSkin);
 
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.getStorage().save(preferences);
-                    }
-                });
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> plugin.getStorage().save(preferences));
             }
         }
     }
 
     public void save(final SkinData skin, final UserPreference preferences) {
         //this can run in the background
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
-            @Override
-            public void run() {
-                if (plugin.getStorage().save(skin)) {
-                    plugin.getStorage().save(preferences);
-                }
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
+            if (plugin.getStorage().save(skin)) {
+                plugin.getStorage().save(preferences);
             }
         });
     }

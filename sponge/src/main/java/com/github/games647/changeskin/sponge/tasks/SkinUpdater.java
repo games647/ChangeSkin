@@ -84,15 +84,14 @@ public class SkinUpdater implements Runnable {
         sendUpdateSelf();
 
         //triggers an update for others player to see the new skin
-        for (Player onlinePlayer : plugin.getGame().getServer().getOnlinePlayers()) {
-            if (onlinePlayer.equals(receiver) || !onlinePlayer.canSee(receiver)) {
-                continue;
-            }
-
-            //removes the entity and display the new skin
-            onlinePlayer.offer(Keys.VANISH, true);
-            onlinePlayer.offer(Keys.VANISH, false);
-        }
+        plugin.getGame().getServer().getOnlinePlayers().stream()
+                .filter(onlinePlayer -> onlinePlayer.equals(receiver))
+                .filter(onlinePlayer -> onlinePlayer.canSee(receiver))
+                .forEach(onlinePlayer -> {
+                    //removes the entity and display the new skin
+                    onlinePlayer.offer(Keys.VANISH, true);
+                    onlinePlayer.offer(Keys.VANISH, false);
+                });
     }
 
     private void sendUpdateSelf() {

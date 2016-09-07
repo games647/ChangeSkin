@@ -1,7 +1,6 @@
 package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.model.SkinData;
-import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.SkinUpdater;
 
 import java.util.UUID;
@@ -69,7 +68,7 @@ public class BungeeCordListener implements RawDataListener {
 
         SkinData targetSkin = new SkinData(encodedData, encodedSignature);
         if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
-            plugin.getPluginChannel().sendTo(player, (out) -> {
+            plugin.getPluginChannel().sendTo(player, out -> {
                 out.writeUTF("PermissionsSuccess");
                 out.writeInteger(skinId);
                 out.writeUTF(encodedData);
@@ -77,9 +76,7 @@ public class BungeeCordListener implements RawDataListener {
                 out.writeUTF(receiverUUID);
             });
         } else {
-            plugin.getPluginChannel().sendTo(player, (out) -> {
-                out.writeUTF("PermissionsFailure");
-            });
+            plugin.getPluginChannel().sendTo(player, out -> out.writeUTF("PermissionsFailure"));
         }
     }
 

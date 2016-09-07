@@ -37,24 +37,21 @@ public class LoginListener extends AbstractSkinListener {
     private void refetchSkin(final PendingConnection conn, final String playerName , final AsyncEvent<?> loginEvent) {
         loginEvent.registerIntent(plugin);
 
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    UserPreference preferences = plugin.getStorage().getPreferences(plugin.getOfflineUUID(playerName));
-                    plugin.startSession(conn, preferences);
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
+            try {
+                UserPreference preferences = plugin.getStorage().getPreferences(plugin.getOfflineUUID(playerName));
+                plugin.startSession(conn, preferences);
 
-                    SkinData targetSkin = preferences.getTargetSkin();
-                    int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
-                    if (targetSkin == null) {
-                        refetch(preferences, playerName);
-                    } else if (autoUpdateDiff > 0
-                            && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
-                        refetch(preferences, playerName);
-                    }
-                } finally {
-                    loginEvent.completeIntent(plugin);
+                SkinData targetSkin = preferences.getTargetSkin();
+                int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
+                if (targetSkin == null) {
+                    refetch(preferences, playerName);
+                } else if (autoUpdateDiff > 0
+                        && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
+                    refetch(preferences, playerName);
                 }
+            } finally {
+                loginEvent.completeIntent(plugin);
             }
         });
     }

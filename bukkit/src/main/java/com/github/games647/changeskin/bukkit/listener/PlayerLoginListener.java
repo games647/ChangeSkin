@@ -69,12 +69,7 @@ public class PlayerLoginListener implements Listener {
                 properties.clear();
                 properties.put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
 
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.getStorage().save(preferences);
-                    }
-                });
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.getStorage().save(preferences));
             }
         }
     }

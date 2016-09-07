@@ -61,12 +61,9 @@ public class SkinUpdater implements Runnable {
             preferences.setTargetSkin(targetSkin);
             preferences.setKeepSkin(keepSkin);
 
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    if (plugin.getStorage().save(targetSkin)) {
-                        plugin.getStorage().save(preferences);
-                    }
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                if (plugin.getStorage().save(targetSkin)) {
+                    plugin.getStorage().save(preferences);
                 }
             });
         }
@@ -99,15 +96,14 @@ public class SkinUpdater implements Runnable {
         sendUpdateSelf(gameProfile);
 
         //triggers an update for others player to see the new skin
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (onlinePlayer.equals(receiver) || !onlinePlayer.canSee(receiver)) {
-                continue;
-            }
-
-            //removes the entity and display the new skin
-            onlinePlayer.hidePlayer(receiver);
-            onlinePlayer.showPlayer(receiver);
-        }
+        Bukkit.getOnlinePlayers().stream()
+                .filter(onlinePlayer -> !onlinePlayer.equals(receiver))
+                .filter(onlinePlayer -> onlinePlayer.canSee(receiver))
+                .forEach(onlinePlayer -> {
+                    //removes the entity and display the new skin
+                    onlinePlayer.hidePlayer(receiver);
+                    onlinePlayer.showPlayer(receiver);
+                });
     }
 
     private void sendUpdateSelf(WrappedGameProfile gameProfile) throws FieldAccessException {

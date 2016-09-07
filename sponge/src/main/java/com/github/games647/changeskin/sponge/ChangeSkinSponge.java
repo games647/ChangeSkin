@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
@@ -131,9 +132,10 @@ public class ChangeSkinSponge {
             }
 
             List<String> defaultSkins = Lists.newArrayList();
-            for (ConfigurationNode node : rootNode.getNode("default-skins").getChildrenMap().values()) {
-                defaultSkins.add(node.getString());
-            }
+            defaultSkins.addAll(rootNode.getNode("default-skins").getChildrenMap().values()
+                    .stream()
+                    .map(ConfigurationNode::getString).collect(Collectors.toList()));
+
 
             core.loadDefaultSkins(defaultSkins);
             loadLocale();
@@ -196,15 +198,15 @@ public class ChangeSkinSponge {
             URL jarConfigFile = this.getClass().getResource("/messages.yml");
             YAMLConfigurationLoader defaultLoader = YAMLConfigurationLoader.builder().setURL(jarConfigFile).build();
             ConfigurationNode defaultRoot = defaultLoader.load();
-            for (ConfigurationNode node : defaultRoot.getChildrenMap().values()) {
+            defaultRoot.getChildrenMap().values().stream().forEach((node) -> {
                 core.addMessage((String) node.getKey(), node.getString());
-            }
+            });
 
             //overwrite the defaults
             ConfigurationNode messageNode = messageLoader.load();
-            for (ConfigurationNode node : messageNode.getChildrenMap().values()) {
+            messageNode.getChildrenMap().values().stream().forEach((node) -> {
                 core.addMessage((String) node.getKey(), node.getString());
-            }
+            });
         } catch (IOException ioEx) {
             logger.error("Failed to load locale", ioEx);
         }
