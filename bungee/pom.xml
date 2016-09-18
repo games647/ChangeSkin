@@ -17,11 +17,6 @@
     <name>ChangeSkinBungee</name>
 
     <repositories>
-<!--         BungeeCord
-        <repository>
-            <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>-->
         <!--BungeeCord with also the part outside the API-->
         <repository>
             <id>myplayplanet-REPO</id>

@@ -105,7 +105,7 @@ public class SetSkinCommand implements CommandExecutor {
         }
     }
 
-    private void onBungeeCord(CommandSender sender, String commandName, String[] args) {
+    private void onBungeeCord(CommandSender sender, String commandName, String... args) {
         Player proxy;
         if (sender instanceof Player) {
             proxy = (Player) sender;
@@ -127,7 +127,7 @@ public class SetSkinCommand implements CommandExecutor {
         proxy.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
     }
 
-    private boolean isKeepSkin(String[] args) {
+    private boolean isKeepSkin(String... args) {
         if (args.length > 0) {
             String lastArg = args[args.length - 1];
             return "keep".equalsIgnoreCase(lastArg);

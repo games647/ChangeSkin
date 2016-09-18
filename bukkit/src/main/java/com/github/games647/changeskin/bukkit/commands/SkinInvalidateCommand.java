@@ -58,7 +58,7 @@ public class SkinInvalidateCommand implements CommandExecutor {
         return true;
     }
 
-    private void onBungeeCord(CommandSender sender, String commandName, String[] args) {
+    private void onBungeeCord(CommandSender sender, String commandName, String... args) {
         Player proxy;
         if (sender instanceof Player) {
             proxy = (Player) sender;

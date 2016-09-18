@@ -63,7 +63,7 @@ public class PlayerLoginListener implements Listener {
         if (!defaultSkins.isEmpty()) {
             int randomIndex = random.nextInt(defaultSkins.size());
 
-            final SkinData targetSkin = defaultSkins.get(randomIndex);
+            SkinData targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
                 preferences.setTargetSkin(targetSkin);
                 properties.clear();

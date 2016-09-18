@@ -57,7 +57,7 @@ public class SkinUpdater implements Runnable {
 
         if (plugin.getStorage() != null) {
             //Save the target uuid from the requesting player source
-            final UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
+            UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
             preferences.setTargetSkin(targetSkin);
             preferences.setKeepSkin(keepSkin);
 
