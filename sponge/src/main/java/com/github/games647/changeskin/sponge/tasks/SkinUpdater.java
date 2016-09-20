@@ -107,7 +107,7 @@ public class SkinUpdater implements Runnable {
         Location<World> oldLocation = receiver.getLocation();
         World receiverWorld = receiver.getWorld();
         Optional<World> differentWorld = plugin.getGame().getServer().getWorlds().stream()
-                .filter((world) -> !world.equals(receiverWorld))
+                .filter(world -> !world.equals(receiverWorld))
                 .findFirst();
 
         Location<World> differentLocation = differentWorld.get().getSpawnLocation();

@@ -85,10 +85,10 @@ public class BungeeCordListener implements PluginMessageListener {
 
     private boolean checkBungeePerms(Player player, UUID targetSkinUUID) {
         if (player.getUniqueId().equals(targetSkinUUID)) {
-            return player.hasPermission(plugin.getName() + ".command.setskin")
+            return player.hasPermission(plugin.getName().toLowerCase() + ".command.setskin")
                 && plugin.checkPermission(player, targetSkinUUID, false);
         } else {
-            return player.hasPermission(plugin.getName() + ".command.setskin.other")
+            return player.hasPermission(plugin.getName().toLowerCase() + ".command.setskin.other")
                     && plugin.checkPermission(player, targetSkinUUID, false);
         }
     }
