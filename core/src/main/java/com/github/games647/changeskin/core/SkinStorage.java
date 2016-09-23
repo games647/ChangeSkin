@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
@@ -37,6 +38,11 @@ public class SkinStorage {
         databaseConfig.setThreadFactory(threadFactory);
 
         databasePath = databasePath.replace("{pluginDir}", core.getDataFolder().getAbsolutePath());
+
+        //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
+        Properties properties = new Properties();
+        properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
+        databaseConfig.setDataSourceProperties(properties);
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
