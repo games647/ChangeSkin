@@ -48,8 +48,11 @@ public class SkinUpdater implements Runnable {
             out.writeInt(targetSkin.getSkinId());
             out.writeUTF(targetSkin.getEncodedData());
             out.writeUTF(targetSkin.getEncodedSignature());
+
             out.writeUTF(receiver.getUniqueId().toString());
+            out.writeBoolean(plugin.getConfig().getBoolean("skinPermission"));
             out.writeBoolean(bukkitOp);
+            
             server.sendData(plugin.getName(), out.toByteArray());
             return;
         }

@@ -2,7 +2,10 @@
 
 ##### 2.3.3
 
+* Forward skinPerm config to bukkit to check it only if necessary 
 * Fix missing bungeecord aliases
+* Fix forwarding permission checking
+* Fix lowercase bungee perm
 
 ##### 2.3.2
 

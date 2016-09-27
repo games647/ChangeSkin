@@ -64,10 +64,11 @@ public class BungeeCordListener implements PluginMessageListener {
 
         //continue on success only
         String receiverUUID = dataInput.readUTF();
+        boolean skinPerm = dataInput.readBoolean();
         boolean isOp = dataInput.readBoolean();
 
         SkinData targetSkin = new SkinData(encodedData, encodedSignature);
-        if (isOp || checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
+        if (isOp || checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid(), skinPerm)) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("PermissionsSuccess");
             out.writeInt(skinId);
@@ -83,13 +84,21 @@ public class BungeeCordListener implements PluginMessageListener {
         }
     }
 
-    private boolean checkBungeePerms(Player player, UUID receiverUUID, UUID targetUUID) {
+    private boolean checkBungeePerms(Player player, UUID receiverUUID, UUID targetUUID, boolean skinPerm) {
         if (player.getUniqueId().equals(receiverUUID)) {
-            return player.hasPermission(plugin.getName().toLowerCase() + ".command.setskin")
-                && plugin.checkPermission(player, targetUUID, false);
+            boolean hasCommandPerm = player.hasPermission(plugin.getName().toLowerCase() + ".command.setskin");
+            if (skinPerm) {
+                return hasCommandPerm && plugin.checkPermission(player, targetUUID, false);
+            } else {
+                return hasCommandPerm;
+            }
         } else {
-            return player.hasPermission(plugin.getName().toLowerCase() + ".command.setskin.other")
-                    && plugin.checkPermission(player, targetUUID, false);
+            boolean hasCommandPerm = player.hasPermission(plugin.getName().toLowerCase() + ".command.setskin.other");
+            if (skinPerm) {
+                return hasCommandPerm && plugin.checkPermission(player, targetUUID, false);
+            } else {
+                return hasCommandPerm;
+            }
         }
     }
 }
