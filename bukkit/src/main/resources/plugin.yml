@@ -22,26 +22,32 @@ commands:
         permission: ${project.parent.artifactId}.command.setskin
 
     skinupdate:
-        descriptions: 'Invalidates the database entry and fetches the fresh skin from the Mojang servers'
+        description: 'Invalidates the database entry and fetches the fresh skin from the Mojang servers'
         aliases: [skin-update]
         permission: ${project.parent.artifactId}.command.skinupdate
 
     skinupload:
-        descriptions: 'Upload a skin to a mojang account'
+        description: 'Upload a skin to a mojang account'
         permission: ${project.parent.artifactId}.command.skinupload
         aliases: [skin-upload, uploadskin, upload-skin]
         usage: /<command> <url> [name]
 
     skinname:
-        descriptions: 'Gives your current skin a name'
+        description: 'Gives your current skin a name'
         permission: ${project.parent.artifactId}.command.skinname
         aliases: [skin-name]
         usage: /<command> <name>
 
     skinselect:
-        descriptions: 'Choose a skin from the database which has a specified name'
+        description: 'Choose a skin from the database which has a specified name'
         permission: ${project.parent.artifactId}.command.skinselect
         aliases: [skin-select]
+        usage: /<command> <name>
+
+    skinskull:
+        description: 'Changes the skin of a holding skull from the database which has a specified name'
+        permission: ${project.parent.artifactId}.command.skinskull
+        aliases: [skin-skull]
         usage: /<command> <name>
 
 permissions:

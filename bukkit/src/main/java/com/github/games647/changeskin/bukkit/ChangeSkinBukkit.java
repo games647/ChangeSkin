@@ -1,11 +1,7 @@
 package com.github.games647.changeskin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.github.games647.changeskin.bukkit.commands.SetSkinCommand;
-import com.github.games647.changeskin.bukkit.commands.SkinInvalidateCommand;
-import com.github.games647.changeskin.bukkit.commands.SkinNameCommand;
-import com.github.games647.changeskin.bukkit.commands.SkinSelectCommand;
-import com.github.games647.changeskin.bukkit.commands.SkinUploadCommand;
+import com.github.games647.changeskin.bukkit.commands.*;
 import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
 import com.github.games647.changeskin.bukkit.listener.PlayerLoginListener;
@@ -190,6 +186,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
         getCommand("skinname").setExecutor(new SkinNameCommand(this));
         getCommand("skinselect").setExecutor(new SkinSelectCommand(this));
         getCommand("skinupload").setExecutor(new SkinUploadCommand(this));
+        getCommand("skinskull").setExecutor(new SetSkullCommand(this));
      }
 
     private void loadLocale() {
