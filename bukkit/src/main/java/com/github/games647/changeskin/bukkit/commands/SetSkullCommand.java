@@ -20,8 +20,8 @@ import java.util.UUID;
 /**
  * Created by Shynixn
  */
-public class SetSkullCommand implements CommandExecutor
-{
+public class SetSkullCommand implements CommandExecutor {
+
     private final ChangeSkinBukkit plugin;
 
     public SetSkullCommand(ChangeSkinBukkit plugin) {
@@ -41,14 +41,19 @@ public class SetSkullCommand implements CommandExecutor
             try {
                 Player player = (Player) sender;
                 int targetId = Integer.parseInt(targetName);
-                SkinData skinData = plugin.getStorage().getSkin(targetId);
-                setSkullSkin(player.getInventory().getItem(player.getInventory().getHeldItemSlot()), skinData);
-                player.updateInventory();
+                Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, () -> applySkin(player,plugin.getStorage().getSkin(targetId)));
             } catch (NumberFormatException numberFormatException) {
                 plugin.sendMessage(sender, "invalid-skin-name");
             }
         }
         return true;
+    }
+
+    private void applySkin(Player player, SkinData skinData) {
+        Bukkit.getServer().getScheduler().runTask(plugin, () -> {
+            setSkullSkin(player.getInventory().getItem(player.getInventory().getHeldItemSlot()), skinData);
+            player.updateInventory();
+        });
     }
 
     private void setSkullSkin(ItemStack itemStack, SkinData skinData) {
