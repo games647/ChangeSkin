@@ -60,8 +60,7 @@ public class SetSkullCommand implements CommandExecutor
             Object craftSkullMeta = clazz.cast(meta);
             Field field = craftSkullMeta.getClass().getDeclaredField("profile");
             field.setAccessible(true);
-            WrappedGameProfile gameProfile;
-            gameProfile = new WrappedGameProfile(UUID.randomUUID(), null);
+            WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.randomUUID(), null);
             field.set(craftSkullMeta, gameProfile.getHandle());
             gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(skinData));
             itemStack.setItemMeta((ItemMeta) craftSkullMeta);
@@ -70,8 +69,7 @@ public class SetSkullCommand implements CommandExecutor
         }
     }
 
-    private String getServerVersion()
-    {
+    private String getServerVersion() {
         return Bukkit.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
     }
 }
