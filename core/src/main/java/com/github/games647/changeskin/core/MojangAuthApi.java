@@ -106,6 +106,12 @@ public class MojangAuthApi {
             httpConnection.setInstanceFollowRedirects(false);
             httpConnection.connect();
 
+            if (httpConnection.getResponseCode() != 301) {
+                logger.log(Level.SEVERE
+                        , "Invalid response from the skin server Response Code: {0}", httpConnection.getResponseCode());
+                return "";
+            }
+
             //contains the actual skin storage url which will never be deleted and is unique
             return httpConnection.getHeaderField("Location");
         } catch (IOException ioEx) {
