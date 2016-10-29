@@ -5,10 +5,10 @@ import com.github.games647.changeskin.core.model.mojang.skin.DataModel;
 import com.github.games647.changeskin.core.model.mojang.skin.MetadataModel;
 import com.github.games647.changeskin.core.model.mojang.skin.SkinModel;
 import com.github.games647.changeskin.core.model.mojang.skin.TextureSourceModel;
-import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.UUID;
 
 public class SkinData {
@@ -37,7 +37,7 @@ public class SkinData {
         this.slimModel = slimModel;
         this.skinURL = skinURL;
         this.capeURL = capeURL;
-        this.encodedSignature = BaseEncoding.base64().encode(signature);
+        this.encodedSignature = Base64.getEncoder().encodeToString(signature);
         this.encodedData = serializeData();
     }
 
@@ -132,7 +132,7 @@ public class SkinData {
         }
 
         String json = new Gson().toJson(dataModel);
-        return BaseEncoding.base64().encode(json.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
@@ -161,7 +161,7 @@ public class SkinData {
     }
 
     private SkinModel deserializeData(String encodedData) {
-        byte[] data = BaseEncoding.base64().decode(encodedData);
+        byte[] data = Base64.getDecoder().decode(encodedData);
         String rawJson = new String(data, StandardCharsets.UTF_8);
 
         return new Gson().fromJson(rawJson, SkinModel.class);

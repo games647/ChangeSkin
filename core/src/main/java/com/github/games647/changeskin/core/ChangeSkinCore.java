@@ -188,4 +188,14 @@ public class ChangeSkinCore {
     public List<Account> getUploadAccounts() {
         return uploadAccounts;
     }
+
+    protected static void closeQuietly(AutoCloseable closeable, Logger logger) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (Exception sqlEx) {
+                logger.log(Level.SEVERE, "Failed to close connection", sqlEx);
+            }
+        }
+    }
 }

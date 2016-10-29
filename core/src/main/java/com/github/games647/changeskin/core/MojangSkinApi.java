@@ -8,8 +8,6 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.mojang.skin.PropertiesModel;
 import com.github.games647.changeskin.core.model.mojang.skin.TexturesModel;
 import com.google.common.io.CharStreams;
-import com.google.common.io.Closeables;
-import com.google.common.io.Closer;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -65,7 +63,7 @@ public class MojangSkinApi {
 
         requests.put(new Object(), new Object());
 
-        Closer closer = Closer.create();
+        BufferedReader reader = null;
         try {
             
             HttpURLConnection httpConnection = ChangeSkinCore.getConnection(UUID_URL + playerName);
@@ -77,8 +75,8 @@ public class MojangSkinApi {
                 return getUUIDFromAPI(playerName);
             }
 
-            InputStreamReader inputReader = closer.register(new InputStreamReader(httpConnection.getInputStream()));
-            BufferedReader reader = closer.register(new BufferedReader(inputReader));
+            InputStreamReader inputReader = new InputStreamReader(httpConnection.getInputStream());
+            reader = new BufferedReader(inputReader);
             String line = reader.readLine();
             if (line != null && !line.equals("null")) {
                 PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile.class);
@@ -88,11 +86,7 @@ public class MojangSkinApi {
         } catch (IOException | JsonParseException ex) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid", ex);
         } finally {
-            try {
-                closer.close();
-            } catch (IOException ex) {
-                logger.log(Level.SEVERE, "Error closing connection", ex);
-            }
+            ChangeSkinCore.closeQuietly(reader, logger);
         }
 
         return null;
@@ -117,7 +111,7 @@ public class MojangSkinApi {
         } catch (IOException | JsonParseException ex) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid from third-party api", ex);
         } finally {
-            Closeables.closeQuietly(inputReader);
+            ChangeSkinCore.closeQuietly(inputReader, logger);
         }
 
         return null;

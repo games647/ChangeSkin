@@ -79,10 +79,10 @@ public class SkinUpdater implements Runnable {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
         //remove existing skins
         gameProfile.getProperties().clear();
-        if (targetSkin != null) {
-            gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
-        } else {
+        if (targetSkin == null) {
             plugin.getLogger().info("No-SKIN");
+        } else {
+            gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
         }
 
         sendUpdate(gameProfile);

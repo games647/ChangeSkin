@@ -2,7 +2,6 @@ package com.github.games647.changeskin.core;
 
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.google.common.io.BaseEncoding;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -12,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Base64;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
@@ -109,9 +109,9 @@ public class SkinStorage {
                 }
             }
         } finally {
-            closeQuietly(testResult);
-            closeQuietly(stmt);
-            closeQuietly(con);
+            ChangeSkinCore.closeQuietly(testResult, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
     }
 
@@ -145,9 +145,9 @@ public class SkinStorage {
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query preferences", sqlEx);
         } finally {
-            closeQuietly(resultSet);
-            closeQuietly(stmt);
-            closeQuietly(con);
+            ChangeSkinCore.closeQuietly(resultSet, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
 
         return null;
@@ -171,9 +171,9 @@ public class SkinStorage {
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from row id", sqlEx);
         } finally {
-            closeQuietly(resultSet);
-            closeQuietly(stmt);
-            closeQuietly(con);
+            ChangeSkinCore.closeQuietly(resultSet, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
 
         return null;
@@ -197,9 +197,9 @@ public class SkinStorage {
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from uuid", sqlEx);
         } finally {
-            closeQuietly(resultSet);
-            closeQuietly(stmt);
-            closeQuietly(con);
+            ChangeSkinCore.closeQuietly(resultSet, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
 
         return null;
@@ -237,8 +237,8 @@ public class SkinStorage {
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save preferences", sqlEx);
         } finally {
-            closeQuietly(stmt);
-            closeQuietly(con);
+            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
     }
 
@@ -270,7 +270,7 @@ public class SkinStorage {
             stmt.setBoolean(4, skinData.isSlimModel());
             stmt.setString(5, skinUrl);
             stmt.setString(6, skinData.getCapeURL());
-            stmt.setBytes(7, BaseEncoding.base64().decode(skinData.getEncodedSignature()));
+            stmt.setBytes(7, Base64.getDecoder().decode(skinData.getEncodedSignature()));
 
             stmt.executeUpdate();
 
@@ -282,9 +282,9 @@ public class SkinStorage {
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query skin data", sqlEx);
         } finally {
-            closeQuietly(generatedKeys);
-            closeQuietly(stmt);
-            closeQuietly(con);
+            ChangeSkinCore.closeQuietly(generatedKeys, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
+            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
 
         return false;
@@ -303,15 +303,5 @@ public class SkinStorage {
 
         byte[] signature = resultSet.getBytes(8);
         return new SkinData(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
-    }
-
-    private void closeQuietly(AutoCloseable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (Exception sqlEx) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to close connection", sqlEx);
-            }
-        }
     }
 }
