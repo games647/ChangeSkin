@@ -48,8 +48,8 @@
         <!--Library for listening and sending Minecraft packets-->
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>3.6.5-SNAPSHOT</version>
+            <artifactId>ProtocolLib-API</artifactId>
+            <version>4.2.0</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
