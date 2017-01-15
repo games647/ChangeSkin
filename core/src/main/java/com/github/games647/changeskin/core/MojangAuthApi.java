@@ -5,7 +5,6 @@ import com.github.games647.changeskin.core.model.mojang.auth.AuthenticationReque
 import com.github.games647.changeskin.core.model.mojang.auth.AuthenticationResponse;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -51,7 +50,7 @@ public class MojangAuthApi {
                 AuthenticationResponse authResponse = gson.fromJson(line, AuthenticationResponse.class);
                 return new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken());
             }
-        } catch (IOException | JsonParseException ex) {
+        } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid", ex);
         } finally {
             ChangeSkinCore.closeQuietly(writer, logger);
@@ -69,7 +68,7 @@ public class MojangAuthApi {
             HttpURLConnection httpConnection = ChangeSkinCore.getConnection(url);
             httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
-            
+
             httpConnection.addRequestProperty("Authorization", "Bearer " + accessToken.toString().replace("-", ""));
 
             OutputStreamWriter streamWriter = new OutputStreamWriter(httpConnection.getOutputStream(), Charsets.UTF_8);
@@ -107,8 +106,8 @@ public class MojangAuthApi {
             httpConnection.connect();
 
             if (httpConnection.getResponseCode() != 301) {
-                logger.log(Level.SEVERE
-                        , "Invalid response from the skin server Response Code: {0}", httpConnection.getResponseCode());
+                logger.log(Level.SEVERE,
+                         "Invalid response from the skin server Response Code: {0}", httpConnection.getResponseCode());
                 return "";
             }
 

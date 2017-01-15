@@ -9,10 +9,8 @@ import com.github.games647.changeskin.core.model.mojang.skin.PropertiesModel;
 import com.github.games647.changeskin.core.model.mojang.skin.TexturesModel;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.UUID;
@@ -33,7 +31,7 @@ public class MojangSkinApi {
     private static final int RATE_LIMIT_ID = 429;
 
     private final Gson gson = new Gson();
-    
+
     private final ConcurrentMap<Object, Object> requests;
     private final Logger logger;
     private final int rateLimit;
@@ -65,7 +63,7 @@ public class MojangSkinApi {
 
         BufferedReader reader = null;
         try {
-            
+
             HttpURLConnection httpConnection = ChangeSkinCore.getConnection(UUID_URL + playerName);
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
@@ -83,7 +81,7 @@ public class MojangSkinApi {
                 String id = playerProfile.getId();
                 return ChangeSkinCore.parseId(id);
             }
-        } catch (IOException | JsonParseException ex) {
+        } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid", ex);
         } finally {
             ChangeSkinCore.closeQuietly(reader, logger);
@@ -105,10 +103,10 @@ public class MojangSkinApi {
                 if (id == null || id.equalsIgnoreCase("null")) {
                     throw new NotPremiumException(line);
                 }
-                
+
                 return ChangeSkinCore.parseId(id);
             }
-        } catch (IOException | JsonParseException ex) {
+        } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid from third-party api", ex);
         } finally {
             ChangeSkinCore.closeQuietly(inputReader, logger);
@@ -150,7 +148,7 @@ public class MojangSkinApi {
                     return skinData;
                 }
             }
-        } catch (IOException | JsonParseException ex) {
+        } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);
         }
 
@@ -177,7 +175,7 @@ public class MojangSkinApi {
                 SkinData skinData = new SkinData(encodedSkin, signature);
                 return skinData;
             }
-        } catch (IOException | JsonParseException ex) {
+        } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);
         }
 
