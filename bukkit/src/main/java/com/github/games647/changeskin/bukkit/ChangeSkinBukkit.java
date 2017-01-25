@@ -1,7 +1,12 @@
 package com.github.games647.changeskin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.github.games647.changeskin.bukkit.commands.*;
+import com.github.games647.changeskin.bukkit.commands.SetSkinCommand;
+import com.github.games647.changeskin.bukkit.commands.SetSkullCommand;
+import com.github.games647.changeskin.bukkit.commands.SkinInvalidateCommand;
+import com.github.games647.changeskin.bukkit.commands.SkinNameCommand;
+import com.github.games647.changeskin.bukkit.commands.SkinSelectCommand;
+import com.github.games647.changeskin.bukkit.commands.SkinUploadCommand;
 import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
 import com.github.games647.changeskin.bukkit.listener.PlayerLoginListener;
@@ -12,6 +17,12 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -20,13 +31,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class ChangeSkinBukkit extends JavaPlugin {
 
@@ -66,7 +70,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
             boolean mojangDownload = getConfig().getBoolean("independent-skin-downloading");
             int cooldown = getConfig().getInt("cooldown");
             int updateDiff = getConfig().getInt("auto-skin-update");
-            this.core = new ChangeSkinCore(getLogger(), getDataFolder(), rateLimit, mojangDownload, cooldown, updateDiff);
+            this.core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, mojangDownload, cooldown, updateDiff);
 
             ThreadFactory threadFactory = new ThreadFactoryBuilder()
                     .setNameFormat(getName() + " Database Pool Thread #%1$d")
@@ -74,7 +78,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
                     .setDaemon(true)
                     .build();
 
-            SkinStorage storage = new SkinStorage(core,threadFactory, driver, host, port, database, username, password);
+            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, username, password);
             core.setStorage(storage);
             try {
                 storage.createTables();

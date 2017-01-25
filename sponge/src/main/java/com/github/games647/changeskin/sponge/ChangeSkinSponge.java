@@ -8,24 +8,10 @@ import com.github.games647.changeskin.sponge.commands.SetSkinCommand;
 import com.github.games647.changeskin.sponge.commands.SkinInvalidateCommand;
 import com.github.games647.changeskin.sponge.commands.SkinUploadCommand;
 import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ThreadFactory;
-import java.util.stream.Collectors;
-
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandManager;
@@ -45,6 +31,18 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
+
 @Plugin(id = "changeskin", name = "ChangeSkin", version = "2.3.2"
         , url = "https://github.com/games647/ChangeSkin"
         , description = "Sponge plugin to change your skin server side")
@@ -53,7 +51,7 @@ public class ChangeSkinSponge {
     @Inject
     @DefaultConfig(sharedRoot = false)
     //We will place more than one config there (i.e. H2/SQLite database)
-    private File defaultConfigFile;
+    private Path defaultConfigFile;
 
     private final Logger logger;
     private final Game game;
@@ -74,25 +72,15 @@ public class ChangeSkinSponge {
     @Listener //load config and database
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
         //deploy default config
-        if (!defaultConfigFile.exists()) {
-            FileOutputStream fileOutputStream = null;
-            try {
-                fileOutputStream = new FileOutputStream(defaultConfigFile);
-                Resources.copy(getClass().getResource("/config.yml"), fileOutputStream);
+        if (!Files.exists(defaultConfigFile)) {
+            try (InputStream in = getClass().getResourceAsStream("/config.yml")) {
+                Files.copy(in, defaultConfigFile);
             } catch (IOException ioEx) {
-                logger.error("Error deploying default config", ioEx);
-            } finally {
-                if (fileOutputStream != null) {
-                    try {
-                        fileOutputStream.close();
-                    } catch (IOException ex) {
-                        //ignore
-                    }
-                }
+                logger.error("Error deploying config", ioEx);
             }
         }
 
-        YAMLConfigurationLoader configLoader = YAMLConfigurationLoader.builder().setFile(defaultConfigFile).build();
+        YAMLConfigurationLoader configLoader = YAMLConfigurationLoader.builder().setPath(defaultConfigFile).build();
         try {
             rootNode = configLoader.load();
 
@@ -110,7 +98,7 @@ public class ChangeSkinSponge {
             java.util.logging.Logger pluginLogger = java.util.logging.Logger.getLogger("ChangeSkin");
 
             int cooldown = rootNode.getNode("cooldown").getInt();
-            File parentFolder = defaultConfigFile.getParentFile();
+            Path parentFolder = defaultConfigFile.getParent();
             int updateDiff = rootNode.getNode("auto-skin-update").getInt();
             core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, mojangDownload, cooldown, updateDiff);
 
@@ -173,27 +161,17 @@ public class ChangeSkinSponge {
     }
 
     private void loadLocale() {
-        File messageFile = new File(defaultConfigFile.getParentFile(), "messages.yml");
+        Path messageFile = defaultConfigFile.getParent().resolve("messages.yml");
 
-        if (!messageFile.exists()) {
-            FileOutputStream fileOutputStream = null;
-            try {
-                fileOutputStream = new FileOutputStream(messageFile);
-                Resources.copy(getClass().getResource("/messages.yml"), fileOutputStream);
+        if (!Files.exists(messageFile)) {
+            try (InputStream in = getClass().getResourceAsStream("/messages.yml")) {
+                Files.copy(in, messageFile);
             } catch (IOException ioEx) {
                 logger.error("Error deploying default message", ioEx);
-            } finally {
-                if (fileOutputStream != null) {
-                    try {
-                        fileOutputStream.close();
-                    } catch (IOException ex) {
-                        //ignore
-                    }
-                }
             }
         }
 
-        YAMLConfigurationLoader messageLoader = YAMLConfigurationLoader.builder().setFile(messageFile).build();
+        YAMLConfigurationLoader messageLoader = YAMLConfigurationLoader.builder().setPath(messageFile).build();
         try {
             URL jarConfigFile = this.getClass().getResource("/messages.yml");
             YAMLConfigurationLoader defaultLoader = YAMLConfigurationLoader.builder().setURL(jarConfigFile).build();

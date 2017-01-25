@@ -7,10 +7,10 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -70,7 +70,7 @@ public class ChangeSkinCore {
     private final ConcurrentMap<String, Object> crackedNames = buildCache(3 * 60 * 60, 1024 * 5);
 
     private final Logger logger;
-    private final File pluginFolder;
+    private final Path pluginFolder;
 
     private SkinStorage storage;
 
@@ -82,7 +82,7 @@ public class ChangeSkinCore {
 
     private final List<Account> uploadAccounts = Lists.newArrayList();
 
-    public ChangeSkinCore(Logger logger, File pluginFolder, int rateLimit, boolean mojangDownload
+    public ChangeSkinCore(Logger logger, Path pluginFolder, int rateLimit, boolean mojangDownload
             , int cooldown, int autoUpdateDiff) {
         this.logger = logger;
         this.pluginFolder = pluginFolder;
@@ -101,7 +101,7 @@ public class ChangeSkinCore {
         return logger;
     }
 
-    public File getDataFolder() {
+    public Path getDataFolder() {
         return pluginFolder;
     }
 
