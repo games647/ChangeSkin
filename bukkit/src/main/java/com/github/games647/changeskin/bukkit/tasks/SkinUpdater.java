@@ -144,7 +144,7 @@ public class SkinUpdater implements Runnable {
         teleport.getDoubles().write(2, location.getZ());
         teleport.getFloat().write(0, location.getYaw());
         teleport.getFloat().write(1, location.getPitch());
-        //send an invalid teleport id in order to let bukkit ignore the incoming confirm packet
+        //send an invalid teleport id in order to let Bukkit ignore the incoming confirm packet
         teleport.getIntegers().writeSafely(0, -1337);
 
         try {
@@ -166,9 +166,12 @@ public class SkinUpdater implements Runnable {
             
             //this is sync so should be safe to call
             //triggers updateHealth
-            receiver.setHealth(receiver.getHealth());
-            receiver.setMaxHealth(receiver.getMaxHealth() + 1);
-            receiver.setMaxHealth(receiver.getMaxHealth() - 1);
+            double oldHealth = receiver.getHealth();
+            double maxHealth = receiver.getMaxHealth();
+
+            receiver.resetMaxHealth();
+            receiver.setMaxHealth(maxHealth);
+            receiver.setHealth(oldHealth);
 
             //set to the correct hand position
             receiver.setItemInHand(receiver.getItemInHand());
