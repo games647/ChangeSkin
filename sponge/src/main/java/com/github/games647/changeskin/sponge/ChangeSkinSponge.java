@@ -72,7 +72,7 @@ public class ChangeSkinSponge {
     @Listener //load config and database
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
         //deploy default config
-        if (!Files.exists(defaultConfigFile)) {
+        if (Files.notExists(defaultConfigFile)) {
             try (InputStream in = getClass().getResourceAsStream("/config.yml")) {
                 Files.copy(in, defaultConfigFile);
             } catch (IOException ioEx) {
@@ -163,7 +163,7 @@ public class ChangeSkinSponge {
     private void loadLocale() {
         Path messageFile = defaultConfigFile.getParent().resolve("messages.yml");
 
-        if (!Files.exists(messageFile)) {
+        if (Files.notExists(messageFile)) {
             try (InputStream in = getClass().getResourceAsStream("/messages.yml")) {
                 Files.copy(in, messageFile);
             } catch (IOException ioEx) {
