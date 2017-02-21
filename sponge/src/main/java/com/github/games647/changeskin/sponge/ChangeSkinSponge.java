@@ -176,13 +176,13 @@ public class ChangeSkinSponge {
             URL jarConfigFile = this.getClass().getResource("/messages.yml");
             YAMLConfigurationLoader defaultLoader = YAMLConfigurationLoader.builder().setURL(jarConfigFile).build();
             ConfigurationNode defaultRoot = defaultLoader.load();
-            defaultRoot.getChildrenMap().values().stream().forEach((node) -> {
+            defaultRoot.getChildrenMap().values().forEach((node) -> {
                 core.addMessage((String) node.getKey(), node.getString());
             });
 
             //overwrite the defaults
             ConfigurationNode messageNode = messageLoader.load();
-            messageNode.getChildrenMap().values().stream().forEach((node) -> {
+            messageNode.getChildrenMap().values().forEach((node) -> {
                 core.addMessage((String) node.getKey(), node.getString());
             });
         } catch (IOException ioEx) {

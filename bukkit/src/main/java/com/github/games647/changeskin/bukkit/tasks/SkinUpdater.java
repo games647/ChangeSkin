@@ -168,8 +168,10 @@ public class SkinUpdater implements Runnable {
             //triggers updateHealth
             double oldHealth = receiver.getHealth();
             double maxHealth = receiver.getMaxHealth();
+            double healthScale = receiver.getHealthScale();
 
             receiver.resetMaxHealth();
+            receiver.setHealthScale(healthScale);
             receiver.setMaxHealth(maxHealth);
             receiver.setHealth(oldHealth);
 
