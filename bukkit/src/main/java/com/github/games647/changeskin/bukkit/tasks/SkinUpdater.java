@@ -16,16 +16,17 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.collect.Lists;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 
 public class SkinUpdater implements Runnable {
 
@@ -163,11 +164,11 @@ public class SkinUpdater implements Runnable {
 
             PlayerInventory inventory = receiver.getInventory();
             inventory.setHeldItemSlot(inventory.getHeldItemSlot());
-            
+
             //this is sync so should be safe to call
             //triggers updateHealth
             double oldHealth = receiver.getHealth();
-            double maxHealth = receiver.getMaxHealth();
+            double maxHealth = getHealth(receiver);
             double healthScale = receiver.getHealthScale();
 
             receiver.resetMaxHealth();
@@ -182,5 +183,25 @@ public class SkinUpdater implements Runnable {
         } catch (InvocationTargetException ex) {
             plugin.getLogger().log(Level.SEVERE, "Exception sending instant skin change packet", ex);
         }
+    }
+
+    /**
+     * This is to protect against players with the health boost potion effect.
+     * This stops the max health from going up when the player has health boost since it adds to the max health.
+     *
+     * @param player
+     * @return the actual max health value
+     */
+    private double getHealth(Player player) {
+        double health = player.getMaxHealth();
+        for(PotionEffect potionEffect : player.getActivePotionEffects()){
+            //Had to do this because doing if(potionEffect.getType() == PotionEffectType.HEALTH_BOOST)
+            //It wouldn't recognize it as the same.
+            if(potionEffect.getType().getName().equalsIgnoreCase(PotionEffectType.HEALTH_BOOST.getName())){
+                health -= ((potionEffect.getAmplifier() + 1) * 4);
+            }
+        }
+
+        return health;
     }
 }
