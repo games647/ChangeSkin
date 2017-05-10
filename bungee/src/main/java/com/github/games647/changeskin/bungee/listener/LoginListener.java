@@ -4,8 +4,6 @@ import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 
-import java.util.UUID;
-
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.AsyncEvent;
@@ -26,8 +24,7 @@ public class LoginListener extends AbstractSkinListener {
         }
 
         PendingConnection connection = loginEvent.getConnection();
-        UUID playerUuid = connection.getUniqueId();
-        String playerName = connection.getName();
+        String playerName = connection.getName().toLowerCase();
         
         if (plugin.getConfig().getBoolean("restoreSkins")) {
             refetchSkin(connection, playerName, loginEvent);

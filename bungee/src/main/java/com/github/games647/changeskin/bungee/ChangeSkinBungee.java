@@ -19,6 +19,17 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.text.MessageFormat;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadFactory;
+import java.util.logging.Level;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -32,17 +43,6 @@ import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.connection.LoginResult.Property;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.text.MessageFormat;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
 
 public class ChangeSkinBungee extends Plugin {
 
@@ -157,16 +157,14 @@ public class ChangeSkinBungee extends Plugin {
                 profileField.setAccessible(true);
                 String mojangUUID = player.getUniqueId().toString().replace("-", "");
 
-                if (skinData == null) {
-                    LoginResult loginResult = new LoginResult(mojangUUID, new Property[]{});
-                    profileField.set(initialHandler, loginResult);
-                } else {
+                Property[] properties = {};
+                if (skinData != null) {
                     Property textures = convertToProperty(skinData);
-                    Property[] properties = new Property[]{textures};
-
-                    LoginResult loginResult = new LoginResult(mojangUUID, properties);
-                    profileField.set(initialHandler, loginResult);
+                    properties = new Property[]{textures};
                 }
+
+                LoginResult loginResult = createResult(mojangUUID, player.getName(), properties);
+                profileField.set(initialHandler, loginResult);
             } catch (NoSuchFieldException | IllegalAccessException ex) {
                 getLogger().log(Level.SEVERE, null, ex);
             }
@@ -193,6 +191,25 @@ public class ChangeSkinBungee extends Plugin {
 
             player.getServer().sendData(getDescription().getName(), out.toByteArray());
         }
+    }
+
+    private LoginResult createResult(String id, String name, Property[] properties) {
+        Constructor<LoginResult> cons;
+        try {
+            cons = LoginResult.class.getConstructor(String.class, String.class, Property[].class);
+            return cons.newInstance(id, name, properties);
+        } catch (NoSuchMethodException e) {
+            try {
+                cons = LoginResult.class.getConstructor(String.class, Property[].class);
+                return cons.newInstance(id, properties);
+            } catch (Exception ex) {
+                getLogger().log(Level.INFO, "Cannot invoke constructor for creating a fake skin", ex);
+            }
+        } catch (Exception ex) {
+            getLogger().log(Level.INFO, "Cannot invoke constructor for creating a fake skin", ex);
+        }
+
+        return null;
     }
 
     public Property convertToProperty(SkinData skinData) {

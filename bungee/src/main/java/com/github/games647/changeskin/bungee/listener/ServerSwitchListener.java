@@ -4,7 +4,6 @@ import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.model.UserPreference;
 
 import java.util.List;
-import java.util.UUID;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -33,8 +32,6 @@ public class ServerSwitchListener extends AbstractSkinListener {
     }
 
     private void onLazyLoad(ProxiedPlayer player) {
-        UUID uuid = player.getUniqueId();
-
         UserPreference preferences = plugin.getStorage().getPreferences(plugin.getOfflineUUID(player.getName()));
         plugin.startSession(player.getPendingConnection(), preferences);
         if (preferences.getTargetSkin() == null && plugin.getConfig().getBoolean("restoreSkins")) {
