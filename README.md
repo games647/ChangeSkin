@@ -11,6 +11,10 @@ currently has.
 Moreover it will be possible to set a custom standard skin. If you want to, this plugin can set this standard skin for
 all players who still have the default steve or alex skin.
 
+## Dev builds
+
+https://ci.xephi.fr/job/ChangeSkin/changes
+
 ## Features
 
 * Skins for offline mode
