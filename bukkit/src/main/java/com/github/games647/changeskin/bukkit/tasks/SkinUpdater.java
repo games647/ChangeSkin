@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
@@ -16,8 +17,10 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.collect.Lists;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -171,13 +174,13 @@ public class SkinUpdater implements Runnable {
             double maxHealth = getHealth(receiver);
             double healthScale = receiver.getHealthScale();
 
-            receiver.resetMaxHealth();
+            resetMaxHealth(receiver);
             receiver.setHealthScale(healthScale);
-            receiver.setMaxHealth(maxHealth);
+            setMaxHealth(receiver, maxHealth);
             receiver.setHealth(oldHealth);
 
             //set to the correct hand position
-            receiver.setItemInHand(receiver.getItemInHand());
+            setItemInHand(receiver);
             //triggers updateAbilities
             receiver.setWalkSpeed(receiver.getWalkSpeed());
         } catch (InvocationTargetException ex) {
@@ -193,7 +196,7 @@ public class SkinUpdater implements Runnable {
      * @return the actual max health value
      */
     private double getHealth(Player player) {
-        double health = player.getMaxHealth();
+        double health = getMaxHealth(player);
         for(PotionEffect potionEffect : player.getActivePotionEffects()){
             //Had to do this because doing if(potionEffect.getType() == PotionEffectType.HEALTH_BOOST)
             //It wouldn't recognize it as the same.
@@ -203,5 +206,41 @@ public class SkinUpdater implements Runnable {
         }
 
         return health;
+    }
+
+    private double getMaxHealth(Player player) {
+        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COLOR_UPDATE) >= 0) {
+            return player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        }
+
+        return player.getMaxHealth();
+    }
+
+    private void resetMaxHealth(Player player) {
+        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COLOR_UPDATE) >= 0) {
+            setMaxHealth(player, player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue());
+            return;
+        }
+
+        player.resetMaxHealth();
+    }
+
+    private void setMaxHealth(Player player, double health) {
+        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COLOR_UPDATE) >= 0) {
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+            return;
+        }
+
+        player.setHealth(health);
+    }
+
+    private void setItemInHand(Player player) {
+        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COMBAT_UPDATE) >= 0) {
+            player.getInventory().setItemInMainHand(player.getInventory().getItemInMainHand());
+            player.getInventory().setItemInOffHand(player.getInventory().getItemInOffHand());
+            return;
+        }
+
+        player.getInventory().setItemInHand(player.getItemInHand());
     }
 }

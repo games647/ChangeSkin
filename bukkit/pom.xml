@@ -49,7 +49,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
-            <version>4.2.1</version>
+            <version>4.3.0-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
