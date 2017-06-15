@@ -9,6 +9,7 @@ import com.github.games647.changeskin.core.model.mojang.skin.PropertiesModel;
 import com.github.games647.changeskin.core.model.mojang.skin.TexturesModel;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.UUID;
@@ -59,7 +60,6 @@ public class MojangSkinApi {
 
         BufferedReader reader = null;
         try {
-
             HttpURLConnection httpConnection = ChangeSkinCore.getConnection(UUID_URL + playerName);
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
@@ -77,8 +77,8 @@ public class MojangSkinApi {
                 String id = playerProfile.getId();
                 return ChangeSkinCore.parseId(id);
             }
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Tried converting player name to uuid", ex);
+        } catch (IOException ioEx) {
+            logger.log(Level.SEVERE, "Tried converting player name to uuid", ioEx);
         } finally {
             ChangeSkinCore.closeQuietly(reader, logger);
         }
