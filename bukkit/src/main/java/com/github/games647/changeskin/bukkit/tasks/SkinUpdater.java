@@ -143,9 +143,9 @@ public class SkinUpdater implements Runnable {
 
         PacketContainer teleport = protocolManager.createPacket(PacketType.Play.Server.POSITION);
         teleport.getModifier().writeDefaults();
-        teleport.getDoubles().write(0, 0D);
-        teleport.getDoubles().write(1, 255D);
-        teleport.getDoubles().write(2, 0D);
+        teleport.getDoubles().write(0, location.getX());
+        teleport.getDoubles().write(1, location.getY());
+        teleport.getDoubles().write(2, location.getZ());
         teleport.getFloat().write(0, location.getYaw());
         teleport.getFloat().write(1, location.getPitch());
         //send an invalid teleport id in order to let Bukkit ignore the incoming confirm packet
