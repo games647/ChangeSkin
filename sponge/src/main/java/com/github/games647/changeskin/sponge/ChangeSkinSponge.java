@@ -10,8 +10,22 @@ import com.github.games647.changeskin.sponge.commands.SkinUploadCommand;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
+
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
+
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandManager;
@@ -31,21 +45,8 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ThreadFactory;
-import java.util.stream.Collectors;
-
-@Plugin(id = "changeskin", name = "ChangeSkin", version = "2.3.2"
-        , url = "https://github.com/games647/ChangeSkin"
-        , description = "Sponge plugin to change your skin server side")
+@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
+        , url = PomData.URL, description = PomData.DESCRIPTION)
 public class ChangeSkinSponge {
 
     @Inject

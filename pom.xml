@@ -18,8 +18,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javaVersion>1.8</javaVersion>
-        <!--Possibility to deploy directly to the plugins folder-->
-        <outputDir>${basedir}/target</outputDir>
     </properties>
 
     <modules>
@@ -29,17 +27,6 @@
         <module>sponge</module>
         <module>universal</module>
     </modules>
-
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/games647/ChangeSkin/issues</url>
-    </issueManagement>
-
-    <scm>
-        <url>https://github.com/games647/ChangeSkin</url>
-        <connection>scm:git:git://github.com/games647/ChangeSkin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:games647/ChangeSkin.git</developerConnection>
-    </scm>
 
     <build>
         <defaultGoal>install</defaultGoal>
@@ -65,14 +52,6 @@
                 <directory>src/main/resources</directory>
                 <!--Replace variables-->
                 <filtering>true</filtering>
-            </resource>
-
-            <!--Add the license to jar in order to see it in the final jar-->
-            <resource>
-                <directory>${basedir}</directory>
-                <includes>
-                    <include>LICENSE</include>
-                </includes>
             </resource>
         </resources>
     </build>

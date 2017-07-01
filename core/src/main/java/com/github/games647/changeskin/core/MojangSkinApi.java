@@ -8,6 +8,7 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.mojang.skin.PropertiesModel;
 import com.github.games647.changeskin.core.model.mojang.skin.TexturesModel;
 import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

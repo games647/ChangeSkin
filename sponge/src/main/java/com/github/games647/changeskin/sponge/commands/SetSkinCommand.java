@@ -3,8 +3,8 @@ package com.github.games647.changeskin.sponge.commands;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.NameResolver;
 import com.github.games647.changeskin.sponge.tasks.SkinDownloader;
-import java.util.Optional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.command.CommandException;

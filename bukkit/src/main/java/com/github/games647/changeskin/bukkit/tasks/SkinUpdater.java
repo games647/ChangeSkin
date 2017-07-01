@@ -18,6 +18,9 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.collect.Lists;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -27,9 +30,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
 public class SkinUpdater implements Runnable {
 
