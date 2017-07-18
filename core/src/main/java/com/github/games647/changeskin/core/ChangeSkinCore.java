@@ -28,10 +28,10 @@ public class ChangeSkinCore {
 
     public static UUID parseId(String withoutDashes) {
         return UUID.fromString(withoutDashes.substring(0, 8)
-                + "-" + withoutDashes.substring(8, 12)
-                + "-" + withoutDashes.substring(12, 16)
-                + "-" + withoutDashes.substring(16, 20)
-                + "-" + withoutDashes.substring(20, 32));
+                + '-' + withoutDashes.substring(8, 12)
+                + '-' + withoutDashes.substring(12, 16)
+                + '-' + withoutDashes.substring(16, 20)
+                + '-' + withoutDashes.substring(20, 32));
     }
 
     public static <K, V> ConcurrentMap<K, V> buildCache(int seconds, int maxSize) {

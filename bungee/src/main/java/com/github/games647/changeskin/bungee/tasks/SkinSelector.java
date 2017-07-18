@@ -3,7 +3,7 @@ package com.github.games647.changeskin.bungee.tasks;
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.model.SkinData;
 
-import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class SkinSelector implements Runnable {
@@ -26,7 +26,7 @@ public class SkinSelector implements Runnable {
             plugin.sendMessage(receiver, "skin-not-found");
         }
 
-        BungeeCord.getInstance().getScheduler()
+        ProxyServer.getInstance().getScheduler()
                 .runAsync(plugin, new SkinUpdater(plugin, receiver, receiver, targetSkin, false, true));
     }
 }

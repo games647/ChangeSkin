@@ -25,7 +25,7 @@ public class SkinSelector implements Runnable {
             plugin.sendMessage(receiver, "skin-not-found");
         }
 
-        SkinUpdater skinUpdater = new SkinUpdater(plugin, receiver, receiver, targetSkin, true);
+        Runnable skinUpdater = new SkinUpdater(plugin, receiver, receiver, targetSkin, true);
         plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
     }
 }

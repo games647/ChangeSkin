@@ -34,7 +34,7 @@ public class SkinInvalidater implements Runnable {
             plugin.sendMessage(invoker, "invalidate-request");
 
             SkinData skin = plugin.getCore().getMojangSkinApi().downloadSkin(ownedSkin.getUuid());
-            SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, receiver, skin, bukkitOp, false);
+            Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skin, bukkitOp, false);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
         }
     }

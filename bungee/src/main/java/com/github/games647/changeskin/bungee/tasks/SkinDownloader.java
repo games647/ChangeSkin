@@ -47,7 +47,7 @@ public class SkinDownloader implements Runnable {
             plugin.sendMessage(invoker, "reset");
         }
 
-        SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, receiver, targetSkin, bukkitOp, keepSkin);
+        Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, targetSkin, bukkitOp, keepSkin);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
     }
 }

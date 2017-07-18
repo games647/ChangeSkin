@@ -61,6 +61,7 @@ public class SetSkullCommand implements CommandExecutor {
         try {
             if(itemStack == null || skinData == null || itemStack.getType() != Material.SKULL_ITEM)
                 return;
+
             SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
             Class<?> clazz = Class.forName("org.bukkit.craftbukkit." + getServerVersion() + ".inventory.CraftMetaSkull");
             Object craftSkullMeta = clazz.cast(meta);

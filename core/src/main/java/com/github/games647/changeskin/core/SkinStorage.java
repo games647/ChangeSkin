@@ -75,7 +75,7 @@ public class SkinStorage {
                     + "`CapeURL` VARCHAR(255), "
                     + "`Signature` BLOB NOT NULL, "
                     + "INDEX(`Name`, `UUID`)"
-                    + ")";
+                    + ')';
 
             String createPreferencesStmt = "CREATE TABLE IF NOT EXISTS " + PREFERENCES_TABLE + " ("
                     + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
@@ -86,7 +86,7 @@ public class SkinStorage {
                     + "FOREIGN KEY (`TargetSkin`) "
                     + "     REFERENCES " + DATA_TABLE + " (`SkinID`) "
                     + "     ON DELETE CASCADE "
-                    + ")";
+                    + ')';
 
             if (dataSource.getJdbcUrl().contains("sqlite")) {
                 createPreferencesStmt = createPreferencesStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
@@ -103,7 +103,7 @@ public class SkinStorage {
             testResult = stmt.executeQuery("SELECT * FROM " + DATA_TABLE + " Limit 1");
             ResultSetMetaData meta = testResult.getMetaData();
             for (int i = 1; i < meta.getColumnCount() + 1; i++) {
-                if (meta.getColumnName(i).equals("KeepSkin")) {
+                if ("KeepSkin".equals(meta.getColumnName(i))) {
                     keepColumnPresent = true;
                     break;
                 }

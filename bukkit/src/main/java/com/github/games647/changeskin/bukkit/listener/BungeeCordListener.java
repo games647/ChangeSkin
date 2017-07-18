@@ -42,7 +42,7 @@ public class BungeeCordListener implements PluginMessageListener {
 
     private boolean updateSkin(ByteArrayDataInput dataInput, Player player) throws IllegalArgumentException {
         String encodedData = dataInput.readUTF();
-        if (encodedData.equalsIgnoreCase("null")) {
+        if ("null".equalsIgnoreCase(encodedData)) {
             Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, player, null, false));
             return true;
         }

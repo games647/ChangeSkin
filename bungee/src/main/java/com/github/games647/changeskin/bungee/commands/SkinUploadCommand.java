@@ -6,8 +6,8 @@ import com.github.games647.changeskin.core.model.mojang.auth.Account;
 
 import java.util.List;
 
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class SkinUploadCommand extends Command {
@@ -32,8 +32,8 @@ public class SkinUploadCommand extends Command {
                     plugin.sendMessage(sender, "no-accounts");
                 } else {
                     Account uploadAccount = accounts.get(0);
-                    SkinUploader skinUploader = new SkinUploader(plugin, sender, uploadAccount, url);
-                    BungeeCord.getInstance().getScheduler().runAsync(plugin, skinUploader);
+                    Runnable skinUploader = new SkinUploader(plugin, sender, uploadAccount, url);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUploader);
                 }
             } else {
                 plugin.sendMessage(sender, "no-valid-url");

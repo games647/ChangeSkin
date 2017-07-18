@@ -39,7 +39,7 @@ public class SkinInvalidateCommand extends Command {
                 return;
             }
 
-            SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer, isOp);
+            Runnable skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer, isOp);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidater);
             return;
         }
@@ -50,7 +50,7 @@ public class SkinInvalidateCommand extends Command {
         }
 
         ProxiedPlayer receiver = (ProxiedPlayer) sender;
-        SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, receiver, isOp);
+        Runnable skinInvalidater = new SkinInvalidater(plugin, sender, receiver, isOp);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidater);
     }
 }

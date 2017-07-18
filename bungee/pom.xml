@@ -17,10 +17,9 @@
     <name>ChangeSkinBungee</name>
 
     <repositories>
-        <!--BungeeCord with also the part outside the API-->
         <repository>
-            <id>bungee-repo</id>
-            <url>https://repo.extension.ws/content/repositories/snapshots/</url>
+            <id>lucko-repo</id>
+            <url>https://ci.lucko.me/plugin/repository/everything</url>
         </repository>
     </repositories>
 
@@ -33,9 +32,9 @@
         </dependency>
 
         <dependency>
-            <groupId>tc.oc</groupId>
+            <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
-            <version>1.11-SNAPSHOT</version>
+            <version>1.12-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

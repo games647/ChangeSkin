@@ -38,7 +38,7 @@ public class SetSkinCommand implements CommandExecutor {
             return true;
         }
 
-        if (args.length > 0 && args[0].equalsIgnoreCase("set")) {
+        if (args.length > 0 && "set".equalsIgnoreCase(args[0])) {
             args = Arrays.copyOfRange(args, 1, args.length);
         }
 
@@ -85,7 +85,7 @@ public class SetSkinCommand implements CommandExecutor {
             setSkinUUID(sender, targetPlayer, toSkin, keepSkin);
         } else {
             plugin.sendMessage(sender, "queue-name-resolve");
-            NameResolver nameResolver = new NameResolver(plugin, sender, toSkin, targetPlayer, keepSkin);
+            Runnable nameResolver = new NameResolver(plugin, sender, toSkin, targetPlayer, keepSkin);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, nameResolver);
         }
     }
@@ -98,7 +98,7 @@ public class SetSkinCommand implements CommandExecutor {
             }
 
             plugin.sendMessage(sender, "skin-change-queue");
-            SkinDownloader skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid, keepSkin);
+            Runnable skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid, keepSkin);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
         } catch (IllegalArgumentException illegalArgumentException) {
             plugin.sendMessage(sender, "invalid-uuid");

@@ -23,7 +23,7 @@
         <!--Sponge-API-->
         <repository>
             <id>sponge-repo</id>
-            <url>http://repo.spongepowered.org/maven</url>
+            <url>https://repo.spongepowered.org/maven</url>
         </repository>
     </repositories>
 

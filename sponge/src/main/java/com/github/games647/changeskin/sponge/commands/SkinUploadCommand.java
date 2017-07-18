@@ -29,7 +29,7 @@ public class SkinUploadCommand implements CommandExecutor {
                 plugin.sendMessage(src, "no-accounts");
             } else {
                 Account uploadAccount = accounts.get(0);
-                SkinUploader skinUploader = new SkinUploader(plugin, src, uploadAccount, url);
+                Runnable skinUploader = new SkinUploader(plugin, src, uploadAccount, url);
                 plugin.getGame().getScheduler().createTaskBuilder().async().execute(skinUploader).submit(plugin);
             }
         } else {

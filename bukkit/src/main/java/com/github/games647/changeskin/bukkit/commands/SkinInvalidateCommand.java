@@ -43,7 +43,7 @@ public class SkinInvalidateCommand implements CommandExecutor {
                 return true;
             }
 
-            SkinInvalidater skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer);
+            Runnable skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, skinInvalidater);
             return true;
         }

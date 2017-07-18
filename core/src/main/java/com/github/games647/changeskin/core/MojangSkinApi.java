@@ -73,7 +73,7 @@ public class MojangSkinApi {
             InputStreamReader inputReader = new InputStreamReader(httpConnection.getInputStream());
             reader = new BufferedReader(inputReader);
             String line = reader.readLine();
-            if (line != null && !line.equals("null")) {
+            if (line != null && !"null".equals(line)) {
                 PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile.class);
                 String id = playerProfile.getId();
                 return ChangeSkinCore.parseId(id);
@@ -103,7 +103,7 @@ public class MojangSkinApi {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();
-            if (line == null || line.equals("null")) {
+            if (line == null || "null".equals(line)) {
                 crackedUUID.put(ownerUUID, new Object());
             } else {
                 TexturesModel texturesModel = gson.fromJson(line, TexturesModel.class);
@@ -116,8 +116,7 @@ public class MojangSkinApi {
                     String encodedSkin = propertiesModel.getValue();
                     String signature = propertiesModel.getSignature();
 
-                    SkinData skinData = new SkinData(encodedSkin, signature);
-                    return skinData;
+                    return new SkinData(encodedSkin, signature);
                 }
             }
         } catch (Exception ex) {
@@ -144,8 +143,7 @@ public class MojangSkinApi {
                 String encodedSkin = propertiesModel.getValue();
                 String signature = propertiesModel.getSignature();
 
-                SkinData skinData = new SkinData(encodedSkin, signature);
-                return skinData;
+                return new SkinData(encodedSkin, signature);
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);

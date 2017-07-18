@@ -46,7 +46,7 @@ public class MojangAuthApi {
             InputStreamReader inputReader = new InputStreamReader(httpConnection.getInputStream());
             reader = new BufferedReader(inputReader);
             String line = reader.readLine();
-            if (line != null && !line.equals("null")) {
+            if (line != null && !"null".equals(line)) {
                 AuthenticationResponse authResponse = gson.fromJson(line, AuthenticationResponse.class);
                 return new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken());
             }

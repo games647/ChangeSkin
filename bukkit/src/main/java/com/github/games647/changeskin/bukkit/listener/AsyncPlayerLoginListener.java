@@ -53,17 +53,20 @@ public class AsyncPlayerLoginListener implements Listener {
     }
 
     private void refetchSkin(String playerName, UserPreference preferences) {
-        UUID ownerUUID = plugin.getCore().getUuidCache().get(playerName);
-        if (ownerUUID == null && !plugin.getCore().getCrackedNames().containsKey(playerName)) {
-            try {
-                ownerUUID = plugin.getCore().getMojangSkinApi().getUUID(playerName);
-            } catch (NotPremiumException ex) {
-                plugin.getLogger().log(Level.FINE, "Username is not premium on refetch", ex);
-                plugin.getCore().getCrackedNames().put(playerName, new Object());
-            } catch (RateLimitException ex) {
-                plugin.getLogger().log(Level.SEVERE, "Rate limit reached on refetch", ex);
+        UUID ownerUUID = plugin.getCore().getUuidCache().computeIfAbsent(playerName, (playername) -> {
+            if (!plugin.getCore().getCrackedNames().containsKey(playerName)) {
+                try {
+                    return plugin.getCore().getMojangSkinApi().getUUID(playerName);
+                } catch (NotPremiumException ex) {
+                    plugin.getLogger().log(Level.FINE, "Username is not premium on refetch", ex);
+                    plugin.getCore().getCrackedNames().put(playerName, new Object());
+                } catch (RateLimitException ex) {
+                    plugin.getLogger().log(Level.SEVERE, "Rate limit reached on refetch", ex);
+                }
             }
-        }
+
+            return null;
+        });
 
         if (ownerUUID != null) {
             plugin.getCore().getUuidCache().put(playerName, ownerUUID);

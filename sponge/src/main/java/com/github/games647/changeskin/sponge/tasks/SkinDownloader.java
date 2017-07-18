@@ -42,7 +42,7 @@ public class SkinDownloader implements Runnable {
             plugin.sendMessage(invoker, "reset");
         }
 
-        SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, receiver, skin, keepSkin);
+        Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skin, keepSkin);
         plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
     }
 }
