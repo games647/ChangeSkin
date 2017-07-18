@@ -23,7 +23,7 @@ public class BungeeCordListener implements RawDataListener {
     public void handlePayload(ChannelBuf data, RemoteConnection connection, Type side) {
         Player player = (Player) connection;
         
-        String subchannel = data.readUTF();
+        String subchannel = data.readString();
 
         if ("UpdateSkin".equalsIgnoreCase(subchannel)) {
             plugin.getLogger().info("Received instant update request from BungeeCord. "
@@ -35,17 +35,17 @@ public class BungeeCordListener implements RawDataListener {
     }
 
     private boolean updateSkin(ChannelBuf data, Player player) throws IllegalArgumentException {
-        String encodedData = data.readUTF();
+        String encodedData = data.readString();
         if ("null".equalsIgnoreCase(encodedData)) {
             Runnable skinUpdater = new SkinUpdater(plugin, null, player, null, false);
             plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
             return true;
         }
 
-        String signature = data.readUTF();
+        String signature = data.readString();
         Player receiver = player;
         try {
-            String playerName = data.readUTF();
+            String playerName = data.readString();
             receiver = plugin.getGame().getServer().getPlayer(playerName).orElseGet(null);
             plugin.getLogger().info("Instant update for {}", playerName);
         } catch (Exception ex) {
@@ -60,23 +60,23 @@ public class BungeeCordListener implements RawDataListener {
 
     private void checkPermissions(Player player, ChannelBuf dataInput) {
         int skinId = dataInput.readInteger();
-        String encodedData = dataInput.readUTF();
-        String encodedSignature = dataInput.readUTF();
+        String encodedData = dataInput.readString();
+        String encodedSignature = dataInput.readString();
 
         //continue on success only
-        String receiverUUID = dataInput.readUTF();
+        String receiverUUID = dataInput.readString();
 
         SkinData targetSkin = new SkinData(encodedData, encodedSignature);
         if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
             plugin.getPluginChannel().sendTo(player, out -> {
-                out.writeUTF("PermissionsSuccess");
+                out.writeString("PermissionsSuccess");
                 out.writeInteger(skinId);
-                out.writeUTF(encodedData);
-                out.writeUTF(encodedSignature);
-                out.writeUTF(receiverUUID);
+                out.writeString(encodedData);
+                out.writeString(encodedSignature);
+                out.writeString(receiverUUID);
             });
         } else {
-            plugin.getPluginChannel().sendTo(player, out -> out.writeUTF("PermissionsFailure"));
+            plugin.getPluginChannel().sendTo(player, out -> out.writeString("PermissionsFailure"));
         }
     }
 
