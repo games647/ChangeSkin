@@ -23,9 +23,12 @@ public class ServerSwitchListener extends AbstractSkinListener {
         ServerInfo target = connectEvent.getTarget();
 
         List<String> blacklist = plugin.getConfig().getStringList("server-blacklist");
-        if (blacklist != null && !blacklist.contains(target.getName())) {
+        if (blacklist != null) {
             final ProxiedPlayer player = connectEvent.getPlayer();
-            if (plugin.getLoginSession(player.getPendingConnection()) == null) {
+            if (blacklist.contains(target.getName())) {
+                //clear the skin
+                plugin.applySkin(player, null);
+            } else if (plugin.getLoginSession(player.getPendingConnection()) == null) {
                 ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
             }
         }
