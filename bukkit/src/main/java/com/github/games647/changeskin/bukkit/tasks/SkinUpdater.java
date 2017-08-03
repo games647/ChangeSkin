@@ -17,6 +17,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.collect.Lists;
+import com.nametagedit.plugin.NametagEdit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
@@ -183,6 +184,10 @@ public class SkinUpdater implements Runnable {
             setItemInHand(receiver);
             //triggers updateAbilities
             receiver.setWalkSpeed(receiver.getWalkSpeed());
+
+            if (Bukkit.getPluginManager().isPluginEnabled("NametagEdit")) {
+                NametagEdit.getApi().reloadNametag(receiver);
+            }
         } catch (InvocationTargetException ex) {
             plugin.getLogger().log(Level.SEVERE, "Exception sending instant skin change packet", ex);
         }

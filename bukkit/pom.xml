@@ -19,13 +19,19 @@
         <!--Bukkit-Server-API -->
         <repository>
             <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/releases/</url>
         </repository>
 
         <!--ProtocolLib-->
         <repository>
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
+        </repository>
+
+        <!--NameTagEdit-->
+        <repository>
+            <id>upstream</id>
+            <url>http://ci.nametagedit.com/plugin/repository/everything/</url>
         </repository>
     </repositories>
 
@@ -41,7 +47,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.12-pre2-SNAPSHOT</version>
+            <version>1.12-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -51,6 +57,12 @@
             <artifactId>ProtocolLib-API</artifactId>
             <version>4.3.0</version>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.nametagedit</groupId>
+            <artifactId>nametagedit</artifactId>
+            <version>4.1.0</version>
         </dependency>
     </dependencies>
 </project>
