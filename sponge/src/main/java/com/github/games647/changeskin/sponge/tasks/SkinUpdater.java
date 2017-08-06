@@ -111,9 +111,9 @@ public class SkinUpdater implements Runnable {
                 .filter(world -> !world.equals(receiverWorld))
                 .findFirst();
 
-        Location<World> differentLocation = differentWorld.get().getSpawnLocation();
-
-        receiver.setLocation(differentLocation);
-        receiver.setLocation(oldLocation);
+        differentWorld.ifPresent(world -> {
+            receiver.setLocation(world.getSpawnLocation());
+            receiver.setLocation(oldLocation);
+        });
     }
 }

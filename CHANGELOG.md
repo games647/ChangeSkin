@@ -1,5 +1,17 @@
 # Changelog
 
+##### 2.4
+
+* Fix showing nametags for NameTagEdit after skin change
+* Clear skin for servers on the blacklist (Fixes #69)
+* Use read-/write String for plugin messages in Sponge (Removes usage of deprecated methods)
+* General code cleanup
+* Fix compatibility with NCP (Fixes #58)
+* Add pom data to the plugin meta file automatically (Sponge)
+* Fix too strict catch block for non premium players (Fixes #71) (related to #68)
+* Replace usage of deprecated methods for 1.12
+* Fix create loginresult after breaking bungee update (Fixes #65)
+
 ##### 2.3.3
 
 * Forward skinPerm config to bukkit to check it only if necessary 

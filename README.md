@@ -1,7 +1,5 @@
 # ChangeSkin
 
-[![Build Status](https://travis-ci.org/games647/ChangeSkin.svg?branch=master)](https://travis-ci.org/games647/ChangeSkin)
-
 ## Description
 
 This plugin allows your players to change their skins by command. These skins have to be downloaded from Mojang, because
