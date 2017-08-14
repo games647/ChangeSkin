@@ -100,7 +100,8 @@ storage:
     # File location
     database: '{pluginDir}/ChangeSkin.db'
 
-# MySQL
+# MySQL / MariaDB
+# If you using Sponge please change the driver name to org.mariadb.jdbc.Driver
 #    driver: com.mysql.jdbc.Driver
 #    host: localhost
 #    port: 3306

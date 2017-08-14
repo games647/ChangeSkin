@@ -11,6 +11,7 @@
 * Fix too strict catch block for non premium players (Fixes #71) (related to #68)
 * Replace usage of deprecated methods for 1.12
 * Fix create loginresult after breaking bungee update (Fixes #65)
+* Fix config loading in Sponge
 
 ##### 2.3.3
 
