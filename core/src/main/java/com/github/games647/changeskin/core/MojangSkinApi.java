@@ -55,7 +55,7 @@ public class MojangSkinApi {
     public MojangSkinApi(ConcurrentMap<Object, Object> requests, Logger logger, int rateLimit, boolean mojangDownload
             , Map<String, Integer> proxies) {
         this.requests = requests;
-        this.rateLimit = rateLimit;
+        this.rateLimit = Math.max(rateLimit, 600);
         this.logger = logger;
         this.mojangDownload = mojangDownload;
 

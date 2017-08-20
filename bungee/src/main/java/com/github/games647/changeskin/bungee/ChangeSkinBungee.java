@@ -15,6 +15,7 @@ import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -72,7 +73,7 @@ public class ChangeSkinBungee extends Plugin {
             boolean mojangDownload = configuration.getBoolean("independent-skin-downloading");
             int cooldown = configuration.getInt("cooldown");
             int updateDiff = configuration.getInt("auto-skin-update");
-            List<String> proxyList = (List<String>) configuration.getList("proxies");
+            List<String> proxyList = (List<String>) configuration.getList("proxies", Lists.newArrayList());
             Map<String, Integer> proxies = proxyList.stream()
                     .collect(Collectors
                             .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
