@@ -7,16 +7,27 @@ import com.github.games647.changeskin.core.model.RawPropertiesModel;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.mojang.skin.PropertiesModel;
 import com.github.games647.changeskin.core.model.mojang.skin.TexturesModel;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.github.games647.changeskin.core.ChangeSkinCore.getConnection;
 
 public class MojangSkinApi {
 
@@ -31,6 +42,7 @@ public class MojangSkinApi {
 
     private final Gson gson = new Gson();
 
+    private final Iterator<Proxy> proxies;
     private final ConcurrentMap<Object, Object> requests;
     private final Logger logger;
     private final int rateLimit;
@@ -40,11 +52,19 @@ public class MojangSkinApi {
 
     private long lastRateLimit;
 
-    public MojangSkinApi(ConcurrentMap<Object, Object> requests, Logger logger, int rateLimit, boolean mojangDownload) {
+    public MojangSkinApi(ConcurrentMap<Object, Object> requests, Logger logger, int rateLimit, boolean mojangDownload
+            , Map<String, Integer> proxies) {
         this.requests = requests;
         this.rateLimit = rateLimit;
         this.logger = logger;
         this.mojangDownload = mojangDownload;
+
+        List<Proxy> proxyBuilder = Lists.newArrayList();
+        for (Entry<String, Integer> proxy : proxies.entrySet()) {
+            proxyBuilder.add(new Proxy(Type.HTTP, new InetSocketAddress(proxy.getKey(), proxy.getValue())));
+        }
+
+        this.proxies = Iterables.cycle(proxyBuilder).iterator();
     }
 
     public UUID getUUID(String playerName) throws NotPremiumException, RateLimitException {
@@ -53,24 +73,36 @@ public class MojangSkinApi {
             throw new NotPremiumException(playerName);
         }
 
-        if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
-            return null;
-        }
-
-        requests.put(new Object(), new Object());
-
         BufferedReader reader = null;
         try {
-            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(UUID_URL + playerName);
-            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
-                throw new NotPremiumException(playerName);
-            } else if (httpConnection.getResponseCode() == RATE_LIMIT_ID) {
-                logger.info("RATE_LIMIT REACHED");
-                lastRateLimit = System.currentTimeMillis();
-                return null;
+            HttpURLConnection connection;
+            if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
+                synchronized (proxies) {
+                    if (proxies.hasNext()) {
+                        connection = getConnection(UUID_URL + playerName, proxies.next());
+                    } else {
+                        return null;
+                    }
+                }
+            } else {
+                requests.put(new Object(), new Object());
+                connection = getConnection(UUID_URL + playerName);
             }
 
-            InputStreamReader inputReader = new InputStreamReader(httpConnection.getInputStream());
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
+                throw new NotPremiumException(playerName);
+            } else if (connection.getResponseCode() == RATE_LIMIT_ID) {
+                logger.info("RATE_LIMIT REACHED");
+                lastRateLimit = System.currentTimeMillis();
+                if (!connection.usingProxy()) {
+                    return getUUID(playerName);
+                } else {
+                    return null;
+                }
+            }
+
+            InputStreamReader inputReader = new InputStreamReader(connection.getInputStream());
             reader = new BufferedReader(inputReader);
             String line = reader.readLine();
             if (line != null && !"null".equals(line)) {
@@ -99,7 +131,7 @@ public class MojangSkinApi {
         //unsigned is needed in order to receive the signature
         String uuidString = ownerUUID.toString().replace("-", "") + "?unsigned=false";
         try {
-            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(SKIN_URL + uuidString);
+            HttpURLConnection httpConnection = getConnection(SKIN_URL + uuidString);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();
@@ -130,7 +162,7 @@ public class MojangSkinApi {
         //unsigned is needed in order to receive the signature
         String uuidStrip = ownerUUID.toString().replace("-", "");
         try {
-            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(MCAPI_SKIN_URL + uuidStrip);
+            HttpURLConnection httpConnection = getConnection(MCAPI_SKIN_URL + uuidStrip);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             McApiProfile profile = gson.fromJson(reader.readLine(), McApiProfile.class);

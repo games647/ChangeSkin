@@ -31,30 +31,30 @@ public class SkinStorage {
             , String databasePath, String user, String pass) {
         this.plugin = core;
 
-        HikariConfig databaseConfig = new HikariConfig();
-        databaseConfig.setUsername(user);
-        databaseConfig.setPassword(pass);
-        databaseConfig.setDriverClassName(driver);
-        databaseConfig.setThreadFactory(threadFactory);
+        HikariConfig config = new HikariConfig();
+        config.setUsername(user);
+        config.setPassword(pass);
+        config.setDriverClassName(driver);
+        config.setThreadFactory(threadFactory);
 
         databasePath = databasePath.replace("{pluginDir}", core.getDataFolder().toAbsolutePath().toString());
 
         //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         Properties properties = new Properties();
         properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
-        databaseConfig.setDataSourceProperties(properties);
+        config.setDataSourceProperties(properties);
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
             jdbcUrl += "sqlite" + "://" + databasePath;
-            databaseConfig.setConnectionTestQuery("SELECT 1");
-            databaseConfig.setMaximumPoolSize(1);
+            config.setConnectionTestQuery("SELECT 1");
+            config.setMaximumPoolSize(1);
         } else {
             jdbcUrl += "mysql" + "://" + host + ':' + port + '/' + databasePath;
         }
 
-        databaseConfig.setJdbcUrl(jdbcUrl);
-        this.dataSource = new HikariDataSource(databaseConfig);
+        config.setJdbcUrl(jdbcUrl);
+        this.dataSource = new HikariDataSource(config);
     }
 
     public void createTables() throws ClassNotFoundException, SQLException {

@@ -21,10 +21,13 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -71,7 +74,11 @@ public class ChangeSkinBukkit extends JavaPlugin {
             boolean mojangDownload = getConfig().getBoolean("independent-skin-downloading");
             int cooldown = getConfig().getInt("cooldown");
             int updateDiff = getConfig().getInt("auto-skin-update");
-            this.core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, mojangDownload, cooldown, updateDiff);
+            List<String> proxyList = getConfig().getStringList("proxies");
+            Map<String, Integer> proxies = proxyList.stream()
+                    .collect(Collectors
+                            .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
+            this.core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, mojangDownload, cooldown, updateDiff, proxies);
 
             ThreadFactory threadFactory = new ThreadFactoryBuilder()
                     .setNameFormat(getName() + " Database Pool Thread #%1$d")

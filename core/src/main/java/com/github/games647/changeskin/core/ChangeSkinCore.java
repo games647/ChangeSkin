@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
@@ -54,7 +55,11 @@ public class ChangeSkinCore {
     }
     
     public static HttpURLConnection getConnection(String url) throws IOException {
-        HttpURLConnection httpConnection = (HttpURLConnection) new URL(url).openConnection();
+        return getConnection(url, Proxy.NO_PROXY);
+    }
+
+    public static HttpURLConnection getConnection(String url, Proxy proxy) throws IOException {
+        HttpURLConnection httpConnection = (HttpURLConnection) new URL(url).openConnection(proxy);
         httpConnection.setConnectTimeout(TIMEOUT);
         httpConnection.setReadTimeout(2 * TIMEOUT);
         httpConnection.setRequestProperty("Content-Type", "application/json");
@@ -83,10 +88,10 @@ public class ChangeSkinCore {
     private final List<Account> uploadAccounts = Lists.newArrayList();
 
     public ChangeSkinCore(Logger logger, Path pluginFolder, int rateLimit, boolean mojangDownload
-            , int cooldown, int autoUpdateDiff) {
+            , int cooldown, int autoUpdateDiff, Map<String, Integer> proxies) {
         this.logger = logger;
         this.pluginFolder = pluginFolder;
-        this.mojangSkinApi = new MojangSkinApi(buildCache(10, -1), logger, rateLimit, mojangDownload);
+        this.mojangSkinApi = new MojangSkinApi(buildCache(10, -1), logger, rateLimit, mojangDownload, proxies);
         this.mojangAuthApi = new MojangAuthApi(logger);
 
         if (cooldown <= 0) {

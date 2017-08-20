@@ -27,10 +27,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -69,7 +72,11 @@ public class ChangeSkinBungee extends Plugin {
             boolean mojangDownload = configuration.getBoolean("independent-skin-downloading");
             int cooldown = configuration.getInt("cooldown");
             int updateDiff = configuration.getInt("auto-skin-update");
-            core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, mojangDownload, cooldown, updateDiff);
+            List<String> proxyList = (List<String>) configuration.getList("proxies");
+            Map<String, Integer> proxies = proxyList.stream()
+                    .collect(Collectors
+                            .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
+            core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, mojangDownload, cooldown, updateDiff, proxies);
 
             loadLocale();
 

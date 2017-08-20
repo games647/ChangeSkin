@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
@@ -101,7 +102,11 @@ public class ChangeSkinSponge {
             int cooldown = rootNode.getNode("cooldown").getInt();
             Path parentFolder = defaultConfigFile.getParent();
             int updateDiff = rootNode.getNode("auto-skin-update").getInt();
-            core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, mojangDownload, cooldown, updateDiff);
+            List<String> proxyList = rootNode.getNode("proxies").getList(value -> value.toString());
+            Map<String, Integer> proxies = proxyList.stream()
+                    .collect(Collectors
+                            .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
+            core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, mojangDownload, cooldown, updateDiff, proxies);
 
             String pluginName = "ChangeSkin";
             ThreadFactory threadFactory = new ThreadFactoryBuilder()

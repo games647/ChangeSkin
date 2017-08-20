@@ -2,6 +2,7 @@
 
 ##### 2.4
 
+* Add support for HTTP-proxies
 * Fix showing nametags for NameTagEdit after skin change
 * Clear skin for servers on the blacklist (Fixes #69)
 * Use read-/write String for plugin messages in Sponge (Removes usage of deprecated methods)
