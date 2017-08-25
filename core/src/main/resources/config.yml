@@ -12,10 +12,10 @@
 default-skins: []
 
 # If the player does not have a skin and hasn't chosen one with /setskin
-# this will try to redownload using the username of the player
+# this will try to re-download using the username of the player
 restoreSkins: false
 
-# Should the skins apply instantly without relogins
+# Should the skins apply instantly without re-login
 # The player will be invisible for a shorten time
 instantSkinChange: true
 
@@ -45,7 +45,7 @@ mojang-request-limit: 600
 
 # In order to use a skin, the player name have to be resolve to the UUID and then have to be downloaded using the UUID.
 # Both requests are rate-limited. The first request is 600 requests per 10 minutes. The second one is rate-limited with
-# one request per indivual skin per minute. So unlike the name resolve there cannot be two requests for the
+# one request per individual skin per minute. So unlike the name resolve there cannot be two requests for the
 # same skin within one minute.
 #
 # This might conflict with some heads plugins. Due this stricter rate-limiting this feature is added.
@@ -87,7 +87,7 @@ upload-accounts: []
 # server will verify if the user has the permissions on the backend server too.
 bukkit-permissions: false
 
-# This automatically refetches the skin from Mojang if the skin is older than x minutes
+# This automatically re-fetches the skin from Mojang if the skin is older than x minutes
 # This value should be at least one minute, because that's the rate-limit by Mojang
 # -1 disables it
 auto-skin-update: -1

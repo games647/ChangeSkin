@@ -31,7 +31,7 @@ import static com.github.games647.changeskin.core.ChangeSkinCore.getConnection;
 
 public class MojangSkinApi {
 
-    private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
+    private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
     private static final String MCAPI_SKIN_URL = "https://mcapi.de/api/user/";
 
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
@@ -129,9 +129,9 @@ public class MojangSkinApi {
         }
 
         //unsigned is needed in order to receive the signature
-        String uuidString = ownerUUID.toString().replace("-", "") + "?unsigned=false";
+        String uuidString = ownerUUID.toString().replace("-", "");
         try {
-            HttpURLConnection httpConnection = getConnection(SKIN_URL + uuidString);
+            HttpURLConnection httpConnection = getConnection(String.format(SKIN_URL, uuidString));
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();

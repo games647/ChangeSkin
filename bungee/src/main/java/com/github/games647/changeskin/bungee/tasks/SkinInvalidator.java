@@ -8,7 +8,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class SkinInvalidater implements Runnable {
+public class SkinInvalidator implements Runnable {
 
     private final ChangeSkinBungee plugin;
     private final CommandSender invoker;
@@ -16,7 +16,7 @@ public class SkinInvalidater implements Runnable {
 
     private final boolean bukkitOp;
 
-    public SkinInvalidater(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, boolean bukkitOp) {
+    public SkinInvalidator(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, boolean bukkitOp) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;

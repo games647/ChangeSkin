@@ -57,7 +57,7 @@ public class SkinUpdater implements Runnable {
             return;
         }
 
-        //uuid was successfull resolved, we could now make a cooldown check
+        //uuid was successful resolved, we could now make a cooldown check
         if (invoker instanceof ProxiedPlayer) {
             plugin.getCore().addCooldown(((ProxiedPlayer) invoker).getUniqueId());
         }

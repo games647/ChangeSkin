@@ -208,7 +208,7 @@
     * changeskin.skin.whitelist.uuid
     * changeskin.skin.blacklist.uuid
 * Removed deprecated methods from the BungeeCord module
-* Removed player name specific permissions. Use the uuids ones
+* Removed player name specific permissions. Use the UUIDs ones
 
 ##### 0.9.4
 
@@ -245,7 +245,7 @@
 
 ##### 0.7.2
 
-* Fixed support for PaperSpigot and TacoSpigot
+* Fixed support for Paper and TacoSpigot
 * Fixed support for Craftbukkit servers
 * Fixed instant skin apply
 

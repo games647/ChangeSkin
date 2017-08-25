@@ -155,7 +155,7 @@ public class ChangeSkinCore {
 
             Account account = mojangAuthApi.authenticate(email, password);
             if (account != null) {
-                logger.log(Level.INFO, "Successfull authenticated user {0}", account.getProfile().getId());
+                logger.log(Level.INFO, "Successful authenticated user {0}", account.getProfile().getId());
                 uploadAccounts.add(account);
             }
         }

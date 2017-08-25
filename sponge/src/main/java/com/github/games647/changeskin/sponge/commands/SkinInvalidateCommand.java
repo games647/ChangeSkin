@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.sponge.commands;
 
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
-import com.github.games647.changeskin.sponge.tasks.SkinInvalidater;
+import com.github.games647.changeskin.sponge.tasks.SkinInvalidator;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +27,7 @@ public class SkinInvalidateCommand implements CommandExecutor {
 
         Player receiver = (Player) src;
         plugin.getGame().getScheduler().createTaskBuilder().async()
-                .execute(new SkinInvalidater(plugin, receiver)).submit(plugin);
+                .execute(new SkinInvalidator(plugin, receiver)).submit(plugin);
         return CommandResult.success();
     }
 }

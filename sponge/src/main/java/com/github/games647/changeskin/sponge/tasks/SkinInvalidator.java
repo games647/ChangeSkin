@@ -6,12 +6,12 @@ import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
 import org.spongepowered.api.entity.living.player.Player;
 
-public class SkinInvalidater implements Runnable {
+public class SkinInvalidator implements Runnable {
 
     private final ChangeSkinSponge plugin;
     private final Player invoker;
 
-    public SkinInvalidater(ChangeSkinSponge plugin, Player invoker) {
+    public SkinInvalidator(ChangeSkinSponge plugin, Player invoker) {
         this.plugin = plugin;
         this.invoker = invoker;
     }

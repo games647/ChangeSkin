@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bungee.commands;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.bungee.tasks.SkinInvalidater;
+import com.github.games647.changeskin.bungee.tasks.SkinInvalidator;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -39,8 +39,8 @@ public class SkinInvalidateCommand extends Command {
                 return;
             }
 
-            Runnable skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer, isOp);
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidater);
+            Runnable skinInvalidate = new SkinInvalidator(plugin, sender, targetPlayer, isOp);
+            ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidate);
             return;
         }
 
@@ -50,7 +50,7 @@ public class SkinInvalidateCommand extends Command {
         }
 
         ProxiedPlayer receiver = (ProxiedPlayer) sender;
-        Runnable skinInvalidater = new SkinInvalidater(plugin, sender, receiver, isOp);
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidater);
+        Runnable skinInvalidate = new SkinInvalidator(plugin, sender, receiver, isOp);
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, skinInvalidate);
     }
 }

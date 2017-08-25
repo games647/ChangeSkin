@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bukkit.commands;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.bukkit.tasks.SkinInvalidater;
+import com.github.games647.changeskin.bukkit.tasks.SkinInvalidator;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
@@ -43,8 +43,8 @@ public class SkinInvalidateCommand implements CommandExecutor {
                 return true;
             }
 
-            Runnable skinInvalidater = new SkinInvalidater(plugin, sender, targetPlayer);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, skinInvalidater);
+            Runnable skinInvalidate = new SkinInvalidator(plugin, sender, targetPlayer);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, skinInvalidate);
             return true;
         }
 
@@ -54,7 +54,7 @@ public class SkinInvalidateCommand implements CommandExecutor {
         }
 
         Player receiver = (Player) sender;
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinInvalidater(plugin, sender, receiver));
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinInvalidator(plugin, sender, receiver));
         return true;
     }
 

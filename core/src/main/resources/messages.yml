@@ -2,7 +2,7 @@
 # You can access the newest locale here:
 # https://github.com/games647/ChangeSkin/blob/master/core/src/main/resources/messages.yml
 
-# In order to split a message into seperate lines you could just make a new line, but keep the '
+# In order to split a message into separate lines you could just make a new line, but keep the '
 # Example:
 # bla: '&aFirst line
 # Second line
@@ -28,7 +28,7 @@ not-online: "&4This player isn't online"
 # The command invoker just invoked /changeskin, but didn't supplied to the target skin
 no-skin: '&4You have to provide the skin you want to change to'
 
-# Only players can have ingame skins
+# Only players can have in game skins
 no-console: '&4You have to be a player to set your own skin'
 
 # UUID resolve request was sent to the mojang servers and is waiting for a response
@@ -37,11 +37,11 @@ queue-name-resolve: '&6Queued name to uuid resolve'
 # Supplied username is cannot be resolved because of connection problems
 no-resolve: "&4UUID couldn't be resolved"
 
-# UUID was successfull resolved
-uuid-resolved: '&2UUID was successfull resolved from the player name'
+# UUID was successful resolved
+uuid-resolved: '&2UUID was successful resolved from the player name'
 
 # Skin preferences was reset to the default value
-reset: '&2Reseting preferences to the default value'
+reset: '&2Resetting preferences to the default value'
 
 # Queuing skin change
 skin-change-queue: '&6Queued Skin change'
@@ -55,7 +55,7 @@ skin-downloading: '&2The skin is now downloading'
 # Instant updates was disabled, so the players have to relogin
 skin-changed-no-instant: '&2Skin was changed. Relogin to see the changes'
 
-# Skin was successfull updates
+# Skin was successful updates
 skin-changed: '&2You received a new skin'
 
 # On name to username rate-limiting
@@ -75,7 +75,7 @@ invalidate-request: '&2Invalidate request sent'
 skin-updated: '&2Target skin was updated'
 
 # User tried to upload a new skin, but it misses the skin url and optionally save name
-upload-noargs: '&4The skin url and optionaly a name is missing'
+upload-noargs: '&4The skin url and optional a name is missing'
 
 # There are no configured accounts to upload skins
 no-accounts: '&4There are no configured accounts to upload skins'

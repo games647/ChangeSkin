@@ -87,7 +87,7 @@ public class PluginMessageListener extends AbstractSkinListener {
         }
 
         if (isSource) {
-            //the proxied player is the actual invoker other it's the console
+            //the player is the actual invoker other it's the console
             ProxyServer.getInstance().getPluginManager().dispatchCommand(invoker, commandName + ' ' + args);
         } else {
             CommandSender console = ProxyServer.getInstance().getConsole();

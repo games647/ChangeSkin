@@ -8,13 +8,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SkinInvalidater implements Runnable {
+public class SkinInvalidator implements Runnable {
 
     private final ChangeSkinBukkit plugin;
     private final CommandSender invoker;
     private final Player receiver;
 
-    public SkinInvalidater(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver) {
+    public SkinInvalidator(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;

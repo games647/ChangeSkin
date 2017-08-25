@@ -2,7 +2,7 @@
 # You can access the newest locale here:
 # https://github.com/games647/ChangeSkin/blob/master/core/src/main/resources/messages.yml
 
-# In order to split a message into seperate lines you could just make a new line, but keep the '
+# In order to split a message into separate lines you could just make a new line, but keep the '
 # Example:
 # bla: '&aFirst line
 # Second line
@@ -28,7 +28,7 @@ not-online: "&4Игрок не в сети!"
 # The command invoker just invoked /changeskin, but didn't supplied to the target skin
 no-skin: '&4Вы должны указать на какой скин хотите сменить свой'
 
-# Only players can have ingame skins
+# Only players can have in game skins
 no-console: '&4Вы должны быть игроком для использования скинов!'
 
 # UUID resolve request was sent to the mojang servers and is waiting for a response
@@ -37,7 +37,7 @@ queue-name-resolve: '&6Отправляем запрос к Mojang, вытяги
 # Supplied username is cannot be resolved because of connection problems
 no-resolve: "&4UUID не может быть понят сервером. Возможно лежат сервера Mojang."
 
-# UUID was successfull resolved
+# UUID was successful resolved
 uuid-resolved: '&2UUID Успешно получен с ника игрока!'
 
 # Skin preferences was reset to the default value
@@ -55,7 +55,7 @@ skin-downloading: '&2Скин в стадии скачивания'
 # Instant updates was disabled, so the players have to relogin
 skin-changed-no-instant: '&2Скин был сменен! Перезайдите чтобы увидеть результат!'
 
-# Skin was successfull updates
+# Skin was successful updates
 skin-changed: '&2Вам установлен новый скин!'
 
 # On name to username rate-limiting

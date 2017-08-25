@@ -41,7 +41,7 @@ public class SkinUploader implements Runnable {
         UUID accessToken = ChangeSkinCore.parseId(owner.getAccessToken());
         plugin.getCore().getMojangAuthApi().changeSkin(uuid, accessToken, url, false);
 
-        //this could proparly cause issues for uuid resolving to this database entry
+        //this could properly cause issues for uuid resolving to this database entry
         SkinData newSkin = plugin.getCore().getMojangSkinApi().downloadSkin(uuid);
         plugin.getStorage().save(newSkin);
 

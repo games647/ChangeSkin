@@ -259,7 +259,7 @@ public class ChangeSkinBungee extends Plugin {
             return true;
         } else if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist.*")) {
             if (invoker.hasPermission('-' + getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
-                //backlisted explicit
+                //blacklisted explicit
                 sendMessage(invoker, "no-permission");
                 return false;
             }
