@@ -158,6 +158,8 @@ public class ChangeSkinBungee extends Plugin {
     }
 
     public void applySkin(ProxiedPlayer player, SkinData skinData) {
+        getLogger().log(Level.FINE, "Applying skin for {0}", player.getName());
+
         InitialHandler initialHandler = (InitialHandler) player.getPendingConnection();
         LoginResult loginProfile = initialHandler.getLoginProfile();
         //this is null on offline mode
