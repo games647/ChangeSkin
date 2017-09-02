@@ -95,7 +95,6 @@ public class ChangeSkinSponge {
             String pass = storageNode.getNode("password").getString();
 
             int rateLimit = rootNode.getNode("mojang-request-limit").getInt();
-            boolean mojangDownload = rootNode.getNode("independent-skin-downloading").getBoolean();
 
             java.util.logging.Logger pluginLogger = java.util.logging.Logger.getLogger("ChangeSkin");
 
@@ -106,7 +105,7 @@ public class ChangeSkinSponge {
             Map<String, Integer> proxies = proxyList.stream()
                     .collect(Collectors
                             .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
-            core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, mojangDownload, cooldown, updateDiff, proxies);
+            core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, cooldown, updateDiff, proxies);
 
             String pluginName = "ChangeSkin";
             ThreadFactory threadFactory = new ThreadFactoryBuilder()
@@ -224,7 +223,7 @@ public class ChangeSkinSponge {
 
         String message = core.getMessage(key);
         if (message != null && sender != null) {
-            sender.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(message.replace('&', '§')));
+            sender.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(message));
         }
     }
 
@@ -236,7 +235,7 @@ public class ChangeSkinSponge {
         String message = core.getMessage(key);
         if (message != null && sender != null) {
             String formated = MessageFormat.format(message, arguments);
-            sender.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(formated.replace('&', '§')));
+            sender.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(formated));
         }
     }
 

@@ -87,11 +87,11 @@ public class ChangeSkinCore {
 
     private final List<Account> uploadAccounts = Lists.newArrayList();
 
-    public ChangeSkinCore(Logger logger, Path pluginFolder, int rateLimit, boolean mojangDownload
-            , int cooldown, int autoUpdateDiff, Map<String, Integer> proxies) {
+    public ChangeSkinCore(Logger logger, Path pluginFolder, int rateLimit, int cooldown, int autoUpdateDiff
+            , Map<String, Integer> proxies) {
         this.logger = logger;
         this.pluginFolder = pluginFolder;
-        this.mojangSkinApi = new MojangSkinApi(buildCache(10, -1), logger, rateLimit, mojangDownload, proxies);
+        this.mojangSkinApi = new MojangSkinApi(buildCache(10, -1), logger, rateLimit, proxies);
         this.mojangAuthApi = new MojangAuthApi(logger);
 
         if (cooldown <= 0) {

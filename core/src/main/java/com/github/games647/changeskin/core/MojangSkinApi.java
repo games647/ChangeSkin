@@ -1,9 +1,6 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.ApiPropertiesModel;
-import com.github.games647.changeskin.core.model.McApiProfile;
 import com.github.games647.changeskin.core.model.PlayerProfile;
-import com.github.games647.changeskin.core.model.RawPropertiesModel;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.mojang.skin.PropertiesModel;
 import com.github.games647.changeskin.core.model.mojang.skin.TexturesModel;
@@ -32,7 +29,6 @@ import static com.github.games647.changeskin.core.ChangeSkinCore.getConnection;
 public class MojangSkinApi {
 
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
-    private static final String MCAPI_SKIN_URL = "https://mcapi.de/api/user/";
 
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
@@ -46,18 +42,15 @@ public class MojangSkinApi {
     private final ConcurrentMap<Object, Object> requests;
     private final Logger logger;
     private final int rateLimit;
-    private final boolean mojangDownload;
 
     private final ConcurrentMap<UUID, Object> crackedUUID = ChangeSkinCore.buildCache(60, -1);
 
     private long lastRateLimit;
 
-    public MojangSkinApi(ConcurrentMap<Object, Object> requests, Logger logger, int rateLimit, boolean mojangDownload
-            , Map<String, Integer> proxies) {
+    public MojangSkinApi(ConcurrentMap<Object, Object> requests, Logger logger, int rateLimit, Map<String, Integer> proxies) {
         this.requests = requests;
         this.rateLimit = Math.max(rateLimit, 600);
         this.logger = logger;
-        this.mojangDownload = mojangDownload;
 
         List<Proxy> proxyBuilder = Lists.newArrayList();
         for (Entry<String, Integer> proxy : proxies.entrySet()) {
@@ -124,10 +117,6 @@ public class MojangSkinApi {
             return null;
         }
 
-        if (mojangDownload) {
-            return downloadSkinFromApi(ownerUUID);
-        }
-
         //unsigned is needed in order to receive the signature
         String uuidString = ownerUUID.toString().replace("-", "");
         try {
@@ -150,32 +139,6 @@ public class MojangSkinApi {
 
                     return new SkinData(encodedSkin, signature);
                 }
-            }
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);
-        }
-
-        return null;
-    }
-
-    public SkinData downloadSkinFromApi(UUID ownerUUID) {
-        //unsigned is needed in order to receive the signature
-        String uuidStrip = ownerUUID.toString().replace("-", "");
-        try {
-            HttpURLConnection httpConnection = getConnection(MCAPI_SKIN_URL + uuidStrip);
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-            McApiProfile profile = gson.fromJson(reader.readLine(), McApiProfile.class);
-
-            ApiPropertiesModel properties = profile.getProperties();
-            if (properties != null && properties.getRaw().length > 0) {
-                RawPropertiesModel propertiesModel = properties.getRaw()[0];
-
-                //base64 encoded skin data
-                String encodedSkin = propertiesModel.getValue();
-                String signature = propertiesModel.getSignature();
-
-                return new SkinData(encodedSkin, signature);
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);

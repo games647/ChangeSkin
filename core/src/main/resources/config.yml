@@ -39,20 +39,10 @@ skinPermission: false
 cooldown: 0
 
 # How many requests should be established until the plugin uses the third-party API https://mcapi.ca/
-# Once this number is reached in a range of ten minutes it will start connecting to https://mcapi.ca/ for the next ten minutes
+# Once this number is reached in a range of ten minutes it will start connecting to https://mcapi.ca/ for the next ten
+# minutes.
 # This option exists in order to workaround the rate-limiting. Name -> UUID are fetched in the same way like heads
 mojang-request-limit: 600
-
-# In order to use a skin, the player name have to be resolve to the UUID and then have to be downloaded using the UUID.
-# Both requests are rate-limited. The first request is 600 requests per 10 minutes. The second one is rate-limited with
-# one request per individual skin per minute. So unlike the name resolve there cannot be two requests for the
-# same skin within one minute.
-#
-# This might conflict with some heads plugins. Due this stricter rate-limiting this feature is added.
-# The option above is for name resolving while this is only for skin downloading.
-#
-# This feature makes use of https://mcapi.de/. If you actively use this feature, please support the author.
-independent-skin-downloading: false
 
 # Only relevant for BungeeCord
 # Here you can ignore certain servers in order to make use of lazy loading -> load the player data only

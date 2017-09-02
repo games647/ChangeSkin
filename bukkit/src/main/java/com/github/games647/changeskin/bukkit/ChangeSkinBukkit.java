@@ -71,14 +71,13 @@ public class ChangeSkinBukkit extends JavaPlugin {
             String password = getConfig().getString("storage.password", "");
 
             int rateLimit = getConfig().getInt("mojang-request-limit");
-            boolean mojangDownload = getConfig().getBoolean("independent-skin-downloading");
             int cooldown = getConfig().getInt("cooldown");
             int updateDiff = getConfig().getInt("auto-skin-update");
             List<String> proxyList = getConfig().getStringList("proxies");
             Map<String, Integer> proxies = proxyList.stream()
                     .collect(Collectors
                             .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
-            this.core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, mojangDownload, cooldown, updateDiff, proxies);
+            this.core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, cooldown, updateDiff, proxies);
 
             ThreadFactory threadFactory = new ThreadFactoryBuilder()
                     .setNameFormat(getName() + " Database Pool Thread #%1$d")

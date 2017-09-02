@@ -70,14 +70,13 @@ public class ChangeSkinBungee extends Plugin {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
             int rateLimit = configuration.getInt("mojang-request-limit");
-            boolean mojangDownload = configuration.getBoolean("independent-skin-downloading");
             int cooldown = configuration.getInt("cooldown");
             int updateDiff = configuration.getInt("auto-skin-update");
             List<String> proxyList = (List<String>) configuration.getList("proxies", Lists.newArrayList());
             Map<String, Integer> proxies = proxyList.stream()
                     .collect(Collectors
                             .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
-            core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, mojangDownload, cooldown, updateDiff, proxies);
+            core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, cooldown, updateDiff, proxies);
 
             loadLocale();
 
