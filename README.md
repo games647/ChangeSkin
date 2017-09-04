@@ -35,6 +35,7 @@ https://ci.xephi.fr/job/ChangeSkin/changes
 * /skinupdate [onlinePlayer] - Invalidates the database entry and fetches the fresh skin from the Mojang servers
 * /skinupload < url > Upload a skin to a mojang account
 * /skinselect < name > Choose a skin from the database which has a specified name
+* /setskull Changes the skin of a holding skull from the database which has a specified name
 
 ## Permissions
 
@@ -46,6 +47,7 @@ https://ci.xephi.fr/job/ChangeSkin/changes
 * changeskin.command.setskin.other - Set the skin of other players
 * changeskin.command.skinselect - Select a skin from the database
 * changeskin.command.skinupload - Upload a skin to one of the configured accounts
+* changeskin.command.skinskull - Use the skull command
 
 Whitelist and blacklist permissions
 
