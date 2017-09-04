@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
+import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 
 import java.util.List;
@@ -30,6 +31,9 @@ public class ServerSwitchListener extends AbstractSkinListener {
                 plugin.applySkin(player, null);
             } else if (plugin.getLoginSession(player.getPendingConnection()) == null) {
                 ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
+            } else {
+                SkinData targetSkin = plugin.getLoginSession(player.getPendingConnection()).getTargetSkin();
+                plugin.applySkin(player, targetSkin);
             }
         }
     }
