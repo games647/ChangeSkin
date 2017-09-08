@@ -67,7 +67,7 @@ Blacklist
 
 1. Put a Minecraft account into the config
 2. Check the logs if it's authenticated correctly (ChangeSkin startup).
-3. /skin-upload < url > example: http://i.imgur.com/4lV1m26.png
+3. /skin-upload < url > example: https://i.imgur.com/4lV1m26.png
 4. Now you see the skin id it's saved as
 5. /skin-select 3 or /skin-select skin-3
 

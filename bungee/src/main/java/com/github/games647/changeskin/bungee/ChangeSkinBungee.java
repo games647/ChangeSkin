@@ -104,6 +104,7 @@ public class ChangeSkinBungee extends Plugin {
             }
 
             core.loadDefaultSkins(configuration.getStringList("default-skins"));
+            core.loadAccounts(configuration.getStringList("upload-accounts"));
         } catch (IOException ioExc) {
             getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ioExc);
             return;

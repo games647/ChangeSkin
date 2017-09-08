@@ -1,6 +1,5 @@
 package com.github.games647.changeskin.bukkit.tasks;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
@@ -31,6 +30,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import static com.comphenix.protocol.PacketType.Play.Server.PLAYER_INFO;
+import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
+import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
 
 public class SkinUpdater implements Runnable {
 
@@ -121,7 +124,7 @@ public class SkinUpdater implements Runnable {
         NativeGameMode gamemode = NativeGameMode.fromBukkit(receiver.getGameMode());
 
         //remove info
-        PacketContainer removeInfo = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO);
+        PacketContainer removeInfo = protocolManager.createPacket(PLAYER_INFO);
         removeInfo.getPlayerInfoAction().write(0, PlayerInfoAction.REMOVE_PLAYER);
 
         WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
@@ -129,12 +132,12 @@ public class SkinUpdater implements Runnable {
         removeInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
         //add info containing the skin data
-        PacketContainer addInfo = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO);
+        PacketContainer addInfo = protocolManager.createPacket(PLAYER_INFO);
         addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
         addInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
         //Respawn packet
-        PacketContainer respawn = protocolManager.createPacket(PacketType.Play.Server.RESPAWN);
+        PacketContainer respawn = protocolManager.createPacket(RESPAWN);
         respawn.getIntegers().write(0, receiver.getWorld().getEnvironment().getId());
         respawn.getDifficulties().write(0, Difficulty.valueOf(receiver.getWorld().getDifficulty().toString()));
         respawn.getGameModes().write(0, gamemode);
@@ -142,7 +145,7 @@ public class SkinUpdater implements Runnable {
 
         Location location = receiver.getLocation().clone();
 
-        PacketContainer teleport = protocolManager.createPacket(PacketType.Play.Server.POSITION);
+        PacketContainer teleport = protocolManager.createPacket(POSITION);
         teleport.getModifier().writeDefaults();
         teleport.getDoubles().write(0, location.getX());
         teleport.getDoubles().write(1, location.getY());

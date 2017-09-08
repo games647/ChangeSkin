@@ -8,6 +8,7 @@ import com.github.games647.changeskin.sponge.commands.SetSkinCommand;
 import com.github.games647.changeskin.sponge.commands.SkinInvalidateCommand;
 import com.github.games647.changeskin.sponge.commands.SkinUploadCommand;
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
 import org.slf4j.Logger;
@@ -132,8 +134,11 @@ public class ChangeSkinSponge {
 
             core.loadDefaultSkins(defaultSkins);
             loadLocale();
+            core.loadAccounts(rootNode.getNode("upload-accounts").getList(TypeToken.of(String.class)));
         } catch (IOException ioEx) {
             logger.error("Failed to load config", ioEx);
+        } catch (ObjectMappingException mappingEx) {
+            logger.error("Failed to load upload accounts", mappingEx);
         }
     }
 
