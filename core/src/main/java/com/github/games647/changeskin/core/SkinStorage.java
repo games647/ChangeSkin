@@ -28,7 +28,7 @@ public class SkinStorage {
     private boolean keepColumnPresent;
 
     public SkinStorage(ChangeSkinCore core, ThreadFactory threadFactory, String driver, String host, int port
-            , String databasePath, String user, String pass) {
+            , String databasePath, String user, String pass, boolean useSSL) {
         this.plugin = core;
 
         HikariConfig config = new HikariConfig();
@@ -42,6 +42,7 @@ public class SkinStorage {
         //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         Properties properties = new Properties();
         properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
+        properties.setProperty("useSSL", String.valueOf(useSSL));
         config.setDataSourceProperties(properties);
 
         String jdbcUrl = "jdbc:";

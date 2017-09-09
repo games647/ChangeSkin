@@ -70,6 +70,8 @@ public class ChangeSkinBukkit extends JavaPlugin {
             String username = getConfig().getString("storage.username", "");
             String password = getConfig().getString("storage.password", "");
 
+            boolean useSSL = getConfig().getBoolean("storage.useSSL", false);
+
             int rateLimit = getConfig().getInt("mojang-request-limit");
             int cooldown = getConfig().getInt("cooldown");
             int updateDiff = getConfig().getInt("auto-skin-update");
@@ -85,7 +87,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
                     .setDaemon(true)
                     .build();
 
-            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, username, password);
+            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, username, password, useSSL);
             core.setStorage(storage);
             try {
                 storage.createTables();

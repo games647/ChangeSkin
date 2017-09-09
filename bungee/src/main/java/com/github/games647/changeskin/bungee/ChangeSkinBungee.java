@@ -88,13 +88,15 @@ public class ChangeSkinBungee extends Plugin {
             String username = configuration.getString("storage.username", "");
             String password = configuration.getString("storage.password", "");
 
+            boolean useSSL = configuration.getBoolean("storage.useSSL", false);
+
             String pluginName = this.getDescription().getName();
             ThreadFactory threadFactory = new ThreadFactoryBuilder()
                     .setNameFormat(pluginName + " Database Pool Thread #%1$d")
                     //Hikari create daemons by default
                     .setDaemon(true)
                     .setThreadFactory(new GroupedThreadFactory(this, pluginName)).build();
-            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, username, password);
+            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, username, password, useSSL);
             core.setStorage(storage);
             try {
                 storage.createTables();

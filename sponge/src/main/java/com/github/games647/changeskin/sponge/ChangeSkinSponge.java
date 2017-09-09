@@ -96,6 +96,8 @@ public class ChangeSkinSponge {
             String user = storageNode.getNode("username").getString();
             String pass = storageNode.getNode("password").getString();
 
+            boolean useSSL = storageNode.getNode("useSSL").getBoolean(false);
+
             int rateLimit = rootNode.getNode("mojang-request-limit").getInt();
 
             java.util.logging.Logger pluginLogger = java.util.logging.Logger.getLogger("ChangeSkin");
@@ -116,7 +118,7 @@ public class ChangeSkinSponge {
                     .setDaemon(true)
                     .build();
 
-            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, user, pass);
+            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, user, pass, useSSL);
             core.setStorage(storage);
 
             try {

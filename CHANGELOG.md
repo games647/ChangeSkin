@@ -1,5 +1,12 @@
 # Changelog
 
+##### 2.4.1
+
+* Load upload on all other platfroms besides Bukkit too
+* Remove mcapi.de because it hits the rate-limit too
+* Re-apply skin after you switch from a blacklisted server
+* Document skull command. Should have done this way earlier
+
 ##### 2.4
 
 * Add support for HTTP-proxies
