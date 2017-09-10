@@ -92,12 +92,12 @@ storage:
 
 # MySQL / MariaDB
 # If you using Sponge please change the driver name to org.mariadb.jdbc.Driver
-    driver: com.mysql.jdbc.Driver
-    host: localhost
-    port: 3306
-    database: ChangeSkin
-    username: myUser
-    password: myPassword
+    # driver: com.mysql.jdbc.Driver
+    # host: localhost
+    # port: 3306
+    # database: ChangeSkin
+    # username: myUser
+    # password: myPassword
     # It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL server isn't running on the same
     # machine
     # useSSL: false
