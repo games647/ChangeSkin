@@ -218,7 +218,7 @@ public class SkinUpdater implements Runnable {
 
     private double getMaxHealth(Player player) {
         if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COLOR_UPDATE) >= 0) {
-            return player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+            return player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
         }
 
         return player.getMaxHealth();
