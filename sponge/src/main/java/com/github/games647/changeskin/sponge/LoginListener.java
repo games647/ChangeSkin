@@ -6,9 +6,9 @@ import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.google.common.base.Objects;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
@@ -44,7 +44,7 @@ public class LoginListener {
             if (autoUpdateDiff > 0 && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
                 SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetSkin.getUuid());
                 plugin.cacheSponge(updatedSkin);
-                if (!Objects.equal(updatedSkin, targetSkin)) {
+                if (!Objects.equals(updatedSkin, targetSkin)) {
                     targetSkin = updatedSkin;
                 }
             }
@@ -99,7 +99,7 @@ public class LoginListener {
                     || (updateDiff > 0 && System.currentTimeMillis() - storedSkin.getTimestamp() > updateDiff)) {
                 SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
                 plugin.cacheSponge(updatedSkin);
-                if (!Objects.equal(updatedSkin, storedSkin)) {
+                if (!Objects.equals(updatedSkin, storedSkin)) {
                     storedSkin = updatedSkin;
                 }
             }

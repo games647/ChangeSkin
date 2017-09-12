@@ -58,7 +58,7 @@ public class SkinStorage {
         this.dataSource = new HikariDataSource(config);
     }
 
-    public void createTables() throws ClassNotFoundException, SQLException {
+    public void createTables() throws SQLException {
         ResultSet testResult = null;
         Connection con = null;
         Statement stmt = null;

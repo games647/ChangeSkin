@@ -39,7 +39,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
     }
 
     private void onLazyLoad(ProxiedPlayer player) {
-        UserPreference preferences = plugin.getStorage().getPreferences(plugin.getOfflineUUID(player.getName()));
+        UserPreference preferences = plugin.getStorage().getPreferences(player.getUniqueId());
         plugin.startSession(player.getPendingConnection(), preferences);
         if (preferences.getTargetSkin() == null && plugin.getConfig().getBoolean("restoreSkins")) {
             refetch(preferences, player.getName());

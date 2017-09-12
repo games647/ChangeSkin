@@ -105,7 +105,7 @@ public class ChangeSkinSponge {
             int cooldown = rootNode.getNode("cooldown").getInt();
             Path parentFolder = defaultConfigFile.getParent();
             int updateDiff = rootNode.getNode("auto-skin-update").getInt();
-            List<String> proxyList = rootNode.getNode("proxies").getList(value -> value.toString());
+            List<String> proxyList = rootNode.getNode("proxies").getList(Object::toString);
             Map<String, Integer> proxies = proxyList.stream()
                     .collect(Collectors
                             .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));

@@ -2,8 +2,8 @@ package com.github.games647.changeskin.bukkit.tasks;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.SkinData;
-import com.google.common.base.Objects;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -35,7 +35,7 @@ public class SkinDownloader implements Runnable {
         if (storedSkin == null
                 || (autoUpdateDiff > 0 && System.currentTimeMillis() - storedSkin.getTimestamp() > autoUpdateDiff)) {
             SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetUUID);
-            if (!Objects.equal(updatedSkin, storedSkin)) {
+            if (!Objects.equals(updatedSkin, storedSkin)) {
                 storedSkin = updatedSkin;
             }
         }

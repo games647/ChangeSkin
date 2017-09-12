@@ -5,8 +5,8 @@ import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.google.common.base.Objects;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -76,7 +76,7 @@ public class AsyncPlayerLoginListener implements Listener {
             if (cachedSkin == null 
                     || (autoUpdateDiff > 0 && System.currentTimeMillis() - cachedSkin.getTimestamp() > autoUpdateDiff)) {
                 SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
-                if (!Objects.equal(updatedSkin, cachedSkin)) {
+                if (!Objects.equals(updatedSkin, cachedSkin)) {
                     cachedSkin = updatedSkin;
                 }
             }

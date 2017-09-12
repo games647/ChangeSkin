@@ -2,8 +2,8 @@ package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.model.SkinData;
-import com.google.common.base.Objects;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import net.md_5.bungee.api.CommandSender;
@@ -38,7 +38,7 @@ public class SkinDownloader implements Runnable {
         long now = System.currentTimeMillis();
         if (targetSkin == null || (updateDiff > 0 && now - targetSkin.getTimestamp() > updateDiff)) {
             SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetUUID);
-            if (!Objects.equal(updatedSkin, targetSkin)) {
+            if (!Objects.equals(updatedSkin, targetSkin)) {
                 targetSkin = updatedSkin;
             }
         }

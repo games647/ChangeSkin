@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.UUID;
 
 public class SkinData {
@@ -137,7 +138,7 @@ public class SkinData {
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(this.slimModel, skinURL, capeURL);
+        return Objects.hash(this.slimModel, skinURL, capeURL);
     }
 
     @Override
@@ -156,8 +157,8 @@ public class SkinData {
 
         SkinData otherSkin = (SkinData) other;
         return this.slimModel != otherSkin.slimModel
-                && com.google.common.base.Objects.equal(this.skinURL, otherSkin.skinURL)
-                && com.google.common.base.Objects.equal(this.capeURL, otherSkin.capeURL);
+                && Objects.equals(this.skinURL, otherSkin.skinURL)
+                && Objects.equals(this.capeURL, otherSkin.capeURL);
     }
 
     private SkinModel deserializeData(String encodedData) {

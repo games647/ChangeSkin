@@ -4,9 +4,7 @@ import com.github.games647.changeskin.bungee.commands.SetSkinCommand;
 import com.github.games647.changeskin.bungee.commands.SkinInvalidateCommand;
 import com.github.games647.changeskin.bungee.commands.SkinSelectCommand;
 import com.github.games647.changeskin.bungee.commands.SkinUploadCommand;
-import com.github.games647.changeskin.bungee.listener.DisconnectListener;
-import com.github.games647.changeskin.bungee.listener.JoinListener;
-import com.github.games647.changeskin.bungee.listener.LoginListener;
+import com.github.games647.changeskin.bungee.listener.ConnectListener;
 import com.github.games647.changeskin.bungee.listener.PluginMessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
 import com.github.games647.changeskin.bungee.tasks.SkinUpdater;
@@ -14,7 +12,6 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
@@ -112,10 +109,8 @@ public class ChangeSkinBungee extends Plugin {
             return;
         }
 
-        getProxy().getPluginManager().registerListener(this, new LoginListener(this));
-        getProxy().getPluginManager().registerListener(this, new JoinListener(this));
+        getProxy().getPluginManager().registerListener(this, new ConnectListener(this));
         getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
-        getProxy().getPluginManager().registerListener(this, new DisconnectListener(this));
 
         //this is required to listen to messages from the server
         getProxy().registerChannel(getDescription().getName());
@@ -228,10 +223,6 @@ public class ChangeSkinBungee extends Plugin {
 
     public Property convertToProperty(SkinData skinData) {
         return new Property(ChangeSkinCore.SKIN_KEY, skinData.getEncodedData(), skinData.getEncodedSignature());
-    }
-
-    public UUID getOfflineUUID(String name) {
-        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
     }
 
     public Configuration getConfig() {

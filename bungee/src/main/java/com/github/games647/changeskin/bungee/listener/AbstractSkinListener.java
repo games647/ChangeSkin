@@ -5,9 +5,9 @@ import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.google.common.base.Objects;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -46,7 +46,7 @@ public abstract class AbstractSkinListener implements Listener {
             if (storedSkin == null
                     || (updateDiff > 0 && System.currentTimeMillis() - storedSkin.getTimestamp() > updateDiff)) {
                 SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
-                if (!Objects.equal(updatedSkin, storedSkin)) {
+                if (!Objects.equals(updatedSkin, storedSkin)) {
                     storedSkin = updatedSkin;
                 }
             }
