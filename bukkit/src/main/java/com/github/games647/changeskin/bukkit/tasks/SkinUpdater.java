@@ -135,8 +135,11 @@ public class SkinUpdater implements Runnable {
 
         //Food
         int oldFood = receiver.getFoodLevel();
+        float oldSat = receiver.getSaturation();
         receiver.setFoodLevel(20);
         receiver.setFoodLevel(oldFood);
+        receiver.setSaturation(5F);
+        receiver.setSaturation(oldSat);
 
         //Health
         resetMaxHealth(receiver);
@@ -148,7 +151,9 @@ public class SkinUpdater implements Runnable {
 
         //exp
         float experience = receiver.getExp();
+        int totalExperience = receiver.getTotalExperience();
         receiver.setExp(experience);
+        receiver.setTotalExperience(totalExperience);
 
         //set to the correct hand position
         setItemInHand(receiver);
