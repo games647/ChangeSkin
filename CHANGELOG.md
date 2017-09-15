@@ -1,7 +1,16 @@
 # Changelog
 
+##### 2.4.2
+
+* Consider more player attributes for instant skin changes
+    * Current available health
+    * Player experience
+    * Food level
+* Use player UUID rather than custom offline UUID (Related #86)
+
 ##### 2.4.1
 
+* Uncomment MySQL settings by default
 * Load upload on all other platfroms besides Bukkit too
 * Remove mcapi.de because it hits the rate-limit too
 * Re-apply skin after you switch from a blacklisted server
