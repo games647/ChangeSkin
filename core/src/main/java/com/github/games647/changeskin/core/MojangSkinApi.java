@@ -28,7 +28,8 @@ import static com.github.games647.changeskin.core.ChangeSkinCore.getConnection;
 
 public class MojangSkinApi {
 
-    private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
+    private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s" +
+            "?unsigned=false";
 
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
@@ -47,7 +48,8 @@ public class MojangSkinApi {
 
     private long lastRateLimit;
 
-    public MojangSkinApi(ConcurrentMap<Object, Object> requests, Logger logger, int rateLimit, Map<String, Integer> proxies) {
+    public MojangSkinApi(ConcurrentMap<Object, Object> requests, Logger logger, int rateLimit
+            , Map<String, Integer> proxies) {
         this.requests = requests;
         this.rateLimit = Math.max(rateLimit, 600);
         this.logger = logger;

@@ -29,22 +29,22 @@ public class BungeeCordListener implements PluginMessageListener {
         }
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(message);
-        String subchannel = dataInput.readUTF();
+        String subChannel = dataInput.readUTF();
 
-        if ("UpdateSkin".equalsIgnoreCase(subchannel)) {
+        if ("UpdateSkin".equalsIgnoreCase(subChannel)) {
             plugin.getLogger().log(Level.INFO, "Received instant update request from BungeeCord. "
                     + "This request should only be send if the command /setskin was invoked");
             updateSkin(dataInput, player);
-        } else if ("PermissionsCheck".equalsIgnoreCase(subchannel)) {
+        } else if ("PermissionsCheck".equalsIgnoreCase(subChannel)) {
             checkPermissions(player, dataInput);
         }
     }
 
-    private boolean updateSkin(ByteArrayDataInput dataInput, Player player) throws IllegalArgumentException {
+    private void updateSkin(ByteArrayDataInput dataInput, Player player) throws IllegalArgumentException {
         String encodedData = dataInput.readUTF();
         if ("null".equalsIgnoreCase(encodedData)) {
             Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, player, null, false));
-            return true;
+            return;
         }
         
         String signature = dataInput.readUTF();
@@ -54,7 +54,6 @@ public class BungeeCordListener implements PluginMessageListener {
 
         SkinData skinData = new SkinData(encodedData, signature);
         Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, receiver, skinData, false));
-        return false;
     }
 
     private void checkPermissions(Player player, ByteArrayDataInput dataInput) {

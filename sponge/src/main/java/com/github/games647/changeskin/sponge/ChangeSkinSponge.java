@@ -188,13 +188,13 @@ public class ChangeSkinSponge {
             URL jarConfigFile = this.getClass().getResource("/messages.yml");
             YAMLConfigurationLoader defaultLoader = YAMLConfigurationLoader.builder().setURL(jarConfigFile).build();
             ConfigurationNode defaultRoot = defaultLoader.load();
-            defaultRoot.getChildrenMap().values().forEach((node) -> {
+            defaultRoot.getChildrenMap().values().forEach(node -> {
                 core.addMessage((String) node.getKey(), node.getString());
             });
 
             //overwrite the defaults
             ConfigurationNode messageNode = messageLoader.load();
-            messageNode.getChildrenMap().values().forEach((node) -> {
+            messageNode.getChildrenMap().values().forEach(node -> {
                 core.addMessage((String) node.getKey(), node.getString());
             });
         } catch (IOException ioEx) {
@@ -241,8 +241,8 @@ public class ChangeSkinSponge {
 
         String message = core.getMessage(key);
         if (message != null && sender != null) {
-            String formated = MessageFormat.format(message, arguments);
-            sender.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(formated));
+            String formatted = MessageFormat.format(message, arguments);
+            sender.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(formatted));
         }
     }
 

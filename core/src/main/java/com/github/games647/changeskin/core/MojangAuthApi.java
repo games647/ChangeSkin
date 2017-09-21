@@ -55,7 +55,7 @@ public class MojangAuthApi {
         return null;
     }
 
-    public boolean changeSkin(UUID ownerId, UUID accessToken, String sourceUrl, boolean slimModel) {
+    public void changeSkin(UUID ownerId, UUID accessToken, String sourceUrl, boolean slimModel) {
         String url = CHANGE_SKIN_URL.replace("<uuid>", ownerId.toString().replace("-", ""));
 
         try {
@@ -79,12 +79,10 @@ public class MojangAuthApi {
             httpConnection.connect();
             logger.log(Level.FINE, "Response code for uploading {0}", httpConnection.getResponseCode());
 
-            return true;
         } catch (IOException ioEx) {
             logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ioEx);
         }
 
-        return false;
     }
 
     public String getSkinUrl(String playerName) {

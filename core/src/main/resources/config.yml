@@ -73,8 +73,8 @@ upload-accounts: []
 #
 # This requires to install the plugin on the bukkit server too in order to send the response to the bungeecord server
 #
-# You still have to give the users the permission on the BungeeCord server in order to execute the command, but the bukkit
-# server will verify if the user has the permissions on the backend server too.
+# You still have to give the users the permission on the BungeeCord server in order to execute the command, but the
+# Bukkit server will verify if the user has the permissions on the backend server too.
 bukkit-permissions: false
 
 # This automatically re-fetches the skin from Mojang if the skin is older than x minutes

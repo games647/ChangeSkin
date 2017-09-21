@@ -42,7 +42,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
         UserPreference preferences = plugin.getStorage().getPreferences(player.getUniqueId());
         plugin.startSession(player.getPendingConnection(), preferences);
         if (preferences.getTargetSkin() == null && plugin.getConfig().getBoolean("restoreSkins")) {
-            refetch(preferences, player.getName());
+            refetchSkin(player.getName(), preferences);
             if (preferences.getTargetSkin() == null) {
                 //still no skin
                 setRandomSkin(preferences, player);

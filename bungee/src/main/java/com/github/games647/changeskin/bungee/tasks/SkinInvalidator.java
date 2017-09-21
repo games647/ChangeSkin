@@ -2,13 +2,13 @@ package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.model.SkinData;
-import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.shared.SharedInvalidator;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class SkinInvalidator implements Runnable {
+public class SkinInvalidator extends SharedInvalidator {
 
     private final ChangeSkinBungee plugin;
     private final CommandSender invoker;
@@ -17,25 +17,22 @@ public class SkinInvalidator implements Runnable {
     private final boolean bukkitOp;
 
     public SkinInvalidator(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, boolean bukkitOp) {
+        super(plugin.getCore(), receiver.getUniqueId());
+
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
-
         this.bukkitOp = bukkitOp;
     }
 
     @Override
-    public void run() {
-        UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
-        SkinData ownedSkin = preferences.getTargetSkin();
-        if (ownedSkin == null) {
-            plugin.sendMessage(invoker, "dont-have-skin");
-        } else {
-            plugin.sendMessage(invoker, "invalidate-request");
+    public void sendMessageInvoker(String id, String... args) {
+        plugin.sendMessage(invoker, id, args);
+    }
 
-            SkinData skin = plugin.getCore().getMojangSkinApi().downloadSkin(ownedSkin.getUuid());
-            Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skin, bukkitOp, false);
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
-        }
+    @Override
+    protected void scheduleApplyTask(SkinData skinData) {
+        Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skinData, bukkitOp, false);
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
     }
 }

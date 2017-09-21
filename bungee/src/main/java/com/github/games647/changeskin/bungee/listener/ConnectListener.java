@@ -69,10 +69,10 @@ public class ConnectListener extends AbstractSkinListener {
                 SkinData targetSkin = preferences.getTargetSkin();
                 int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
                 if (targetSkin == null) {
-                    refetch(preferences, playerName);
+                    refetchSkin(playerName, preferences);
                 } else if (autoUpdateDiff > 0
                         && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
-                    refetch(preferences, playerName);
+                    refetchSkin(playerName, preferences);
                 }
             } finally {
                 loginEvent.completeIntent(plugin);

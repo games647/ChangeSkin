@@ -4,7 +4,6 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.commands.SetSkinCommand;
 import com.github.games647.changeskin.bukkit.commands.SetSkullCommand;
 import com.github.games647.changeskin.bukkit.commands.SkinInvalidateCommand;
-import com.github.games647.changeskin.bukkit.commands.SkinNameCommand;
 import com.github.games647.changeskin.bukkit.commands.SkinSelectCommand;
 import com.github.games647.changeskin.bukkit.commands.SkinUploadCommand;
 import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
@@ -171,17 +170,6 @@ public class ChangeSkinBukkit extends JavaPlugin {
         return false;
     }
 
-    public void sendMessage(CommandSender sender, String key) {
-        if (core == null) {
-            return;
-        }
-
-        String message = core.getMessage(key);
-        if (message != null && sender != null) {
-            sender.sendMessage(message);
-        }
-    }
-
     public void sendMessage(CommandSender sender, String key, Object... arguments) {
         if (core == null) {
             return;
@@ -196,7 +184,6 @@ public class ChangeSkinBukkit extends JavaPlugin {
     private void registerCommands() {
         getCommand("setskin").setExecutor(new SetSkinCommand(this));
         getCommand("skinupdate").setExecutor(new SkinInvalidateCommand(this));
-        getCommand("skinname").setExecutor(new SkinNameCommand(this));
         getCommand("skinselect").setExecutor(new SkinSelectCommand(this));
         getCommand("skinupload").setExecutor(new SkinUploadCommand(this));
         getCommand("skinskull").setExecutor(new SetSkullCommand(this));

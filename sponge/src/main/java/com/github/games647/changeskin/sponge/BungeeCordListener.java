@@ -23,23 +23,23 @@ public class BungeeCordListener implements RawDataListener {
     public void handlePayload(ChannelBuf data, RemoteConnection connection, Type side) {
         Player player = (Player) connection;
         
-        String subchannel = data.readString();
+        String subChannel = data.readString();
 
-        if ("UpdateSkin".equalsIgnoreCase(subchannel)) {
+        if ("UpdateSkin".equalsIgnoreCase(subChannel)) {
             plugin.getLogger().info("Received instant update request from BungeeCord. "
                     + "This request should only be send if the command /setskin was invoked");
             updateSkin(data, player);
-        } else if ("PermissionsCheck".equalsIgnoreCase(subchannel)) {
+        } else if ("PermissionsCheck".equalsIgnoreCase(subChannel)) {
             checkPermissions(player, data);
         }
     }
 
-    private boolean updateSkin(ChannelBuf data, Player player) throws IllegalArgumentException {
+    private void updateSkin(ChannelBuf data, Player player) throws IllegalArgumentException {
         String encodedData = data.readString();
         if ("null".equalsIgnoreCase(encodedData)) {
             Runnable skinUpdater = new SkinUpdater(plugin, null, player, null, false);
             plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
-            return true;
+            return;
         }
 
         String signature = data.readString();
@@ -55,7 +55,6 @@ public class BungeeCordListener implements RawDataListener {
         SkinData skinData = new SkinData(encodedData, signature);
         Runnable skinUpdater = new SkinUpdater(plugin, null, receiver, skinData, false);
         plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
-        return false;
     }
 
     private void checkPermissions(Player player, ChannelBuf dataInput) {

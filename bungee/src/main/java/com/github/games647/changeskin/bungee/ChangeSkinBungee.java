@@ -28,7 +28,6 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -52,15 +51,10 @@ public class ChangeSkinBungee extends Plugin {
     private ChangeSkinCore core;
     private Configuration configuration;
 
-    private final ConcurrentMap<PendingConnection, UserPreference> loginSessions = Maps.newConcurrentMap();
+    private final Map<PendingConnection, UserPreference> loginSessions = Maps.newConcurrentMap();
 
     @Override
     public void onEnable() {
-        //load config
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdir();
-        }
-
         File configFile = saveDefaultResource("config.yml");
 
         try {
@@ -124,12 +118,17 @@ public class ChangeSkinBungee extends Plugin {
 
     private File saveDefaultResource(String file) {
         File configFile = new File(getDataFolder(), file);
-        if (!configFile.exists()) {
-            try (InputStream in = getResourceAsStream(file)) {
-                Files.copy(in, configFile.toPath());
-            } catch (IOException ioExc) {
-                getLogger().log(Level.SEVERE, "Error saving default " + file, ioExc);
+        try {
+            Files.createDirectories(getDataFolder().toPath());
+
+            if (!configFile.exists()) {
+                try (InputStream in = getResourceAsStream(file)) {
+                    Files.copy(in, configFile.toPath());
+                }
             }
+
+        } catch (IOException ioExc) {
+            getLogger().log(Level.SEVERE, "Error saving default " + file, ioExc);
         }
 
         return configFile;
@@ -207,14 +206,10 @@ public class ChangeSkinBungee extends Plugin {
         try {
             cons = LoginResult.class.getConstructor(String.class, String.class, Property[].class);
             return cons.newInstance(id, name, properties);
-        } catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException noSuchMethodEx) {
             //old BungeeCord
-            try {
-                cons = LoginResult.class.getConstructor(String.class, Property[].class);
-                return cons.newInstance(id, properties);
-            } catch (Exception ex) {
-                getLogger().log(Level.INFO, "Cannot invoke constructor for creating a fake skin", ex);
-            }
+            getLogger().log(Level.INFO, "Cannot find method for setting the new skin. " +
+                    "It could be because you run an outdated BungeeCord version", noSuchMethodEx);
         } catch (Exception ex) {
             getLogger().log(Level.INFO, "Cannot invoke constructor for creating a fake skin", ex);
         }
@@ -266,13 +261,6 @@ public class ChangeSkinBungee extends Plugin {
         //disallow - not whitelisted or blacklisted
         sendMessage(invoker, "no-permission");
         return false;
-    }
-
-    public void sendMessage(CommandSender sender, String key) {
-        String message = core.getMessage(key);
-        if (message != null && sender != null) {
-            sender.sendMessage(TextComponent.fromLegacyText(message));
-        }
     }
 
     public void sendMessage(CommandSender sender, String key, Object... arguments) {

@@ -2,30 +2,30 @@ package com.github.games647.changeskin.bukkit.tasks;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.shared.SharedSkinSelect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class SkinSelector implements Runnable {
+public class SkinSelector extends SharedSkinSelect {
 
     private final ChangeSkinBukkit plugin;
-
     private final Player receiver;
-    private final int targetId;
 
     public SkinSelector(ChangeSkinBukkit plugin, Player receiver, int targetId) {
+        super(plugin.getCore(), targetId);
+
         this.plugin = plugin;
         this.receiver = receiver;
-        this.targetId = targetId;
     }
 
     @Override
-    public void run() {
-        SkinData targetSkin = plugin.getStorage().getSkin(targetId);
-        if (targetSkin == null) {
-            plugin.sendMessage(receiver, "skin-not-found");
-        }
-
+    protected void scheduleApplyTask(SkinData targetSkin) {
         Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, receiver, receiver, targetSkin, true));
+    }
+
+    @Override
+    public void sendMessageInvoker(String id, String... args) {
+        plugin.sendMessage(receiver, id);
     }
 }

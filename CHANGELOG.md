@@ -11,7 +11,7 @@
 ##### 2.4.1
 
 * Uncomment MySQL settings by default
-* Load upload on all other platfroms besides Bukkit too
+* Load upload on all other platforms besides Bukkit too
 * Remove mcapi.de because it hits the rate-limit too
 * Re-apply skin after you switch from a blacklisted server
 * Document skull command. Should have done this way earlier
@@ -19,7 +19,7 @@
 ##### 2.4
 
 * Add support for HTTP-proxies
-* Fix showing nametags for NameTagEdit after skin change
+* Fix showing nametag for NameTagEdit after skin change
 * Clear skin for servers on the blacklist (Fixes #69)
 * Use read-/write String for plugin messages in Sponge (Removes usage of deprecated methods)
 * General code cleanup
@@ -157,14 +157,14 @@
 
 ##### 1.7
 
-* Added skindata index (as suggested by @ieti)
+* Added skin data index (as suggested by @ieti)
 * Added experimental Sponge support
 * Added third-party api for fetching the uuid
 * skinupdate command to invalidate the database entry (Added new locale messages)
 * Removed error message if message file already exists (as suggested by @ieti)
 * Load embed message file per default
 * Fix NPE on skin reset
-* Fix display name is used instead of playerlist name for instant updates
+* Fix display name is used instead of tablist name for instant updates
 * Fix self instant update if the player is in a vehicle
 
 ##### 1.6
@@ -255,7 +255,7 @@
 
 * Added database storage
 * Added reset command /skin reset
-* Added specific skin permssions. You can use changeskin.skin.* changeskin.skin.playerName changeskin.skin.uuid
+* Added specific skin permissions. You can use changeskin.skin.* changeskin.skin.playerName changeskin.skin.uuid
 * Fixed invisible players will be make visible
 * Ignore invalid usernames
 
@@ -272,7 +272,7 @@
 ##### 0.7
 
 * Minimize preferences size if you choose your own profile
-* Add instant skin changes (skin changes work without relogs)
+* Add instant skin changes (skin changes work without relogin)
 
 ##### 0.6
 
@@ -290,7 +290,7 @@
 * Add /setskin <playerName> command
 * Player skin can now be resolved also by their names
 * Add default skins
-* If you set it to your own UUID your preferences will be reseted
+* If you set it to your own UUID your preferences will be reset
 
 ##### 0.3
 

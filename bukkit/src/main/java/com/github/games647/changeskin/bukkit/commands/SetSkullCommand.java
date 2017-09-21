@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 /**
- * Created by Shynixn
+ * @author Shynixn
  */
 public class SetSkullCommand implements CommandExecutor {
 

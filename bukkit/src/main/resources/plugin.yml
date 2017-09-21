@@ -32,12 +32,6 @@ commands:
         aliases: [skin-upload, uploadskin, upload-skin]
         usage: /<command> <url> [name]
 
-    skinname:
-        description: 'Gives your current skin a name'
-        permission: ${project.parent.artifactId}.command.skinname
-        aliases: [skin-name]
-        usage: /<command> <name>
-
     skinselect:
         description: 'Choose a skin from the database which has a specified name'
         permission: ${project.parent.artifactId}.command.skinselect

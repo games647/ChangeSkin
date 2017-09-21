@@ -2,52 +2,41 @@ package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.shared.SharedDownloader;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class SkinDownloader implements Runnable {
+public class SkinDownloader extends SharedDownloader {
 
     protected final ChangeSkinBungee plugin;
     private final CommandSender invoker;
     private final ProxiedPlayer receiver;
-    private final UUID targetUUID;
 
     private final boolean bukkitOp;
-    private final boolean keepSkin;
 
     public SkinDownloader(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, UUID targetUUID
             , boolean bukkitOp, boolean keepSkin) {
+        super(plugin.getCore(), keepSkin, targetUUID, receiver.getUniqueId());
+
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
-        this.targetUUID = targetUUID;
 
         this.bukkitOp = bukkitOp;
-        this.keepSkin = keepSkin;
     }
 
     @Override
-    public void run() {
-        SkinData targetSkin = plugin.getStorage().getSkin(targetUUID);
-        int updateDiff = plugin.getCore().getAutoUpdateDiff();
-        long now = System.currentTimeMillis();
-        if (targetSkin == null || (updateDiff > 0 && now - targetSkin.getTimestamp() > updateDiff)) {
-            SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetUUID);
-            if (!Objects.equals(updatedSkin, targetSkin)) {
-                targetSkin = updatedSkin;
-            }
-        }
-
-        if (targetUUID.equals(receiver.getUniqueId())) {
-            plugin.sendMessage(invoker, "reset");
-        }
-
-        Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, targetSkin, bukkitOp, keepSkin);
+    protected void scheduleApplyTask(SkinData skinData) {
+        Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skinData, bukkitOp, keepSkin);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
+    }
+
+    @Override
+    public void sendMessageInvoker(String id, String... args) {
+        plugin.sendMessage(invoker, id);
     }
 }

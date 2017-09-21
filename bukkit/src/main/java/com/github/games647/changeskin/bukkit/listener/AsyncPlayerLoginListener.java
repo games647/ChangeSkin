@@ -1,14 +1,11 @@
 package com.github.games647.changeskin.bukkit.listener;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.core.NotPremiumException;
-import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.shared.SharedListener;
 
-import java.util.Objects;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -16,11 +13,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
-public class AsyncPlayerLoginListener implements Listener {
+public class AsyncPlayerLoginListener extends SharedListener implements Listener {
 
     protected final ChangeSkinBukkit plugin;
 
     public AsyncPlayerLoginListener(ChangeSkinBukkit plugin) {
+        super(plugin.getCore());
+
         this.plugin = plugin;
     }
 
@@ -52,41 +51,8 @@ public class AsyncPlayerLoginListener implements Listener {
         }
     }
 
-    private void refetchSkin(String playerName, UserPreference preferences) {
-        UUID ownerUUID = plugin.getCore().getUuidCache().computeIfAbsent(playerName, (playername) -> {
-            if (!plugin.getCore().getCrackedNames().containsKey(playerName)) {
-                try {
-                    return plugin.getCore().getMojangSkinApi().getUUID(playerName);
-                } catch (NotPremiumException ex) {
-                    plugin.getLogger().log(Level.FINE, "Username is not premium on refetch", ex);
-                    plugin.getCore().getCrackedNames().put(playerName, new Object());
-                } catch (RateLimitException ex) {
-                    plugin.getLogger().log(Level.SEVERE, "Rate limit reached on refetch", ex);
-                }
-            }
-
-            return null;
-        });
-
-        if (ownerUUID != null) {
-            plugin.getCore().getUuidCache().put(playerName, ownerUUID);
-            SkinData cachedSkin = plugin.getStorage().getSkin(ownerUUID);
-
-            int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
-            if (cachedSkin == null 
-                    || (autoUpdateDiff > 0 && System.currentTimeMillis() - cachedSkin.getTimestamp() > autoUpdateDiff)) {
-                SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
-                if (!Objects.equals(updatedSkin, cachedSkin)) {
-                    cachedSkin = updatedSkin;
-                }
-            }
-
-            preferences.setTargetSkin(cachedSkin);
-            save(cachedSkin, preferences);
-        }
-    }
-
-    private void save(final SkinData skin, final UserPreference preferences) {
+    @Override
+    protected void save(final SkinData skin, final UserPreference preferences) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (plugin.getStorage().save(skin)) {
                 plugin.getStorage().save(preferences);
