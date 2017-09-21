@@ -66,7 +66,6 @@ public class MojangSkinApi {
             throw new NotPremiumException(playerName);
         }
 
-        BufferedReader reader = null;
         try {
             HttpURLConnection connection;
             if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
@@ -91,22 +90,20 @@ public class MojangSkinApi {
                 if (!connection.usingProxy()) {
                     return getUUID(playerName);
                 } else {
-                    return null;
+                    throw new RateLimitException("Rate-Limit hit on request name->uuid of " + playerName);
                 }
             }
 
-            InputStreamReader inputReader = new InputStreamReader(connection.getInputStream());
-            reader = new BufferedReader(inputReader);
-            String line = reader.readLine();
-            if (line != null && !"null".equals(line)) {
-                PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile.class);
-                String id = playerProfile.getId();
-                return ChangeSkinCore.parseId(id);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String line = reader.readLine();
+                if (line != null && !"null".equals(line)) {
+                    PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile.class);
+                    String id = playerProfile.getId();
+                    return ChangeSkinCore.parseId(id);
+                }
             }
         } catch (IOException ioEx) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid", ioEx);
-        } finally {
-            ChangeSkinCore.closeQuietly(reader, logger);
         }
 
         return null;
@@ -122,22 +119,23 @@ public class MojangSkinApi {
         try {
             HttpURLConnection httpConnection = getConnection(String.format(SKIN_URL, uuidString));
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-            String line = reader.readLine();
-            if (line == null || "null".equals(line)) {
-                crackedUUID.put(ownerUUID, new Object());
-            } else {
-                TexturesModel texturesModel = gson.fromJson(line, TexturesModel.class);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()))) {
+                String line = reader.readLine();
+                if (line == null || "null".equals(line)) {
+                    crackedUUID.put(ownerUUID, new Object());
+                } else {
+                    TexturesModel texturesModel = gson.fromJson(line, TexturesModel.class);
 
-                PropertiesModel[] properties = texturesModel.getProperties();
-                if (properties != null && properties.length > 0) {
-                    PropertiesModel propertiesModel = properties[0];
+                    PropertiesModel[] properties = texturesModel.getProperties();
+                    if (properties != null && properties.length > 0) {
+                        PropertiesModel propertiesModel = properties[0];
 
-                    //base64 encoded skin data
-                    String encodedSkin = propertiesModel.getValue();
-                    String signature = propertiesModel.getSignature();
+                        //base64 encoded skin data
+                        String encodedSkin = propertiesModel.getValue();
+                        String signature = propertiesModel.getSignature();
 
-                    return new SkinData(encodedSkin, signature);
+                        return new SkinData(encodedSkin, signature);
+                    }
                 }
             }
         } catch (Exception ex) {

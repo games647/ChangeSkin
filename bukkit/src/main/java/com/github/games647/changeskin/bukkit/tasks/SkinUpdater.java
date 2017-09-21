@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftVersion;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
@@ -184,9 +185,11 @@ public class SkinUpdater implements Runnable {
         addInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
         //Respawn packet
+        Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
+
         PacketContainer respawn = protocolManager.createPacket(RESPAWN);
         respawn.getIntegers().write(0, receiver.getWorld().getEnvironment().getId());
-        respawn.getDifficulties().write(0, Difficulty.valueOf(receiver.getWorld().getDifficulty().toString()));
+        respawn.getDifficulties().write(0, difficulty);
         respawn.getGameModes().write(0, gamemode);
         respawn.getWorldTypeModifier().write(0, receiver.getWorld().getWorldType());
 
@@ -221,7 +224,7 @@ public class SkinUpdater implements Runnable {
      * This is to protect against players with the health boost potion effect.
      * This stops the max health from going up when the player has health boost since it adds to the max health.
      *
-     * @param player
+     * @param player health of this player
      * @return the actual max health value
      */
     private double getHealth(Player player) {

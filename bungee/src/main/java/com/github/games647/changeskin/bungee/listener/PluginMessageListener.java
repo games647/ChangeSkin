@@ -75,7 +75,7 @@ public class PluginMessageListener extends AbstractSkinListener {
         }
     }
 
-    private void onCommandForward(ProxiedPlayer invoker, ByteArrayDataInput dataInput) {
+    private void onCommandForward(CommandSender invoker, ByteArrayDataInput dataInput) {
         String commandName = dataInput.readUTF();
         String args = dataInput.readUTF();
         boolean isSource = dataInput.readBoolean();

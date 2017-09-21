@@ -208,6 +208,7 @@ public class ChangeSkinBungee extends Plugin {
             cons = LoginResult.class.getConstructor(String.class, String.class, Property[].class);
             return cons.newInstance(id, name, properties);
         } catch (NoSuchMethodException e) {
+            //old BungeeCord
             try {
                 cons = LoginResult.class.getConstructor(String.class, Property[].class);
                 return cons.newInstance(id, properties);

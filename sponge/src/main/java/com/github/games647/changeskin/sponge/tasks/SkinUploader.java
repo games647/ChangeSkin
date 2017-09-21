@@ -25,7 +25,6 @@ public class SkinUploader implements Runnable {
         this.invoker = invoker;
         this.owner = owner;
         this.url = url;
-        this.saveName = name;
     }
 
     public SkinUploader(ChangeSkinSponge plugin, CommandSource invoker, Account owner, String url) {

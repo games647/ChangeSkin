@@ -31,30 +31,25 @@ public class MojangAuthApi {
     }
 
     public Account authenticate(String email, String password) {
-        BufferedWriter writer = null;
-        BufferedReader reader = null;
         try {
             HttpURLConnection httpConnection = ChangeSkinCore.getConnection(AUTH_URL);
             httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
 
-            OutputStreamWriter streamWriter = new OutputStreamWriter(httpConnection.getOutputStream(), Charsets.UTF_8);
-            writer = new BufferedWriter(streamWriter);
-            writer.append(gson.toJson(new AuthenticationRequest(email, password)));
-            writer.flush();
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(httpConnection.getOutputStream()))) {
+                writer.append(gson.toJson(new AuthenticationRequest(email, password)));
+                writer.flush();
+            }
 
-            InputStreamReader inputReader = new InputStreamReader(httpConnection.getInputStream());
-            reader = new BufferedReader(inputReader);
-            String line = reader.readLine();
-            if (line != null && !"null".equals(line)) {
-                AuthenticationResponse authResponse = gson.fromJson(line, AuthenticationResponse.class);
-                return new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken());
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()))) {
+                String line = reader.readLine();
+                if (line != null && !"null".equals(line)) {
+                    AuthenticationResponse authResponse = gson.fromJson(line, AuthenticationResponse.class);
+                    return new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken());
+                }
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid", ex);
-        } finally {
-            ChangeSkinCore.closeQuietly(writer, logger);
-            ChangeSkinCore.closeQuietly(reader, logger);
         }
 
         return null;
@@ -63,7 +58,6 @@ public class MojangAuthApi {
     public boolean changeSkin(UUID ownerId, UUID accessToken, String sourceUrl, boolean slimModel) {
         String url = CHANGE_SKIN_URL.replace("<uuid>", ownerId.toString().replace("-", ""));
 
-        BufferedWriter writer = null;
         try {
             HttpURLConnection httpConnection = ChangeSkinCore.getConnection(url);
             httpConnection.setRequestMethod("POST");
@@ -71,17 +65,16 @@ public class MojangAuthApi {
 
             httpConnection.addRequestProperty("Authorization", "Bearer " + accessToken.toString().replace("-", ""));
 
-            OutputStreamWriter streamWriter = new OutputStreamWriter(httpConnection.getOutputStream(), Charsets.UTF_8);
-            writer = new BufferedWriter(streamWriter);
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(httpConnection.getOutputStream()))) {
+                if (slimModel) {
+                    writer.write("model=" + URLEncoder.encode("slim", Charsets.UTF_8.name()));
+                } else {
+                    writer.write("model=");
+                }
 
-            if (slimModel) {
-                writer.write("model=" + URLEncoder.encode("slim", Charsets.UTF_8.name()));
-            } else {
-                writer.write("model=");
+                writer.write("&url=" + URLEncoder.encode(sourceUrl, Charsets.UTF_8.name()));
+                writer.flush();
             }
-
-            writer.write("&url=" + URLEncoder.encode(sourceUrl, Charsets.UTF_8.name()));
-            writer.flush();
 
             httpConnection.connect();
             logger.log(Level.FINE, "Response code for uploading {0}", httpConnection.getResponseCode());
@@ -89,8 +82,6 @@ public class MojangAuthApi {
             return true;
         } catch (IOException ioEx) {
             logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ioEx);
-        } finally {
-            ChangeSkinCore.closeQuietly(writer, logger);
         }
 
         return false;
@@ -107,7 +98,7 @@ public class MojangAuthApi {
 
             if (httpConnection.getResponseCode() != 301) {
                 logger.log(Level.SEVERE,
-                         "Invalid response from the skin server Response Code: {0}", httpConnection.getResponseCode());
+                        "Invalid response from the skin server Response Code: {0}", httpConnection.getResponseCode());
                 return "";
             }
 

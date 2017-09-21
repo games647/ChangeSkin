@@ -59,12 +59,8 @@ public class SkinStorage {
     }
 
     public void createTables() throws SQLException {
-        ResultSet testResult = null;
-        Connection con = null;
-        Statement stmt = null;
-        try {
-            con = dataSource.getConnection();
-            stmt = con.createStatement();
+        try (Connection con = dataSource.getConnection();
+            Statement stmt = con.createStatement()) {
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + DATA_TABLE + " ("
                     + "`SkinID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "`DisplayName` VARCHAR(255), "
@@ -101,106 +97,79 @@ public class SkinStorage {
                     + "`SkinURL`=REPLACE(`SkinURL`, 'http://textures.minecraft.net/texture/', ''), "
                     + "`CapeURL`=REPLACE(`CapeURL`, 'http://textures.minecraft.net/texture/', '')");
 
-            testResult = stmt.executeQuery("SELECT * FROM " + DATA_TABLE + " Limit 1");
-            ResultSetMetaData meta = testResult.getMetaData();
-            for (int i = 1; i < meta.getColumnCount() + 1; i++) {
-                if ("KeepSkin".equals(meta.getColumnName(i))) {
-                    keepColumnPresent = true;
-                    break;
+            try (ResultSet testResult = stmt.executeQuery("SELECT * FROM " + DATA_TABLE + " Limit 1")) {
+                ResultSetMetaData meta = testResult.getMetaData();
+                for (int i = 1; i < meta.getColumnCount() + 1; i++) {
+                    if ("KeepSkin".equals(meta.getColumnName(i))) {
+                        keepColumnPresent = true;
+                        break;
+                    }
                 }
             }
-        } finally {
-            ChangeSkinCore.closeQuietly(testResult, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
     }
 
     public UserPreference getPreferences(UUID uuid) {
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-        try {
-
-            con = dataSource.getConnection();
-
-            stmt = con.prepareStatement("SELECT SkinId, Timestamp, " + DATA_TABLE +".UUID, Name, SlimModel, SkinUrl"
-                    + ", CapeUrl, Signature, " + PREFERENCES_TABLE + ".*"
+        try (Connection con = dataSource.getConnection();
+            PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, "
+                    + DATA_TABLE + ".UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature, " + PREFERENCES_TABLE + ".*"
                     + " FROM " + PREFERENCES_TABLE
                     + " JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
-                    + " WHERE " + PREFERENCES_TABLE + ".UUID=? LIMIT 1");
+                    + " WHERE " + PREFERENCES_TABLE + ".UUID=? LIMIT 1")) {
             stmt.setString(1, uuid.toString().replace("-", ""));
 
-            resultSet = stmt.executeQuery();
-            if (resultSet.next()) {
-                SkinData skinData = parseSkinData(resultSet);
-                boolean keepSkin = false;
-                if (keepColumnPresent) {
-                    keepSkin = resultSet.getBoolean(11);
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                if (resultSet.next()) {
+                    SkinData skinData = parseSkinData(resultSet);
+                    boolean keepSkin = false;
+                    if (keepColumnPresent) {
+                        keepSkin = resultSet.getBoolean(11);
+                    }
+
+                    return new UserPreference(uuid, skinData, keepSkin);
+                } else {
+                    return new UserPreference(uuid);
                 }
-                
-                return new UserPreference(uuid, skinData, keepSkin);
-            } else {
-                return new UserPreference(uuid);
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query preferences", sqlEx);
-        } finally {
-            ChangeSkinCore.closeQuietly(resultSet, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
 
         return null;
     }
 
     public SkinData getSkin(int targetSkinId) {
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-        try {
-            con = dataSource.getConnection();
-
-            stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature "
-                    + "FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1");
+        try (Connection con = dataSource.getConnection();
+            PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
+                    "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1")) {
             stmt.setInt(1, targetSkinId);
 
-            resultSet = stmt.executeQuery();
-            if (resultSet.next()) {
-                return parseSkinData(resultSet);
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                if (resultSet.next()) {
+                    return parseSkinData(resultSet);
+                }
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from row id", sqlEx);
-        } finally {
-            ChangeSkinCore.closeQuietly(resultSet, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
 
         return null;
     }
 
     public SkinData getSkin(UUID skinUUID) {
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-        try {
-            con = dataSource.getConnection();
-
-            stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature "
-                    + "FROM " + DATA_TABLE + " WHERE UUID=? ORDER BY Timestamp DESC LIMIT 1");
+        try (Connection con = dataSource.getConnection();
+            PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
+                    "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE
+                    + " WHERE UUID=? ORDER BY Timestamp DESC LIMIT 1")) {
             stmt.setString(1, skinUUID.toString().replace("-", ""));
 
-            resultSet = stmt.executeQuery();
-            if (resultSet.next()) {
-                return parseSkinData(resultSet);
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                if (resultSet.next()) {
+                    return parseSkinData(resultSet);
+                }
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from uuid", sqlEx);
-        } finally {
-            ChangeSkinCore.closeQuietly(resultSet, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
 
         return null;
@@ -212,34 +181,31 @@ public class SkinStorage {
             throw new IllegalArgumentException("Tried saving preferences without skin");
         }
 
-        Connection con = null;
-        PreparedStatement stmt = null;
-        try {
-            con = dataSource.getConnection();
+        try (Connection con = dataSource.getConnection()) {
             if (targetSkin == null) {
-                stmt = con.prepareStatement("DELETE FROM " + PREFERENCES_TABLE + " WHERE UUID=?");
-                stmt.setString(1, preferences.getUuid().toString().replace("-", ""));
-                stmt.executeUpdate();
+                try (PreparedStatement stmt = con.prepareStatement("DELETE FROM "
+                        + PREFERENCES_TABLE + " WHERE UUID=?")) {
+                    stmt.setString(1, preferences.getUuid().toString().replace("-", ""));
+                    stmt.executeUpdate();
+                }
             } else {
                 String insertQuery = "REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin) VALUES (?, ?)";
                 if (keepColumnPresent) {
                     insertQuery = "REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin, KeepSkin) VALUES (?, ?, ?)";
                 }
 
-                stmt = con.prepareStatement(insertQuery);
-                stmt.setString(1, preferences.getUuid().toString().replace("-", ""));
-                stmt.setInt(2, targetSkin.getSkinId());
-                if (keepColumnPresent) {
-                    stmt.setBoolean(3, preferences.isKeepSkin());
+                try (PreparedStatement stmt = con.prepareStatement(insertQuery)) {
+                    stmt.setString(1, preferences.getUuid().toString().replace("-", ""));
+                    stmt.setInt(2, targetSkin.getSkinId());
+                    if (keepColumnPresent) {
+                        stmt.setBoolean(3, preferences.isKeepSkin());
+                    }
+
+                    stmt.executeUpdate();
                 }
-                
-                stmt.executeUpdate();
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save preferences", sqlEx);
-        } finally {
-            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
     }
 
@@ -255,15 +221,10 @@ public class SkinStorage {
 
         String skinUrl = skinData.getSkinURL();
 
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet generatedKeys = null;
-        try {
-            con = dataSource.getConnection();
-
-            stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
-                    + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
-                    + " (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
+                + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
+                + " (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setLong(1, skinData.getTimestamp());
             stmt.setString(2, skinData.getUuid().toString().replace("-", ""));
@@ -275,17 +236,14 @@ public class SkinStorage {
 
             stmt.executeUpdate();
 
-            generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys != null && generatedKeys.next()) {
-                skinData.setSkinId(generatedKeys.getInt(1));
-                return true;
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys != null && generatedKeys.next()) {
+                    skinData.setSkinId(generatedKeys.getInt(1));
+                    return true;
+                }
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().log(Level.SEVERE, "Failed to query skin data", sqlEx);
-        } finally {
-            ChangeSkinCore.closeQuietly(generatedKeys, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(stmt, plugin.getLogger());
-            ChangeSkinCore.closeQuietly(con, plugin.getLogger());
         }
 
         return false;

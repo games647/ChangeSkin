@@ -8,4 +8,4 @@ language: java
 
 script: mvn compile test
 
-jdk: [openjdk8]
+jdk: [oraclejdk8]

@@ -3,13 +3,8 @@ package com.github.games647.changeskin.core.model.mojang.skin;
 public class SkinModel {
 
     private long timestamp;
-
     private String profileId;
-
     private String profileName;
-
-    private final boolean signatureRequired = true;
-
     private DataModel textures;
 
     public long getTimestamp() {
@@ -45,6 +40,6 @@ public class SkinModel {
     }
 
     public boolean isSignatureRequired() {
-        return signatureRequired;
+        return true;
     }
 }

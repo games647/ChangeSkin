@@ -138,7 +138,7 @@ public class SkinData {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.slimModel, skinURL, capeURL);
+        return Objects.hash(slimModel, skinURL, capeURL);
     }
 
     @Override

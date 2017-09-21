@@ -134,7 +134,7 @@ public class ChangeSkinCore {
         return autoUpdateDiff;
     }
 
-    public void loadDefaultSkins(List<String> defaults) {
+    public void loadDefaultSkins(Iterable<String> defaults) {
         for (String uuidString : defaults) {
             UUID ownerUUID = UUID.fromString(uuidString);
             SkinData skinData = storage.getSkin(ownerUUID);
@@ -148,7 +148,7 @@ public class ChangeSkinCore {
         }
     }
 
-    public void loadAccounts(List<String> accounts) {
+    public void loadAccounts(Iterable<String> accounts) {
         for (String line : accounts) {
             String email = line.split(":")[0];
             String password = line.split(":")[1];
@@ -192,15 +192,5 @@ public class ChangeSkinCore {
 
     public List<Account> getUploadAccounts() {
         return uploadAccounts;
-    }
-
-    protected static void closeQuietly(AutoCloseable closeable, Logger logger) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (Exception sqlEx) {
-                logger.log(Level.SEVERE, "Failed to close connection", sqlEx);
-            }
-        }
     }
 }
