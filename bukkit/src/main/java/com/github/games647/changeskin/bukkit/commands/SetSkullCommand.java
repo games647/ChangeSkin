@@ -5,8 +5,11 @@ import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinData;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,13 +18,33 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author Shynixn
  */
 public class SetSkullCommand implements CommandExecutor {
+
+    //speed by letting the JVM optimize this
+    //MethodHandle is only faster for static final fields
+    private static final MethodHandle skullProfileSetter;
+
+    static {
+        MethodHandle methodHandle = null;
+        try {
+            Class<?> clazz = Class.forName("org.bukkit.craftbukkit." + getServerVersion() + ".inventory.CraftMetaSkull");
+            Field profileField = clazz.getDeclaredField("profile");
+            profileField.setAccessible(true);
+
+            methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
+        } catch (Exception ex) {
+            JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLogger()
+                    .log(Level.INFO, "Cannot find loginProfile field for setting skin in offline mode", ex);
+        }
+
+        skullProfileSetter = methodHandle;
+    }
 
     private final ChangeSkinBukkit plugin;
 
@@ -62,21 +85,22 @@ public class SetSkullCommand implements CommandExecutor {
             if(itemStack == null || skinData == null || itemStack.getType() != Material.SKULL_ITEM)
                 return;
 
-            SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
-            Class<?> clazz = Class.forName("org.bukkit.craftbukkit." + getServerVersion() + ".inventory.CraftMetaSkull");
-            Object craftSkullMeta = clazz.cast(meta);
-            Field field = craftSkullMeta.getClass().getDeclaredField("profile");
-            field.setAccessible(true);
+            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+
             WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.randomUUID(), null);
-            field.set(craftSkullMeta, gameProfile.getHandle());
+            skullProfileSetter.invokeExact(skullMeta, gameProfile.getHandle());
+
             gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(skinData));
-            itemStack.setItemMeta((ItemMeta) craftSkullMeta);
-        } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
-            e.printStackTrace();
+            itemStack.setItemMeta(skullMeta);
+        } catch (Error error) {
+            //rethrow errors we shouldn't silence them like OutOfMemory
+            throw error;
+        } catch (Throwable throwable) {
+            plugin.getLogger().log(Level.INFO, "Failed to set skull item", throwable);
         }
     }
 
-    private String getServerVersion() {
+    private static String getServerVersion() {
         return Bukkit.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
     }
 }

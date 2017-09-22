@@ -82,7 +82,7 @@ public class ChangeSkinCore {
     private final List<SkinData> defaultSkins = Lists.newArrayList();
     private final MojangSkinApi mojangSkinApi;
     private final MojangAuthApi mojangAuthApi;
-    private ConcurrentMap<UUID, Object> cooldowns;
+    private final ConcurrentMap<UUID, Object> cooldowns;
     private final int autoUpdateDiff;
 
     private final List<Account> uploadAccounts = Lists.newArrayList();

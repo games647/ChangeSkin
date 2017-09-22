@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 public abstract class AbstractForwardCommand implements CommandExecutor {
 
-    protected ChangeSkinBukkit plugin;
+    protected final ChangeSkinBukkit plugin;
 
     public AbstractForwardCommand(ChangeSkinBukkit plugin) {
         this.plugin = plugin;

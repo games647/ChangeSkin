@@ -21,15 +21,17 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.text.MessageFormat;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import net.md_5.bungee.api.ChatColor;
@@ -48,6 +50,25 @@ import net.md_5.bungee.connection.LoginResult.Property;
 
 public class ChangeSkinBungee extends Plugin {
 
+    //speed by letting the JVM optimize this
+    //MethodHandle is only faster for static final fields
+    private static final MethodHandle profileSetter;
+
+    static {
+        MethodHandle methodHandle = null;
+        try {
+            Field profileField = InitialHandler.class.getDeclaredField("loginProfile");
+            profileField.setAccessible(true);
+
+            methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
+        } catch (Exception ex) {
+            Logger.getLogger(ChangeSkinBungee.class.getName()).log(Level.INFO, "Cannot find loginProfile field" +
+                    "for setting skin in offline mode");
+        }
+
+        profileSetter = methodHandle;
+    }
+
     private ChangeSkinCore core;
     private Configuration configuration;
 
@@ -63,7 +84,7 @@ public class ChangeSkinBungee extends Plugin {
             int rateLimit = configuration.getInt("mojang-request-limit");
             int cooldown = configuration.getInt("cooldown");
             int updateDiff = configuration.getInt("auto-skin-update");
-            List<String> proxyList = (List<String>) configuration.getList("proxies", Lists.newArrayList());
+            Collection<String> proxyList = (Collection<String>) configuration.getList("proxies", Lists.newArrayList());
             Map<String, Integer> proxies = proxyList.stream()
                     .collect(Collectors
                             .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
@@ -160,21 +181,24 @@ public class ChangeSkinBungee extends Plugin {
         LoginResult loginProfile = initialHandler.getLoginProfile();
         //this is null on offline mode
         if (loginProfile == null) {
-            try {
-                Field profileField = InitialHandler.class.getDeclaredField("loginProfile");
-                profileField.setAccessible(true);
-                String mojangUUID = player.getUniqueId().toString().replace("-", "");
+            String mojangUUID = player.getUniqueId().toString().replace("-", "");
 
-                Property[] properties = {};
-                if (skinData != null) {
-                    Property textures = convertToProperty(skinData);
-                    properties = new Property[]{textures};
+            Property[] properties = {};
+            if (skinData != null) {
+                Property textures = convertToProperty(skinData);
+                properties = new Property[]{textures};
+            }
+
+            if (profileSetter != null) {
+                try {
+                    LoginResult loginResult = new LoginResult(mojangUUID, player.getName(), properties);
+                    profileSetter.invokeExact(initialHandler, loginResult);
+                } catch (Error error) {
+                    //rethrow errors we shouldn't silence them like OutOfMemory
+                    throw error;
+                } catch (Throwable throwable) {
+                    getLogger().log(Level.SEVERE, "Error applying skin", throwable);
                 }
-
-                LoginResult loginResult = createResult(mojangUUID, player.getName(), properties);
-                profileField.set(initialHandler, loginResult);
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                getLogger().log(Level.SEVERE, null, ex);
             }
         } else if (skinData == null) {
             loginProfile.setProperties(new Property[]{});
@@ -199,22 +223,6 @@ public class ChangeSkinBungee extends Plugin {
 
             player.getServer().sendData(getDescription().getName(), out.toByteArray());
         }
-    }
-
-    private LoginResult createResult(String id, String name, Property[] properties) {
-        Constructor<LoginResult> cons;
-        try {
-            cons = LoginResult.class.getConstructor(String.class, String.class, Property[].class);
-            return cons.newInstance(id, name, properties);
-        } catch (NoSuchMethodException noSuchMethodEx) {
-            //old BungeeCord
-            getLogger().log(Level.INFO, "Cannot find method for setting the new skin. " +
-                    "It could be because you run an outdated BungeeCord version", noSuchMethodEx);
-        } catch (Exception ex) {
-            getLogger().log(Level.INFO, "Cannot invoke constructor for creating a fake skin", ex);
-        }
-
-        return null;
     }
 
     public Property convertToProperty(SkinData skinData) {

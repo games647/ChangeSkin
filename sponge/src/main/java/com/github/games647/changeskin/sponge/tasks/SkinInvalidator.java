@@ -25,7 +25,7 @@ public class SkinInvalidator extends SharedInvalidator {
 
     @Override
     protected void scheduleApplyTask(SkinData skinData) {
-        SkinUpdater skinUpdater = new SkinUpdater(plugin, invoker, invoker, skinData, false);
+        Runnable skinUpdater = new SkinUpdater(plugin, invoker, invoker, skinData, false);
         plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
     }
 }

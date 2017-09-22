@@ -100,7 +100,7 @@ public class ChangeSkinSponge {
 
             int rateLimit = rootNode.getNode("mojang-request-limit").getInt();
 
-            java.util.logging.Logger pluginLogger = java.util.logging.Logger.getLogger("ChangeSkin");
+            java.util.logging.Logger pluginLogger = new SLF4JBridgeLogger(logger);
 
             int cooldown = rootNode.getNode("cooldown").getInt();
             Path parentFolder = defaultConfigFile.getParent();
@@ -132,7 +132,6 @@ public class ChangeSkinSponge {
             defaultSkins.addAll(rootNode.getNode("default-skins").getChildrenMap().values()
                     .stream()
                     .map(ConfigurationNode::getString).collect(Collectors.toList()));
-
 
             core.loadDefaultSkins(defaultSkins);
             loadLocale();

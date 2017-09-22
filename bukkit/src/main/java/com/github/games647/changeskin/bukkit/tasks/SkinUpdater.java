@@ -139,7 +139,7 @@ public class SkinUpdater implements Runnable {
         float oldSat = receiver.getSaturation();
         receiver.setFoodLevel(20);
         receiver.setFoodLevel(oldFood);
-        receiver.setSaturation(5F);
+        receiver.setSaturation(5.0F);
         receiver.setSaturation(oldSat);
 
         //Health
@@ -147,7 +147,7 @@ public class SkinUpdater implements Runnable {
         setMaxHealth(receiver, maxHealth);
 
         // trigger a health update
-        receiver.setHealth(20F); //20 is default
+        receiver.setHealth(20.0F); //20 is default
         receiver.setHealth(oldHealth);
 
         //exp
