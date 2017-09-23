@@ -1,13 +1,15 @@
 package com.github.games647.changeskin.core.model.mojang.skin;
 
+import java.util.UUID;
+
 public class TexturesModel {
 
-    private String id;
+    private UUID id;
     private String name;
 
-    private PropertiesModel[] properties;
+    private SkinProperties[] properties;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -15,7 +17,7 @@ public class TexturesModel {
         return name;
     }
 
-    public PropertiesModel[] getProperties() {
+    public SkinProperties[] getProperties() {
         return properties;
     }
 }

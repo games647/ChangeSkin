@@ -1,17 +1,17 @@
 package com.github.games647.changeskin.core.model.mojang.auth;
 
-import com.github.games647.changeskin.core.model.PlayerProfile;
+import com.github.games647.changeskin.core.model.GameProfile;
 
 public class AuthenticationResponse {
 
     private String accessToken;
-    private PlayerProfile selectedProfile;
+    private GameProfile selectedProfile;
 
     public String getAccessToken() {
         return accessToken;
     }
 
-    public PlayerProfile getSelectedProfile() {
+    public GameProfile getSelectedProfile() {
         return selectedProfile;
     }
 }

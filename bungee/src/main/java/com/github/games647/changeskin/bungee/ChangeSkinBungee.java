@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.common.net.HostAndPort;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
@@ -27,6 +28,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
@@ -85,9 +87,7 @@ public class ChangeSkinBungee extends Plugin {
             int cooldown = configuration.getInt("cooldown");
             int updateDiff = configuration.getInt("auto-skin-update");
             Collection<String> proxyList = (Collection<String>) configuration.getList("proxies", Lists.newArrayList());
-            Map<String, Integer> proxies = proxyList.stream()
-                    .collect(Collectors
-                            .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
+            List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(Collectors.toList());
             core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, cooldown, updateDiff, proxies);
 
             loadLocale();

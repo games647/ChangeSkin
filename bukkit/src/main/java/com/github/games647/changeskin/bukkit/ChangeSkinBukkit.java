@@ -11,17 +11,18 @@ import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
 import com.github.games647.changeskin.bukkit.listener.PlayerLoginListener;
 import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
+import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.base.Charsets;
+import com.google.common.net.HostAndPort;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
@@ -41,7 +42,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
 
     protected ChangeSkinCore core;
 
-    private final ConcurrentMap<UUID, UserPreference> loginSessions = ChangeSkinCore.buildCache(2 * 60, -1);
+    private final ConcurrentMap<UUID, UserPreference> loginSessions = CommonUtil.buildCache(2 * 60, -1);
 
     @Override
     public void onEnable() {
@@ -75,9 +76,7 @@ public class ChangeSkinBukkit extends JavaPlugin {
             int cooldown = getConfig().getInt("cooldown");
             int updateDiff = getConfig().getInt("auto-skin-update");
             List<String> proxyList = getConfig().getStringList("proxies");
-            Map<String, Integer> proxies = proxyList.stream()
-                    .collect(Collectors
-                            .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
+            List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(Collectors.toList());
             this.core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, cooldown, updateDiff, proxies);
 
             ThreadFactory threadFactory = new ThreadFactoryBuilder()

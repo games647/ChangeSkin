@@ -32,7 +32,7 @@ public class MojangAuthApi {
 
     public Account authenticate(String email, String password) {
         try {
-            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(AUTH_URL);
+            HttpURLConnection httpConnection = CommonUtil.getConnection(AUTH_URL);
             httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
 
@@ -42,11 +42,8 @@ public class MojangAuthApi {
             }
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()))) {
-                String line = reader.readLine();
-                if (line != null && !"null".equals(line)) {
-                    AuthenticationResponse authResponse = gson.fromJson(line, AuthenticationResponse.class);
-                    return new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken());
-                }
+                AuthenticationResponse authResponse = gson.fromJson(reader, AuthenticationResponse.class);
+                return new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken());
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid", ex);
@@ -59,7 +56,7 @@ public class MojangAuthApi {
         String url = CHANGE_SKIN_URL.replace("<uuid>", ownerId.toString().replace("-", ""));
 
         try {
-            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(url);
+            HttpURLConnection httpConnection = CommonUtil.getConnection(url);
             httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
 
@@ -89,7 +86,7 @@ public class MojangAuthApi {
         String url = OLD_SKIN_URL.replace("<playerName>", playerName);
 
         try {
-            HttpURLConnection httpConnection = ChangeSkinCore.getConnection(url);
+            HttpURLConnection httpConnection = CommonUtil.getConnection(url);
             //we only need the new url not the actual content
             httpConnection.setInstanceFollowRedirects(false);
             httpConnection.connect();

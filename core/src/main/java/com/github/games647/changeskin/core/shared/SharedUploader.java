@@ -1,7 +1,8 @@
 package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.PlayerProfile;
+import com.github.games647.changeskin.core.CommonUtil;
+import com.github.games647.changeskin.core.model.GameProfile;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.mojang.auth.Account;
 
@@ -21,11 +22,12 @@ public abstract class SharedUploader implements Runnable, MessageReceiver {
 
     @Override
     public void run() {
-        PlayerProfile profile = owner.getProfile();
+        GameProfile profile = owner.getProfile();
         String oldSkinUrl = core.getMojangAuthApi().getSkinUrl(profile.getName());
 
-        UUID uuid = ChangeSkinCore.parseId(profile.getId());
-        UUID accessToken = ChangeSkinCore.parseId(owner.getAccessToken());
+        UUID uuid = profile.getId();
+        UUID accessToken = CommonUtil.parseId(owner.getAccessToken());
+
         core.getMojangAuthApi().changeSkin(uuid, accessToken, url, false);
 
         //this could properly cause issues for uuid resolving to this database entry

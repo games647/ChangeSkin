@@ -1,20 +1,25 @@
 package com.github.games647.changeskin.core.model;
 
-import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.mojang.skin.DataModel;
+import com.github.games647.changeskin.core.model.mojang.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.mojang.skin.MetadataModel;
 import com.github.games647.changeskin.core.model.mojang.skin.SkinModel;
-import com.github.games647.changeskin.core.model.mojang.skin.TextureSourceModel;
+import com.github.games647.changeskin.core.model.mojang.skin.TextureModel;
+import com.github.games647.changeskin.core.model.mojang.skin.TextureType;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 public class SkinData {
 
-    public static final String URL_PREFIX = "http://textures.minecraft.net/texture/";
+    private static final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
+
+    private static final String URL_PREFIX = "http://textures.minecraft.net/texture/";
 
     private int skinId = -1;
 
@@ -48,20 +53,21 @@ public class SkinData {
 
         SkinModel data = deserializeData(encodedData);
         this.timestamp = data.getTimestamp();
-        this.uuid = ChangeSkinCore.parseId(data.getProfileId());
+        this.uuid = data.getProfileId();
         this.name = data.getProfileName();
 
-        DataModel textures = data.getTextures();
-        if (textures != null && textures.getSKIN() != null) {
-            this.skinURL = textures.getSKIN().getUrl().replace(URL_PREFIX, "");
-            this.slimModel = textures.getSKIN().getMetadata() != null;
+        Map<TextureType, TextureModel> textures = data.getTextures();
+        if (textures != null && textures.get(TextureType.SKIN) != null) {
+            TextureModel skin = textures.get(TextureType.SKIN);
+            this.skinURL = skin.getUrl().replace(URL_PREFIX, "");
+            this.slimModel = textures.get(TextureType.SKIN).getMetadata() != null;
         } else {
             this.skinURL = "";
             this.slimModel = false;
         }
 
-        if (textures != null && textures.getCAPE() != null) {
-            this.capeURL = textures.getCAPE().getUrl().replace(URL_PREFIX, "");
+        if (textures != null && textures.get(TextureType.CAPE) != null) {
+            this.capeURL = textures.get(TextureType.CAPE).getUrl().replace(URL_PREFIX, "");
         } else {
             this.capeURL = "";
         }
@@ -110,29 +116,30 @@ public class SkinData {
     private String serializeData() {
         SkinModel dataModel = new SkinModel();
         dataModel.setTimestamp(timestamp);
-        dataModel.setProfileId(uuid.toString().replace("-", ""));
+        dataModel.setProfileId(uuid);
         dataModel.setProfileName(name);
 
         if (skinURL != null && !skinURL.isEmpty()) {
-            DataModel texturesModel = new DataModel();
-            TextureSourceModel skinModel = new TextureSourceModel();
+            Map<TextureType, TextureModel> textures = Maps.newHashMap();
+
+            TextureModel skinModel = new TextureModel();
             skinModel.setUrl(URL_PREFIX + skinURL);
             if (slimModel) {
                 skinModel.setMetadata(new MetadataModel());
             }
 
-            texturesModel.setSKIN(skinModel);
+            textures.put(TextureType.SKIN, skinModel);
 
             if (capeURL != null && !capeURL.isEmpty()) {
-                TextureSourceModel capeModel = new TextureSourceModel();
+                TextureModel capeModel = new TextureModel();
                 capeModel.setUrl(URL_PREFIX + capeURL);
-                texturesModel.setCAPE(capeModel);
+                textures.put(TextureType.CAPE, capeModel);
             }
 
-            dataModel.setTextures(texturesModel);
+            dataModel.setTextures(textures);
         }
 
-        String json = new Gson().toJson(dataModel);
+        String json = gson.toJson(dataModel);
         return Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -165,6 +172,6 @@ public class SkinData {
         byte[] data = Base64.getDecoder().decode(encodedData);
         String rawJson = new String(data, StandardCharsets.UTF_8);
 
-        return new Gson().fromJson(rawJson, SkinModel.class);
+        return gson.fromJson(rawJson, SkinModel.class);
     }
 }

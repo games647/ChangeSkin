@@ -8,6 +8,7 @@ import com.github.games647.changeskin.sponge.commands.SetSkinCommand;
 import com.github.games647.changeskin.sponge.commands.SkinInvalidateCommand;
 import com.github.games647.changeskin.sponge.commands.SkinUploadCommand;
 import com.google.common.collect.Lists;
+import com.google.common.net.HostAndPort;
 import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
@@ -19,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
@@ -106,9 +106,7 @@ public class ChangeSkinSponge {
             Path parentFolder = defaultConfigFile.getParent();
             int updateDiff = rootNode.getNode("auto-skin-update").getInt();
             List<String> proxyList = rootNode.getNode("proxies").getList(Object::toString);
-            Map<String, Integer> proxies = proxyList.stream()
-                    .collect(Collectors
-                            .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
+            List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(Collectors.toList());
             core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, cooldown, updateDiff, proxies);
 
             String pluginName = "ChangeSkin";

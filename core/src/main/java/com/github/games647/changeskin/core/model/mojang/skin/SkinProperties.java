@@ -1,13 +1,12 @@
 package com.github.games647.changeskin.core.model.mojang.skin;
 
-public class PropertiesModel {
+public class SkinProperties {
 
-    private String name;
     private String value;
     private String signature;
 
     public String getName() {
-        return name;
+        return "textures";
     }
 
     public String getValue() {

@@ -93,9 +93,6 @@ public class SkinStorage {
 
             stmt.executeUpdate(createDataStmt);
             stmt.executeUpdate(createPreferencesStmt);
-            stmt.executeUpdate("UPDATE " + DATA_TABLE + " SET "
-                    + "`SkinURL`=REPLACE(`SkinURL`, 'http://textures.minecraft.net/texture/', ''), "
-                    + "`CapeURL`=REPLACE(`CapeURL`, 'http://textures.minecraft.net/texture/', '')");
 
             try (ResultSet testResult = stmt.executeQuery("SELECT * FROM " + DATA_TABLE + " Limit 1")) {
                 ResultSetMetaData meta = testResult.getMetaData();
@@ -252,7 +249,7 @@ public class SkinStorage {
     private SkinData parseSkinData(ResultSet resultSet) throws SQLException {
         int skinId = resultSet.getInt(1);
         long timestamp = resultSet.getLong(2);
-        UUID uuid = ChangeSkinCore.parseId(resultSet.getString(3));
+        UUID uuid = CommonUtil.parseId(resultSet.getString(3));
         String name = resultSet.getString(4);
 
         boolean slimModel = resultSet.getBoolean(5);

@@ -1,12 +1,14 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.PlayerProfile;
+import com.github.games647.changeskin.core.model.GameProfile;
 import com.github.games647.changeskin.core.model.SkinData;
-import com.github.games647.changeskin.core.model.mojang.skin.PropertiesModel;
+import com.github.games647.changeskin.core.model.mojang.UUIDTypeAdapter;
+import com.github.games647.changeskin.core.model.mojang.skin.SkinProperties;
 import com.github.games647.changeskin.core.model.mojang.skin.TexturesModel;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import com.google.common.net.HostAndPort;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,13 +20,13 @@ import java.net.Proxy.Type;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import static com.github.games647.changeskin.core.ChangeSkinCore.getConnection;
+import static com.github.games647.changeskin.core.CommonUtil.getConnection;
 
 public class MojangSkinApi {
 
@@ -33,38 +35,36 @@ public class MojangSkinApi {
 
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
-    private static final String VALID_USERNAME = "^\\w{2,16}$";
-
     private static final int RATE_LIMIT_ID = 429;
 
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
+    private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
     private final Iterator<Proxy> proxies;
-    private final ConcurrentMap<Object, Object> requests;
+    private final Map<Object, Object> requests = CommonUtil.buildCache(10, -1);
     private final Logger logger;
     private final int rateLimit;
 
-    private final ConcurrentMap<UUID, Object> crackedUUID = ChangeSkinCore.buildCache(60, -1);
+    private final Map<UUID, Object> crackedUUID = CommonUtil.buildCache(60, -1);
 
     private long lastRateLimit;
 
-    public MojangSkinApi(ConcurrentMap<Object, Object> requests, Logger logger, int rateLimit
-            , Map<String, Integer> proxies) {
-        this.requests = requests;
+    public MojangSkinApi(Logger logger, int rateLimit, List<HostAndPort> proxies) {
         this.rateLimit = Math.max(rateLimit, 600);
         this.logger = logger;
 
-        List<Proxy> proxyBuilder = Lists.newArrayList();
-        for (Entry<String, Integer> proxy : proxies.entrySet()) {
-            proxyBuilder.add(new Proxy(Type.HTTP, new InetSocketAddress(proxy.getKey(), proxy.getValue())));
-        }
+        List<Proxy> proxyBuilder = proxies.stream()
+                .map(proxy -> {
+                    InetSocketAddress sa = new InetSocketAddress(proxy.getHostText(), proxy.getPort());
+                    return new Proxy(Type.HTTP, sa);
+                }).collect(Collectors.toList());
 
         this.proxies = Iterables.cycle(proxyBuilder).iterator();
     }
 
     public UUID getUUID(String playerName) throws NotPremiumException, RateLimitException {
         logger.log(Level.FINE, "Making UUID->Name request for {0}", playerName);
-        if (!playerName.matches(VALID_USERNAME)) {
+        if (!validNamePattern.matcher(playerName).matches()) {
             throw new NotPremiumException(playerName);
         }
 
@@ -83,7 +83,6 @@ public class MojangSkinApi {
                 connection = getConnection(UUID_URL + playerName);
             }
 
-
             if (connection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
             } else if (connection.getResponseCode() == RATE_LIMIT_ID) {
@@ -97,12 +96,8 @@ public class MojangSkinApi {
             }
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                String line = reader.readLine();
-                if (line != null && !"null".equals(line)) {
-                    PlayerProfile playerProfile = gson.fromJson(line, PlayerProfile.class);
-                    String id = playerProfile.getId();
-                    return ChangeSkinCore.parseId(id);
-                }
+                GameProfile playerProfile = gson.fromJson(reader, GameProfile.class);
+                return playerProfile.getId();
             }
         } catch (IOException ioEx) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid", ioEx);
@@ -120,24 +115,23 @@ public class MojangSkinApi {
         String uuidString = ownerUUID.toString().replace("-", "");
         try {
             HttpURLConnection httpConnection = getConnection(String.format(SKIN_URL, uuidString));
+            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
+                crackedUUID.put(ownerUUID, new Object());
+                return null;
+            }
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()))) {
-                String line = reader.readLine();
-                if (line == null || "null".equals(line)) {
-                    crackedUUID.put(ownerUUID, new Object());
-                } else {
-                    TexturesModel texturesModel = gson.fromJson(line, TexturesModel.class);
+                TexturesModel texturesModel = gson.fromJson(reader, TexturesModel.class);
 
-                    PropertiesModel[] properties = texturesModel.getProperties();
-                    if (properties != null && properties.length > 0) {
-                        PropertiesModel propertiesModel = properties[0];
+                SkinProperties[] properties = texturesModel.getProperties();
+                if (properties != null && properties.length > 0) {
+                    SkinProperties propertiesModel = properties[0];
 
-                        //base64 encoded skin data
-                        String encodedSkin = propertiesModel.getValue();
-                        String signature = propertiesModel.getSignature();
+                    //base64 encoded skin data
+                    String encodedSkin = propertiesModel.getValue();
+                    String signature = propertiesModel.getSignature();
 
-                        return new SkinData(encodedSkin, signature);
-                    }
+                    return new SkinData(encodedSkin, signature);
                 }
             }
         } catch (Exception ex) {

@@ -2,21 +2,14 @@ package com.github.games647.changeskin.core;
 
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.mojang.auth.Account;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.net.HostAndPort;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.Proxy;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,55 +17,12 @@ public class ChangeSkinCore {
 
     public static final String SKIN_KEY = "textures";
 
-    private static final int TIMEOUT = 3000;
-    private static final String USER_AGENT = "ChangeSkin-Bukkit-Plugin";
-
-    public static UUID parseId(String withoutDashes) {
-        return UUID.fromString(withoutDashes.substring(0, 8)
-                + '-' + withoutDashes.substring(8, 12)
-                + '-' + withoutDashes.substring(12, 16)
-                + '-' + withoutDashes.substring(16, 20)
-                + '-' + withoutDashes.substring(20, 32));
-    }
-
-    public static <K, V> ConcurrentMap<K, V> buildCache(int seconds, int maxSize) {
-        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
-
-        if (seconds > 0) {
-            builder.expireAfterWrite(seconds, TimeUnit.SECONDS);
-        }
-
-        if (maxSize > 0) {
-            builder.maximumSize(maxSize);
-        }
-
-        return builder.build(new CacheLoader<K, V>() {
-            @Override
-            public V load(K key) throws Exception {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        }).asMap();
-    }
-    
-    public static HttpURLConnection getConnection(String url) throws IOException {
-        return getConnection(url, Proxy.NO_PROXY);
-    }
-
-    public static HttpURLConnection getConnection(String url, Proxy proxy) throws IOException {
-        HttpURLConnection httpConnection = (HttpURLConnection) new URL(url).openConnection(proxy);
-        httpConnection.setConnectTimeout(TIMEOUT);
-        httpConnection.setReadTimeout(2 * TIMEOUT);
-        httpConnection.setRequestProperty("Content-Type", "application/json");
-        httpConnection.setRequestProperty("User-Agent", USER_AGENT);
-        return httpConnection;
-    }
-
     private final Map<String, String> localeMessages = Maps.newConcurrentMap();
 
     //this is thread-safe in order to save and load from different threads like the skin download
-    private final ConcurrentMap<String, UUID> uuidCache = buildCache(3 * 60 * 60, 1024 * 5);
+    private final Map<String, UUID> uuidCache = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
 
-    private final ConcurrentMap<String, Object> crackedNames = buildCache(3 * 60 * 60, 1024 * 5);
+    private final Map<String, Object> crackedNames = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
 
     private final Logger logger;
     private final Path pluginFolder;
@@ -82,23 +32,23 @@ public class ChangeSkinCore {
     private final List<SkinData> defaultSkins = Lists.newArrayList();
     private final MojangSkinApi mojangSkinApi;
     private final MojangAuthApi mojangAuthApi;
-    private final ConcurrentMap<UUID, Object> cooldowns;
+    private final Map<UUID, Object> cooldowns;
     private final int autoUpdateDiff;
 
     private final List<Account> uploadAccounts = Lists.newArrayList();
 
     public ChangeSkinCore(Logger logger, Path pluginFolder, int rateLimit, int cooldown, int autoUpdateDiff
-            , Map<String, Integer> proxies) {
+            , List<HostAndPort> proxies) {
         this.logger = logger;
         this.pluginFolder = pluginFolder;
-        this.mojangSkinApi = new MojangSkinApi(buildCache(10, -1), logger, rateLimit, proxies);
+        this.mojangSkinApi = new MojangSkinApi(logger, rateLimit, proxies);
         this.mojangAuthApi = new MojangAuthApi(logger);
 
         if (cooldown <= 0) {
             cooldown = 1;
         }
 
-        this.cooldowns = buildCache(cooldown, -1);
+        this.cooldowns = CommonUtil.buildCache(cooldown, -1);
         this.autoUpdateDiff = autoUpdateDiff * 60 * 1_000;
     }
 
@@ -110,11 +60,11 @@ public class ChangeSkinCore {
         return pluginFolder;
     }
 
-    public ConcurrentMap<String, UUID> getUuidCache() {
+    public Map<String, UUID> getUuidCache() {
         return uuidCache;
     }
 
-    public ConcurrentMap<String, Object> getCrackedNames() {
+    public Map<String, Object> getCrackedNames() {
         return crackedNames;
     }
 

@@ -1,11 +1,13 @@
 package com.github.games647.changeskin.core.model;
 
-public class PlayerProfile {
+import java.util.UUID;
 
-    private String id;
+public class GameProfile {
+
+    private UUID id;
     private String name;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 

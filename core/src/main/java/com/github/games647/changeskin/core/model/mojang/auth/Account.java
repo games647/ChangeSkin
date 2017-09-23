@@ -1,18 +1,18 @@
 package com.github.games647.changeskin.core.model.mojang.auth;
 
-import com.github.games647.changeskin.core.model.PlayerProfile;
+import com.github.games647.changeskin.core.model.GameProfile;
 
 public class Account {
 
-    private final PlayerProfile profile;
+    private final GameProfile profile;
     private final String accessToken;
 
-    public Account(PlayerProfile profile, String accessToken) {
+    public Account(GameProfile profile, String accessToken) {
         this.profile = profile;
         this.accessToken = accessToken;
     }
 
-    public PlayerProfile getProfile() {
+    public GameProfile getProfile() {
         return profile;
     }
 

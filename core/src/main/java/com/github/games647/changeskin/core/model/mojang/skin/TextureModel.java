@@ -1,10 +1,13 @@
 package com.github.games647.changeskin.core.model.mojang.skin;
 
-public class TextureSourceModel {
+public class TextureModel {
 
     private MetadataModel metadata;
     private String url;
 
+    /**
+     * @return can be null if not slim or this is a cape
+     */
     public MetadataModel getMetadata() {
         return metadata;
     }

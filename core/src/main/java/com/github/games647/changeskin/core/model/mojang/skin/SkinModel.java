@@ -1,11 +1,14 @@
 package com.github.games647.changeskin.core.model.mojang.skin;
 
+import java.util.Map;
+import java.util.UUID;
+
 public class SkinModel {
 
     private long timestamp;
-    private String profileId;
+    private UUID profileId;
     private String profileName;
-    private DataModel textures;
+    private Map<TextureType, TextureModel> textures;
 
     public long getTimestamp() {
         return timestamp;
@@ -15,11 +18,11 @@ public class SkinModel {
         this.timestamp = timestamp;
     }
 
-    public String getProfileId() {
+    public UUID getProfileId() {
         return profileId;
     }
 
-    public void setProfileId(String profileId) {
+    public void setProfileId(UUID profileId) {
         this.profileId = profileId;
     }
 
@@ -31,11 +34,11 @@ public class SkinModel {
         this.profileName = profileName;
     }
 
-    public DataModel getTextures() {
+    public Map<TextureType, TextureModel> getTextures() {
         return textures;
     }
 
-    public void setTextures(DataModel textures) {
+    public void setTextures(Map<TextureType, TextureModel> textures) {
         this.textures = textures;
     }
 
