@@ -14,9 +14,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.event.EventHandler;
 
-public class PluginMessageListener extends AbstractSkinListener {
+public class MessageListener extends AbstractSkinListener {
 
-    public PluginMessageListener(ChangeSkinBungee plugin) {
+    public MessageListener(ChangeSkinBungee plugin) {
         super(plugin);
     }
 
@@ -67,7 +67,7 @@ public class PluginMessageListener extends AbstractSkinListener {
             }
         });
         
-        if (plugin.getConfig().getBoolean("instantSkinChange")) {
+        if (plugin.getCore().getConfig().getBoolean("instantSkinChange")) {
             plugin.applySkin(receiver, targetSkin);
             plugin.sendMessage(invoker, "skin-changed");
         } else {

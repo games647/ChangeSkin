@@ -16,6 +16,9 @@ public class CommonUtil {
     private static final int TIMEOUT = 3000;
     private static final String USER_AGENT = "ChangeSkin-Bukkit-Plugin";
 
+    private static final char COLOR_CHAR = '&';
+    private static final char TRANSLATED_CHAR = '§';
+
     public static UUID parseId(String withoutDashes) {
         return UUID.fromString(withoutDashes.substring(0, 8)
                 + '-' + withoutDashes.substring(8, 12)
@@ -41,6 +44,18 @@ public class CommonUtil {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         }).asMap();
+    }
+
+    public static String translateColorCodes(String rawMessage) {
+        char[] chars = rawMessage.toCharArray();
+        for (int i = 0; i < chars.length - 1; i++) {
+            if (chars[i] == COLOR_CHAR && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(chars[i + 1]) > -1) {
+                chars[i] = TRANSLATED_CHAR;
+                chars[i + 1] = Character.toLowerCase(chars[i + 1]);
+            }
+        }
+
+        return new String(chars);
     }
 
     public static HttpURLConnection getConnection(String url) throws IOException {

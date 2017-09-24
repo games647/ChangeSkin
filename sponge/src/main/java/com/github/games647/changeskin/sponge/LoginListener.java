@@ -9,8 +9,10 @@ import com.github.games647.changeskin.core.model.UserPreference;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -37,15 +39,15 @@ public class LoginListener {
         int autoUpdateDiff = plugin.getCore().getAutoUpdateDiff();
         SkinData targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
-            if (!plugin.getRootNode().getNode("restoreSkins").getBoolean() || !refetch(preferences, profile)) {
+            if (!plugin.getCore().getConfig().getBoolean("restoreSkins") || !refetch(preferences, profile)) {
                 setDefaultSkin(preferences, profile);
             }
         } else {
             if (autoUpdateDiff > 0 && System.currentTimeMillis() - targetSkin.getTimestamp() > autoUpdateDiff) {
-                SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetSkin.getUuid());
-                plugin.cacheSponge(updatedSkin);
-                if (!Objects.equals(updatedSkin, targetSkin)) {
-                    targetSkin = updatedSkin;
+                Optional<SkinData> updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(targetSkin.getUuid());
+                if (updatedSkin.isPresent() && !Objects.equals(updatedSkin.get(), targetSkin)) {
+                    plugin.cacheSponge(updatedSkin.get());
+                    targetSkin = updatedSkin.get();
                 }
             }
 
@@ -80,15 +82,16 @@ public class LoginListener {
 
         if (ownerUUID == null && !plugin.getCore().getCrackedNames().containsKey(playerName)) {
             try {
-                ownerUUID = plugin.getCore().getMojangSkinApi().getUUID(playerName);
-                if (ownerUUID != null) {
+                Optional<UUID> optUUID = plugin.getCore().getMojangSkinApi().getUUID(playerName);
+                if (optUUID.isPresent()) {
+                    ownerUUID = optUUID.get();
                     plugin.getCore().getUuidCache().put(playerName, ownerUUID);
                 }
             } catch (NotPremiumException ex) {
-                plugin.getLogger().debug("User is not premium", ex);
+                plugin.getLogger().log(Level.FINE,"User is not premium", ex);
                 plugin.getCore().getCrackedNames().put(playerName, new Object());
             } catch (RateLimitException ex) {
-                plugin.getLogger().error("Rate limit reached on refetch", ex);
+                plugin.getLogger().log(Level.FINE,"Rate limit reached on refetch", ex);
             }
         }
 
@@ -97,10 +100,10 @@ public class LoginListener {
             int updateDiff = plugin.getCore().getAutoUpdateDiff();
             if (storedSkin == null
                     || (updateDiff > 0 && System.currentTimeMillis() - storedSkin.getTimestamp() > updateDiff)) {
-                SkinData updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
-                plugin.cacheSponge(updatedSkin);
-                if (!Objects.equals(updatedSkin, storedSkin)) {
-                    storedSkin = updatedSkin;
+                Optional<SkinData> updatedSkin = plugin.getCore().getMojangSkinApi().downloadSkin(ownerUUID);
+                if (updatedSkin.isPresent() && !Objects.equals(updatedSkin.get(), storedSkin)) {
+                    plugin.cacheSponge(updatedSkin.get());
+                    storedSkin = updatedSkin.get();
                 }
             }
 

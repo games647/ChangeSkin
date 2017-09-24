@@ -1,49 +1,39 @@
 package com.github.games647.changeskin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.github.games647.changeskin.bukkit.commands.SetSkinCommand;
-import com.github.games647.changeskin.bukkit.commands.SetSkullCommand;
-import com.github.games647.changeskin.bukkit.commands.SkinInvalidateCommand;
-import com.github.games647.changeskin.bukkit.commands.SkinSelectCommand;
-import com.github.games647.changeskin.bukkit.commands.SkinUploadCommand;
-import com.github.games647.changeskin.bukkit.listener.AsyncPlayerLoginListener;
-import com.github.games647.changeskin.bukkit.listener.BungeeCordListener;
-import com.github.games647.changeskin.bukkit.listener.PlayerLoginListener;
+import com.github.games647.changeskin.bukkit.commands.SetCommand;
+import com.github.games647.changeskin.bukkit.commands.SkullCommand;
+import com.github.games647.changeskin.bukkit.commands.InvalidateCommand;
+import com.github.games647.changeskin.bukkit.commands.SelectCommand;
+import com.github.games647.changeskin.bukkit.commands.UploadCommand;
+import com.github.games647.changeskin.bukkit.listener.AsyncLoginListener;
+import com.github.games647.changeskin.bukkit.listener.BungeeListener;
+import com.github.games647.changeskin.bukkit.listener.LoginListener;
 import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
+import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.google.common.base.Charsets;
-import com.google.common.net.HostAndPort;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import java.io.File;
-import java.io.InputStreamReader;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ChangeSkinBukkit extends JavaPlugin {
-
-    private boolean bungeeCord;
-
-    protected ChangeSkinCore core;
+public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
     private final ConcurrentMap<UUID, UserPreference> loginSessions = CommonUtil.buildCache(2 * 60, -1);
+    private boolean bungeeCord;
+    private ChangeSkinCore core;
 
     @Override
     public void onEnable() {
@@ -61,48 +51,20 @@ public class ChangeSkinBukkit extends JavaPlugin {
             getLogger().info("Make sure you installed the plugin on BungeeCord too");
 
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
-            getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
+            getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeListener(this));
         } else {
-            String driver = getConfig().getString("storage.driver");
-            String host = getConfig().getString("storage.host", "");
-            int port = getConfig().getInt("storage.port", 3306);
-            String database = getConfig().getString("storage.database");
+            this.core = new ChangeSkinCore(this);
 
-            String username = getConfig().getString("storage.username", "");
-            String password = getConfig().getString("storage.password", "");
-
-            boolean useSSL = getConfig().getBoolean("storage.useSSL", false);
-
-            int rateLimit = getConfig().getInt("mojang-request-limit");
-            int cooldown = getConfig().getInt("cooldown");
-            int updateDiff = getConfig().getInt("auto-skin-update");
-            List<String> proxyList = getConfig().getStringList("proxies");
-            List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(Collectors.toList());
-            this.core = new ChangeSkinCore(getLogger(), getDataFolder().toPath(), rateLimit, cooldown, updateDiff, proxies);
-
-            ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                    .setNameFormat(getName() + " Database Pool Thread #%1$d")
-                    //Hikari create daemons by default
-                    .setDaemon(true)
-                    .build();
-
-            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, username, password, useSSL);
-            core.setStorage(storage);
             try {
-                storage.createTables();
+                core.load();
             } catch (Exception ex) {
-                getLogger().log(Level.SEVERE, "Failed to setup database. Disabling plugin...", ex);
-                setEnabled(false);
+                getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ex);
+                getServer().getPluginManager().disablePlugin(this);
                 return;
             }
 
-            core.loadDefaultSkins(getConfig().getStringList("default-skins"));
-            core.loadAccounts(getConfig().getStringList("upload-accounts"));
-
-            loadLocale();
-
-            getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
-            getServer().getPluginManager().registerEvents(new AsyncPlayerLoginListener(this), this);
+            getServer().getPluginManager().registerEvents(new LoginListener(this), this);
+            getServer().getPluginManager().registerEvents(new AsyncLoginListener(this), this);
         }
     }
 
@@ -185,40 +147,24 @@ public class ChangeSkinBukkit extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("setskin").setExecutor(new SetSkinCommand(this));
-        getCommand("skinupdate").setExecutor(new SkinInvalidateCommand(this));
-        getCommand("skinselect").setExecutor(new SkinSelectCommand(this));
-        getCommand("skinupload").setExecutor(new SkinUploadCommand(this));
-        getCommand("skinskull").setExecutor(new SetSkullCommand(this));
-     }
-
-    private void loadLocale() {
-        File messageFile = new File(getDataFolder(), "messages.yml");
-        saveDefaultFile("messages.yml");
-        saveDefaultFile("messages_ru.yml");
-
-        InputStreamReader defaultReader = new InputStreamReader(getResource("messages.yml"), Charsets.UTF_8);
-        YamlConfiguration defaults = YamlConfiguration.loadConfiguration(defaultReader);
-
-        YamlConfiguration messageConfig = YamlConfiguration.loadConfiguration(messageFile);
-        messageConfig.setDefaults(defaults);
-
-        for (String key : messageConfig.getKeys(false)) {
-            String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
-            if (!message.isEmpty()) {
-                core.addMessage(key, message);
-            }
-        }
-    }
-
-    private void saveDefaultFile(String file) {
-        File messageFile = new File(getDataFolder(), file);
-        if (!messageFile.exists()) {
-            saveResource(file, false);
-        }
+        getCommand("setskin").setExecutor(new SetCommand(this));
+        getCommand("skinupdate").setExecutor(new InvalidateCommand(this));
+        getCommand("skinselect").setExecutor(new SelectCommand(this));
+        getCommand("skinupload").setExecutor(new UploadCommand(this));
+        getCommand("skinskull").setExecutor(new SkullCommand(this));
     }
 
     public boolean isBungeeCord() {
         return bungeeCord;
+    }
+
+    @Override
+    public void sendMessage(CommandSender receiver, String message) {
+        receiver.sendMessage(message);
+    }
+
+    @Override
+    public ThreadFactory getThreadFactory() {
+        return null;
     }
 }

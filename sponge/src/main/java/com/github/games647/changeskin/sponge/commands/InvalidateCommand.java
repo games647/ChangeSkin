@@ -10,18 +10,18 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 
-public class SkinInvalidateCommand implements CommandExecutor {
+public class InvalidateCommand implements CommandExecutor {
 
     private final ChangeSkinSponge plugin;
 
-    public SkinInvalidateCommand(ChangeSkinSponge plugin) {
+    public InvalidateCommand(ChangeSkinSponge plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            plugin.sendMessage(src, "no-console");
+            plugin.sendMessageKey(src, "no-console");
             return CommandResult.empty();
         }
 

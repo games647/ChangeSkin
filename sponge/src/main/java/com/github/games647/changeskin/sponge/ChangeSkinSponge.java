@@ -1,34 +1,22 @@
 package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.sponge.commands.SelectCommand;
-import com.github.games647.changeskin.sponge.commands.SetSkinCommand;
-import com.github.games647.changeskin.sponge.commands.SkinInvalidateCommand;
-import com.github.games647.changeskin.sponge.commands.SkinUploadCommand;
-import com.google.common.collect.Lists;
-import com.google.common.net.HostAndPort;
-import com.google.common.reflect.TypeToken;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.github.games647.changeskin.sponge.commands.SetCommand;
+import com.github.games647.changeskin.sponge.commands.InvalidateCommand;
+import com.github.games647.changeskin.sponge.commands.UploadCommand;
 import com.google.inject.Inject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
+import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
-import java.util.stream.Collectors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-
-import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandSource;
@@ -45,11 +33,12 @@ import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.GameProfileCache;
 import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
         , url = PomData.URL, description = PomData.DESCRIPTION)
-public class ChangeSkinSponge {
+public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
 
     @Inject
     @DefaultConfig(sharedRoot = false)
@@ -61,82 +50,24 @@ public class ChangeSkinSponge {
     private final PluginContainer pluginContainer;
 
     private ChangeSkinCore core;
-    private ConfigurationNode rootNode;
 
     private RawDataChannel pluginChannel;
 
     @Inject
-    public ChangeSkinSponge(Logger logger, Game game, PluginContainer pluginContainer) {
-        this.logger = logger;
+    public ChangeSkinSponge(org.slf4j.Logger logger, Game game, PluginContainer pluginContainer) {
+        this.logger = new SLF4JBridgeLogger(logger);
         this.game = game;
         this.pluginContainer = pluginContainer;
     }
 
     @Listener //load config and database
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        //deploy default config
-        if (Files.notExists(defaultConfigFile)) {
-            try (InputStream in = getClass().getResourceAsStream("/config.yml")) {
-                Files.copy(in, defaultConfigFile);
-            } catch (IOException ioEx) {
-                logger.error("Error deploying config", ioEx);
-            }
-        }
-
-        YAMLConfigurationLoader configLoader = YAMLConfigurationLoader.builder().setPath(defaultConfigFile).build();
+        core = new ChangeSkinCore(this);
         try {
-            rootNode = configLoader.load();
-
-            ConfigurationNode storageNode = rootNode.getNode("storage");
-            String driver = storageNode.getNode("driver").getString();
-            String host = storageNode.getNode("host").getString();
-            int port = storageNode.getNode("port").getInt();
-            String database = storageNode.getNode("database").getString();
-            String user = storageNode.getNode("username").getString();
-            String pass = storageNode.getNode("password").getString();
-
-            boolean useSSL = storageNode.getNode("useSSL").getBoolean(false);
-
-            int rateLimit = rootNode.getNode("mojang-request-limit").getInt();
-
-            java.util.logging.Logger pluginLogger = new SLF4JBridgeLogger(logger);
-
-            int cooldown = rootNode.getNode("cooldown").getInt();
-            Path parentFolder = defaultConfigFile.getParent();
-            int updateDiff = rootNode.getNode("auto-skin-update").getInt();
-            List<String> proxyList = rootNode.getNode("proxies").getList(Object::toString);
-            List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(Collectors.toList());
-            core = new ChangeSkinCore(pluginLogger, parentFolder, rateLimit, cooldown, updateDiff, proxies);
-
-            String pluginName = "ChangeSkin";
-            ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                    .setNameFormat(pluginName + " Database Pool Thread #%1$d")
-                    //Hikari create daemons by default
-                    .setDaemon(true)
-                    .build();
-
-            SkinStorage storage = new SkinStorage(core, threadFactory, driver, host, port, database, user, pass, useSSL);
-            core.setStorage(storage);
-
-            try {
-                storage.createTables();
-            } catch (Exception ex) {
-                logger.error("Failed to setup database. Disabling plugin...", ex);
-                return;
-            }
-
-            List<String> defaultSkins = Lists.newArrayList();
-            defaultSkins.addAll(rootNode.getNode("default-skins").getChildrenMap().values()
-                    .stream()
-                    .map(ConfigurationNode::getString).collect(Collectors.toList()));
-
-            core.loadDefaultSkins(defaultSkins);
-            loadLocale();
-            core.loadAccounts(rootNode.getNode("upload-accounts").getList(TypeToken.of(String.class)));
-        } catch (IOException ioEx) {
-            logger.error("Failed to load config", ioEx);
-        } catch (ObjectMappingException mappingEx) {
-            logger.error("Failed to load upload accounts", mappingEx);
+            core.load();
+        } catch (Exception ex) {
+            getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ex);
+            return;
         }
     }
 
@@ -149,62 +80,28 @@ public class ChangeSkinSponge {
                 .build(), "skin-select");
 
         commandManager.register(this, CommandSpec.builder()
-                .executor(new SkinUploadCommand(this))
+                .executor(new UploadCommand(this))
                 .arguments(GenericArguments.string(Text.of("url")))
                 .build(), "skin-upload");
 
         commandManager.register(this, CommandSpec.builder()
-                .executor(new SetSkinCommand(this))
+                .executor(new SetCommand(this))
                 .arguments(
                         GenericArguments.string(Text.of("skin")),
                         GenericArguments.flags().flag("keep").buildWith(GenericArguments.none()))
                 .build(), "changeskin", "setskin");
 
         commandManager.register(this, CommandSpec.builder()
-                .executor(new SkinInvalidateCommand(this))
+                .executor(new InvalidateCommand(this))
                 .build(), "skininvalidate", "skin-invalidate");
 
         game.getEventManager().registerListeners(this, new LoginListener(this));
         pluginChannel = game.getChannelRegistrar().createRawChannel(this, pluginContainer.getId());
-        pluginChannel.addListener(new BungeeCordListener(this));
-    }
-
-    private void loadLocale() {
-        Path messageFile = defaultConfigFile.getParent().resolve("messages.yml");
-
-        if (Files.notExists(messageFile)) {
-            try (InputStream in = getClass().getResourceAsStream("/messages.yml")) {
-                Files.copy(in, messageFile);
-            } catch (IOException ioEx) {
-                logger.error("Error deploying default message", ioEx);
-            }
-        }
-
-        YAMLConfigurationLoader messageLoader = YAMLConfigurationLoader.builder().setPath(messageFile).build();
-        try {
-            URL jarConfigFile = this.getClass().getResource("/messages.yml");
-            YAMLConfigurationLoader defaultLoader = YAMLConfigurationLoader.builder().setURL(jarConfigFile).build();
-            ConfigurationNode defaultRoot = defaultLoader.load();
-            defaultRoot.getChildrenMap().values().forEach(node -> {
-                core.addMessage((String) node.getKey(), node.getString());
-            });
-
-            //overwrite the defaults
-            ConfigurationNode messageNode = messageLoader.load();
-            messageNode.getChildrenMap().values().forEach(node -> {
-                core.addMessage((String) node.getKey(), node.getString());
-            });
-        } catch (IOException ioEx) {
-            logger.error("Failed to load locale", ioEx);
-        }
+        pluginChannel.addListener(new BungeeListener(this));
     }
 
     public ChangeSkinCore getCore() {
         return core;
-    }
-
-    public ConfigurationNode getRootNode() {
-        return rootNode;
     }
 
     public boolean checkPermission(CommandSource invoker, UUID uuid, boolean sendMessage) {
@@ -214,13 +111,14 @@ public class ChangeSkinSponge {
 
         //disallow - not whitelisted or blacklisted
         if (sendMessage) {
-            sendMessage(invoker, "no-permission");
+            sendMessageKey(invoker, "no-permission");
         }
 
         return false;
     }
 
-    public void sendMessage(CommandSource sender, String key) {
+    public void sendMessageKey(CommandSource sender, String key) {
+        //todo: this shouldn't be the key - it should be the actual message
         if (core == null) {
             return;
         }
@@ -231,7 +129,12 @@ public class ChangeSkinSponge {
         }
     }
 
-    public void sendMessage(CommandSource sender, String key, Object... arguments) {
+    @Override
+    public ThreadFactory getThreadFactory() {
+        return null;
+    }
+
+    public void sendMessageKey(CommandSource sender, String key, Object... arguments) {
         if (core == null) {
             return;
         }
@@ -267,7 +170,22 @@ public class ChangeSkinSponge {
         return game;
     }
 
-    public Logger getLogger() {
+    @Override
+    public String getName() {
+        return PomData.NAME;
+    }
+
+    @Override
+    public File getDataFolder() {
+        return defaultConfigFile.toFile().getParentFile();
+    }
+
+    public java.util.logging.Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public void sendMessage(MessageReceiver receiver, String message) {
+        receiver.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(message));
     }
 }

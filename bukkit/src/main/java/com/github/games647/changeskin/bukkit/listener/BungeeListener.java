@@ -14,11 +14,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-public class BungeeCordListener implements PluginMessageListener {
+public class BungeeListener implements PluginMessageListener {
 
     private final ChangeSkinBukkit plugin;
 
-    public BungeeCordListener(ChangeSkinBukkit plugin) {
+    public BungeeListener(ChangeSkinBukkit plugin) {
         this.plugin = plugin;
     }
 

@@ -8,9 +8,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SkinInvalidateCommand extends AbstractForwardCommand {
+public class InvalidateCommand extends AbstractForwardCommand {
 
-    public SkinInvalidateCommand(ChangeSkinBukkit plugin) {
+    public InvalidateCommand(ChangeSkinBukkit plugin) {
         super(plugin);
     }
 

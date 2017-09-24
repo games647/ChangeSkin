@@ -13,11 +13,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
-public class AsyncPlayerLoginListener extends SharedListener implements Listener {
+public class AsyncLoginListener extends SharedListener implements Listener {
 
     protected final ChangeSkinBukkit plugin;
 
-    public AsyncPlayerLoginListener(ChangeSkinBukkit plugin) {
+    public AsyncLoginListener(ChangeSkinBukkit plugin) {
         super(plugin.getCore());
 
         this.plugin = plugin;

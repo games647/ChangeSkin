@@ -12,11 +12,11 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 
-public class SkinUploadCommand implements CommandExecutor {
+public class UploadCommand implements CommandExecutor {
 
     private final ChangeSkinSponge plugin;
 
-    public SkinUploadCommand(ChangeSkinSponge plugin) {
+    public UploadCommand(ChangeSkinSponge plugin) {
         this.plugin = plugin;
     }
 
@@ -26,14 +26,14 @@ public class SkinUploadCommand implements CommandExecutor {
         if (url.startsWith("http://") || url.startsWith("https://")) {
             List<Account> accounts = plugin.getCore().getUploadAccounts();
             if (accounts.isEmpty()) {
-                plugin.sendMessage(src, "no-accounts");
+                plugin.sendMessageKey(src, "no-accounts");
             } else {
                 Account uploadAccount = accounts.get(0);
                 Runnable skinUploader = new SkinUploader(plugin, src, uploadAccount, url);
                 plugin.getGame().getScheduler().createTaskBuilder().async().execute(skinUploader).submit(plugin);
             }
         } else {
-            plugin.sendMessage(src, "no-valid-url");
+            plugin.sendMessageKey(src, "no-valid-url");
         }
 
         return CommandResult.success();

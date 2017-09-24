@@ -4,6 +4,7 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.sponge.tasks.SkinUpdater;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.spongepowered.api.Platform.Type;
 import org.spongepowered.api.entity.living.player.Player;
@@ -11,11 +12,11 @@ import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.RawDataListener;
 import org.spongepowered.api.network.RemoteConnection;
 
-public class BungeeCordListener implements RawDataListener {
+public class BungeeListener implements RawDataListener {
 
     private final ChangeSkinSponge plugin;
 
-    public BungeeCordListener(ChangeSkinSponge plugin) {
+    public BungeeListener(ChangeSkinSponge plugin) {
         this.plugin = plugin;
     }
 
@@ -46,7 +47,7 @@ public class BungeeCordListener implements RawDataListener {
         String playerName = data.readString();
 
         Player receiver = plugin.getGame().getServer().getPlayer(playerName).orElse(player);
-        plugin.getLogger().info("Instant update for {}", playerName);
+        plugin.getLogger().log(Level.INFO, "Instant update for {0}", playerName);
 
         SkinData skinData = new SkinData(encodedData, signature);
         Runnable skinUpdater = new SkinUpdater(plugin, null, receiver, skinData, false);

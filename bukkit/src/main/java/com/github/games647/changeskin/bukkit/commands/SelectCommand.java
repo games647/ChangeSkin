@@ -9,11 +9,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SkinSelectCommand implements CommandExecutor {
+public class SelectCommand implements CommandExecutor {
 
     private final ChangeSkinBukkit plugin;
 
-    public SkinSelectCommand(ChangeSkinBukkit plugin) {
+    public SelectCommand(ChangeSkinBukkit plugin) {
         this.plugin = plugin;
     }
 

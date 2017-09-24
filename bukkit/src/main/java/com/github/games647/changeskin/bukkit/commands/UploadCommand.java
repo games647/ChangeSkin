@@ -1,27 +1,26 @@
-package com.github.games647.changeskin.bungee.commands;
+package com.github.games647.changeskin.bukkit.commands;
 
-import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.bungee.tasks.SkinUploader;
+import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
+import com.github.games647.changeskin.bukkit.tasks.SkinUploader;
 import com.github.games647.changeskin.core.model.mojang.auth.Account;
 
 import java.util.List;
 
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Command;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 
-public class SkinUploadCommand extends Command {
+public class UploadCommand implements CommandExecutor {
 
-    private final ChangeSkinBungee plugin;
+    private final ChangeSkinBukkit plugin;
 
-    public SkinUploadCommand(ChangeSkinBungee plugin) {
-        super("skin-upload", plugin.getDescription().getName().toLowerCase() + ".command.skinupload", "skinupload");
-
+    public UploadCommand(ChangeSkinBukkit plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
             plugin.sendMessage(sender, "upload-noargs");
         } else {
@@ -33,11 +32,13 @@ public class SkinUploadCommand extends Command {
                 } else {
                     Account uploadAccount = accounts.get(0);
                     Runnable skinUploader = new SkinUploader(plugin, sender, uploadAccount, url);
-                    ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUploader);
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, skinUploader);
                 }
             } else {
                 plugin.sendMessage(sender, "no-valid-url");
             }
         }
+
+        return true;
     }
 }

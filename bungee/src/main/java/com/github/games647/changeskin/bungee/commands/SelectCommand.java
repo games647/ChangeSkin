@@ -8,11 +8,11 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-public class SkinSelectCommand extends Command {
+public class SelectCommand extends Command {
 
     private final ChangeSkinBungee plugin;
 
-    public SkinSelectCommand(ChangeSkinBungee plugin) {
+    public SelectCommand(ChangeSkinBungee plugin) {
         super("skin-select", plugin.getDescription().getName().toLowerCase() + ".command.skinselect", "skinselect");
 
         this.plugin = plugin;

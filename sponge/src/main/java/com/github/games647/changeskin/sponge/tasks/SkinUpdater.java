@@ -55,10 +55,10 @@ public class SkinUpdater implements Runnable {
                 })
                 .submit(plugin);
 
-        if (plugin.getRootNode().getNode("instantSkinChange").getBoolean()) {
+        if (plugin.getCore().getConfig().getBoolean("instantSkinChange")) {
             onInstantUpdate();
         } else if (invoker != null) {
-            plugin.sendMessage(invoker, "skin-changed-no-instant");
+            plugin.sendMessageKey(invoker, "skin-changed-no-instant");
         }
     }
 
@@ -75,7 +75,7 @@ public class SkinUpdater implements Runnable {
 
         sendUpdate();
         if (invoker != null) {
-            plugin.sendMessage(invoker, "skin-changed");
+            plugin.sendMessageKey(invoker, "skin-changed");
         }
     }
 

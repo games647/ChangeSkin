@@ -1,26 +1,27 @@
-package com.github.games647.changeskin.bukkit.commands;
+package com.github.games647.changeskin.bungee.commands;
 
-import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.bukkit.tasks.SkinUploader;
+import com.github.games647.changeskin.bungee.ChangeSkinBungee;
+import com.github.games647.changeskin.bungee.tasks.SkinUploader;
 import com.github.games647.changeskin.core.model.mojang.auth.Account;
 
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Command;
 
-public class SkinUploadCommand implements CommandExecutor {
+public class UploadCommand extends Command {
 
-    private final ChangeSkinBukkit plugin;
+    private final ChangeSkinBungee plugin;
 
-    public SkinUploadCommand(ChangeSkinBukkit plugin) {
+    public UploadCommand(ChangeSkinBungee plugin) {
+        super("skin-upload", plugin.getDescription().getName().toLowerCase() + ".command.skinupload", "skinupload");
+
         this.plugin = plugin;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         if (args.length == 0) {
             plugin.sendMessage(sender, "upload-noargs");
         } else {
@@ -32,13 +33,11 @@ public class SkinUploadCommand implements CommandExecutor {
                 } else {
                     Account uploadAccount = accounts.get(0);
                     Runnable skinUploader = new SkinUploader(plugin, sender, uploadAccount, url);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, skinUploader);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUploader);
                 }
             } else {
                 plugin.sendMessage(sender, "no-valid-url");
             }
         }
-
-        return true;
     }
 }

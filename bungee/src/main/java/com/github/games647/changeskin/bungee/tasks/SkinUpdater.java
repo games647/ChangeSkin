@@ -38,7 +38,7 @@ public class SkinUpdater implements Runnable {
         }
 
         if (invoker instanceof ProxiedPlayer && targetSkin != null
-                && plugin.getConfig().getBoolean("bukkit-permissions")) {
+                && plugin.getCore().getConfig().getBoolean("bukkit-permissions")) {
             Server server = ((ProxiedPlayer) invoker).getServer();
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -50,7 +50,7 @@ public class SkinUpdater implements Runnable {
             out.writeUTF(targetSkin.getEncodedSignature());
 
             out.writeUTF(receiver.getUniqueId().toString());
-            out.writeBoolean(plugin.getConfig().getBoolean("skinPermission"));
+            out.writeBoolean(plugin.getCore().getConfig().getBoolean("skinPermission"));
             out.writeBoolean(bukkitOp);
             
             server.sendData(plugin.getName(), out.toByteArray());
@@ -70,7 +70,7 @@ public class SkinUpdater implements Runnable {
         plugin.getStorage().save(targetSkin);
         plugin.getStorage().save(preferences);
 
-        if (plugin.getConfig().getBoolean("instantSkinChange")) {
+        if (plugin.getCore().getConfig().getBoolean("instantSkinChange")) {
             plugin.applySkin(receiver, targetSkin);
             plugin.sendMessage(receiver, "skin-changed");
         } else if (invoker != null) {

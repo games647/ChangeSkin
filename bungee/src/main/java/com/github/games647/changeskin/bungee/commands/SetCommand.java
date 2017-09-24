@@ -12,11 +12,11 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-public class SetSkinCommand extends Command {
+public class SetCommand extends Command {
 
     protected final ChangeSkinBungee plugin;
 
-    public SetSkinCommand(ChangeSkinBungee plugin) {
+    public SetCommand(ChangeSkinBungee plugin) {
         super("setskin", plugin.getDescription().getName().toLowerCase() + ".command.setskin", "skin"
                 , plugin.getDescription().getName(), "skin", "set-skin");
 
@@ -89,7 +89,7 @@ public class SetSkinCommand extends Command {
     private void setSkinUUID(CommandSender sender, ProxiedPlayer receiverPayer, String targetUUID, boolean bukkitOp, boolean keepSkin) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
-            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid)) {
+            if (plugin.getCore().getConfig().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid)) {
                 return;
             }
 

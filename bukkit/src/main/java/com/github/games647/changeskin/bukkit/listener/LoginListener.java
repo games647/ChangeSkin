@@ -19,13 +19,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-public class PlayerLoginListener implements Listener {
+public class LoginListener implements Listener {
 
     protected final ChangeSkinBukkit plugin;
 
     private final Random random = new Random();
 
-    public PlayerLoginListener(ChangeSkinBukkit plugin) {
+    public LoginListener(ChangeSkinBukkit plugin) {
         this.plugin = plugin;
     }
 

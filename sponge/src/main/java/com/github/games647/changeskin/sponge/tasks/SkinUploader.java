@@ -24,6 +24,6 @@ public class SkinUploader extends SharedUploader {
 
     @Override
     public void sendMessageInvoker(String id, String... args) {
-        plugin.sendMessage(invoker, id, args);
+        plugin.sendMessageKey(invoker, id, args);
     }
 }

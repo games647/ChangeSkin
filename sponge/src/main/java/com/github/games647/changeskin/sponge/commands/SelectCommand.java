@@ -21,7 +21,7 @@ public class SelectCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            plugin.sendMessage(src, "no-console");
+            plugin.sendMessageKey(src, "no-console");
             return CommandResult.empty();
         }
 
@@ -33,7 +33,7 @@ public class SelectCommand implements CommandExecutor {
             plugin.getGame().getScheduler().createTaskBuilder().async()
                     .execute(new SkinSelector(plugin, receiver, targetId)).submit(plugin);
         } catch (NumberFormatException numberFormatException) {
-            plugin.sendMessage(src, "invalid-skin-name");
+            plugin.sendMessageKey(src, "invalid-skin-name");
         }
 
         return CommandResult.success();

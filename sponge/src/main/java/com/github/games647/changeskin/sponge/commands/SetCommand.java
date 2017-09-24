@@ -13,23 +13,23 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 
-public class SetSkinCommand implements CommandExecutor {
+public class SetCommand implements CommandExecutor {
 
     private final ChangeSkinSponge plugin;
 
-    public SetSkinCommand(ChangeSkinSponge plugin) {
+    public SetCommand(ChangeSkinSponge plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            plugin.sendMessage(src, "no-console");
+            plugin.sendMessageKey(src, "no-console");
             return CommandResult.empty();
         }
 
         if (plugin.getCore().isCooldown(((Player) src).getUniqueId())) {
-            plugin.sendMessage(src, "cooldown");
+            plugin.sendMessageKey(src, "cooldown");
             return CommandResult.empty();
         }
 
@@ -44,18 +44,18 @@ public class SetSkinCommand implements CommandExecutor {
         if (targetSkin.length() > 16) {
             UUID targetUUID = UUID.fromString(targetSkin);
 
-            if (plugin.getRootNode().getNode("skinPermission").getBoolean()
+            if (plugin.getCore().getConfig().getBoolean("skinPermission")
                     && !plugin.checkPermission(src, targetUUID, true)) {
                 return CommandResult.empty();
             }
 
-            plugin.sendMessage(src, "skin-change-queue");
+            plugin.sendMessageKey(src, "skin-change-queue");
             Runnable skinDownloader = new SkinDownloader(plugin, src, receiver, targetUUID, keepSkin);
             plugin.getGame().getScheduler().createTaskBuilder().async().execute(skinDownloader).submit(plugin);
             return CommandResult.success();
         }
 
-        plugin.sendMessage(src, "queue-name-resolve");
+        plugin.sendMessageKey(src, "queue-name-resolve");
         Runnable nameResolver = new NameResolver(plugin, src, targetSkin, receiver, keepSkin);
         plugin.getGame().getScheduler().createTaskBuilder().async().execute(nameResolver).submit(plugin);
         return CommandResult.success();

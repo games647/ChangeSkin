@@ -24,7 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * @author Shynixn
  */
-public class SetSkullCommand implements CommandExecutor {
+public class SkullCommand implements CommandExecutor {
 
     //speed by letting the JVM optimize this
     //MethodHandle is only faster for static final fields
@@ -48,7 +48,7 @@ public class SetSkullCommand implements CommandExecutor {
 
     private final ChangeSkinBukkit plugin;
 
-    public SetSkullCommand(ChangeSkinBukkit plugin) {
+    public SkullCommand(ChangeSkinBukkit plugin) {
         this.plugin = plugin;
     }
 

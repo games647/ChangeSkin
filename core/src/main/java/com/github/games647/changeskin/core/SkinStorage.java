@@ -27,17 +27,21 @@ public class SkinStorage {
 
     private boolean keepColumnPresent;
 
-    public SkinStorage(ChangeSkinCore core, ThreadFactory threadFactory, String driver, String host, int port
-            , String databasePath, String user, String pass, boolean useSSL) {
+    public SkinStorage(ChangeSkinCore core, String driver, String host, int port, String databasePath
+            , String user, String pass, boolean useSSL) {
         this.plugin = core;
 
         HikariConfig config = new HikariConfig();
         config.setUsername(user);
         config.setPassword(pass);
         config.setDriverClassName(driver);
-        config.setThreadFactory(threadFactory);
 
-        databasePath = databasePath.replace("{pluginDir}", core.getDataFolder().toAbsolutePath().toString());
+        ThreadFactory threadFactory = core.getPlugin().getThreadFactory();
+        if (threadFactory != null) {
+            config.setThreadFactory(threadFactory);
+        }
+
+        databasePath = databasePath.replace("{pluginDir}", core.getPlugin().getDataFolder().toString());
 
         //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         Properties properties = new Properties();
