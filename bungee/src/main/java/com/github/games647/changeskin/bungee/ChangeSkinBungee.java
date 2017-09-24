@@ -115,7 +115,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     public void setSkin(ProxiedPlayer player, UUID targetSkin, boolean applyNow) {
         SkinData newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
-            Optional<SkinData> downloadSkin = core.getMojangSkinApi().downloadSkin(targetSkin);
+            Optional<SkinData> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
             if (downloadSkin.isPresent()) {
                 newSkin = downloadSkin.get();
             }

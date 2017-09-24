@@ -2,10 +2,9 @@ package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.PlatformPlugin;
-import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.sponge.commands.InvalidateCommand;
 import com.github.games647.changeskin.sponge.commands.SelectCommand;
 import com.github.games647.changeskin.sponge.commands.SetCommand;
-import com.github.games647.changeskin.sponge.commands.InvalidateCommand;
 import com.github.games647.changeskin.sponge.commands.UploadCommand;
 import com.google.inject.Inject;
 
@@ -29,9 +28,6 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.profile.GameProfile;
-import org.spongepowered.api.profile.GameProfileCache;
-import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -144,18 +140,6 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
             String formatted = MessageFormat.format(message, arguments);
             sender.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(formatted));
         }
-    }
-
-    public void cacheSponge(SkinData skin) {
-        //cache the request for Sponge
-        GameProfileCache profileCache = game.getServer().getGameProfileManager().getCache();
-
-        GameProfile gameProfile = GameProfile.of(skin.getUuid(), skin.getName());
-        profileCache.add(gameProfile);
-
-        ProfileProperty skinProperty = ProfileProperty
-                .of(ChangeSkinCore.SKIN_KEY, skin.getEncodedData(), skin.getEncodedSignature());
-        gameProfile.getPropertyMap().put(ChangeSkinCore.SKIN_KEY, skinProperty);
     }
 
     public PluginContainer getPluginContainer() {

@@ -113,7 +113,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     public void setSkin(Player player, UUID targetSkin, boolean applyNow) {
         SkinData newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
-            Optional<SkinData> downloadSkin = core.getMojangSkinApi().downloadSkin(targetSkin);
+            Optional<SkinData> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
             if (downloadSkin.isPresent()) {
                 newSkin = downloadSkin.get();
             }
@@ -123,7 +123,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     }
 
     public boolean checkPermission(CommandSender invoker, UUID uuid, boolean sendMessage) {
-        if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+        if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid)) {
             return true;
         }
 

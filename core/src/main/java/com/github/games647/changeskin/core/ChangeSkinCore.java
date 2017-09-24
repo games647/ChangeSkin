@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -36,21 +37,19 @@ public class ChangeSkinCore {
     private final Map<String, Object> crackedNames = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
 
     private final PlatformPlugin plugin;
+    private final List<SkinData> defaultSkins = Lists.newArrayList();
+    private final List<Account> uploadAccounts = Lists.newArrayList();
+    private final MojangAuthApi authApi;
 
+    private MojangSkinApi skinApi;
     private Configuration config;
     private SkinStorage storage;
-
-    private final List<SkinData> defaultSkins = Lists.newArrayList();
-    private MojangSkinApi mojangSkinApi;
-    private final MojangAuthApi mojangAuthApi;
     private Map<UUID, Object> cooldowns;
     private int autoUpdateDiff;
 
-    private final List<Account> uploadAccounts = Lists.newArrayList();
-
     public ChangeSkinCore(PlatformPlugin<?> plugin) {
         this.plugin = plugin;
-        this.mojangAuthApi = new MojangAuthApi(plugin.getLogger());
+        this.authApi = new MojangAuthApi(plugin.getLogger());
     }
 
     public void load() {
@@ -70,7 +69,7 @@ public class ChangeSkinCore {
             autoUpdateDiff = config.getInt("auto-skin-update") * 60 * 1_000;
             List<HostAndPort> proxies = config.getStringList("proxies")
                     .stream().map(HostAndPort::fromString).collect(Collectors.toList());
-            mojangSkinApi = new MojangSkinApi(plugin.getLogger(), rateLimit, proxies);
+            skinApi = new MojangSkinApi(plugin.getLogger(), rateLimit, proxies);
 
             loadDefaultSkins(config.getStringList("default-skins"));
             loadAccounts(config.getStringList("upload-accounts"));
@@ -135,8 +134,19 @@ public class ChangeSkinCore {
         return defaultSkins;
     }
 
-    public int getAutoUpdateDiff() {
-        return autoUpdateDiff;
+    public SkinData checkAutoUpdate(SkinData oldSkin) {
+        if (oldSkin == null) {
+            return null;
+        }
+
+        if (autoUpdateDiff > 0 && System.currentTimeMillis() - oldSkin.getTimestamp() > autoUpdateDiff) {
+            Optional<SkinData> updatedSkin = skinApi.downloadSkin(oldSkin.getUuid());
+            if (updatedSkin.isPresent() && !Objects.equals(updatedSkin.get(), oldSkin)) {
+                return updatedSkin.get();
+            }
+        }
+
+        return oldSkin;
     }
 
     private Configuration loadFile(String fileName) throws IOException {
@@ -173,7 +183,7 @@ public class ChangeSkinCore {
             UUID ownerUUID = UUID.fromString(uuidString);
             SkinData skinData = storage.getSkin(ownerUUID);
             if (skinData == null) {
-                Optional<SkinData> optSkin = mojangSkinApi.downloadSkin(ownerUUID);
+                Optional<SkinData> optSkin = skinApi.downloadSkin(ownerUUID);
                 if (optSkin.isPresent()) {
                     uuidCache.put(skinData.getName(), skinData.getUuid());
                     storage.save(skinData);
@@ -189,7 +199,7 @@ public class ChangeSkinCore {
             String email = line.split(":")[0];
             String password = line.split(":")[1];
 
-            Optional<Account> optAccount = mojangAuthApi.authenticate(email, password);
+            Optional<Account> optAccount = authApi.authenticate(email, password);
             if (optAccount.isPresent()) {
                 Account account = optAccount.get();
                 plugin.getLogger().log(Level.INFO, "Authenticated user {0}", account.getProfile().getId());
@@ -203,12 +213,12 @@ public class ChangeSkinCore {
         uuidCache.clear();
     }
 
-    public MojangSkinApi getMojangSkinApi() {
-        return mojangSkinApi;
+    public MojangSkinApi getSkinApi() {
+        return skinApi;
     }
 
-    public MojangAuthApi getMojangAuthApi() {
-        return mojangAuthApi;
+    public MojangAuthApi getAuthApi() {
+        return authApi;
     }
 
     public SkinStorage getStorage() {

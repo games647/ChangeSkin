@@ -31,7 +31,7 @@ public abstract class SharedNameResolver implements Runnable, MessageReceiver {
             }
 
             try {
-                Optional<UUID> optUUID = core.getMojangSkinApi().getUUID(targetName);
+                Optional<UUID> optUUID = core.getSkinApi().getUUID(targetName);
                 if (optUUID.isPresent()) {
                     uuid = optUUID.get();
                     core.getUuidCache().put(targetName, uuid);

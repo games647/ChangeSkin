@@ -26,7 +26,7 @@ public abstract class SharedInvalidator implements Runnable, MessageReceiver {
         } else {
             sendMessageInvoker("invalidate-request");
 
-            Optional<SkinData> skin = core.getMojangSkinApi().downloadSkin(ownedSkin.getUuid());
+            Optional<SkinData> skin = core.getSkinApi().downloadSkin(ownedSkin.getUuid());
             if (skin.isPresent()) {
                 scheduleApplyTask(skin.get());
             }
