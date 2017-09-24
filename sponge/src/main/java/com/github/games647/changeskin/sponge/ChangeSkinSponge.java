@@ -20,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
@@ -156,8 +155,9 @@ public class ChangeSkinSponge {
 
         commandManager.register(this, CommandSpec.builder()
                 .executor(new SetSkinCommand(this))
-                .arguments(GenericArguments.string(Text.of("skin"))
-                        , GenericArguments.optional(GenericArguments.string(Text.of("keep"))))
+                .arguments(
+                        GenericArguments.string(Text.of("skin")),
+                        GenericArguments.flags().flag("keep").buildWith(GenericArguments.none()))
                 .build(), "changeskin", "setskin");
 
         commandManager.register(this, CommandSpec.builder()
@@ -248,13 +248,7 @@ public class ChangeSkinSponge {
         GameProfileCache profileCache = game.getServer().getGameProfileManager().getCache();
 
         GameProfile gameProfile = GameProfile.of(skin.getUuid(), skin.getName());
-
-        Optional<GameProfile> cachedProfile = profileCache.getById(skin.getUuid());
-        if (cachedProfile.isPresent()) {
-            gameProfile = cachedProfile.get();
-        } else {
-            profileCache.add(gameProfile);
-        }
+        profileCache.add(gameProfile);
 
         ProfileProperty skinProperty = ProfileProperty
                 .of(ChangeSkinCore.SKIN_KEY, skin.getEncodedData(), skin.getEncodedSignature());

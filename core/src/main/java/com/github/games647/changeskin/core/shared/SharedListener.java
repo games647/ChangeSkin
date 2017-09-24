@@ -7,6 +7,7 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -22,7 +23,10 @@ public abstract class SharedListener {
         UUID ownerUUID = core.getUuidCache().get(playerName);
         if (ownerUUID == null && !core.getCrackedNames().containsKey(playerName)) {
             try {
-                ownerUUID = core.getMojangSkinApi().getUUID(playerName);
+                Optional<UUID> optUUID = core.getMojangSkinApi().getUUID(playerName);
+                if (optUUID.isPresent()) {
+                    ownerUUID = optUUID.get();
+                }
             } catch (NotPremiumException ex) {
                 core.getLogger().log(Level.FINE, "Username is not premium on refetch");
                 core.getCrackedNames().put(playerName, new Object());
@@ -38,9 +42,9 @@ public abstract class SharedListener {
             int updateDiff = core.getAutoUpdateDiff();
             if (storedSkin == null
                     || (updateDiff > 0 && System.currentTimeMillis() - storedSkin.getTimestamp() > updateDiff)) {
-                SkinData updatedSkin = core.getMojangSkinApi().downloadSkin(ownerUUID);
-                if (!Objects.equals(updatedSkin, storedSkin)) {
-                    storedSkin = updatedSkin;
+                Optional<SkinData> optUpdatedSkin = core.getMojangSkinApi().downloadSkin(ownerUUID);
+                if (optUpdatedSkin.isPresent() && !Objects.equals(optUpdatedSkin.get(), storedSkin)) {
+                    storedSkin = optUpdatedSkin.get();
                 }
             }
 

@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +31,7 @@ public class MojangAuthApi {
         this.logger = logger;
     }
 
-    public Account authenticate(String email, String password) {
+    public Optional<Account> authenticate(String email, String password) {
         try {
             HttpURLConnection httpConnection = CommonUtil.getConnection(AUTH_URL);
             httpConnection.setRequestMethod("POST");
@@ -43,13 +44,13 @@ public class MojangAuthApi {
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()))) {
                 AuthenticationResponse authResponse = gson.fromJson(reader, AuthenticationResponse.class);
-                return new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken());
+                return Optional.of(new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken()));
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid", ex);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public void changeSkin(UUID ownerId, UUID accessToken, String sourceUrl, boolean slimModel) {

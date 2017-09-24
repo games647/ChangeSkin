@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
@@ -150,7 +151,10 @@ public class ChangeSkinBukkit extends JavaPlugin {
     public void setSkin(Player player, UUID targetSkin, boolean applyNow) {
         SkinData newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
-            newSkin = core.getMojangSkinApi().downloadSkin(targetSkin);
+            Optional<SkinData> downloadSkin = core.getMojangSkinApi().downloadSkin(targetSkin);
+            if (downloadSkin.isPresent()) {
+                newSkin = downloadSkin.get();
+            }
         }
 
         setSkin(player, newSkin, applyNow);

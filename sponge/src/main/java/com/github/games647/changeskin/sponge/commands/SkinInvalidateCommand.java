@@ -26,8 +26,10 @@ public class SkinInvalidateCommand implements CommandExecutor {
         }
 
         Player receiver = (Player) src;
-        plugin.getGame().getScheduler().createTaskBuilder().async()
-                .execute(new SkinInvalidator(plugin, receiver)).submit(plugin);
+        plugin.getGame().getScheduler().createTaskBuilder()
+                .async()
+                .execute(new SkinInvalidator(plugin, receiver))
+                .submit(plugin);
         return CommandResult.success();
     }
 }

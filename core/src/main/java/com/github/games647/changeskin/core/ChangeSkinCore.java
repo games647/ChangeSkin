@@ -9,6 +9,7 @@ import com.google.common.net.HostAndPort;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,9 +90,11 @@ public class ChangeSkinCore {
             UUID ownerUUID = UUID.fromString(uuidString);
             SkinData skinData = storage.getSkin(ownerUUID);
             if (skinData == null) {
-                skinData = mojangSkinApi.downloadSkin(ownerUUID);
-                uuidCache.put(skinData.getName(), skinData.getUuid());
-                storage.save(skinData);
+                Optional<SkinData> optSkin = mojangSkinApi.downloadSkin(ownerUUID);
+                if (optSkin.isPresent()) {
+                    uuidCache.put(skinData.getName(), skinData.getUuid());
+                    storage.save(skinData);
+                }
             }
 
             defaultSkins.add(skinData);
@@ -103,8 +106,9 @@ public class ChangeSkinCore {
             String email = line.split(":")[0];
             String password = line.split(":")[1];
 
-            Account account = mojangAuthApi.authenticate(email, password);
-            if (account != null) {
+            Optional<Account> optAccount = mojangAuthApi.authenticate(email, password);
+            if (optAccount.isPresent()) {
+                Account account = optAccount.get();
                 logger.log(Level.INFO, "Successful authenticated user {0}", account.getProfile().getId());
                 uploadAccounts.add(account);
             }

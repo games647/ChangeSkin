@@ -1,5 +1,12 @@
 # Changelog
 
+##### 2.5
+
+* Faster skin serialization and deserialization (using cached gson object)
+* Cache fields for reflections
+* Remove duplicated task code
+* Clean up project code
+
 ##### 2.4.2
 
 * Consider more player attributes for instant skin changes

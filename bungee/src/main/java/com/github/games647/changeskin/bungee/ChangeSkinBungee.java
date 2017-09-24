@@ -30,6 +30,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
@@ -168,7 +169,10 @@ public class ChangeSkinBungee extends Plugin {
     public void setSkin(ProxiedPlayer player, UUID targetSkin, boolean applyNow) {
         SkinData newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
-            newSkin = core.getMojangSkinApi().downloadSkin(targetSkin);
+            Optional<SkinData> downloadSkin = core.getMojangSkinApi().downloadSkin(targetSkin);
+            if (downloadSkin.isPresent()) {
+                newSkin = downloadSkin.get();
+            }
         }
 
         setSkin(player, newSkin, applyNow);

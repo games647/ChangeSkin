@@ -20,6 +20,7 @@ import java.net.Proxy.Type;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,7 +63,7 @@ public class MojangSkinApi {
         this.proxies = Iterables.cycle(proxyBuilder).iterator();
     }
 
-    public UUID getUUID(String playerName) throws NotPremiumException, RateLimitException {
+    public Optional<UUID> getUUID(String playerName) throws NotPremiumException, RateLimitException {
         logger.log(Level.FINE, "Making UUID->Name request for {0}", playerName);
         if (!validNamePattern.matcher(playerName).matches()) {
             throw new NotPremiumException(playerName);
@@ -75,7 +76,7 @@ public class MojangSkinApi {
                     if (proxies.hasNext()) {
                         connection = getConnection(UUID_URL + playerName, proxies.next());
                     } else {
-                        return null;
+                        return Optional.empty();
                     }
                 }
             } else {
@@ -97,18 +98,18 @@ public class MojangSkinApi {
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                 GameProfile playerProfile = gson.fromJson(reader, GameProfile.class);
-                return playerProfile.getId();
+                return Optional.of(playerProfile.getId());
             }
         } catch (IOException ioEx) {
             logger.log(Level.SEVERE, "Tried converting player name to uuid", ioEx);
         }
 
-        return null;
+        return Optional.empty();
     }
 
-    public SkinData downloadSkin(UUID ownerUUID) {
+    public Optional<SkinData> downloadSkin(UUID ownerUUID) {
         if (crackedUUID.containsKey(ownerUUID)) {
-            return null;
+            return Optional.empty();
         }
 
         //unsigned is needed in order to receive the signature
@@ -117,7 +118,7 @@ public class MojangSkinApi {
             HttpURLConnection httpConnection = getConnection(String.format(SKIN_URL, uuidString));
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 crackedUUID.put(ownerUUID, new Object());
-                return null;
+                return Optional.empty();
             }
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()))) {
@@ -131,13 +132,13 @@ public class MojangSkinApi {
                     String encodedSkin = propertiesModel.getValue();
                     String signature = propertiesModel.getSignature();
 
-                    return new SkinData(encodedSkin, signature);
+                    return Optional.of(new SkinData(encodedSkin, signature));
                 }
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);
         }
 
-        return null;
+        return Optional.empty();
     }
 }

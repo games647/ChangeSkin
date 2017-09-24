@@ -4,7 +4,6 @@ import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.NameResolver;
 import com.github.games647.changeskin.sponge.tasks.SkinDownloader;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.command.CommandException;
@@ -36,11 +35,7 @@ public class SetSkinCommand implements CommandExecutor {
 
         Player receiver = (Player) src;
         String targetSkin = args.<String>getOne("skin").get();
-        Optional<String> keepOptional = args.getOne("keep");
-        boolean keepSkin = false;
-        if (keepOptional.isPresent() && "keep".equalsIgnoreCase(keepOptional.get())) {
-            keepSkin = true;
-        }
+        boolean keepSkin = args.hasAny("keep");
 
         if ("reset".equals(targetSkin)) {
             targetSkin = receiver.getUniqueId().toString();

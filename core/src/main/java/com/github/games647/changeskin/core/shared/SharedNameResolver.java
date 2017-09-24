@@ -4,6 +4,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -26,16 +27,16 @@ public abstract class SharedNameResolver implements Runnable, MessageReceiver {
         if (uuid == null) {
             if (core.getCrackedNames().containsKey(targetName)) {
                 sendMessageInvoker("not-premium");
-
                 return;
             }
 
             try {
-                uuid = core.getMojangSkinApi().getUUID(targetName);
-                if (uuid == null) {
-                    sendMessageInvoker("no-resolve");
-                } else {
+                Optional<UUID> optUUID = core.getMojangSkinApi().getUUID(targetName);
+                if (optUUID.isPresent()) {
+                    uuid = optUUID.get();
                     core.getUuidCache().put(targetName, uuid);
+                } else {
+                    sendMessageInvoker("no-resolve");
                 }
             } catch (NotPremiumException notPremiumEx) {
                 core.getLogger().log(Level.FINE, "Requested not premium", notPremiumEx);

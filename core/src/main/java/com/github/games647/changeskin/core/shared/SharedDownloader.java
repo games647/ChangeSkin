@@ -4,6 +4,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinData;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class SharedDownloader implements Runnable, MessageReceiver {
@@ -27,9 +28,9 @@ public abstract class SharedDownloader implements Runnable, MessageReceiver {
 
         int autoUpdateDiff = core.getAutoUpdateDiff();
         if (shouldDownload(storedSkin, autoUpdateDiff)) {
-            SkinData updatedSkin = core.getMojangSkinApi().downloadSkin(targetUUID);
-            if (!Objects.equals(updatedSkin, storedSkin)) {
-                storedSkin = updatedSkin;
+            Optional<SkinData> optUpdatedSkin = core.getMojangSkinApi().downloadSkin(targetUUID);
+            if (optUpdatedSkin.isPresent() && !Objects.equals(optUpdatedSkin.get(), storedSkin)) {
+                storedSkin = optUpdatedSkin.get();
             }
         }
 

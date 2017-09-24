@@ -22,7 +22,7 @@ public class BungeeCordListener implements RawDataListener {
     @Override
     public void handlePayload(ChannelBuf data, RemoteConnection connection, Type side) {
         Player player = (Player) connection;
-        
+
         String subChannel = data.readString();
 
         if ("UpdateSkin".equalsIgnoreCase(subChannel)) {
@@ -43,14 +43,10 @@ public class BungeeCordListener implements RawDataListener {
         }
 
         String signature = data.readString();
-        Player receiver = player;
-        try {
-            String playerName = data.readString();
-            receiver = plugin.getGame().getServer().getPlayer(playerName).orElseGet(null);
-            plugin.getLogger().info("Instant update for {}", playerName);
-        } catch (Exception ex) {
-            plugin.getLogger().warn("You are using an outdated ChangeSkin spigot version");
-        }
+        String playerName = data.readString();
+
+        Player receiver = plugin.getGame().getServer().getPlayer(playerName).orElse(player);
+        plugin.getLogger().info("Instant update for {}", playerName);
 
         SkinData skinData = new SkinData(encodedData, signature);
         Runnable skinUpdater = new SkinUpdater(plugin, null, receiver, skinData, false);
@@ -82,7 +78,7 @@ public class BungeeCordListener implements RawDataListener {
     private boolean checkBungeePerms(Player player, UUID receiver, UUID targetSkinUUID) {
         if (player.getUniqueId().equals(receiver)) {
             return player.hasPermission(plugin.getPluginContainer().getId() + ".command.setskin")
-                && plugin.checkPermission(player, targetSkinUUID, false);
+                    && plugin.checkPermission(player, targetSkinUUID, false);
         } else {
             return player.hasPermission(plugin.getPluginContainer().getId() + ".command.setskin.other")
                     && plugin.checkPermission(player, targetSkinUUID, false);
