@@ -6,6 +6,7 @@ import com.github.games647.changeskin.sponge.tasks.SkinUploader;
 
 import java.util.List;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -30,7 +31,7 @@ public class UploadCommand implements CommandExecutor {
             } else {
                 Account uploadAccount = accounts.get(0);
                 Runnable skinUploader = new SkinUploader(plugin, src, uploadAccount, url);
-                plugin.getGame().getScheduler().createTaskBuilder().async().execute(skinUploader).submit(plugin);
+                Sponge.getScheduler().createTaskBuilder().async().execute(skinUploader).submit(plugin);
             }
         } else {
             plugin.sendMessageKey(src, "no-valid-url");

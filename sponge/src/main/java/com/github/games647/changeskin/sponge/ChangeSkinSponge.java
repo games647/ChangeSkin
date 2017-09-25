@@ -16,44 +16,38 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.serializer.TextSerializers;
+
+import static org.spongepowered.api.command.args.GenericArguments.flags;
+import static org.spongepowered.api.command.args.GenericArguments.string;
+import static org.spongepowered.api.text.Text.of;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
         , url = PomData.URL, description = PomData.DESCRIPTION)
 public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
 
-    @Inject
-    @DefaultConfig(sharedRoot = false)
-    //We will place more than one config there (i.e. H2/SQLite database)
-    private Path defaultConfigFile;
-
+    private final Path dataFolder;
     private final Logger logger;
-    private final Game game;
-    private final PluginContainer pluginContainer;
 
     private ChangeSkinCore core;
 
-    private RawDataChannel pluginChannel;
-
+    //We will place more than one config there (i.e. H2/SQLite database) -> sharedRoot = false
     @Inject
-    public ChangeSkinSponge(org.slf4j.Logger logger, Game game, PluginContainer pluginContainer) {
+    public ChangeSkinSponge(org.slf4j.Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder) {
         this.logger = new SLF4JBridgeLogger(logger);
-        this.game = game;
-        this.pluginContainer = pluginContainer;
+        this.dataFolder = dataFolder;
     }
 
     @Listener //load config and database
@@ -62,38 +56,37 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
         try {
             core.load();
         } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ex);
-            return;
+            logger.log(Level.SEVERE, "Error loading config. Disabling plugin...", ex);
         }
     }
 
     @Listener //command and event register
     public void onInit(GameInitializationEvent initEvent) {
-        CommandManager commandManager = game.getCommandManager();
+        CommandManager commandManager = Sponge.getCommandManager();
         commandManager.register(this, CommandSpec.builder()
                 .executor(new SelectCommand(this))
-                .arguments(GenericArguments.string(Text.of("skinName")))
+                .arguments(string(of("skinName")))
                 .build(), "skin-select");
 
         commandManager.register(this, CommandSpec.builder()
                 .executor(new UploadCommand(this))
-                .arguments(GenericArguments.string(Text.of("url")))
+                .arguments(string(of("url")))
                 .build(), "skin-upload");
 
         commandManager.register(this, CommandSpec.builder()
                 .executor(new SetCommand(this))
                 .arguments(
-                        GenericArguments.string(Text.of("skin")),
-                        GenericArguments.flags().flag("keep").buildWith(GenericArguments.none()))
+                        string(of("skin")),
+                        flags().flag("keep").buildWith(GenericArguments.none()))
                 .build(), "changeskin", "setskin");
 
         commandManager.register(this, CommandSpec.builder()
                 .executor(new InvalidateCommand(this))
                 .build(), "skininvalidate", "skin-invalidate");
 
-        game.getEventManager().registerListeners(this, new LoginListener(this));
-        pluginChannel = game.getChannelRegistrar().createRawChannel(this, pluginContainer.getId());
-        pluginChannel.addListener(new BungeeListener(this));
+        Sponge.getEventManager().registerListeners(this, new LoginListener(this));
+        RawDataChannel pluginChannel = Sponge.getChannelRegistrar().createRawChannel(this, PomData.ARTIFACT_ID);
+        pluginChannel.addListener(new BungeeListener(this, pluginChannel));
     }
 
     public ChangeSkinCore getCore() {
@@ -101,7 +94,7 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
     }
 
     public boolean checkPermission(CommandSource invoker, UUID uuid, boolean sendMessage) {
-        if (invoker.hasPermission(pluginContainer.getId().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+        if (invoker.hasPermission(PomData.ARTIFACT_ID + ".skin.whitelist." + uuid)) {
             return true;
         }
 
@@ -113,7 +106,7 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
         return false;
     }
 
-    public void sendMessageKey(CommandSource sender, String key) {
+    public void sendMessageKey(MessageReceiver sender, String key) {
         //todo: this shouldn't be the key - it should be the actual message
         if (core == null) {
             return;
@@ -130,7 +123,7 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
         return null;
     }
 
-    public void sendMessageKey(CommandSource sender, String key, Object... arguments) {
+    public void sendMessageKey(MessageReceiver sender, String key, Object... arguments) {
         if (core == null) {
             return;
         }
@@ -142,18 +135,6 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
         }
     }
 
-    public PluginContainer getPluginContainer() {
-        return pluginContainer;
-    }
-
-    public RawDataChannel getPluginChannel() {
-        return pluginChannel;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
     @Override
     public String getName() {
         return PomData.NAME;
@@ -161,10 +142,10 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
 
     @Override
     public File getDataFolder() {
-        return defaultConfigFile.toFile().getParentFile();
+        return dataFolder.toFile();
     }
 
-    public java.util.logging.Logger getLogger() {
+    public Logger getLogger() {
         return logger;
     }
 

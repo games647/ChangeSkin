@@ -28,11 +28,11 @@ public class SetCommand extends Command {
         boolean isOp = sender.getGroups().contains(plugin.getName() + "-OP");
         if (sender instanceof ProxiedPlayer) {
             sender.removeGroups(plugin.getName() + "-OP");
-        }
 
-        if (sender instanceof ProxiedPlayer && plugin.getCore().isCooldown(((ProxiedPlayer) sender).getUniqueId())) {
-            plugin.sendMessage(sender, "cooldown");
-            return;
+            if (plugin.getCore().isCooldown(((ProxiedPlayer) sender).getUniqueId())) {
+                plugin.sendMessage(sender, "cooldown");
+                return;
+            }
         }
 
         if (args.length > 0 && "set".equalsIgnoreCase(args[0])) {

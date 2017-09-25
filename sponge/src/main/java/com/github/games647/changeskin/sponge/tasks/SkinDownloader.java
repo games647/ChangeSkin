@@ -6,6 +6,7 @@ import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -27,7 +28,7 @@ public class SkinDownloader extends SharedDownloader {
     @Override
     protected void scheduleApplyTask(SkinData skinData) {
         Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skinData, keepSkin);
-        plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
+        Sponge.getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
     }
 
     @Override

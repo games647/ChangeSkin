@@ -5,6 +5,7 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -47,7 +48,7 @@ public class SkinUpdater implements Runnable {
         preferences.setTargetSkin(targetSkin);
         preferences.setKeepSkin(keepSkin);
 
-        plugin.getGame().getScheduler().createTaskBuilder().async()
+        Sponge.getScheduler().createTaskBuilder().async()
                 .execute(() -> {
                     if (plugin.getCore().getStorage().save(targetSkin)) {
                         plugin.getCore().getStorage().save(preferences);
@@ -83,7 +84,7 @@ public class SkinUpdater implements Runnable {
         sendUpdateSelf();
 
         //triggers an update for others player to see the new skin
-        plugin.getGame().getServer().getOnlinePlayers().stream()
+        Sponge.getServer().getOnlinePlayers().stream()
                 .filter(onlinePlayer -> onlinePlayer.equals(receiver))
                 .filter(onlinePlayer -> onlinePlayer.canSee(receiver))
                 .forEach(onlinePlayer -> {
@@ -105,7 +106,7 @@ public class SkinUpdater implements Runnable {
 
         Location<World> oldLocation = receiver.getLocation();
         World receiverWorld = receiver.getWorld();
-        plugin.getGame().getServer().getWorlds()
+        Sponge.getServer().getWorlds()
                 .stream()
                 .filter(world -> !world.equals(receiverWorld))
                 .findFirst()

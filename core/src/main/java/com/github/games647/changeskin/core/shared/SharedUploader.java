@@ -33,12 +33,12 @@ public abstract class SharedUploader implements Runnable, MessageReceiver {
 
         //this could properly cause issues for uuid resolving to this database entry
         Optional<SkinData> optNewSkin = core.getSkinApi().downloadSkin(uuid);
-        if (optNewSkin.isPresent()) {
-            SkinData newSkin = optNewSkin.get();
+        optNewSkin.ifPresent(skinData -> {
+            SkinData newSkin = skinData;
             core.getStorage().save(newSkin);
 
             core.getAuthApi().changeSkin(uuid, accessToken, oldSkinUrl, false);
             sendMessageInvoker("skin-uploaded", owner.getProfile().getName(), "Skin-" + newSkin.getSkinId());
-        }
+        });
     }
 }

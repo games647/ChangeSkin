@@ -114,6 +114,7 @@ public class SkinData {
     }
 
     private String serializeData() {
+        //todo: merge this object with the json representation in skin/
         SkinModel dataModel = new SkinModel();
         dataModel.setTimestamp(timestamp);
         dataModel.setProfileId(uuid);

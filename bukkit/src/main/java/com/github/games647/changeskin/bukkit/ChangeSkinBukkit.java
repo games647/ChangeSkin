@@ -1,10 +1,10 @@
 package com.github.games647.changeskin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.github.games647.changeskin.bukkit.commands.SetCommand;
-import com.github.games647.changeskin.bukkit.commands.SkullCommand;
 import com.github.games647.changeskin.bukkit.commands.InvalidateCommand;
 import com.github.games647.changeskin.bukkit.commands.SelectCommand;
+import com.github.games647.changeskin.bukkit.commands.SetCommand;
+import com.github.games647.changeskin.bukkit.commands.SkullCommand;
 import com.github.games647.changeskin.bukkit.commands.UploadCommand;
 import com.github.games647.changeskin.bukkit.listener.AsyncLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeListener;
@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,7 +37,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     @Override
     public void onEnable() {
         try {
-            bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
+            bungeeCord = getServer().spigot().getConfig().getBoolean("settings.bungeecord");
         } catch (Exception | NoSuchMethodError ex) {
             getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
         }

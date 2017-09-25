@@ -37,28 +37,27 @@ public class SkinUpdater implements Runnable {
             return;
         }
 
-        if (invoker instanceof ProxiedPlayer && targetSkin != null
-                && plugin.getCore().getConfig().getBoolean("bukkit-permissions")) {
-            Server server = ((ProxiedPlayer) invoker).getServer();
-
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("PermissionsCheck");
-
-            //serialize it to restore on response message
-            out.writeInt(targetSkin.getSkinId());
-            out.writeUTF(targetSkin.getEncodedData());
-            out.writeUTF(targetSkin.getEncodedSignature());
-
-            out.writeUTF(receiver.getUniqueId().toString());
-            out.writeBoolean(plugin.getCore().getConfig().getBoolean("skinPermission"));
-            out.writeBoolean(bukkitOp);
-            
-            server.sendData(plugin.getName(), out.toByteArray());
-            return;
-        }
-
-        //uuid was successful resolved, we could now make a cooldown check
         if (invoker instanceof ProxiedPlayer) {
+            if (targetSkin != null && plugin.getCore().getConfig().getBoolean("bukkit-permissions")) {
+                Server server = ((ProxiedPlayer) invoker).getServer();
+
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeUTF("PermissionsCheck");
+
+                //serialize it to restore on response message
+                out.writeInt(targetSkin.getSkinId());
+                out.writeUTF(targetSkin.getEncodedData());
+                out.writeUTF(targetSkin.getEncodedSignature());
+
+                out.writeUTF(receiver.getUniqueId().toString());
+                out.writeBoolean(plugin.getCore().getConfig().getBoolean("skinPermission"));
+                out.writeBoolean(bukkitOp);
+
+                server.sendData(plugin.getName(), out.toByteArray());
+                return;
+            }
+
+            //uuid was successful resolved, we could now make a cooldown check
             plugin.getCore().addCooldown(((ProxiedPlayer) invoker).getUniqueId());
         }
 

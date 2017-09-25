@@ -200,10 +200,10 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     }
 
     public boolean checkPermission(CommandSender invoker, UUID uuid) {
-        if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+        if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid)) {
             return true;
         } else if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist.*")) {
-            if (invoker.hasPermission('-' + getName().toLowerCase() + ".skin.whitelist." + uuid.toString())) {
+            if (invoker.hasPermission('-' + getName().toLowerCase() + ".skin.whitelist." + uuid)) {
                 //blacklisted explicit
                 sendMessage(invoker, "no-permission");
                 return false;

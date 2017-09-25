@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.profile.GameProfile;
@@ -48,7 +49,7 @@ public class LoginListener extends SharedListener {
     }
 
     private void applySkin(SkinData skinData, GameProfile profile) {
-        GameProfileManager profileManager = plugin.getGame().getServer().getGameProfileManager();
+        GameProfileManager profileManager = Sponge.getServer().getGameProfileManager();
         ProfileProperty profileProperty = profileManager.createProfileProperty(ChangeSkinCore.SKIN_KEY
                 , skinData.getEncodedData(), skinData.getEncodedSignature());
         profile.getPropertyMap().clear();
@@ -70,7 +71,7 @@ public class LoginListener extends SharedListener {
 
     @Override
     protected void save(final SkinData skinData, final UserPreference preferences) {
-        plugin.getGame().getScheduler().createTaskBuilder()
+        Sponge.getScheduler().createTaskBuilder()
                 .async()
                 .execute(() -> {
                     if (core.getStorage().save(skinData)) {

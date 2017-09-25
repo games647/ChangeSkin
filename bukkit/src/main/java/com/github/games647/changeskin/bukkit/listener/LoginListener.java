@@ -18,11 +18,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 public class LoginListener implements Listener {
 
-    protected final ChangeSkinBukkit plugin;
-
+    private final ChangeSkinBukkit plugin;
     private final Random random = new Random();
 
     public LoginListener(ChangeSkinBukkit plugin) {
@@ -31,7 +31,7 @@ public class LoginListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
-        if (loginEvent.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+        if (loginEvent.getResult() != Result.ALLOWED) {
             //in this event isCancelled option in the annotation doesn't work
             return;
         }

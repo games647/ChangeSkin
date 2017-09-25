@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class MojangSkinApi {
 
     private long lastRateLimit;
 
-    public MojangSkinApi(Logger logger, int rateLimit, List<HostAndPort> proxies) {
+    public MojangSkinApi(Logger logger, int rateLimit, Collection<HostAndPort> proxies) {
         this.rateLimit = Math.max(rateLimit, 600);
         this.logger = logger;
 

@@ -5,5 +5,5 @@ public enum TextureType {
 
     CAPE,
 
-    ELYTRA;
+    ELYTRA
 }

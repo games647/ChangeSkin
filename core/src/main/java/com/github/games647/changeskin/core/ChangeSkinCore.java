@@ -36,7 +36,7 @@ public class ChangeSkinCore {
 
     private final Map<String, Object> crackedNames = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
 
-    private final PlatformPlugin plugin;
+    private final PlatformPlugin<?> plugin;
     private final List<SkinData> defaultSkins = Lists.newArrayList();
     private final List<Account> uploadAccounts = Lists.newArrayList();
     private final MojangAuthApi authApi;
@@ -114,7 +114,7 @@ public class ChangeSkinCore {
         return plugin.getLogger();
     }
 
-    public PlatformPlugin getPlugin() {
+    public PlatformPlugin<?> getPlugin() {
         return plugin;
     }
 
@@ -185,6 +185,7 @@ public class ChangeSkinCore {
             if (skinData == null) {
                 Optional<SkinData> optSkin = skinApi.downloadSkin(ownerUUID);
                 if (optSkin.isPresent()) {
+                    skinData = optSkin.get();
                     uuidCache.put(skinData.getName(), skinData.getUuid());
                     storage.save(skinData);
                 }
@@ -199,12 +200,10 @@ public class ChangeSkinCore {
             String email = line.split(":")[0];
             String password = line.split(":")[1];
 
-            Optional<Account> optAccount = authApi.authenticate(email, password);
-            if (optAccount.isPresent()) {
-                Account account = optAccount.get();
+            authApi.authenticate(email, password).ifPresent(account -> {
                 plugin.getLogger().log(Level.INFO, "Authenticated user {0}", account.getProfile().getId());
                 uploadAccounts.add(account);
-            }
+            });
         }
     }
 

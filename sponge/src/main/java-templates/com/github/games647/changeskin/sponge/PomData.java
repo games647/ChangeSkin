@@ -1,6 +1,6 @@
 package com.github.games647.changeskin.sponge;
 
-class PomData {
+public class PomData {
 
     public static final String ARTIFACT_ID = "${project.parent.artifactId}";
     public static final String NAME = "${project.parent.name}";

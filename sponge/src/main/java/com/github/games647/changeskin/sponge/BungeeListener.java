@@ -7,7 +7,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.spongepowered.api.Platform.Type;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.RawDataListener;
 import org.spongepowered.api.network.RemoteConnection;
@@ -15,9 +17,11 @@ import org.spongepowered.api.network.RemoteConnection;
 public class BungeeListener implements RawDataListener {
 
     private final ChangeSkinSponge plugin;
+    private final RawDataChannel pluginChannel;
 
-    public BungeeListener(ChangeSkinSponge plugin) {
+    public BungeeListener(ChangeSkinSponge plugin, RawDataChannel pluginChannel) {
         this.plugin = plugin;
+        this.pluginChannel = pluginChannel;
     }
 
     @Override
@@ -39,19 +43,19 @@ public class BungeeListener implements RawDataListener {
         String encodedData = data.readString();
         if ("null".equalsIgnoreCase(encodedData)) {
             Runnable skinUpdater = new SkinUpdater(plugin, null, player, null, false);
-            plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
+            Sponge.getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
             return;
         }
 
         String signature = data.readString();
         String playerName = data.readString();
 
-        Player receiver = plugin.getGame().getServer().getPlayer(playerName).orElse(player);
+        Player receiver = Sponge.getServer().getPlayer(playerName).orElse(player);
         plugin.getLogger().log(Level.INFO, "Instant update for {0}", playerName);
 
         SkinData skinData = new SkinData(encodedData, signature);
         Runnable skinUpdater = new SkinUpdater(plugin, null, receiver, skinData, false);
-        plugin.getGame().getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
+        Sponge.getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
     }
 
     private void checkPermissions(Player player, ChannelBuf dataInput) {
@@ -64,7 +68,7 @@ public class BungeeListener implements RawDataListener {
 
         SkinData targetSkin = new SkinData(encodedData, encodedSignature);
         if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
-            plugin.getPluginChannel().sendTo(player, out -> {
+            pluginChannel.sendTo(player, out -> {
                 out.writeString("PermissionsSuccess");
                 out.writeInteger(skinId);
                 out.writeString(encodedData);
@@ -72,16 +76,16 @@ public class BungeeListener implements RawDataListener {
                 out.writeString(receiverUUID);
             });
         } else {
-            plugin.getPluginChannel().sendTo(player, out -> out.writeString("PermissionsFailure"));
+            pluginChannel.sendTo(player, out -> out.writeString("PermissionsFailure"));
         }
     }
 
     private boolean checkBungeePerms(Player player, UUID receiver, UUID targetSkinUUID) {
         if (player.getUniqueId().equals(receiver)) {
-            return player.hasPermission(plugin.getPluginContainer().getId() + ".command.setskin")
+            return player.hasPermission(PomData.ARTIFACT_ID + ".command.setskin")
                     && plugin.checkPermission(player, targetSkinUUID, false);
         } else {
-            return player.hasPermission(plugin.getPluginContainer().getId() + ".command.setskin.other")
+            return player.hasPermission(PomData.ARTIFACT_ID + ".command.setskin.other")
                     && plugin.checkPermission(player, targetSkinUUID, false);
         }
     }

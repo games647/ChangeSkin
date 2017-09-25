@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 
 public class AsyncLoginListener extends SharedListener implements Listener {
 
@@ -26,7 +27,7 @@ public class AsyncLoginListener extends SharedListener implements Listener {
     //we are making an blocking request it might be better to ignore it if normal priority events cancelled it
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent preLoginEvent) {
-        if (preLoginEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+        if (preLoginEvent.getLoginResult() != Result.ALLOWED) {
             //in this event isCancelled option in the annotation doesn't work
             return;
         }

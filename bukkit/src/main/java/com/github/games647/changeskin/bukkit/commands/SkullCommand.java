@@ -101,6 +101,7 @@ public class SkullCommand implements CommandExecutor {
     }
 
     private static String getServerVersion() {
-        return Bukkit.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
+        return Bukkit.getServer().getClass().getPackage().getName()
+                .replace(".",  ",").split(",")[3];
     }
 }

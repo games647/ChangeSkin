@@ -33,7 +33,7 @@ public class InvalidateCommand extends Command {
             }
 
             String permPrefix = plugin.getDescription().getName().toLowerCase() + ".command.skinupdate.other.";
-            if (!sender.hasPermission(permPrefix + targetPlayer.getUniqueId().toString())
+            if (!sender.hasPermission(permPrefix + targetPlayer.getUniqueId())
                     && !sender.hasPermission(permPrefix + '*')) {
                 plugin.sendMessage(sender, "no-permission-other");
                 return;

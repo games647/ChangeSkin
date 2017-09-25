@@ -4,7 +4,6 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public abstract class SharedInvalidator implements Runnable, MessageReceiver {
@@ -26,10 +25,7 @@ public abstract class SharedInvalidator implements Runnable, MessageReceiver {
         } else {
             sendMessageInvoker("invalidate-request");
 
-            Optional<SkinData> skin = core.getSkinApi().downloadSkin(ownedSkin.getUuid());
-            if (skin.isPresent()) {
-                scheduleApplyTask(skin.get());
-            }
+            core.getSkinApi().downloadSkin(ownedSkin.getUuid()).ifPresent(this::scheduleApplyTask);
         }
     }
 

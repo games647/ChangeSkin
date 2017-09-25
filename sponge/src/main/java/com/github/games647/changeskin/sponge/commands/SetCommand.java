@@ -6,6 +6,7 @@ import com.github.games647.changeskin.sponge.tasks.SkinDownloader;
 
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -51,13 +52,13 @@ public class SetCommand implements CommandExecutor {
 
             plugin.sendMessageKey(src, "skin-change-queue");
             Runnable skinDownloader = new SkinDownloader(plugin, src, receiver, targetUUID, keepSkin);
-            plugin.getGame().getScheduler().createTaskBuilder().async().execute(skinDownloader).submit(plugin);
+            Sponge.getScheduler().createTaskBuilder().async().execute(skinDownloader).submit(plugin);
             return CommandResult.success();
         }
 
         plugin.sendMessageKey(src, "queue-name-resolve");
         Runnable nameResolver = new NameResolver(plugin, src, targetSkin, receiver, keepSkin);
-        plugin.getGame().getScheduler().createTaskBuilder().async().execute(nameResolver).submit(plugin);
+        Sponge.getScheduler().createTaskBuilder().async().execute(nameResolver).submit(plugin);
         return CommandResult.success();
     }
 }
