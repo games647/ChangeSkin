@@ -3,13 +3,13 @@ package com.github.games647.changeskin.sponge.commands;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.SkinSelector;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 
 public class SelectCommand implements CommandExecutor {
 
@@ -31,7 +31,7 @@ public class SelectCommand implements CommandExecutor {
         try {
             int targetId = Integer.parseInt(skinName);
             Player receiver = (Player) src;
-            Sponge.getScheduler().createTaskBuilder().async()
+            Task.builder().async()
                     .execute(new SkinSelector(plugin, receiver, targetId)).submit(plugin);
         } catch (NumberFormatException numberFormatException) {
             plugin.sendMessageKey(src, "invalid-skin-name");

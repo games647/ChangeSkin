@@ -22,15 +22,17 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
 
 public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
     private final ConcurrentMap<UUID, UserPreference> loginSessions = CommonUtil.buildCache(2 * 60, -1);
+    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
+
     private boolean bungeeCord;
     private ChangeSkinCore core;
 
@@ -39,15 +41,15 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         try {
             bungeeCord = getServer().spigot().getConfig().getBoolean("settings.bungeecord");
         } catch (Exception | NoSuchMethodError ex) {
-            getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
+            logger.warn("Cannot check bungeecord support. You use a non-spigot build");
         }
 
         saveDefaultConfig();
         registerCommands();
 
         if (bungeeCord) {
-            getLogger().info("BungeeCord detected. Activating BungeeCord support");
-            getLogger().info("Make sure you installed the plugin on BungeeCord too");
+            logger.info("BungeeCord detected. Activating BungeeCord support");
+            logger.info("Make sure you installed the plugin on BungeeCord too");
 
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeListener(this));
@@ -57,7 +59,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
             try {
                 core.load();
             } catch (Exception ex) {
-                getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ex);
+                logger.error("Error loading config. Disabling plugin...", ex);
                 getServer().getPluginManager().disablePlugin(this);
                 return;
             }
@@ -165,5 +167,10 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     @Override
     public ThreadFactory getThreadFactory() {
         return null;
+    }
+
+    @Override
+    public Logger getLog() {
+        return logger;
     }
 }

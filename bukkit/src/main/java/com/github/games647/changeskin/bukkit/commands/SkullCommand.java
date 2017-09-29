@@ -9,7 +9,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -39,8 +38,8 @@ public class SkullCommand implements CommandExecutor {
 
             methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
         } catch (Exception ex) {
-            JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLogger()
-                    .log(Level.INFO, "Cannot find loginProfile field for setting skin in offline mode", ex);
+            ChangeSkinBukkit plugin = JavaPlugin.getPlugin(ChangeSkinBukkit.class);
+            plugin.getLog().info("Cannot find loginProfile field for setting skin in offline mode", ex);
         }
 
         skullProfileSetter = methodHandle;
@@ -58,6 +57,7 @@ public class SkullCommand implements CommandExecutor {
             plugin.sendMessage(sender, "no-console");
             return true;
         }
+
         if (args.length == 0) {
             plugin.sendMessage(sender, "select-noargs");
         } else {
@@ -65,16 +65,17 @@ public class SkullCommand implements CommandExecutor {
             try {
                 Player player = (Player) sender;
                 int targetId = Integer.parseInt(targetName);
-                Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, () -> applySkin(player,plugin.getStorage().getSkin(targetId)));
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> applySkin(player, plugin.getStorage().getSkin(targetId)));
             } catch (NumberFormatException numberFormatException) {
                 plugin.sendMessage(sender, "invalid-skin-name");
             }
         }
+
         return true;
     }
 
     private void applySkin(Player player, SkinData skinData) {
-        Bukkit.getServer().getScheduler().runTask(plugin, () -> {
+        Bukkit.getScheduler().runTask(plugin, () -> {
             setSkullSkin(player.getInventory().getItem(player.getInventory().getHeldItemSlot()), skinData);
             player.updateInventory();
         });
@@ -96,7 +97,7 @@ public class SkullCommand implements CommandExecutor {
             //rethrow errors we shouldn't silence them like OutOfMemory
             throw error;
         } catch (Throwable throwable) {
-            plugin.getLogger().log(Level.INFO, "Failed to set skull item", throwable);
+            plugin.getLog().info("Failed to set skull item", throwable);
         }
     }
 

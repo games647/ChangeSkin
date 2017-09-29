@@ -13,9 +13,8 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandSource;
@@ -45,9 +44,9 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
 
     //We will place more than one config there (i.e. H2/SQLite database) -> sharedRoot = false
     @Inject
-    public ChangeSkinSponge(org.slf4j.Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder) {
-        this.logger = new SLF4JBridgeLogger(logger);
+    public ChangeSkinSponge(Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder) {
         this.dataFolder = dataFolder;
+        this.logger = logger;
     }
 
     @Listener //load config and database
@@ -56,7 +55,7 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
         try {
             core.load();
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Error loading config. Disabling plugin...", ex);
+            logger.error("Error loading config. Disabling plugin...", ex);
         }
     }
 
@@ -145,7 +144,8 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
         return dataFolder.toFile();
     }
 
-    public Logger getLogger() {
+    @Override
+    public Logger getLog() {
         return logger;
     }
 

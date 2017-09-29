@@ -6,7 +6,6 @@ import com.github.games647.changeskin.core.RateLimitException;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public abstract class SharedNameResolver implements Runnable, MessageReceiver {
 
@@ -39,12 +38,12 @@ public abstract class SharedNameResolver implements Runnable, MessageReceiver {
                     sendMessageInvoker("no-resolve");
                 }
             } catch (NotPremiumException notPremiumEx) {
-                core.getLogger().log(Level.FINE, "Requested not premium", notPremiumEx);
+                core.getLogger().debug("Requested not premium", notPremiumEx);
                 core.getCrackedNames().put(targetName, new Object());
 
                 sendMessageInvoker("not-premium");
             } catch (RateLimitException rateLimitEx) {
-                core.getLogger().log(Level.SEVERE, "UUID Rate Limit reached", rateLimitEx);
+                core.getLogger().warn("UUID Rate Limit reached", rateLimitEx);
                 sendMessageInvoker("rate-limit");
             }
         }

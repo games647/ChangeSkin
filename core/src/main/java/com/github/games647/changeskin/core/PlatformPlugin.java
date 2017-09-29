@@ -2,7 +2,8 @@ package com.github.games647.changeskin.core;
 
 import java.io.File;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
 
 public interface PlatformPlugin<C> {
 
@@ -10,7 +11,7 @@ public interface PlatformPlugin<C> {
 
     File getDataFolder();
 
-    Logger getLogger();
+    Logger getLog();
 
     void sendMessage(C receiver, String message);
 

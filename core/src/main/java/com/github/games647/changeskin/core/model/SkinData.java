@@ -17,9 +17,8 @@ import java.util.UUID;
 
 public class SkinData {
 
-    private static final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
-
     private static final String URL_PREFIX = "http://textures.minecraft.net/texture/";
+    private static final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     private int skinId = -1;
 

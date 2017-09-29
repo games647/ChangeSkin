@@ -4,8 +4,8 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.shared.SharedInvalidator;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 
 public class SkinInvalidator extends SharedInvalidator {
 
@@ -27,6 +27,6 @@ public class SkinInvalidator extends SharedInvalidator {
     @Override
     protected void scheduleApplyTask(SkinData skinData) {
         Runnable skinUpdater = new SkinUpdater(plugin, invoker, invoker, skinData, false);
-        Sponge.getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
+        Task.builder().execute(skinUpdater).submit(plugin);
     }
 }

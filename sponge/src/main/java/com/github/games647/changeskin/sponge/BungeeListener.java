@@ -4,7 +4,6 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.sponge.tasks.SkinUpdater;
 
 import java.util.UUID;
-import java.util.logging.Level;
 
 import org.spongepowered.api.Platform.Type;
 import org.spongepowered.api.Sponge;
@@ -13,6 +12,7 @@ import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.RawDataListener;
 import org.spongepowered.api.network.RemoteConnection;
+import org.spongepowered.api.scheduler.Task;
 
 public class BungeeListener implements RawDataListener {
 
@@ -31,7 +31,7 @@ public class BungeeListener implements RawDataListener {
         String subChannel = data.readString();
 
         if ("UpdateSkin".equalsIgnoreCase(subChannel)) {
-            plugin.getLogger().info("Received instant update request from BungeeCord. "
+            plugin.getLog().info("Received instant update request from BungeeCord. "
                     + "This request should only be send if the command /setskin was invoked");
             updateSkin(data, player);
         } else if ("PermissionsCheck".equalsIgnoreCase(subChannel)) {
@@ -43,7 +43,7 @@ public class BungeeListener implements RawDataListener {
         String encodedData = data.readString();
         if ("null".equalsIgnoreCase(encodedData)) {
             Runnable skinUpdater = new SkinUpdater(plugin, null, player, null, false);
-            Sponge.getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
+            Task.builder().execute(skinUpdater).submit(plugin);
             return;
         }
 
@@ -51,11 +51,11 @@ public class BungeeListener implements RawDataListener {
         String playerName = data.readString();
 
         Player receiver = Sponge.getServer().getPlayer(playerName).orElse(player);
-        plugin.getLogger().log(Level.INFO, "Instant update for {0}", playerName);
+        plugin.getLog().info("Instant update for {}", playerName);
 
         SkinData skinData = new SkinData(encodedData, signature);
         Runnable skinUpdater = new SkinUpdater(plugin, null, receiver, skinData, false);
-        Sponge.getScheduler().createTaskBuilder().execute(skinUpdater).submit(plugin);
+        Task.builder().execute(skinUpdater).submit(plugin);
     }
 
     private void checkPermissions(Player player, ChannelBuf dataInput) {

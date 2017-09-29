@@ -16,6 +16,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.GameProfileManager;
 import org.spongepowered.api.profile.property.ProfileProperty;
+import org.spongepowered.api.scheduler.Task;
 
 public class LoginListener extends SharedListener {
 
@@ -71,7 +72,7 @@ public class LoginListener extends SharedListener {
 
     @Override
     protected void save(final SkinData skinData, final UserPreference preferences) {
-        Sponge.getScheduler().createTaskBuilder()
+        Task.builder()
                 .async()
                 .execute(() -> {
                     if (core.getStorage().save(skinData)) {

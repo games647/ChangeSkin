@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 import com.nametagedit.plugin.NametagEdit;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -89,7 +88,7 @@ public class SkinUpdater implements Runnable {
         //remove existing skins
         gameProfile.getProperties().clear();
         if (targetSkin == null) {
-            plugin.getLogger().info("No-SKIN");
+            plugin.getLog().info("No-SKIN");
         } else {
             gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
         }
@@ -216,7 +215,7 @@ public class SkinUpdater implements Runnable {
             //prevent the moved too quickly message
             protocolManager.sendServerPacket(receiver, teleport);
         } catch (InvocationTargetException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Exception sending instant skin change packet", ex);
+            plugin.getLog().error("Exception sending instant skin change packet", ex);
         }
     }
 

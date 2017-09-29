@@ -12,6 +12,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -48,7 +49,7 @@ public class SkinUpdater implements Runnable {
         preferences.setTargetSkin(targetSkin);
         preferences.setKeepSkin(keepSkin);
 
-        Sponge.getScheduler().createTaskBuilder().async()
+        Task.builder().async()
                 .execute(() -> {
                     if (plugin.getCore().getStorage().save(targetSkin)) {
                         plugin.getCore().getStorage().save(preferences);

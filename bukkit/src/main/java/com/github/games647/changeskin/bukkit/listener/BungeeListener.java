@@ -8,7 +8,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -32,7 +31,7 @@ public class BungeeListener implements PluginMessageListener {
         String subChannel = dataInput.readUTF();
 
         if ("UpdateSkin".equalsIgnoreCase(subChannel)) {
-            plugin.getLogger().log(Level.INFO, "Received instant update request from BungeeCord. "
+            plugin.getLog().info("Received instant update request from BungeeCord. "
                     + "This request should only be send if the command /setskin was invoked");
             updateSkin(dataInput, player);
         } else if ("PermissionsCheck".equalsIgnoreCase(subChannel)) {
@@ -50,7 +49,7 @@ public class BungeeListener implements PluginMessageListener {
         String signature = dataInput.readUTF();
         String playerName = dataInput.readUTF();
         Player receiver = Bukkit.getPlayerExact(playerName);
-        plugin.getLogger().log(Level.INFO, "Instant update for {0}", playerName);
+        plugin.getLog().info("Instant update for {0}", playerName);
 
         SkinData skinData = new SkinData(encodedData, signature);
         Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, receiver, skinData, false));

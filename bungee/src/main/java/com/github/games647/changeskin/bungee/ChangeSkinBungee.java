@@ -1,14 +1,15 @@
 package com.github.games647.changeskin.bungee;
 
-import com.github.games647.changeskin.bungee.commands.SetCommand;
 import com.github.games647.changeskin.bungee.commands.InvalidateCommand;
 import com.github.games647.changeskin.bungee.commands.SelectCommand;
+import com.github.games647.changeskin.bungee.commands.SetCommand;
 import com.github.games647.changeskin.bungee.commands.UploadCommand;
 import com.github.games647.changeskin.bungee.listener.ConnectListener;
 import com.github.games647.changeskin.bungee.listener.MessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
 import com.github.games647.changeskin.bungee.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.ChangeSkinCore;
+import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.SkinData;
@@ -26,8 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -38,6 +37,9 @@ import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.connection.LoginResult.Property;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSender> {
 
@@ -53,14 +55,15 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
 
             methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
         } catch (Exception ex) {
-            Logger.getLogger(ChangeSkinBungee.class.getName()).log(Level.INFO, "Cannot find loginProfile field" +
-                    "for setting skin in offline mode");
+            Logger logger = LoggerFactory.getLogger("ChangeSkin");
+            logger.info("Cannot find loginProfile field for setting skin in offline mode");
         }
 
         profileSetter = methodHandle;
     }
 
     private final Map<PendingConnection, UserPreference> loginSessions = Maps.newConcurrentMap();
+    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
     private ChangeSkinCore core;
 
     @Override
@@ -69,7 +72,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         try {
             core.load();
         } catch (Exception ioExc) {
-            getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ioExc);
+            logger.error("Error loading config. Disabling plugin...", ioExc);
             return;
         }
 
@@ -89,6 +92,11 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     @Override
     public String getName() {
         return getDescription().getName();
+    }
+
+    @Override
+    public Logger getLog() {
+        return logger;
     }
 
     @Override
@@ -125,7 +133,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     }
 
     public void applySkin(ProxiedPlayer player, SkinData skinData) {
-        getLogger().log(Level.FINE, "Applying skin for {0}", player.getName());
+        logger.debug("Applying skin for {0}", player.getName());
 
         InitialHandler initialHandler = (InitialHandler) player.getPendingConnection();
         LoginResult loginProfile = initialHandler.getLoginProfile();
@@ -147,7 +155,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
                     //rethrow errors we shouldn't silence them like OutOfMemory
                     throw error;
                 } catch (Throwable throwable) {
-                    getLogger().log(Level.SEVERE, "Error applying skin", throwable);
+                    logger.error("Error applying skin", throwable);
                 }
             }
         } else if (skinData == null) {

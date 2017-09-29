@@ -15,8 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
 
 public class MojangAuthApi {
 
@@ -47,7 +47,7 @@ public class MojangAuthApi {
                 return Optional.of(new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken()));
             }
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Tried converting player name to uuid", ex);
+            logger.error("Tried converting player name to uuid", ex);
         }
 
         return Optional.empty();
@@ -75,12 +75,10 @@ public class MojangAuthApi {
             }
 
             httpConnection.connect();
-            logger.log(Level.FINE, "Response code for uploading {0}", httpConnection.getResponseCode());
-
+            logger.debug("Response code for uploading {0}", httpConnection.getResponseCode());
         } catch (IOException ioEx) {
-            logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ioEx);
+            logger.error("Tried downloading skin data from Mojang", ioEx);
         }
-
     }
 
     public String getSkinUrl(String playerName) {
@@ -92,16 +90,16 @@ public class MojangAuthApi {
             httpConnection.setInstanceFollowRedirects(false);
             httpConnection.connect();
 
-            if (httpConnection.getResponseCode() != 301) {
-                logger.log(Level.SEVERE,
-                        "Invalid response from the skin server Response Code: {0}", httpConnection.getResponseCode());
+            int responseCode = httpConnection.getResponseCode();
+            if (responseCode != 301) {
+                logger.error("Invalid response from the skin server Response Code: {}", responseCode);
                 return "";
             }
 
             //contains the actual skin storage url which will never be deleted and is unique
             return httpConnection.getHeaderField("Location");
         } catch (IOException ioEx) {
-            logger.log(Level.SEVERE, "Tried looking for the old skin url", ioEx);
+            logger.error("Tried looking for the old skin url", ioEx);
         }
 
         return "";

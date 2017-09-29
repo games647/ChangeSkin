@@ -18,12 +18,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+
+import org.slf4j.Logger;
 
 public class ChangeSkinCore {
 
@@ -49,7 +50,7 @@ public class ChangeSkinCore {
 
     public ChangeSkinCore(PlatformPlugin<?> plugin) {
         this.plugin = plugin;
-        this.authApi = new MojangAuthApi(plugin.getLogger());
+        this.authApi = new MojangAuthApi(plugin.getLog());
     }
 
     public void load() {
@@ -69,7 +70,7 @@ public class ChangeSkinCore {
             autoUpdateDiff = config.getInt("auto-skin-update") * 60 * 1_000;
             List<HostAndPort> proxies = config.getStringList("proxies")
                     .stream().map(HostAndPort::fromString).collect(Collectors.toList());
-            skinApi = new MojangSkinApi(plugin.getLogger(), rateLimit, proxies);
+            skinApi = new MojangSkinApi(plugin.getLog(), rateLimit, proxies);
 
             loadDefaultSkins(config.getStringList("default-skins"));
             loadAccounts(config.getStringList("upload-accounts"));
@@ -89,7 +90,7 @@ public class ChangeSkinCore {
             try {
                 this.storage.createTables();
             } catch (Exception ex) {
-                getLogger().log(Level.SEVERE, "Failed to setup database. ", ex);
+                getLogger().error("Failed to setup database. ", ex);
                 return;
             }
 
@@ -106,12 +107,12 @@ public class ChangeSkinCore {
                         }
                     });
         } catch (IOException ioEx) {
-            plugin.getLogger().log(Level.INFO, "Failed to load yaml files", ioEx);
+            plugin.getLog().info("Failed to load yaml files", ioEx);
         }
     }
 
     public Logger getLogger() {
-        return plugin.getLogger();
+        return plugin.getLog();
     }
 
     public PlatformPlugin<?> getPlugin() {
@@ -174,7 +175,7 @@ public class ChangeSkinCore {
                 }
             }
         } catch (IOException ioExc) {
-            plugin.getLogger().log(Level.SEVERE, "Cannot create plugin folder " + dataFolder, ioExc);
+            plugin.getLog().error("Cannot create plugin folder " + dataFolder, ioExc);
         }
     }
 
@@ -201,7 +202,7 @@ public class ChangeSkinCore {
             String password = line.split(":")[1];
 
             authApi.authenticate(email, password).ifPresent(account -> {
-                plugin.getLogger().log(Level.INFO, "Authenticated user {0}", account.getProfile().getId());
+                plugin.getLog().info("Authenticated user {}", account.getProfile().getId());
                 uploadAccounts.add(account);
             });
         }

@@ -23,30 +23,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
 
 import static com.github.games647.changeskin.core.CommonUtil.getConnection;
 
 public class MojangSkinApi {
 
+    private static final int RATE_LIMIT_ID = 429;
+    private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s" +
             "?unsigned=false";
-
-    private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
-
-    private static final int RATE_LIMIT_ID = 429;
 
     private final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
     private final Iterator<Proxy> proxies;
-    private final Map<Object, Object> requests = CommonUtil.buildCache(10, -1);
     private final Logger logger;
     private final int rateLimit;
 
+    private final Map<Object, Object> requests = CommonUtil.buildCache(10, -1);
     private final Map<UUID, Object> crackedUUID = CommonUtil.buildCache(60, -1);
 
     private long lastRateLimit;
@@ -65,7 +63,7 @@ public class MojangSkinApi {
     }
 
     public Optional<UUID> getUUID(String playerName) throws NotPremiumException, RateLimitException {
-        logger.log(Level.FINE, "Making UUID->Name request for {0}", playerName);
+        logger.debug("Making UUID->Name request for {0}", playerName);
         if (!validNamePattern.matcher(playerName).matches()) {
             throw new NotPremiumException(playerName);
         }
@@ -102,7 +100,7 @@ public class MojangSkinApi {
                 return Optional.of(playerProfile.getId());
             }
         } catch (IOException ioEx) {
-            logger.log(Level.SEVERE, "Tried converting player name to uuid", ioEx);
+            logger.error("Tried converting player name to uuid", ioEx);
         }
 
         return Optional.empty();
@@ -137,7 +135,7 @@ public class MojangSkinApi {
                 }
             }
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Tried downloading skin data from Mojang", ex);
+            logger.error("Tried downloading skin data from Mojang", ex);
         }
 
         return Optional.empty();

@@ -15,7 +15,6 @@ import java.util.Base64;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
 
 public class SkinStorage {
 
@@ -133,7 +132,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to query preferences", sqlEx);
+            plugin.getLogger().error("Failed to query preferences", sqlEx);
         }
 
         return null;
@@ -151,7 +150,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from row id", sqlEx);
+            plugin.getLogger().error("Failed to query skin data from row id", sqlEx);
         }
 
         return null;
@@ -170,7 +169,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to query skin data from uuid", sqlEx);
+            plugin.getLogger().error("Failed to query skin data from uuid", sqlEx);
         }
 
         return null;
@@ -206,7 +205,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to save preferences", sqlEx);
+            plugin.getLogger().error("Failed to save preferences", sqlEx);
         }
     }
 
@@ -244,7 +243,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to query skin data", sqlEx);
+            plugin.getLogger().error("Failed to query skin data", sqlEx);
         }
 
         return false;

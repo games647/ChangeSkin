@@ -8,7 +8,6 @@ import com.github.games647.changeskin.core.model.UserPreference;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public abstract class SharedListener {
 
@@ -27,10 +26,10 @@ public abstract class SharedListener {
                     ownerUUID = optUUID.get();
                 }
             } catch (NotPremiumException ex) {
-                core.getLogger().log(Level.FINE, "Username is not premium on refetch");
+                core.getLogger().debug("Username is not premium on refetch");
                 core.getCrackedNames().put(playerName, new Object());
             } catch (RateLimitException ex) {
-                core.getLogger().log(Level.SEVERE, "Rate limit reached on refetch", ex);
+                core.getLogger().warn("Rate limit reached on refetch", ex);
             }
         }
 
