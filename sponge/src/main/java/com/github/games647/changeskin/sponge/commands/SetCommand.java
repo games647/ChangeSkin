@@ -25,12 +25,12 @@ public class SetCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            plugin.sendMessageKey(src, "no-console");
+            plugin.sendMessage(src, "no-console");
             return CommandResult.empty();
         }
 
         if (plugin.getCore().isCooldown(((Player) src).getUniqueId())) {
-            plugin.sendMessageKey(src, "cooldown");
+            plugin.sendMessage(src, "cooldown");
             return CommandResult.empty();
         }
 
@@ -50,13 +50,13 @@ public class SetCommand implements CommandExecutor {
                 return CommandResult.empty();
             }
 
-            plugin.sendMessageKey(src, "skin-change-queue");
+            plugin.sendMessage(src, "skin-change-queue");
             Runnable skinDownloader = new SkinDownloader(plugin, src, receiver, targetUUID, keepSkin);
             Task.builder().async().execute(skinDownloader).submit(plugin);
             return CommandResult.success();
         }
 
-        plugin.sendMessageKey(src, "queue-name-resolve");
+        plugin.sendMessage(src, "queue-name-resolve");
         Runnable nameResolver = new NameResolver(plugin, src, targetSkin, receiver, keepSkin);
         Task.builder().async().execute(nameResolver).submit(plugin);
         return CommandResult.success();

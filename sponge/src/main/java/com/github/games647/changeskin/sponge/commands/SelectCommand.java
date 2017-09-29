@@ -22,7 +22,7 @@ public class SelectCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            plugin.sendMessageKey(src, "no-console");
+            plugin.sendMessage(src, "no-console");
             return CommandResult.empty();
         }
 
@@ -34,7 +34,7 @@ public class SelectCommand implements CommandExecutor {
             Task.builder().async()
                     .execute(new SkinSelector(plugin, receiver, targetId)).submit(plugin);
         } catch (NumberFormatException numberFormatException) {
-            plugin.sendMessageKey(src, "invalid-skin-name");
+            plugin.sendMessage(src, "invalid-skin-name");
         }
 
         return CommandResult.success();

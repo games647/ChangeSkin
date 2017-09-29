@@ -31,7 +31,7 @@ public class SkinDownloader extends SharedDownloader {
     }
 
     @Override
-    public void sendMessageInvoker(String id, String... args) {
+    public void sendMessageInvoker(String id) {
         plugin.sendMessage(invoker, id);
     }
 }

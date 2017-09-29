@@ -206,9 +206,13 @@ public class ChangeSkinCore {
         }
     }
 
-    public void onDisable() {
+    public void close() {
         defaultSkins.clear();
         uuidCache.clear();
+
+        if (storage != null) {
+            storage.close();
+        }
     }
 
     public MojangSkinApi getSkinApi() {

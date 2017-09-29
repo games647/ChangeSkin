@@ -27,14 +27,14 @@ public class UploadCommand implements CommandExecutor {
         if (url.startsWith("http://") || url.startsWith("https://")) {
             List<Account> accounts = plugin.getCore().getUploadAccounts();
             if (accounts.isEmpty()) {
-                plugin.sendMessageKey(src, "no-accounts");
+                plugin.sendMessage(src, "no-accounts");
             } else {
                 Account uploadAccount = accounts.get(0);
                 Runnable skinUploader = new SkinUploader(plugin, src, uploadAccount, url);
                 Task.builder().async().execute(skinUploader).submit(plugin);
             }
         } else {
-            plugin.sendMessageKey(src, "no-valid-url");
+            plugin.sendMessage(src, "no-valid-url");
         }
 
         return CommandResult.success();

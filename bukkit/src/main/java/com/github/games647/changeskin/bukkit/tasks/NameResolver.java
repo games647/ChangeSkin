@@ -24,9 +24,9 @@ public class NameResolver extends SharedNameResolver {
     }
 
     @Override
-    public void sendMessageInvoker(String id, String... args) {
+    public void sendMessageInvoker(String id) {
         if (invoker != null) {
-            plugin.sendMessage(invoker, id, args);
+            plugin.sendMessage(invoker, id);
         }
     }
 

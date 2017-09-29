@@ -25,7 +25,7 @@ public class SkinSelector extends SharedSkinSelect {
     }
 
     @Override
-    public void sendMessageInvoker(String id, String... args) {
+    public void sendMessageInvoker(String id) {
         plugin.sendMessage(receiver, id);
     }
 }

@@ -9,7 +9,6 @@ import com.github.games647.changeskin.sponge.commands.UploadCommand;
 import com.google.inject.Inject;
 
 import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
@@ -23,6 +22,7 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.channel.MessageReceiver;
@@ -76,7 +76,7 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
                 .arguments(
                         string(of("skin")),
                         flags().flag("keep").buildWith(GenericArguments.none()))
-                .build(), "changeskin", "setskin");
+                .build(), "changeskin", "setskin", "skin");
 
         commandManager.register(this, CommandSpec.builder()
                 .executor(new InvalidateCommand(this))
@@ -85,6 +85,13 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
         Sponge.getEventManager().registerListeners(this, new LoginListener(this));
         RawDataChannel pluginChannel = Sponge.getChannelRegistrar().createRawChannel(this, PomData.ARTIFACT_ID);
         pluginChannel.addListener(new BungeeListener(this, pluginChannel));
+    }
+
+    @Listener
+    public void onShutdown(GameStoppingServerEvent stoppingServerEvent) {
+        if (core != null) {
+            core.close();
+        }
     }
 
     public ChangeSkinCore getCore() {
@@ -98,39 +105,15 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
 
         //disallow - not whitelisted or blacklisted
         if (sendMessage) {
-            sendMessageKey(invoker, "no-permission");
+            sendMessage(invoker, "no-permission");
         }
 
         return false;
     }
 
-    public void sendMessageKey(MessageReceiver sender, String key) {
-        //todo: this shouldn't be the key - it should be the actual message
-        if (core == null) {
-            return;
-        }
-
-        String message = core.getMessage(key);
-        if (message != null && sender != null) {
-            sender.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(message));
-        }
-    }
-
     @Override
     public ThreadFactory getThreadFactory() {
         return null;
-    }
-
-    public void sendMessageKey(MessageReceiver sender, String key, Object... arguments) {
-        if (core == null) {
-            return;
-        }
-
-        String message = core.getMessage(key);
-        if (message != null && sender != null) {
-            String formatted = MessageFormat.format(message, arguments);
-            sender.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(formatted));
-        }
     }
 
     @Override
@@ -149,7 +132,10 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
     }
 
     @Override
-    public void sendMessage(MessageReceiver receiver, String message) {
-        receiver.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(message));
+    public void sendMessage(MessageReceiver receiver, String key) {
+        String message = core.getMessage(key);
+        if (message != null && receiver != null) {
+            receiver.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(message));
+        }
     }
 }

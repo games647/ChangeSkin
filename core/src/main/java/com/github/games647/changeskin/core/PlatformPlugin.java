@@ -13,7 +13,7 @@ public interface PlatformPlugin<C> {
 
     Logger getLog();
 
-    void sendMessage(C receiver, String message);
+    void sendMessage(C receiver, String key);
 
     ThreadFactory getThreadFactory();
 }

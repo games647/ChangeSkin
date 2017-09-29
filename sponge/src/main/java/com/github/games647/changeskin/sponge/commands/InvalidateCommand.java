@@ -22,7 +22,7 @@ public class InvalidateCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            plugin.sendMessageKey(src, "no-console");
+            plugin.sendMessage(src, "no-console");
             return CommandResult.empty();
         }
 

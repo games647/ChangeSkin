@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -91,6 +90,13 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     }
 
     @Override
+    public void onDisable() {
+        if (core != null) {
+            core.close();
+        }
+    }
+
+    @Override
     public String getName() {
         return getDescription().getName();
     }
@@ -106,8 +112,11 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     }
 
     @Override
-    public void sendMessage(CommandSender receiver, String message) {
-        receiver.sendMessage(TextComponent.fromLegacyText(message));
+    public void sendMessage(CommandSender receiver, String key) {
+        String message = core.getMessage(key);
+        if (message != null && receiver != null) {
+            receiver.sendMessage(TextComponent.fromLegacyText(message));
+        }
     }
 
     @Override
@@ -229,12 +238,5 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         //disallow - not whitelisted or blacklisted
         sendMessage(invoker, "no-permission");
         return false;
-    }
-
-    public void sendMessage(CommandSender sender, String key, Object... arguments) {
-        String message = core.getMessage(key);
-        if (message != null && sender != null) {
-            sender.sendMessage(TextComponent.fromLegacyText(MessageFormat.format(message, arguments)));
-        }
     }
 }

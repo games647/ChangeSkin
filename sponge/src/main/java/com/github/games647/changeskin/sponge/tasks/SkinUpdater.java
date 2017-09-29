@@ -60,7 +60,7 @@ public class SkinUpdater implements Runnable {
         if (plugin.getCore().getConfig().getBoolean("instantSkinChange")) {
             onInstantUpdate();
         } else if (invoker != null) {
-            plugin.sendMessageKey(invoker, "skin-changed-no-instant");
+            plugin.sendMessage(invoker, "skin-changed-no-instant");
         }
     }
 
@@ -77,7 +77,7 @@ public class SkinUpdater implements Runnable {
 
         sendUpdate();
         if (invoker != null) {
-            plugin.sendMessageKey(invoker, "skin-changed");
+            plugin.sendMessage(invoker, "skin-changed");
         }
     }
 

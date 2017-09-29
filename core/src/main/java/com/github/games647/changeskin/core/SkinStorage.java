@@ -251,6 +251,12 @@ public class SkinStorage {
         return false;
     }
 
+    public void close() {
+        if (dataSource != null) {
+            dataSource.close();
+        }
+    }
+
     private SkinData parseSkinData(ResultSet resultSet) throws SQLException {
         int skinId = resultSet.getInt(1);
         long timestamp = resultSet.getLong(2);

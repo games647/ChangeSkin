@@ -20,8 +20,8 @@ public class SkinInvalidator extends SharedInvalidator {
     }
 
     @Override
-    public void sendMessageInvoker(String id, String... args) {
-        plugin.sendMessageKey(invoker, id, args);
+    public void sendMessageInvoker(String id) {
+        plugin.sendMessage(invoker, id);
     }
 
     @Override

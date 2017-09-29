@@ -5,16 +5,15 @@ import com.github.games647.changeskin.core.shared.SharedUploader;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class SkinUploader extends SharedUploader {
 
-    private final ChangeSkinSponge plugin;
     private final CommandSource invoker;
 
     public SkinUploader(ChangeSkinSponge plugin, CommandSource invoker, Account owner, String url, String name) {
         super(plugin.getCore(), owner, url);
 
-        this.plugin = plugin;
         this.invoker = invoker;
     }
 
@@ -23,7 +22,7 @@ public class SkinUploader extends SharedUploader {
     }
 
     @Override
-    public void sendMessageInvoker(String id, String... args) {
-        plugin.sendMessageKey(invoker, id, args);
+    public void sendMessageInvoker(String localeMessage) {
+        invoker.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(localeMessage));
     }
 }

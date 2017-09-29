@@ -18,7 +18,6 @@ import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 
 import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
@@ -70,6 +69,13 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         }
     }
 
+    @Override
+    public void onDisable() {
+        if (core != null) {
+            this.core.close();
+        }
+    }
+
     public WrappedSignedProperty convertToProperty(SkinData skinData) {
         return WrappedSignedProperty.fromValues(ChangeSkinCore.SKIN_KEY, skinData.getEncodedData()
                 , skinData.getEncodedSignature());
@@ -77,13 +83,6 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
     public ChangeSkinCore getCore() {
         return core;
-    }
-
-    @Override
-    public void onDisable() {
-        if (core != null) {
-            this.core.onDisable();
-        }
     }
 
     public SkinStorage getStorage() {
@@ -137,17 +136,6 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         return false;
     }
 
-    public void sendMessage(CommandSender sender, String key, Object... arguments) {
-        if (core == null) {
-            return;
-        }
-
-        String message = core.getMessage(key);
-        if (message != null && sender != null) {
-            sender.sendMessage(MessageFormat.format(message, arguments));
-        }
-    }
-
     private void registerCommands() {
         getCommand("setskin").setExecutor(new SetCommand(this));
         getCommand("skinupdate").setExecutor(new InvalidateCommand(this));
@@ -161,8 +149,11 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     }
 
     @Override
-    public void sendMessage(CommandSender receiver, String message) {
-        receiver.sendMessage(message);
+    public void sendMessage(CommandSender receiver, String key) {
+        String message = core.getMessage(key);
+        if (message != null && receiver != null) {
+            receiver.sendMessage(message);
+        }
     }
 
     @Override
