@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import net.md_5.bungee.config.Configuration;
@@ -158,13 +157,12 @@ public class ChangeSkinCore {
             defaults = configProvider.load(defaultStream);
         }
 
-        File file = new File(plugin.getDataFolder(), fileName);
+        File file = plugin.getPluginFolder().resolve(fileName).toFile();
         return configProvider.load(file, defaults);
     }
 
     private void saveDefaultFile(String fileName) {
-        Path dataFolder = plugin.getDataFolder().toPath();
-
+        Path dataFolder = plugin.getPluginFolder();
         try {
             Files.createDirectories(dataFolder);
 

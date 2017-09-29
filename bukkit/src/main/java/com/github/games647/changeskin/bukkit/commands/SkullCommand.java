@@ -32,7 +32,8 @@ public class SkullCommand implements CommandExecutor {
     static {
         MethodHandle methodHandle = null;
         try {
-            Class<?> clazz = Class.forName("org.bukkit.craftbukkit." + getServerVersion() + ".inventory.CraftMetaSkull");
+            String serverVersion = getServerVersion();
+            Class<?> clazz = Class.forName("org.bukkit.craftbukkit." + serverVersion + ".inventory.CraftMetaSkull");
             Field profileField = clazz.getDeclaredField("profile");
             profileField.setAccessible(true);
 
@@ -65,7 +66,9 @@ public class SkullCommand implements CommandExecutor {
             try {
                 Player player = (Player) sender;
                 int targetId = Integer.parseInt(targetName);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> applySkin(player, plugin.getStorage().getSkin(targetId)));
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    applySkin(player, plugin.getStorage().getSkin(targetId));
+                });
             } catch (NumberFormatException numberFormatException) {
                 plugin.sendMessage(sender, "invalid-skin-name");
             }

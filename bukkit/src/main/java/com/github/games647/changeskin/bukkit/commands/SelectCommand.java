@@ -30,7 +30,8 @@ public class SelectCommand implements CommandExecutor {
             String targetName = args[0].toLowerCase().replace("skin-", "");
             try {
                 int targetId = Integer.parseInt(targetName);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SkinSelector(plugin, (Player) sender, targetId));
+                Runnable task = new SkinSelector(plugin, (Player) sender, targetId);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, task);
             } catch (NumberFormatException numberFormatException) {
                 plugin.sendMessage(sender, "invalid-skin-name");
             }

@@ -22,6 +22,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
             methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
         } catch (Exception ex) {
             Logger logger = LoggerFactory.getLogger("ChangeSkin");
-            logger.info("Cannot find loginProfile field for setting skin in offline mode");
+            logger.info("Cannot find loginProfile field for setting skin in offline mode", ex);
         }
 
         profileSetter = methodHandle;
@@ -97,6 +98,11 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     @Override
     public Logger getLog() {
         return logger;
+    }
+
+    @Override
+    public Path getPluginFolder() {
+        return getDataFolder().toPath();
     }
 
     @Override

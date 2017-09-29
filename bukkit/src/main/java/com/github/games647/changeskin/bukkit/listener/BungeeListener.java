@@ -49,7 +49,7 @@ public class BungeeListener implements PluginMessageListener {
         String signature = dataInput.readUTF();
         String playerName = dataInput.readUTF();
         Player receiver = Bukkit.getPlayerExact(playerName);
-        plugin.getLog().info("Instant update for {0}", playerName);
+        plugin.getLog().info("Instant update for {}", playerName);
 
         SkinData skinData = new SkinData(encodedData, signature);
         Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, receiver, skinData, false));

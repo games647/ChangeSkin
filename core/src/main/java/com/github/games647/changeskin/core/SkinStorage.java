@@ -40,7 +40,8 @@ public class SkinStorage {
             config.setThreadFactory(threadFactory);
         }
 
-        databasePath = databasePath.replace("{pluginDir}", core.getPlugin().getDataFolder().toString());
+        String folderPath = core.getPlugin().getPluginFolder().toAbsolutePath().toString();
+        databasePath = databasePath.replace("{pluginDir}", folderPath);
 
         //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         Properties properties = new Properties();
@@ -191,7 +192,8 @@ public class SkinStorage {
             } else {
                 String insertQuery = "REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin) VALUES (?, ?)";
                 if (keepColumnPresent) {
-                    insertQuery = "REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin, KeepSkin) VALUES (?, ?, ?)";
+                    insertQuery = "REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin, KeepSkin) " +
+                            "VALUES (?, ?, ?)";
                 }
 
                 try (PreparedStatement stmt = con.prepareStatement(insertQuery)) {

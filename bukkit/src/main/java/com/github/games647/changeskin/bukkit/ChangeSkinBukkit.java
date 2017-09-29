@@ -17,6 +17,7 @@ import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
 
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.UUID;
@@ -172,5 +173,10 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     @Override
     public Logger getLog() {
         return logger;
+    }
+
+    @Override
+    public Path getPluginFolder() {
+        return getDataFolder().toPath();
     }
 }

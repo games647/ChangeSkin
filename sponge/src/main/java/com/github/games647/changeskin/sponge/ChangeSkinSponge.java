@@ -8,7 +8,6 @@ import com.github.games647.changeskin.sponge.commands.SetCommand;
 import com.github.games647.changeskin.sponge.commands.UploadCommand;
 import com.google.inject.Inject;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.UUID;
@@ -140,8 +139,8 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
     }
 
     @Override
-    public File getDataFolder() {
-        return dataFolder.toFile();
+    public Path getPluginFolder() {
+        return dataFolder;
     }
 
     @Override
