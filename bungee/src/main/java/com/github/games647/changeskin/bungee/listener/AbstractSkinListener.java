@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedListener;
 
 import java.util.List;
@@ -25,11 +25,11 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
 
     public void setRandomSkin(final UserPreference preferences, ProxiedPlayer player) {
         //skin wasn't found and there are no preferences so set a default skin
-        List<SkinData> defaultSkins = plugin.getCore().getDefaultSkins();
+        List<SkinModel> defaultSkins = plugin.getCore().getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
             int randomIndex = random.nextInt(defaultSkins.size());
 
-            final SkinData targetSkin = defaultSkins.get(randomIndex);
+            final SkinModel targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
                 preferences.setTargetSkin(targetSkin);
                 plugin.applySkin(player, targetSkin);
@@ -40,7 +40,7 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
     }
 
     @Override
-    public void save(final SkinData skin, final UserPreference preferences) {
+    public void save(final SkinModel skin, final UserPreference preferences) {
         //this can run in the background
         ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
             if (plugin.getStorage().save(skin)) {

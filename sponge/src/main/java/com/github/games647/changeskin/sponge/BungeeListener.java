@@ -1,6 +1,6 @@
 package com.github.games647.changeskin.sponge;
 
-import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.sponge.tasks.SkinUpdater;
 
 import java.util.UUID;
@@ -53,7 +53,7 @@ public class BungeeListener implements RawDataListener {
         Player receiver = Sponge.getServer().getPlayer(playerName).orElse(player);
         plugin.getLog().info("Instant update for {}", playerName);
 
-        SkinData skinData = new SkinData(encodedData, signature);
+        SkinModel skinData = SkinModel.createSkinFromEncoded(encodedData, signature);
         Runnable skinUpdater = new SkinUpdater(plugin, null, receiver, skinData, false);
         Task.builder().execute(skinUpdater).submit(plugin);
     }
@@ -66,8 +66,8 @@ public class BungeeListener implements RawDataListener {
         //continue on success only
         String receiverUUID = dataInput.readString();
 
-        SkinData targetSkin = new SkinData(encodedData, encodedSignature);
-        if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid())) {
+        SkinModel targetSkin = SkinModel.createSkinFromEncoded(encodedData, encodedSignature);
+        if (checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getProfileId())) {
             pluginChannel.sendTo(player, out -> {
                 out.writeString("PermissionsSuccess");
                 out.writeInteger(skinId);

@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.util.UUID;
 
@@ -19,15 +19,15 @@ public abstract class SharedInvalidator implements Runnable, MessageReceiver {
     @Override
     public void run() {
         UserPreference preferences = core.getStorage().getPreferences(receiverUUID);
-        SkinData ownedSkin = preferences.getTargetSkin();
+        SkinModel ownedSkin = preferences.getTargetSkin();
         if (ownedSkin == null) {
             sendMessageInvoker("dont-have-skin");
         } else {
             sendMessageInvoker("invalidate-request");
 
-            core.getSkinApi().downloadSkin(ownedSkin.getUuid()).ifPresent(this::scheduleApplyTask);
+            core.getSkinApi().downloadSkin(ownedSkin.getProfileId()).ifPresent(this::scheduleApplyTask);
         }
     }
 
-    protected abstract void scheduleApplyTask(SkinData skinData);
+    protected abstract void scheduleApplyTask(SkinModel skinData);
 }

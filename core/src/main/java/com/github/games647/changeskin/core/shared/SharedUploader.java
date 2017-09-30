@@ -3,7 +3,7 @@ package com.github.games647.changeskin.core.shared;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.model.GameProfile;
-import com.github.games647.changeskin.core.model.mojang.auth.Account;
+import com.github.games647.changeskin.core.model.auth.Account;
 
 import java.util.UUID;
 

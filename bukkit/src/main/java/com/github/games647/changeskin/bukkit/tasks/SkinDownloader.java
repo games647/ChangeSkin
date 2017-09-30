@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bukkit.tasks;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedDownloader;
 
 import java.util.UUID;
@@ -26,7 +26,7 @@ public class SkinDownloader extends SharedDownloader {
     }
 
     @Override
-    protected void scheduleApplyTask(SkinData skinData) {
+    protected void scheduleApplyTask(SkinModel skinData) {
         Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, skinData, keepSkin));
     }
 

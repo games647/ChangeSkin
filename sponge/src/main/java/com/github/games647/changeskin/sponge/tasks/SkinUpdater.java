@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.sponge.tasks;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
 import org.spongepowered.api.Sponge;
@@ -21,10 +21,10 @@ public class SkinUpdater implements Runnable {
     private final ChangeSkinSponge plugin;
     private final CommandSource invoker;
     private final Player receiver;
-    private final SkinData targetSkin;
+    private final SkinModel targetSkin;
     private final boolean keepSkin;
 
-    public SkinUpdater(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, SkinData targetSkin
+    public SkinUpdater(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, SkinModel targetSkin
             , boolean keepSkin) {
         this.plugin = plugin;
         this.invoker = invoker;
@@ -71,7 +71,7 @@ public class SkinUpdater implements Runnable {
             profile.getPropertyMap().clear();
 
             ProfileProperty profileProperty = ProfileProperty.of(ChangeSkinCore.SKIN_KEY
-                    , targetSkin.getEncodedData(), targetSkin.getEncodedSignature());
+                    , targetSkin.getEncodedValue(), targetSkin.getSignature());
             profile.getPropertyMap().put(ChangeSkinCore.SKIN_KEY, profileProperty);
         }
 

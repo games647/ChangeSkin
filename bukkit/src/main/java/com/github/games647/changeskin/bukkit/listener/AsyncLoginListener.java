@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bukkit.listener;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedListener;
 
 import java.util.UUID;
@@ -42,7 +42,7 @@ public class AsyncLoginListener extends SharedListener implements Listener {
 
         plugin.startSession(playerUuid, preferences);
 
-        SkinData targetSkin = preferences.getTargetSkin();
+        SkinModel targetSkin = preferences.getTargetSkin();
         if (targetSkin == null && plugin.getConfig().getBoolean("restoreSkins")) {
             refetchSkin(playerName, preferences);
         } else {
@@ -53,7 +53,7 @@ public class AsyncLoginListener extends SharedListener implements Listener {
     }
 
     @Override
-    protected void save(final SkinData skin, final UserPreference preferences) {
+    protected void save(final SkinModel skin, final UserPreference preferences) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (plugin.getStorage().save(skin)) {
                 plugin.getStorage().save(preferences);

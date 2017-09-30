@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedInvalidator;
 
 import net.md_5.bungee.api.CommandSender;
@@ -31,7 +31,7 @@ public class SkinInvalidator extends SharedInvalidator {
     }
 
     @Override
-    protected void scheduleApplyTask(SkinData skinData) {
+    protected void scheduleApplyTask(SkinModel skinData) {
         Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skinData, bukkitOp, false);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
     }

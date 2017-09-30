@@ -14,8 +14,8 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.collect.Lists;
 import com.nametagedit.plugin.NametagEdit;
 
@@ -40,11 +40,11 @@ public class SkinUpdater implements Runnable {
     protected final ChangeSkinBukkit plugin;
     private final CommandSender invoker;
     private final Player receiver;
-    private final SkinData targetSkin;
+    private final SkinModel targetSkin;
     private final boolean keepSkin;
 
     public SkinUpdater(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver
-            , SkinData targetSkin, boolean keepSkin) {
+            , SkinModel targetSkin, boolean keepSkin) {
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;

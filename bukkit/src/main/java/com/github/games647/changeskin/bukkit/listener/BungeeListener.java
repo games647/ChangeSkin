@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bukkit.listener;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
-import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -51,7 +51,7 @@ public class BungeeListener implements PluginMessageListener {
         Player receiver = Bukkit.getPlayerExact(playerName);
         plugin.getLog().info("Instant update for {}", playerName);
 
-        SkinData skinData = new SkinData(encodedData, signature);
+        SkinModel skinData = SkinModel.createSkinFromEncoded(encodedData, signature);
         Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, receiver, skinData, false));
     }
 
@@ -65,8 +65,8 @@ public class BungeeListener implements PluginMessageListener {
         boolean skinPerm = dataInput.readBoolean();
         boolean isOp = dataInput.readBoolean();
 
-        SkinData targetSkin = new SkinData(encodedData, encodedSignature);
-        if (isOp || checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getUuid(), skinPerm)) {
+        SkinModel targetSkin = SkinModel.createSkinFromEncoded(encodedData, encodedSignature);
+        if (isOp || checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getProfileId(), skinPerm)) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("PermissionsSuccess");
             out.writeInt(skinId);

@@ -2,8 +2,8 @@ package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.SkinStorage;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedListener;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class LoginListener extends SharedListener {
         UUID playerUUID = profile.getUniqueId();
 
         UserPreference preferences = storage.getPreferences(playerUUID);
-        SkinData targetSkin = preferences.getTargetSkin();
+        SkinModel targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
             if (!core.getConfig().getBoolean("restoreSkins")
                     || !refetchSkin(profile.getName().get(), preferences)) {
@@ -49,19 +49,19 @@ public class LoginListener extends SharedListener {
         }
     }
 
-    private void applySkin(SkinData skinData, GameProfile profile) {
+    private void applySkin(SkinModel skinData, GameProfile profile) {
         GameProfileManager profileManager = Sponge.getServer().getGameProfileManager();
         ProfileProperty profileProperty = profileManager.createProfileProperty(ChangeSkinCore.SKIN_KEY
-                , skinData.getEncodedData(), skinData.getEncodedSignature());
+                , skinData.getEncodedValue(), skinData.getSignature());
         profile.getPropertyMap().clear();
         profile.getPropertyMap().put(ChangeSkinCore.SKIN_KEY, profileProperty);
     }
 
     private void setDefaultSkin(UserPreference preferences, GameProfile profile) {
-        List<SkinData> defaultSkins = core.getDefaultSkins();
+        List<SkinModel> defaultSkins = core.getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
             int randomIndex = random.nextInt(defaultSkins.size());
-            SkinData defaultSkin = defaultSkins.get(randomIndex);
+            SkinModel defaultSkin = defaultSkins.get(randomIndex);
             if (defaultSkin != null) {
                 preferences.setTargetSkin(defaultSkin);
                 save(defaultSkin, preferences);
@@ -71,7 +71,7 @@ public class LoginListener extends SharedListener {
     }
 
     @Override
-    protected void save(final SkinData skinData, final UserPreference preferences) {
+    protected void save(final SkinModel skinData, final UserPreference preferences) {
         Task.builder()
                 .async()
                 .execute(() -> {

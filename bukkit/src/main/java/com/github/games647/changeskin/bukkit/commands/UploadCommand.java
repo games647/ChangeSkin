@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bukkit.commands;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.SkinUploader;
-import com.github.games647.changeskin.core.model.mojang.auth.Account;
+import com.github.games647.changeskin.core.model.auth.Account;
 
 import java.util.List;
 

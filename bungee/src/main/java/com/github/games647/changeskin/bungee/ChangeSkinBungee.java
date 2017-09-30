@@ -12,8 +12,8 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -64,6 +64,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
 
     private final Map<PendingConnection, UserPreference> loginSessions = Maps.newConcurrentMap();
     private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
+    private final Property[] emptyProperties = {};
     private ChangeSkinCore core;
 
     @Override
@@ -130,15 +131,15 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     }
 
     //you should call this method async
-    public void setSkin(ProxiedPlayer player, final SkinData newSkin, boolean applyNow) {
+    public void setSkin(ProxiedPlayer player, final SkinModel newSkin, boolean applyNow) {
         new SkinUpdater(this, player, player, newSkin, false, false).run();
     }
 
     //you should call this method async
     public void setSkin(ProxiedPlayer player, UUID targetSkin, boolean applyNow) {
-        SkinData newSkin = core.getStorage().getSkin(targetSkin);
+        SkinModel newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
-            Optional<SkinData> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
+            Optional<SkinModel> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
             if (downloadSkin.isPresent()) {
                 newSkin = downloadSkin.get();
             }
@@ -147,8 +148,8 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         setSkin(player, newSkin, applyNow);
     }
 
-    public void applySkin(ProxiedPlayer player, SkinData skinData) {
-        logger.debug("Applying skin for {0}", player.getName());
+    public void applySkin(ProxiedPlayer player, SkinModel skinData) {
+        logger.debug("Applying skin for {}", player.getName());
 
         InitialHandler initialHandler = (InitialHandler) player.getPendingConnection();
         LoginResult loginProfile = initialHandler.getLoginProfile();
@@ -156,7 +157,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         if (loginProfile == null) {
             String mojangUUID = player.getUniqueId().toString().replace("-", "");
 
-            Property[] properties = {};
+            Property[] properties = emptyProperties;
             if (skinData != null) {
                 Property textures = convertToProperty(skinData);
                 properties = new Property[]{textures};
@@ -174,7 +175,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
                 }
             }
         } else if (skinData == null) {
-            loginProfile.setProperties(new Property[]{});
+            loginProfile.setProperties(emptyProperties);
         } else {
             Property textures = convertToProperty(skinData);
             loginProfile.setProperties(new Property[]{textures});
@@ -189,8 +190,8 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
                 out.writeUTF("null");
                 out.writeUTF(player.getName());
             } else {
-                out.writeUTF(skinData.getEncodedData());
-                out.writeUTF(skinData.getEncodedSignature());
+                out.writeUTF(skinData.getEncodedValue());
+                out.writeUTF(skinData.getSignature());
                 out.writeUTF(player.getName());
             }
 
@@ -198,8 +199,8 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         }
     }
 
-    public Property convertToProperty(SkinData skinData) {
-        return new Property(ChangeSkinCore.SKIN_KEY, skinData.getEncodedData(), skinData.getEncodedSignature());
+    public Property convertToProperty(SkinModel skinData) {
+        return new Property(ChangeSkinCore.SKIN_KEY, skinData.getEncodedValue(), skinData.getSignature());
     }
 
     public UserPreference getLoginSession(PendingConnection id) {

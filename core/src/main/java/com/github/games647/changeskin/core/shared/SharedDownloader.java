@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.util.UUID;
 
@@ -22,7 +22,7 @@ public abstract class SharedDownloader implements Runnable, MessageReceiver {
 
     @Override
     public void run() {
-        SkinData storedSkin = core.getStorage().getSkin(targetUUID);
+        SkinModel storedSkin = core.getStorage().getSkin(targetUUID);
         storedSkin = core.checkAutoUpdate(storedSkin);
 
         if (targetUUID.equals(receiverUUID)) {
@@ -32,5 +32,5 @@ public abstract class SharedDownloader implements Runnable, MessageReceiver {
         scheduleApplyTask(storedSkin);
     }
 
-    protected abstract void scheduleApplyTask(SkinData skinData);
+    protected abstract void scheduleApplyTask(SkinModel skinData);
 }

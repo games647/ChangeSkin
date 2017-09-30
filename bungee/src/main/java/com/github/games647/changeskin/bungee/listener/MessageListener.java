@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
@@ -45,7 +45,7 @@ public class MessageListener extends AbstractSkinListener {
         
         String encodedData = dataInput.readUTF();
         String encodedSignature = dataInput.readUTF();
-        final SkinData targetSkin = new SkinData(encodedData, encodedSignature);
+        final SkinModel targetSkin = SkinModel.createSkinFromEncoded(encodedData, encodedSignature);
         targetSkin.setSkinId(skinId);
         
         UUID receiverUUID = UUID.fromString(dataInput.readUTF());

@@ -5,8 +5,8 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.collect.Multimap;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class LoginListener implements Listener {
         if (preferences == null) {
             fallbackBukkit(player, properties);
         } else {
-            SkinData targetSkin = preferences.getTargetSkin();
+            SkinModel targetSkin = preferences.getTargetSkin();
             if (targetSkin == null) {
                 setRandomSkin(preferences, properties);
             } else {
@@ -59,11 +59,11 @@ public class LoginListener implements Listener {
 
     private void setRandomSkin(final UserPreference preferences, Multimap<String, WrappedSignedProperty> properties) {
         //skin wasn't found and there are no preferences so set a default skin
-        List<SkinData> defaultSkins = plugin.getCore().getDefaultSkins();
+        List<SkinModel> defaultSkins = plugin.getCore().getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
             int randomIndex = random.nextInt(defaultSkins.size());
 
-            SkinData targetSkin = defaultSkins.get(randomIndex);
+            SkinModel targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
                 preferences.setTargetSkin(targetSkin);
                 properties.clear();
@@ -78,7 +78,7 @@ public class LoginListener implements Listener {
         UserPreference preferences = plugin.getStorage().getPreferences(player.getUniqueId());
         plugin.startSession(player.getUniqueId(), preferences);
 
-        SkinData targetSkin = preferences.getTargetSkin();
+        SkinModel targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
             if (plugin.getConfig().getBoolean("restoreSkins")) {
                 Runnable nameResolver = new NameResolver(plugin, null, player.getName(), player, false);

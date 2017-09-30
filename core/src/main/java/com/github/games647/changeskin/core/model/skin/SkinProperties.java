@@ -1,4 +1,4 @@
-package com.github.games647.changeskin.core.model.mojang.skin;
+package com.github.games647.changeskin.core.model.skin;
 
 public class SkinProperties {
 

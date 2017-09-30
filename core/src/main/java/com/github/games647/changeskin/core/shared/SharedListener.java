@@ -3,8 +3,8 @@ package com.github.games647.changeskin.core.shared;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.NotPremiumException;
 import com.github.games647.changeskin.core.RateLimitException;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -35,7 +35,7 @@ public abstract class SharedListener {
 
         if (ownerUUID != null) {
             core.getUuidCache().put(playerName, ownerUUID);
-            SkinData storedSkin = core.checkAutoUpdate(core.getStorage().getSkin(ownerUUID));
+            SkinModel storedSkin = core.checkAutoUpdate(core.getStorage().getSkin(ownerUUID));
 
             preferences.setTargetSkin(storedSkin);
             save(storedSkin, preferences);
@@ -46,5 +46,5 @@ public abstract class SharedListener {
         return false;
     }
 
-    protected abstract void save(SkinData skin, UserPreference preferences);
+    protected abstract void save(SkinModel skin, UserPreference preferences);
 }

@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.mojang.auth.Account;
-import com.github.games647.changeskin.core.model.mojang.auth.AuthenticationRequest;
-import com.github.games647.changeskin.core.model.mojang.auth.AuthenticationResponse;
+import com.github.games647.changeskin.core.model.auth.Account;
+import com.github.games647.changeskin.core.model.auth.AuthenticationRequest;
+import com.github.games647.changeskin.core.model.auth.AuthenticationResponse;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 

@@ -14,8 +14,8 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -76,9 +76,9 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         }
     }
 
-    public WrappedSignedProperty convertToProperty(SkinData skinData) {
-        return WrappedSignedProperty.fromValues(ChangeSkinCore.SKIN_KEY, skinData.getEncodedData()
-                , skinData.getEncodedSignature());
+    public WrappedSignedProperty convertToProperty(SkinModel skinData) {
+        return WrappedSignedProperty.fromValues(ChangeSkinCore.SKIN_KEY, skinData.getEncodedValue()
+                , skinData.getSignature());
     }
 
     public ChangeSkinCore getCore() {
@@ -106,15 +106,15 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     }
 
     //you should call this method async
-    public void setSkin(Player player, SkinData newSkin, boolean applyNow) {
+    public void setSkin(Player player, SkinModel newSkin, boolean applyNow) {
         new SkinUpdater(this, null, player, newSkin, true).run();
     }
 
     //you should call this method async
     public void setSkin(Player player, UUID targetSkin, boolean applyNow) {
-        SkinData newSkin = core.getStorage().getSkin(targetSkin);
+        SkinModel newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
-            Optional<SkinData> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
+            Optional<SkinModel> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
             if (downloadSkin.isPresent()) {
                 newSkin = downloadSkin.get();
             }

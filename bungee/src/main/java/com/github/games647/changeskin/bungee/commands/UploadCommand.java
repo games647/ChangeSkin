@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bungee.commands;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.bungee.tasks.SkinUploader;
-import com.github.games647.changeskin.core.model.mojang.auth.Account;
+import com.github.games647.changeskin.core.model.auth.Account;
 
 import java.util.List;
 

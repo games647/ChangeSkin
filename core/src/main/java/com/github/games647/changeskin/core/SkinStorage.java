@@ -1,7 +1,10 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.MetadataModel;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.model.skin.TextureModel;
+import com.github.games647.changeskin.core.model.skin.TextureType;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -121,7 +124,7 @@ public class SkinStorage {
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
-                    SkinData skinData = parseSkinData(resultSet);
+                    SkinModel skinData = parseSkinData(resultSet);
                     boolean keepSkin = false;
                     if (keepColumnPresent) {
                         keepSkin = resultSet.getBoolean(11);
@@ -139,7 +142,7 @@ public class SkinStorage {
         return null;
     }
 
-    public SkinData getSkin(int targetSkinId) {
+    public SkinModel getSkin(int targetSkinId) {
         try (Connection con = dataSource.getConnection();
             PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
                     "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1")) {
@@ -157,7 +160,7 @@ public class SkinStorage {
         return null;
     }
 
-    public SkinData getSkin(UUID skinUUID) {
+    public SkinModel getSkin(UUID skinUUID) {
         try (Connection con = dataSource.getConnection();
             PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
                     "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE
@@ -177,7 +180,7 @@ public class SkinStorage {
     }
 
     public void save(UserPreference preferences) {
-        SkinData targetSkin = preferences.getTargetSkin();
+        SkinModel targetSkin = preferences.getTargetSkin();
         if (targetSkin != null && targetSkin.getSkinId() == -1) {
             throw new IllegalArgumentException("Tried saving preferences without skin");
         }
@@ -211,17 +214,32 @@ public class SkinStorage {
         }
     }
 
-    public boolean save(SkinData skinData) {
+    public boolean save(SkinModel skinData) {
         if (skinData == null) {
             return false;
         }
 
         if (skinData.getSkinId() != -1) {
-            //skin already set
+            //skin already saved
             return true;
         }
 
-        String skinUrl = skinData.getSkinURL();
+        TextureModel skinTexture = skinData.getTextures().get(TextureType.SKIN);
+        String skinUrl = "";
+        boolean slimModel = false;
+        if (skinTexture != null) {
+            skinUrl = skinTexture.getShortUrl();
+            MetadataModel metadata = skinTexture.getMetadata();
+            if (metadata != null) {
+                slimModel = true;
+            }
+        }
+
+        TextureModel capeTexture = skinData.getTextures().get(TextureType.CAPE);
+        String capeUrl = "";
+        if (capeTexture != null) {
+            capeUrl = capeTexture.getShortUrl();
+        }
 
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
@@ -229,12 +247,12 @@ public class SkinStorage {
                 + " (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setLong(1, skinData.getTimestamp());
-            stmt.setString(2, skinData.getUuid().toString().replace("-", ""));
-            stmt.setString(3, skinData.getName());
-            stmt.setBoolean(4, skinData.isSlimModel());
+            stmt.setString(2, skinData.getProfileId().toString().replace("-", ""));
+            stmt.setString(3, skinData.getProfileName());
+            stmt.setBoolean(4, slimModel);
             stmt.setString(5, skinUrl);
-            stmt.setString(6, skinData.getCapeURL());
-            stmt.setBytes(7, Base64.getDecoder().decode(skinData.getEncodedSignature()));
+            stmt.setString(6, capeUrl);
+            stmt.setBytes(7, Base64.getDecoder().decode(skinData.getSignature()));
 
             stmt.executeUpdate();
 
@@ -257,7 +275,7 @@ public class SkinStorage {
         }
     }
 
-    private SkinData parseSkinData(ResultSet resultSet) throws SQLException {
+    private SkinModel parseSkinData(ResultSet resultSet) throws SQLException {
         int skinId = resultSet.getInt(1);
         long timestamp = resultSet.getLong(2);
         UUID uuid = CommonUtil.parseId(resultSet.getString(3));
@@ -269,6 +287,6 @@ public class SkinStorage {
         String capeUrl = resultSet.getString(7);
 
         byte[] signature = resultSet.getBytes(8);
-        return new SkinData(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
+        return new SkinModel(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
     }
 }

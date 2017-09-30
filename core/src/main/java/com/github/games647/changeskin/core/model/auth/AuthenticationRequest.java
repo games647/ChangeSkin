@@ -1,4 +1,4 @@
-package com.github.games647.changeskin.core.model.mojang.auth;
+package com.github.games647.changeskin.core.model.auth;
 
 public class AuthenticationRequest {
 

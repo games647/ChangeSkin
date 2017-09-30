@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedSkinSelect;
 
 import net.md_5.bungee.api.ProxyServer;
@@ -21,7 +21,7 @@ public class SkinSelector extends SharedSkinSelect {
     }
 
     @Override
-    protected void scheduleApplyTask(SkinData targetSkin) {
+    protected void scheduleApplyTask(SkinModel targetSkin) {
         ProxyServer.getInstance().getScheduler()
                 .runAsync(plugin, new SkinUpdater(plugin, receiver, receiver, targetSkin, false, true));
     }

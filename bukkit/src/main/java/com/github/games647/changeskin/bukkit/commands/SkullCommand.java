@@ -3,7 +3,7 @@ package com.github.games647.changeskin.bukkit.commands;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.SkinData;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -77,14 +77,14 @@ public class SkullCommand implements CommandExecutor {
         return true;
     }
 
-    private void applySkin(Player player, SkinData skinData) {
+    private void applySkin(Player player, SkinModel skinData) {
         Bukkit.getScheduler().runTask(plugin, () -> {
             setSkullSkin(player.getInventory().getItem(player.getInventory().getHeldItemSlot()), skinData);
             player.updateInventory();
         });
     }
 
-    private void setSkullSkin(ItemStack itemStack, SkinData skinData) {
+    private void setSkullSkin(ItemStack itemStack, SkinModel skinData) {
         try {
             if(itemStack == null || skinData == null || itemStack.getType() != Material.SKULL_ITEM)
                 return;

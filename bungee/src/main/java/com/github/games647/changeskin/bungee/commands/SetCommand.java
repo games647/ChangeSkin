@@ -75,7 +75,8 @@ public class SetCommand extends Command {
         setSkinUUID(sender, (ProxiedPlayer) sender, ((ProxiedPlayer) sender).getUniqueId().toString(), bukkitOp, false);
     }
 
-    private void setSkin(CommandSender sender, ProxiedPlayer targetPlayer, String toSkin, boolean bukkitOp, boolean keepSkin) {
+    private void setSkin(CommandSender sender, ProxiedPlayer targetPlayer, String toSkin
+            , boolean bukkitOp, boolean keepSkin) {
         //minecraft player names has the max length of 16 characters so it could be the uuid
         if (toSkin.length() > 16) {
             setSkinUUID(sender, targetPlayer, toSkin, bukkitOp, keepSkin);
@@ -86,7 +87,8 @@ public class SetCommand extends Command {
         }
     }
 
-    private void setSkinUUID(CommandSender sender, ProxiedPlayer receiverPayer, String targetUUID, boolean bukkitOp, boolean keepSkin) {
+    private void setSkinUUID(CommandSender sender, ProxiedPlayer receiverPayer, String targetUUID
+            , boolean bukkitOp, boolean keepSkin) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
             if (plugin.getCore().getConfig().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid)) {

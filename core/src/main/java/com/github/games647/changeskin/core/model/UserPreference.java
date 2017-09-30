@@ -1,14 +1,16 @@
 package com.github.games647.changeskin.core.model;
 
+import com.github.games647.changeskin.core.model.skin.SkinModel;
+
 import java.util.UUID;
 
 public class UserPreference {
 
     private final UUID uuid;
-    private SkinData targetSkin;
+    private SkinModel targetSkin;
     private boolean keepSkin;
 
-    public UserPreference(UUID uuid, SkinData targetSkin, boolean keepSkin) {
+    public UserPreference(UUID uuid, SkinModel targetSkin, boolean keepSkin) {
         this.uuid = uuid;
         this.targetSkin = targetSkin;
         this.keepSkin = keepSkin;
@@ -30,11 +32,11 @@ public class UserPreference {
         this.keepSkin = keepSkin;
     }
 
-    public SkinData getTargetSkin() {
+    public SkinModel getTargetSkin() {
         return targetSkin;
     }
 
-    public void setTargetSkin(SkinData targetSkin) {
+    public void setTargetSkin(SkinModel targetSkin) {
         this.targetSkin = targetSkin;
     }
 }

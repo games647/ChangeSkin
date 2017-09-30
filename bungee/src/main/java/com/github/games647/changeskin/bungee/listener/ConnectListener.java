@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -46,7 +46,7 @@ public class ConnectListener extends AbstractSkinListener {
             return;
         }
 
-        SkinData targetSkin = preferences.getTargetSkin();
+        SkinModel targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
             setRandomSkin(preferences, player);
         } else {
@@ -67,7 +67,7 @@ public class ConnectListener extends AbstractSkinListener {
                 UserPreference preferences = plugin.getStorage().getPreferences(conn.getUniqueId());
                 plugin.startSession(conn, preferences);
 
-                SkinData targetSkin = preferences.getTargetSkin();
+                SkinModel targetSkin = preferences.getTargetSkin();
                 if (targetSkin == null) {
                     refetchSkin(playerName, preferences);
                 } else {

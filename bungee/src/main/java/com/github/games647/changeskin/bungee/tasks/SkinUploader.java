@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.model.mojang.auth.Account;
+import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.shared.SharedUploader;
 
 import net.md_5.bungee.api.CommandSender;

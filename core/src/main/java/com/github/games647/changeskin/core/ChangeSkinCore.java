@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.SkinData;
-import com.github.games647.changeskin.core.model.mojang.auth.Account;
+import com.github.games647.changeskin.core.model.auth.Account;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.net.HostAndPort;
@@ -37,7 +37,7 @@ public class ChangeSkinCore {
     private final Map<String, Object> crackedNames = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
 
     private final PlatformPlugin<?> plugin;
-    private final List<SkinData> defaultSkins = Lists.newArrayList();
+    private final List<SkinModel> defaultSkins = Lists.newArrayList();
     private final List<Account> uploadAccounts = Lists.newArrayList();
     private final MojangAuthApi authApi;
 
@@ -130,17 +130,17 @@ public class ChangeSkinCore {
         return localeMessages.get(key);
     }
 
-    public List<SkinData> getDefaultSkins() {
+    public List<SkinModel> getDefaultSkins() {
         return defaultSkins;
     }
 
-    public SkinData checkAutoUpdate(SkinData oldSkin) {
+    public SkinModel checkAutoUpdate(SkinModel oldSkin) {
         if (oldSkin == null) {
             return null;
         }
 
         if (autoUpdateDiff > 0 && System.currentTimeMillis() - oldSkin.getTimestamp() > autoUpdateDiff) {
-            Optional<SkinData> updatedSkin = skinApi.downloadSkin(oldSkin.getUuid());
+            Optional<SkinModel> updatedSkin = skinApi.downloadSkin(oldSkin.getProfileId());
             if (updatedSkin.isPresent() && !Objects.equals(updatedSkin.get(), oldSkin)) {
                 return updatedSkin.get();
             }
@@ -173,19 +173,19 @@ public class ChangeSkinCore {
                 }
             }
         } catch (IOException ioExc) {
-            plugin.getLog().error("Cannot create plugin folder " + dataFolder, ioExc);
+            plugin.getLog().error("Cannot create plugin folder {}", dataFolder, ioExc);
         }
     }
 
     private void loadDefaultSkins(Iterable<String> defaults) {
         for (String uuidString : defaults) {
             UUID ownerUUID = UUID.fromString(uuidString);
-            SkinData skinData = storage.getSkin(ownerUUID);
+            SkinModel skinData = storage.getSkin(ownerUUID);
             if (skinData == null) {
-                Optional<SkinData> optSkin = skinApi.downloadSkin(ownerUUID);
+                Optional<SkinModel> optSkin = skinApi.downloadSkin(ownerUUID);
                 if (optSkin.isPresent()) {
                     skinData = optSkin.get();
-                    uuidCache.put(skinData.getName(), skinData.getUuid());
+                    uuidCache.put(skinData.getProfileName(), skinData.getProfileId());
                     storage.save(skinData);
                 }
             }

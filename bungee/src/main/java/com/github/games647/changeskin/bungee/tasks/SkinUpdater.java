@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.model.SkinData;
 import com.github.games647.changeskin.core.model.UserPreference;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -14,13 +14,13 @@ public class SkinUpdater implements Runnable {
 
     private final ChangeSkinBungee plugin;
     private final ProxiedPlayer receiver;
-    private final SkinData targetSkin;
+    private final SkinModel targetSkin;
     private final CommandSender invoker;
 
     private final boolean bukkitOp;
     private final boolean keepSkin;
 
-    public SkinUpdater(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, SkinData targetSkin
+    public SkinUpdater(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, SkinModel targetSkin
             , boolean bukkitOp, boolean keepSkin) {
         this.plugin = plugin;
         this.receiver = receiver;
@@ -46,8 +46,8 @@ public class SkinUpdater implements Runnable {
 
                 //serialize it to restore on response message
                 out.writeInt(targetSkin.getSkinId());
-                out.writeUTF(targetSkin.getEncodedData());
-                out.writeUTF(targetSkin.getEncodedSignature());
+                out.writeUTF(targetSkin.getEncodedValue());
+                out.writeUTF(targetSkin.getSignature());
 
                 out.writeUTF(receiver.getUniqueId().toString());
                 out.writeBoolean(plugin.getCore().getConfig().getBoolean("skinPermission"));

@@ -1,6 +1,6 @@
 package com.github.games647.changeskin.sponge.tasks;
 
-import com.github.games647.changeskin.core.model.mojang.auth.Account;
+import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.shared.SharedUploader;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 

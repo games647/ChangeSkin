@@ -1,10 +1,10 @@
 package com.github.games647.changeskin.core;
 
 import com.github.games647.changeskin.core.model.GameProfile;
-import com.github.games647.changeskin.core.model.SkinData;
-import com.github.games647.changeskin.core.model.mojang.UUIDTypeAdapter;
-import com.github.games647.changeskin.core.model.mojang.skin.SkinProperties;
-import com.github.games647.changeskin.core.model.mojang.skin.TexturesModel;
+import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
+import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.model.skin.SkinProperties;
+import com.github.games647.changeskin.core.model.skin.TexturesModel;
 import com.google.common.collect.Iterables;
 import com.google.common.net.HostAndPort;
 import com.google.gson.Gson;
@@ -106,7 +106,7 @@ public class MojangSkinApi {
         return Optional.empty();
     }
 
-    public Optional<SkinData> downloadSkin(UUID ownerUUID) {
+    public Optional<SkinModel> downloadSkin(UUID ownerUUID) {
         if (crackedUUID.containsKey(ownerUUID)) {
             return Optional.empty();
         }
@@ -131,7 +131,7 @@ public class MojangSkinApi {
                     String encodedSkin = propertiesModel.getValue();
                     String signature = propertiesModel.getSignature();
 
-                    return Optional.of(new SkinData(encodedSkin, signature));
+                    return Optional.of(SkinModel.createSkinFromEncoded(encodedSkin, signature));
                 }
             }
         } catch (Exception ex) {
