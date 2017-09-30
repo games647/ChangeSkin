@@ -8,6 +8,10 @@ import com.github.games647.changeskin.core.model.skin.TextureType;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +33,7 @@ public class SkinStorage {
 
     private boolean keepColumnPresent;
 
-    public SkinStorage(ChangeSkinCore core, String driver, String host, int port, String databasePath
+    public SkinStorage(ChangeSkinCore core, String driver, String host, int port, String database
             , String user, String pass, boolean useSSL) {
         this.plugin = core;
 
@@ -43,9 +47,6 @@ public class SkinStorage {
             config.setThreadFactory(threadFactory);
         }
 
-        String folderPath = core.getPlugin().getPluginFolder().toAbsolutePath().toString();
-        databasePath = databasePath.replace("{pluginDir}", folderPath);
-
         //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         Properties properties = new Properties();
         properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
@@ -54,11 +55,13 @@ public class SkinStorage {
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
-            jdbcUrl += "sqlite" + "://" + databasePath;
+            String folderPath = core.getPlugin().getPluginFolder().toAbsolutePath().toString();
+            database = database.replace("{pluginDir}", folderPath);
+
+            jdbcUrl += "sqlite://" + database;
             config.setConnectionTestQuery("SELECT 1");
-            config.setMaximumPoolSize(1);
         } else {
-            jdbcUrl += "mysql" + "://" + host + ':' + port + '/' + databasePath;
+            jdbcUrl += "mysql://" + host + ':' + port + '/' + database;
         }
 
         config.setJdbcUrl(jdbcUrl);
@@ -66,48 +69,41 @@ public class SkinStorage {
     }
 
     public void createTables() throws SQLException {
-        try (Connection con = dataSource.getConnection();
-            Statement stmt = con.createStatement()) {
-            String createDataStmt = "CREATE TABLE IF NOT EXISTS " + DATA_TABLE + " ("
-                    + "`SkinID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
-                    + "`DisplayName` VARCHAR(255), "
-                    + "`Timestamp` BIGINT NOT NULL, "
-                    + "`UUID` CHAR(36) NOT NULL, "
-                    + "`Name` VARCHAR(16) NOT NULL, "
-                    + "`SlimModel` BIT DEFAULT 0 NOT NULL, "
-                    + "`SkinURL` VARCHAR(255) NOT NULL, "
-                    + "`CapeURL` VARCHAR(255), "
-                    + "`Signature` BLOB NOT NULL, "
-                    + "INDEX(`Name`, `UUID`)"
-                    + ')';
+        try (InputStream in = getClass().getResourceAsStream("/create.sql");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+             Connection con = dataSource.getConnection();
+             Statement stmt = con.createStatement()) {
+            StringBuilder builder = new StringBuilder();
 
-            String createPreferencesStmt = "CREATE TABLE IF NOT EXISTS " + PREFERENCES_TABLE + " ("
-                    + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
-                    + "`UUID` CHAR(36) NOT NULL, "
-                    + "`TargetSkin` INTEGER NOT NULL, "
-                    + "`KeepSkin` BIT NOT NULL DEFAULT 1, "
-                    + "UNIQUE (`UUID`), "
-                    + "FOREIGN KEY (`TargetSkin`) "
-                    + "     REFERENCES " + DATA_TABLE + " (`SkinID`) "
-                    + "     ON DELETE CASCADE "
-                    + ')';
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("#")) continue;
 
-            if (dataSource.getJdbcUrl().contains("sqlite")) {
-                createPreferencesStmt = createPreferencesStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
-                createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT")
-                        .replace(", INDEX(`Name`, `UUID`)", "");
+                builder.append(line);
+                if (line.endsWith(";")) {
+                    String sql = builder.toString();
+                    if (dataSource.getJdbcUrl().contains("sqlite")) {
+                        sql = sql.replace("AUTO_INCREMENT", "AUTOINCREMENT");
+                    }
+
+                    stmt.addBatch(sql);
+                    builder = new StringBuilder();
+                }
             }
 
-            stmt.executeUpdate(createDataStmt);
-            stmt.executeUpdate(createPreferencesStmt);
+            stmt.executeBatch();
+        } catch (IOException ioEx) {
+            plugin.getLogger().error("Failed to load migration file", ioEx);
+        }
 
-            try (ResultSet testResult = stmt.executeQuery("SELECT * FROM " + DATA_TABLE + " Limit 1")) {
-                ResultSetMetaData meta = testResult.getMetaData();
-                for (int i = 1; i < meta.getColumnCount() + 1; i++) {
-                    if ("KeepSkin".equals(meta.getColumnName(i))) {
-                        keepColumnPresent = true;
-                        break;
-                    }
+        try (Connection con = dataSource.getConnection();
+             Statement stmt = con.createStatement();
+             ResultSet testResult = stmt.executeQuery("SELECT * FROM " + DATA_TABLE + " Limit 1")) {
+            ResultSetMetaData meta = testResult.getMetaData();
+            for (int i = 1; i < meta.getColumnCount() + 1; i++) {
+                if ("KeepSkin".equals(meta.getColumnName(i))) {
+                    keepColumnPresent = true;
+                    break;
                 }
             }
         }
@@ -115,11 +111,11 @@ public class SkinStorage {
 
     public UserPreference getPreferences(UUID uuid) {
         try (Connection con = dataSource.getConnection();
-            PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, "
-                    + DATA_TABLE + ".UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature, " + PREFERENCES_TABLE + ".*"
-                    + " FROM " + PREFERENCES_TABLE
-                    + " JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
-                    + " WHERE " + PREFERENCES_TABLE + ".UUID=? LIMIT 1")) {
+             PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, "
+                     + DATA_TABLE + ".UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature, " + PREFERENCES_TABLE + ".*"
+                     + " FROM " + PREFERENCES_TABLE
+                     + " JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
+                     + " WHERE " + PREFERENCES_TABLE + ".UUID=? LIMIT 1")) {
             stmt.setString(1, uuid.toString().replace("-", ""));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
@@ -144,8 +140,8 @@ public class SkinStorage {
 
     public SkinModel getSkin(int targetSkinId) {
         try (Connection con = dataSource.getConnection();
-            PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
-                    "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1")) {
+             PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
+                     "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1")) {
             stmt.setInt(1, targetSkinId);
 
             try (ResultSet resultSet = stmt.executeQuery()) {
@@ -162,9 +158,9 @@ public class SkinStorage {
 
     public SkinModel getSkin(UUID skinUUID) {
         try (Connection con = dataSource.getConnection();
-            PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
-                    "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE
-                    + " WHERE UUID=? ORDER BY Timestamp DESC LIMIT 1")) {
+             PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
+                     "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE
+                     + " WHERE UUID=? ORDER BY Timestamp DESC LIMIT 1")) {
             stmt.setString(1, skinUUID.toString().replace("-", ""));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
@@ -243,8 +239,8 @@ public class SkinStorage {
 
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
-                + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
-                + " (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+                     + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
+                     + " (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setLong(1, skinData.getTimestamp());
             stmt.setString(2, skinData.getProfileId().toString().replace("-", ""));
