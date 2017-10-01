@@ -1,10 +1,12 @@
 package com.github.games647.changeskin.core;
 
+import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.model.auth.AuthenticationRequest;
 import com.github.games647.changeskin.core.model.auth.AuthenticationResponse;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,7 +26,7 @@ public class MojangAuthApi {
     private static final String AUTH_URL = "https://authserver.mojang.com/authenticate";
     private static final String OLD_SKIN_URL = "https://skins.minecraft.net/MinecraftSkins/<playerName>.png";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
     private final Logger logger;
 
     public MojangAuthApi(Logger logger) {
@@ -54,14 +56,14 @@ public class MojangAuthApi {
     }
 
     public void changeSkin(UUID ownerId, UUID accessToken, String sourceUrl, boolean slimModel) {
-        String url = CHANGE_SKIN_URL.replace("<uuid>", ownerId.toString().replace("-", ""));
+        String url = CHANGE_SKIN_URL.replace("<uuid>", CommonUtil.toMojangId(ownerId));
 
         try {
             HttpURLConnection httpConnection = CommonUtil.getConnection(url);
             httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
 
-            httpConnection.addRequestProperty("Authorization", "Bearer " + accessToken.toString().replace("-", ""));
+            httpConnection.addRequestProperty("Authorization", "Bearer " + CommonUtil.toMojangId(accessToken));
 
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(httpConnection.getOutputStream()))) {
                 if (slimModel) {

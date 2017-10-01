@@ -116,7 +116,7 @@ public class SkinStorage {
                      + " FROM " + PREFERENCES_TABLE
                      + " JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
                      + " WHERE " + PREFERENCES_TABLE + ".UUID=? LIMIT 1")) {
-            stmt.setString(1, uuid.toString().replace("-", ""));
+            stmt.setString(1, CommonUtil.toMojangId(uuid));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -161,7 +161,7 @@ public class SkinStorage {
              PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
                      "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE
                      + " WHERE UUID=? ORDER BY Timestamp DESC LIMIT 1")) {
-            stmt.setString(1, skinUUID.toString().replace("-", ""));
+            stmt.setString(1, CommonUtil.toMojangId(skinUUID));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -185,7 +185,7 @@ public class SkinStorage {
             if (targetSkin == null) {
                 try (PreparedStatement stmt = con.prepareStatement("DELETE FROM "
                         + PREFERENCES_TABLE + " WHERE UUID=?")) {
-                    stmt.setString(1, preferences.getUuid().toString().replace("-", ""));
+                    stmt.setString(1, CommonUtil.toMojangId(preferences.getUuid()));
                     stmt.executeUpdate();
                 }
             } else {
@@ -196,7 +196,7 @@ public class SkinStorage {
                 }
 
                 try (PreparedStatement stmt = con.prepareStatement(insertQuery)) {
-                    stmt.setString(1, preferences.getUuid().toString().replace("-", ""));
+                    stmt.setString(1, CommonUtil.toMojangId(preferences.getUuid()));
                     stmt.setInt(2, targetSkin.getSkinId());
                     if (keepColumnPresent) {
                         stmt.setBoolean(3, preferences.isKeepSkin());
@@ -243,7 +243,7 @@ public class SkinStorage {
                      + " (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setLong(1, skinData.getTimestamp());
-            stmt.setString(2, skinData.getProfileId().toString().replace("-", ""));
+            stmt.setString(2, CommonUtil.toMojangId(skinData.getProfileId()));
             stmt.setString(3, skinData.getProfileName());
             stmt.setBoolean(4, slimModel);
             stmt.setString(5, skinUrl);

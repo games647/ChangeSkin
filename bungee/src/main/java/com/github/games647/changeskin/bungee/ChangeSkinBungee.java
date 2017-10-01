@@ -155,7 +155,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         LoginResult loginProfile = initialHandler.getLoginProfile();
         //this is null on offline mode
         if (loginProfile == null) {
-            String mojangUUID = player.getUniqueId().toString().replace("-", "");
+            String mojangUUID = CommonUtil.toMojangId(player.getUniqueId());
 
             Property[] properties = emptyProperties;
             if (skinData != null) {

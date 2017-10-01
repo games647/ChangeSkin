@@ -73,6 +73,6 @@ Blacklist
 
 ## How to install on BungeeCord
 1. Install the plugin on both BungeeCord and Bukkit server
-2. Activate BungeeCord support in your spigot configuration
+2. Activate BungeeCord support in your Spigot configuration
 3. Check the settings of the ChangeSkin config in the BungeeCord instance
     * For example BungeeCord doesn't support SQLite by default

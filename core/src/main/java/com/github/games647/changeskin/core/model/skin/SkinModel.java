@@ -23,6 +23,8 @@ public class SkinModel {
     private final String profileName;
     private final Map<TextureType, TextureModel> textures = Maps.newHashMap();
 
+    private final boolean signatureRequired = true;
+
     public SkinModel(int skinId, long timestamp, UUID uuid, String name
             , boolean slimModel, String skinURL, String capeURL, byte[] signature) {
         this.skinId = skinId;
@@ -86,10 +88,6 @@ public class SkinModel {
 
     public Map<TextureType, TextureModel> getTextures() {
         return textures;
-    }
-
-    public boolean isSignatureRequired() {
-        return true;
     }
 
     private String serializeData() {

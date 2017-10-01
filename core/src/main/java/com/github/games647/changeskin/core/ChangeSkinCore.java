@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -139,7 +141,8 @@ public class ChangeSkinCore {
             return null;
         }
 
-        if (autoUpdateDiff > 0 && System.currentTimeMillis() - oldSkin.getTimestamp() > autoUpdateDiff) {
+        long difference = Duration.between(Instant.ofEpochMilli(oldSkin.getTimestamp()), Instant.now()).getSeconds();
+        if (autoUpdateDiff > 0 && difference > autoUpdateDiff) {
             Optional<SkinModel> updatedSkin = skinApi.downloadSkin(oldSkin.getProfileId());
             if (updatedSkin.isPresent() && !Objects.equals(updatedSkin.get(), oldSkin)) {
                 return updatedSkin.get();

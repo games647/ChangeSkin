@@ -17,6 +17,8 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +49,7 @@ public class MojangSkinApi {
     private final Map<Object, Object> requests = CommonUtil.buildCache(10, -1);
     private final Map<UUID, Object> crackedUUID = CommonUtil.buildCache(60, -1);
 
-    private long lastRateLimit;
+    private Instant lastRateLimit;
 
     public MojangSkinApi(Logger logger, int rateLimit, Collection<HostAndPort> proxies) {
         this.rateLimit = Math.max(rateLimit, 600);
@@ -70,7 +72,7 @@ public class MojangSkinApi {
 
         try {
             HttpURLConnection connection;
-            if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
+            if (requests.size() >= rateLimit || Duration.between(lastRateLimit, Instant.now()).getSeconds() < 60 * 10) {
                 synchronized (proxies) {
                     if (proxies.hasNext()) {
                         connection = getConnection(UUID_URL + playerName, proxies.next());
@@ -87,7 +89,7 @@ public class MojangSkinApi {
                 throw new NotPremiumException(playerName);
             } else if (connection.getResponseCode() == RATE_LIMIT_ID) {
                 logger.info("RATE_LIMIT REACHED");
-                lastRateLimit = System.currentTimeMillis();
+                lastRateLimit = Instant.now();
                 if (!connection.usingProxy()) {
                     return getUUID(playerName);
                 } else {
@@ -112,7 +114,7 @@ public class MojangSkinApi {
         }
 
         //unsigned is needed in order to receive the signature
-        String uuidString = ownerUUID.toString().replace("-", "");
+        String uuidString = CommonUtil.toMojangId(ownerUUID);
         try {
             HttpURLConnection httpConnection = getConnection(String.format(SKIN_URL, uuidString));
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {

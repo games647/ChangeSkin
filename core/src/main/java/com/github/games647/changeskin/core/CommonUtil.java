@@ -33,6 +33,10 @@ public class CommonUtil {
                 + '-' + withoutDashes.substring(20, 32));
     }
 
+    public static String toMojangId(UUID uuid) {
+        return uuid.toString().replace("-", "");
+    }
+
     public static <K, V> ConcurrentMap<K, V> buildCache(int seconds, int maxSize) {
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
 
