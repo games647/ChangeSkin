@@ -1,7 +1,13 @@
 # Changelog
 
-##### 2.5
+##### 3.0
 
+* Use migration for sql storage
+* Merge Mojang model and changeskin model
+* Migrate SLF4J logging (Fixes #90)
+* Refactor project code to share more code between platforms -> easier to maintain the project
+* Use Optional for possible null values
+* Use Gson's TypeAdapter for more type safety
 * Faster skin serialization and deserialization (using cached gson object)
 * Cache fields for reflections
 * Remove duplicated task code

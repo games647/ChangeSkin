@@ -63,12 +63,15 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     }
 
     private final Map<PendingConnection, UserPreference> loginSessions = Maps.newConcurrentMap();
-    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
     private final Property[] emptyProperties = {};
+
     private ChangeSkinCore core;
+    private Logger logger;
 
     @Override
     public void onEnable() {
+        logger = CommonUtil.createLoggerFromJDK(getLogger());
+
         core = new ChangeSkinCore(this);
         try {
             core.load();
