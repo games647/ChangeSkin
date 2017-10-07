@@ -1,7 +1,6 @@
 package com.github.games647.changeskin.bukkit.tasks;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftVersion;
@@ -167,26 +166,26 @@ public class SkinUpdater implements Runnable {
     }
 
     private void sendPacketsSelf(WrappedGameProfile gameProfile) {
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         NativeGameMode gamemode = NativeGameMode.fromBukkit(receiver.getGameMode());
 
-        //remove info
-        PacketContainer removeInfo = protocolManager.createPacket(PLAYER_INFO);
+        //remove the old skin - client updates it only on a complete remove and add
+        PacketContainer removeInfo = new PacketContainer(PLAYER_INFO);
         removeInfo.getPlayerInfoAction().write(0, PlayerInfoAction.REMOVE_PLAYER);
 
         WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
         PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
         removeInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
-        //add info containing the skin data
-        PacketContainer addInfo = protocolManager.createPacket(PLAYER_INFO);
+        //adds the skin
+        PacketContainer addInfo = new PacketContainer(PLAYER_INFO);
         addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
         addInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
         //Respawn packet
         Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
 
-        PacketContainer respawn = protocolManager.createPacket(RESPAWN);
+        //notify the client that it should update the own skin
+        PacketContainer respawn = new PacketContainer(RESPAWN);
         respawn.getIntegers().write(0, receiver.getWorld().getEnvironment().getId());
         respawn.getDifficulties().write(0, difficulty);
         respawn.getGameModes().write(0, gamemode);
@@ -194,7 +193,8 @@ public class SkinUpdater implements Runnable {
 
         Location location = receiver.getLocation().clone();
 
-        PacketContainer teleport = protocolManager.createPacket(POSITION);
+        //prevent the moved too quickly message
+        PacketContainer teleport = new PacketContainer(POSITION);
         teleport.getModifier().writeDefaults();
         teleport.getDoubles().write(0, location.getX());
         teleport.getDoubles().write(1, location.getY());
@@ -205,17 +205,15 @@ public class SkinUpdater implements Runnable {
         teleport.getIntegers().writeSafely(0, -1337);
 
         try {
-            //remove the old skin - client updates it only on a complete remove and add
-            protocolManager.sendServerPacket(receiver, removeInfo);
-            //adds the skin
-            protocolManager.sendServerPacket(receiver, addInfo);
-            //notify the client that it should update the own skin
-            protocolManager.sendServerPacket(receiver, respawn);
-
-            //prevent the moved too quickly message
-            protocolManager.sendServerPacket(receiver, teleport);
+            sendPacket(receiver, removeInfo, addInfo, respawn, teleport);
         } catch (InvocationTargetException ex) {
             plugin.getLog().error("Exception sending instant skin change packet", ex);
+        }
+    }
+
+    private void sendPacket(Player receiver, PacketContainer... packets) throws InvocationTargetException {
+        for (PacketContainer packet : packets) {
+            ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, packet);
         }
     }
 
@@ -228,10 +226,10 @@ public class SkinUpdater implements Runnable {
      */
     private double getHealth(Player player) {
         double health = getMaxHealth(player);
-        for(PotionEffect potionEffect : player.getActivePotionEffects()){
+        for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             //Had to do this because doing if(potionEffect.getType() == PotionEffectType.HEALTH_BOOST)
             //It wouldn't recognize it as the same.
-            if(potionEffect.getType().getName().equalsIgnoreCase(PotionEffectType.HEALTH_BOOST.getName())){
+            if (potionEffect.getType().getName().equalsIgnoreCase(PotionEffectType.HEALTH_BOOST.getName())) {
                 health -= ((potionEffect.getAmplifier() + 1) * 4);
             }
         }

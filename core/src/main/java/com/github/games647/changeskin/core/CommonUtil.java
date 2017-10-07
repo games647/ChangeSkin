@@ -83,6 +83,8 @@ public class CommonUtil {
 
     public static Logger createLoggerFromJDK(java.util.logging.Logger parent) {
         try {
+            parent.setLevel(Level.ALL);
+
             Class<JDK14LoggerAdapter> adapterClass = JDK14LoggerAdapter.class;
             Constructor<JDK14LoggerAdapter> cons = adapterClass.getDeclaredConstructor(java.util.logging.Logger.class);
             cons.setAccessible(true);
