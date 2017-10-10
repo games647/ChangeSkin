@@ -39,7 +39,7 @@ public class NameResolver extends SharedNameResolver {
     protected boolean hasSkinPermission(UUID uuid) {
         return invoker == null
                 || !plugin.getCore().getConfig().getBoolean("skinPermission")
-                || !plugin.checkPermission(invoker, uuid);
+                || !plugin.checkWhitelistPermission(invoker, uuid, true);
 
     }
 

@@ -226,13 +226,17 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         return core;
     }
 
-    public boolean checkPermission(CommandSender invoker, UUID uuid) {
+    @Override
+    public boolean checkWhitelistPermission(CommandSender invoker, UUID uuid, boolean sendMessage) {
         if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid)) {
             return true;
         } else if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist.*")) {
             if (invoker.hasPermission('-' + getName().toLowerCase() + ".skin.whitelist." + uuid)) {
                 //blacklisted explicit
-                sendMessage(invoker, "no-permission");
+                if (sendMessage) {
+                    sendMessage(invoker, "no-permission");
+                }
+
                 return false;
             }
 
@@ -240,7 +244,10 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         }
 
         //disallow - not whitelisted or blacklisted
-        sendMessage(invoker, "no-permission");
+        if (sendMessage) {
+            sendMessage(invoker, "no-permission");
+        }
+
         return false;
     }
 }

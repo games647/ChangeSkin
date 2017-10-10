@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.core;
 
 import java.nio.file.Path;
+import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
 import org.slf4j.Logger;
@@ -16,4 +17,6 @@ public interface PlatformPlugin<C> {
     void sendMessage(C receiver, String key);
 
     ThreadFactory getThreadFactory();
+
+    boolean checkWhitelistPermission(C invoker, UUID uuid, boolean sendMessage);
 }

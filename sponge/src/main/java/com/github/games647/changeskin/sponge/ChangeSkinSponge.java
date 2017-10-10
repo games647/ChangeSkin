@@ -25,7 +25,6 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import static org.spongepowered.api.command.args.GenericArguments.flags;
@@ -34,7 +33,7 @@ import static org.spongepowered.api.text.Text.of;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
         , url = PomData.URL, description = PomData.DESCRIPTION)
-public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
+public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
     private final Path dataFolder;
     private final Logger logger;
@@ -98,7 +97,8 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
         return core;
     }
 
-    public boolean checkPermission(CommandSource invoker, UUID uuid, boolean sendMessage) {
+    @Override
+    public boolean checkWhitelistPermission(CommandSource invoker, UUID uuid, boolean sendMessage) {
         if (invoker.hasPermission(PomData.ARTIFACT_ID + ".skin.whitelist." + uuid)) {
             return true;
         }
@@ -132,7 +132,7 @@ public class ChangeSkinSponge implements PlatformPlugin<MessageReceiver> {
     }
 
     @Override
-    public void sendMessage(MessageReceiver receiver, String key) {
+    public void sendMessage(CommandSource receiver, String key) {
         String message = core.getMessage(key);
         if (message != null && receiver != null) {
             receiver.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(message));

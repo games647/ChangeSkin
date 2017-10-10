@@ -3,9 +3,7 @@ package com.github.games647.changeskin.bukkit.listener;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
+import com.github.games647.changeskin.core.shared.SharedBungeeListener;
 
 import java.util.UUID;
 
@@ -13,90 +11,52 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-public class BungeeListener implements PluginMessageListener {
+public class BungeeListener extends SharedBungeeListener<Player> implements PluginMessageListener {
 
     private final ChangeSkinBukkit plugin;
 
     public BungeeListener(ChangeSkinBukkit plugin) {
+        super(plugin.getCore());
+
         this.plugin = plugin;
     }
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals(plugin.getName())) {
+        if (!channel.equals(channelName)) {
             return;
         }
 
-        ByteArrayDataInput dataInput = ByteStreams.newDataInput(message);
-        String subChannel = dataInput.readUTF();
-
-        if ("UpdateSkin".equalsIgnoreCase(subChannel)) {
-            plugin.getLog().info("Received instant update request from BungeeCord. "
-                    + "This request should only be send if the command /setskin was invoked");
-            updateSkin(dataInput, player);
-        } else if ("PermissionsCheck".equalsIgnoreCase(subChannel)) {
-            checkPermissions(player, dataInput);
-        }
+        handlePayload(player, message);
     }
 
-    private void updateSkin(ByteArrayDataInput dataInput, Player player) throws IllegalArgumentException {
-        String encodedData = dataInput.readUTF();
-        if ("null".equalsIgnoreCase(encodedData)) {
-            Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, player, null, false));
-            return;
-        }
-        
-        String signature = dataInput.readUTF();
-        String playerName = dataInput.readUTF();
-        Player receiver = Bukkit.getPlayerExact(playerName);
-        plugin.getLog().info("Instant update for {}", playerName);
-
-        SkinModel skinData = SkinModel.createSkinFromEncoded(encodedData, signature);
-        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, receiver, skinData, false));
+    @Override
+    protected void sendMessage(Player player, String channel, byte[] data) {
+        player.sendPluginMessage(plugin, channel, data);
     }
 
-    private void checkPermissions(Player player, ByteArrayDataInput dataInput) {
-        int skinId = dataInput.readInt();
-        String encodedData = dataInput.readUTF();
-        String encodedSignature = dataInput.readUTF();
-
-        //continue on success only
-        String receiverUUID = dataInput.readUTF();
-        boolean skinPerm = dataInput.readBoolean();
-        boolean isOp = dataInput.readBoolean();
-
-        SkinModel targetSkin = SkinModel.createSkinFromEncoded(encodedData, encodedSignature);
-        if (isOp || checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getProfileId(), skinPerm)) {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("PermissionsSuccess");
-            out.writeInt(skinId);
-            out.writeUTF(encodedData);
-            out.writeUTF(encodedSignature);
-            out.writeUTF(receiverUUID);
-
-            player.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
-        } else {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("PermissionsFailure");
-            player.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
-        }
+    @Override
+    protected void runUpdater(Player receiver, SkinModel targetSkin) {
+        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, receiver, targetSkin, false));
     }
 
-    private boolean checkBungeePerms(Player player, UUID receiverUUID, UUID targetUUID, boolean skinPerm) {
-        if (player.getUniqueId().equals(receiverUUID)) {
-            boolean hasCommandPerm = player.hasPermission(plugin.getName().toLowerCase() + ".command.setskin");
-            if (skinPerm) {
-                return hasCommandPerm && plugin.checkPermission(player, targetUUID, false);
-            } else {
-                return hasCommandPerm;
-            }
-        } else {
-            boolean hasCommandPerm = player.hasPermission(plugin.getName().toLowerCase() + ".command.setskin.other");
-            if (skinPerm) {
-                return hasCommandPerm && plugin.checkPermission(player, targetUUID, false);
-            } else {
-                return hasCommandPerm;
-            }
-        }
+    @Override
+    protected Player getPlayerExact(String name) {
+        return Bukkit.getPlayerExact(name);
+    }
+
+    @Override
+    protected UUID getUUID(Player player) {
+        return player.getUniqueId();
+    }
+
+    @Override
+    protected boolean hasPermission(Player player, String permission) {
+        return player.hasPermission(permission);
+    }
+
+    @Override
+    protected boolean checkWhitelistPermission(Player player, UUID targetUUID) {
+        return plugin.checkWhitelistPermission(player, targetUUID, false);
     }
 }

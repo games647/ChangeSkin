@@ -15,7 +15,7 @@ public class SkinModel {
     private static final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     private transient int skinId;
-    private transient final String encodedValue;
+    private final transient String encodedValue;
     private transient String encodedSignature;
 
     private final long timestamp;
@@ -50,7 +50,7 @@ public class SkinModel {
         String rawJson = new String(data, StandardCharsets.UTF_8);
 
         SkinModel skinModel = gson.fromJson(rawJson, SkinModel.class);
-        skinModel.setEncodedSignature(signature);
+        skinModel.encodedSignature = signature;
         return skinModel;
     }
 

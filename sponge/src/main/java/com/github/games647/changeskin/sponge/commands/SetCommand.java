@@ -46,7 +46,7 @@ public class SetCommand implements CommandExecutor {
             UUID targetUUID = UUID.fromString(targetSkin);
 
             if (plugin.getCore().getConfig().getBoolean("skinPermission")
-                    && !plugin.checkPermission(src, targetUUID, true)) {
+                    && !plugin.checkWhitelistPermission(src, targetUUID, true)) {
                 return CommandResult.empty();
             }
 

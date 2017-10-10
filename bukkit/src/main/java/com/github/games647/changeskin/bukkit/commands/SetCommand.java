@@ -85,7 +85,7 @@ public class SetCommand extends AbstractForwardCommand {
     private void setSkinUUID(CommandSender sender, Player receiverPayer, String targetUUID, boolean keepSkin) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
-            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkPermission(sender, uuid, true)) {
+            if (plugin.getConfig().getBoolean("skinPermission") && !plugin.checkWhitelistPermission(sender, uuid, true)) {
                 return;
             }
 

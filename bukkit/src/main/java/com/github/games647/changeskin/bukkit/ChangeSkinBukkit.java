@@ -123,7 +123,8 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         setSkin(player, newSkin, applyNow);
     }
 
-    public boolean checkPermission(CommandSender invoker, UUID uuid, boolean sendMessage) {
+    @Override
+    public boolean checkWhitelistPermission(CommandSender invoker, UUID uuid, boolean sendMessage) {
         if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid)) {
             return true;
         }
