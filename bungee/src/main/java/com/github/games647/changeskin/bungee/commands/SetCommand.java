@@ -91,7 +91,8 @@ public class SetCommand extends Command {
             , boolean bukkitOp, boolean keepSkin) {
         try {
             UUID uuid = UUID.fromString(targetUUID);
-            if (plugin.getCore().getConfig().getBoolean("skinPermission") && !plugin.checkWhitelistPermission(sender, uuid, true)) {
+            if (plugin.getCore().getConfig().getBoolean("skinPermission")
+                    && !plugin.checkWhitelistPermission(sender, uuid, true)) {
                 return;
             }
 

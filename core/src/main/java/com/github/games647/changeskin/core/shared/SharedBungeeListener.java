@@ -1,6 +1,6 @@
 package com.github.games647.changeskin.core.shared;
 
-import com.github.games647.changeskin.core.ChangeSkinCore;
+import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -10,12 +10,12 @@ import java.util.UUID;
 
 public abstract class SharedBungeeListener<P> {
 
-    protected final ChangeSkinCore core;
+    protected final PlatformPlugin<?> plugin;
     protected final String channelName;
 
-    public SharedBungeeListener(ChangeSkinCore core) {
-        this.core = core;
-        this.channelName = core.getPlugin().getName();
+    public SharedBungeeListener(PlatformPlugin<?> plugin) {
+        this.plugin = plugin;
+        this.channelName = plugin.getName();
     }
 
     protected void handlePayload(P player, byte[] data) {
@@ -23,8 +23,6 @@ public abstract class SharedBungeeListener<P> {
         String subChannel = dataInput.readUTF();
 
         if ("UpdateSkin".equalsIgnoreCase(subChannel)) {
-            core.getLogger().info("Received instant update request from BungeeCord. "
-                    + "This request should only be send if the command /setskin was invoked");
             updateSkin(player, dataInput);
         } else if ("PermissionsCheck".equalsIgnoreCase(subChannel)) {
             checkPermissions(player, dataInput);
@@ -33,19 +31,13 @@ public abstract class SharedBungeeListener<P> {
 
 
     private void updateSkin(P player, ByteArrayDataInput dataInput) throws IllegalArgumentException {
-        String encodedData = dataInput.readUTF();
-        if ("null".equalsIgnoreCase(encodedData)) {
-            runUpdater(player, null);
-            return;
-        }
-
-        String signature = dataInput.readUTF();
         String playerName = dataInput.readUTF();
         P receiver = getPlayerExact(playerName);
-        core.getLogger().info("Instant update for {}", playerName);
 
-        SkinModel skinData = SkinModel.createSkinFromEncoded(encodedData, signature);
-        runUpdater(player, skinData);
+        plugin.getLog().info("Instant update for {}", playerName);
+
+        // SkinModel skinData = SkinModel.createSkinFromEncoded(encodedData, signature);
+        runUpdater(player, null);
     }
 
     private void checkPermissions(P player, ByteArrayDataInput dataInput) {
@@ -76,7 +68,7 @@ public abstract class SharedBungeeListener<P> {
     }
 
     private boolean checkBungeePerms(P player, UUID receiverUUID, UUID targetUUID, boolean skinPerm) {
-        String pluginName = core.getPlugin().getName().toLowerCase();
+        String pluginName = plugin.getName().toLowerCase();
         if (getUUID(player).equals(receiverUUID)) {
             boolean hasCommandPerm = hasPermission(player, pluginName + ".command.setskin");
             if (skinPerm) {

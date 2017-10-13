@@ -71,7 +71,6 @@ public class SkinUpdater implements Runnable {
 
         if (plugin.getCore().getConfig().getBoolean("instantSkinChange")) {
             plugin.applySkin(receiver, targetSkin);
-            plugin.sendMessage(receiver, "skin-changed");
         } else if (invoker != null) {
             plugin.sendMessage(invoker, "skin-changed-no-instant");
         }

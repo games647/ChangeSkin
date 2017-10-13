@@ -16,7 +16,7 @@ public class BungeeListener extends SharedBungeeListener<Player> implements Plug
     private final ChangeSkinBukkit plugin;
 
     public BungeeListener(ChangeSkinBukkit plugin) {
-        super(plugin.getCore());
+        super(plugin);
 
         this.plugin = plugin;
     }

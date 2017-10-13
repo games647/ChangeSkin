@@ -24,7 +24,7 @@ public class SkinModel {
     private final String profileName;
 
     private final boolean signatureRequired = true;
-    private final Map<TextureType, TextureModel> textures = Maps.newHashMap();
+    private final Map<TextureType, TextureModel> textures = Maps.newEnumMap(TextureType.class);
 
     public SkinModel(int skinId, long timestamp, UUID uuid, String name
             , boolean slimModel, String skinURL, String capeURL, byte[] signature) {

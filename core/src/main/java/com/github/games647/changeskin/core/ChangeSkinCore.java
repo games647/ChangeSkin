@@ -54,7 +54,7 @@ public class ChangeSkinCore {
         this.authApi = new MojangAuthApi(plugin.getLog());
     }
 
-    public void load() {
+    public void load(boolean database) {
         saveDefaultFile("messages.yml");
         saveDefaultFile("config.yml");
 
@@ -76,23 +76,8 @@ public class ChangeSkinCore {
             loadDefaultSkins(config.getStringList("default-skins"));
             loadAccounts(config.getStringList("upload-accounts"));
 
-            Configuration configStorage = config.getSection("storage");
-
-            String driver = configStorage.getString("driver");
-            String host = configStorage.get("host", "");
-            int port = configStorage.get("port", 3306);
-            String database = configStorage.getString("database");
-
-            String user = configStorage.get("username", "");
-            String password = configStorage.get("password", "");
-
-            boolean useSSL = configStorage.get("useSSL", false);
-            this.storage = new SkinStorage(this, driver, host, port, database, user, password, useSSL);
-            try {
-                this.storage.createTables();
-            } catch (Exception ex) {
-                getLogger().error("Failed to setup database. ", ex);
-                return;
+            if (database) {
+                setupDatabase(config.getSection("storage"));
             }
 
             Configuration messages = loadFile("messages.yml");
@@ -109,6 +94,24 @@ public class ChangeSkinCore {
                     });
         } catch (IOException ioEx) {
             plugin.getLog().info("Failed to load yaml files", ioEx);
+        }
+    }
+
+    public void setupDatabase(Configuration sqlConfig) {
+        String driver = sqlConfig.getString("driver");
+        String host = sqlConfig.get("host", "");
+        int port = sqlConfig.get("port", 3306);
+        String database = sqlConfig.getString("database");
+
+        String user = sqlConfig.get("username", "");
+        String password = sqlConfig.get("password", "");
+
+        boolean useSSL = sqlConfig.get("useSSL", false);
+        this.storage = new SkinStorage(this, driver, host, port, database, user, password, useSSL);
+        try {
+            this.storage.createTables();
+        } catch (Exception ex) {
+            getLogger().error("Failed to setup database. ", ex);
         }
     }
 

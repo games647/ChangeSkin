@@ -32,9 +32,9 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
     private final ConcurrentMap<UUID, UserPreference> loginSessions = CommonUtil.buildCache(2 * 60, -1);
     private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
+    private final ChangeSkinCore core = new ChangeSkinCore(this);
 
     private boolean bungeeCord;
-    private ChangeSkinCore core;
 
     @Override
     public void onEnable() {
@@ -47,6 +47,14 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         saveDefaultConfig();
         registerCommands();
 
+        try {
+            core.load(!bungeeCord);
+        } catch (Exception ex) {
+            logger.error("Error loading config. Disabling plugin...", ex);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         if (bungeeCord) {
             logger.info("BungeeCord detected. Activating BungeeCord support");
             logger.info("Make sure you installed the plugin on BungeeCord too");
@@ -54,16 +62,6 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeListener(this));
         } else {
-            this.core = new ChangeSkinCore(this);
-
-            try {
-                core.load();
-            } catch (Exception ex) {
-                logger.error("Error loading config. Disabling plugin...", ex);
-                getServer().getPluginManager().disablePlugin(this);
-                return;
-            }
-
             getServer().getPluginManager().registerEvents(new LoginListener(this), this);
             getServer().getPluginManager().registerEvents(new AsyncLoginListener(this), this);
         }
@@ -71,9 +69,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
     @Override
     public void onDisable() {
-        if (core != null) {
-            this.core.close();
-        }
+        this.core.close();
     }
 
     public WrappedSignedProperty convertToProperty(SkinModel skinData) {

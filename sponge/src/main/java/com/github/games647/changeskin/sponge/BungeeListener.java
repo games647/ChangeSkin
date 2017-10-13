@@ -21,7 +21,7 @@ public class BungeeListener extends SharedBungeeListener<Player> implements RawD
     private final RawDataChannel pluginChannel;
 
     public BungeeListener(ChangeSkinSponge plugin, RawDataChannel pluginChannel) {
-        super(plugin.getCore());
+        super(plugin);
 
         this.plugin = plugin;
         this.pluginChannel = pluginChannel;

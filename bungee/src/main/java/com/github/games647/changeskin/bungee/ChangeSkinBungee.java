@@ -74,7 +74,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
 
         core = new ChangeSkinCore(this);
         try {
-            core.load();
+            core.load(true);
         } catch (Exception ioExc) {
             logger.error("Error loading config. Disabling plugin...", ioExc);
             return;
@@ -188,15 +188,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         if (player.getServer() != null) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("UpdateSkin");
-
-            if (skinData == null) {
-                out.writeUTF("null");
-                out.writeUTF(player.getName());
-            } else {
-                out.writeUTF(skinData.getEncodedValue());
-                out.writeUTF(skinData.getSignature());
-                out.writeUTF(player.getName());
-            }
+            out.writeUTF(player.getName());
 
             player.getServer().sendData(getDescription().getName(), out.toByteArray());
         }

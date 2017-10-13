@@ -51,7 +51,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
         core = new ChangeSkinCore(this);
         try {
-            core.load();
+            core.load(true);
         } catch (Exception ex) {
             logger.error("Error loading config. Disabling plugin...", ex);
         }
