@@ -49,8 +49,6 @@ public class ConnectListener extends AbstractSkinListener {
         SkinModel targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
             setRandomSkin(preferences, player);
-        } else {
-            plugin.applySkin(player, targetSkin);
         }
     }
 

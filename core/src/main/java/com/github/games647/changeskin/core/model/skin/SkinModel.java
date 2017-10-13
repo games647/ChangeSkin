@@ -18,12 +18,13 @@ public class SkinModel {
     private final transient String encodedValue;
     private transient String encodedSignature;
 
+    //the order of these fields are relevant
     private final long timestamp;
     private final UUID profileId;
     private final String profileName;
-    private final Map<TextureType, TextureModel> textures = Maps.newHashMap();
 
     private final boolean signatureRequired = true;
+    private final Map<TextureType, TextureModel> textures = Maps.newHashMap();
 
     public SkinModel(int skinId, long timestamp, UUID uuid, String name
             , boolean slimModel, String skinURL, String capeURL, byte[] signature) {

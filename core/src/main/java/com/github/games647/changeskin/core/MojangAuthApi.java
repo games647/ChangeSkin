@@ -41,7 +41,6 @@ public class MojangAuthApi {
 
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(httpConnection.getOutputStream()))) {
                 writer.append(gson.toJson(new AuthenticationRequest(email, password)));
-                writer.flush();
             }
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()))) {
@@ -73,7 +72,6 @@ public class MojangAuthApi {
                 }
 
                 writer.write("&url=" + URLEncoder.encode(sourceUrl, Charsets.UTF_8.name()));
-                writer.flush();
             }
 
             httpConnection.connect();
