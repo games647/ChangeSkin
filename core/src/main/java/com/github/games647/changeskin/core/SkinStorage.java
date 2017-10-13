@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Base64;
@@ -28,14 +27,12 @@ public class SkinStorage {
     private static final String PREFERENCES_TABLE = "preferences";
     private static final String DATA_TABLE = "skinData";
 
-    private final ChangeSkinCore plugin;
+    private final ChangeSkinCore core;
     private final HikariDataSource dataSource;
-
-    private boolean keepColumnPresent;
 
     public SkinStorage(ChangeSkinCore core, String driver, String host, int port, String database
             , String user, String pass, boolean useSSL) {
-        this.plugin = core;
+        this.core = core;
 
         HikariConfig config = new HikariConfig();
         config.setUsername(user);
@@ -93,19 +90,7 @@ public class SkinStorage {
 
             stmt.executeBatch();
         } catch (IOException ioEx) {
-            plugin.getLogger().error("Failed to load migration file", ioEx);
-        }
-
-        try (Connection con = dataSource.getConnection();
-             Statement stmt = con.createStatement();
-             ResultSet testResult = stmt.executeQuery("SELECT * FROM " + DATA_TABLE + " Limit 1")) {
-            ResultSetMetaData meta = testResult.getMetaData();
-            for (int i = 1; i < meta.getColumnCount() + 1; i++) {
-                if ("KeepSkin".equals(meta.getColumnName(i))) {
-                    keepColumnPresent = true;
-                    break;
-                }
-            }
+            core.getLogger().error("Failed to load migration file", ioEx);
         }
     }
 
@@ -114,25 +99,27 @@ public class SkinStorage {
              PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, "
                      + DATA_TABLE + ".UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature, " + PREFERENCES_TABLE + ".*"
                      + " FROM " + PREFERENCES_TABLE
-                     + " JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
+                     + " LEFT JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
                      + " WHERE " + PREFERENCES_TABLE + ".UUID=? LIMIT 1")) {
             stmt.setString(1, CommonUtil.toMojangId(uuid));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
-                    SkinModel skinData = parseSkinData(resultSet);
-                    boolean keepSkin = false;
-                    if (keepColumnPresent) {
-                        keepSkin = resultSet.getBoolean(11);
+                    int prefId = resultSet.getInt(8);
+
+                    SkinModel skinData = null;
+                    if (resultSet.getObject(1)  != null) {
+                        skinData = parseSkinData(resultSet);
                     }
 
-                    return new UserPreference(uuid, skinData, keepSkin);
+                    boolean keepSkin = resultSet.getBoolean(12);
+                    return new UserPreference(prefId, uuid, skinData, keepSkin);
                 } else {
                     return new UserPreference(uuid);
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Failed to query preferences", sqlEx);
+            core.getLogger().error("Failed to query preferences", sqlEx);
         }
 
         return null;
@@ -150,7 +137,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Failed to query skin data from row id", sqlEx);
+            core.getLogger().error("Failed to query skin data from row id", sqlEx);
         }
 
         return null;
@@ -169,7 +156,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Failed to query skin data from uuid", sqlEx);
+            core.getLogger().error("Failed to query skin data from uuid", sqlEx);
         }
 
         return null;
@@ -182,31 +169,27 @@ public class SkinStorage {
         }
 
         try (Connection con = dataSource.getConnection()) {
-            if (targetSkin == null) {
-                try (PreparedStatement stmt = con.prepareStatement("DELETE FROM "
-                        + PREFERENCES_TABLE + " WHERE UUID=?")) {
-                    stmt.setString(1, CommonUtil.toMojangId(preferences.getUuid()));
-                    stmt.executeUpdate();
-                }
-            } else {
-                String insertQuery = "REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin) VALUES (?, ?)";
-                if (keepColumnPresent) {
-                    insertQuery = "REPLACE INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin, KeepSkin) " +
-                            "VALUES (?, ?, ?)";
-                }
+            if (preferences.getId() == -1) {
+                String insertQuery = "INSERT INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin, KeepSkin) " +
+                        "VALUES (?, ?, ?)";
 
                 try (PreparedStatement stmt = con.prepareStatement(insertQuery)) {
                     stmt.setString(1, CommonUtil.toMojangId(preferences.getUuid()));
-                    stmt.setInt(2, targetSkin.getSkinId());
-                    if (keepColumnPresent) {
-                        stmt.setBoolean(3, preferences.isKeepSkin());
-                    }
+                    stmt.setInt(2, targetSkin == null ? -1 : targetSkin.getSkinId());
+                    stmt.setBoolean(3, preferences.isKeepSkin());
 
+                    stmt.executeUpdate();
+                }
+            } else {
+                try (PreparedStatement stmt = con.prepareStatement("UPDATE " + PREFERENCES_TABLE
+                        + " SET TargetSkin=? WHERE UUID=?")) {
+                    stmt.setInt(1, targetSkin == null ? -1 : targetSkin.getSkinId());
+                    stmt.setString(2, CommonUtil.toMojangId(preferences.getUuid()));
                     stmt.executeUpdate();
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Failed to save preferences", sqlEx);
+            core.getLogger().error("Failed to save preferences", sqlEx);
         }
     }
 
@@ -259,7 +242,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Failed to query skin data", sqlEx);
+            core.getLogger().error("Failed to query skin data", sqlEx);
         }
 
         return false;

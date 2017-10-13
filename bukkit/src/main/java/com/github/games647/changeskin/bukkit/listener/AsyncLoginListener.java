@@ -46,7 +46,10 @@ public class AsyncLoginListener extends SharedListener implements Listener {
         if (targetSkin == null && plugin.getConfig().getBoolean("restoreSkins")) {
             refetchSkin(playerName, preferences);
         } else {
-            targetSkin = core.checkAutoUpdate(targetSkin);
+            if (!preferences.isKeepSkin()) {
+                targetSkin = core.checkAutoUpdate(targetSkin);
+            }
+
             preferences.setTargetSkin(targetSkin);
             save(targetSkin, preferences);
         }

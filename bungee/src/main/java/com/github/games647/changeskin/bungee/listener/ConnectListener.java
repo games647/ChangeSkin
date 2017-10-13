@@ -69,7 +69,10 @@ public class ConnectListener extends AbstractSkinListener {
                 if (targetSkin == null) {
                     refetchSkin(playerName, preferences);
                 } else {
-                    targetSkin = core.checkAutoUpdate(targetSkin);
+                    if (!preferences.isKeepSkin()) {
+                        targetSkin = core.checkAutoUpdate(targetSkin);
+                    }
+
                     preferences.setTargetSkin(targetSkin);
                     save(targetSkin, preferences);
                 }

@@ -29,11 +29,18 @@ public class ServerSwitchListener extends AbstractSkinListener {
             if (blacklist.contains(target.getName())) {
                 //clear the skin
                 plugin.applySkin(player, null);
-            } else if (plugin.getLoginSession(player.getPendingConnection()) == null) {
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
             } else {
-                SkinModel targetSkin = plugin.getLoginSession(player.getPendingConnection()).getTargetSkin();
-                plugin.applySkin(player, targetSkin);
+                UserPreference session = plugin.getLoginSession(player.getPendingConnection());
+                if (session == null) {
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
+                } else {
+                    SkinModel targetSkin = session.getTargetSkin();
+                    if (!session.isKeepSkin()) {
+                        targetSkin = plugin.getCore().checkAutoUpdate(targetSkin);
+                    }
+
+                    plugin.applySkin(player, targetSkin);
+                }
             }
         }
     }

@@ -23,7 +23,11 @@ public abstract class SharedDownloader implements Runnable, MessageReceiver {
     @Override
     public void run() {
         SkinModel storedSkin = core.getStorage().getSkin(targetUUID);
-        storedSkin = core.checkAutoUpdate(storedSkin);
+        if (storedSkin == null) {
+            storedSkin = core.getSkinApi().downloadSkin(targetUUID).orElse(null);
+        } else {
+            storedSkin = core.checkAutoUpdate(storedSkin);
+        }
 
         if (targetUUID.equals(receiverUUID)) {
             sendMessageInvoker("reset");

@@ -6,18 +6,29 @@ import java.util.UUID;
 
 public class UserPreference {
 
+    private int id;
+
     private final UUID uuid;
     private SkinModel targetSkin;
     private boolean keepSkin;
 
-    public UserPreference(UUID uuid, SkinModel targetSkin, boolean keepSkin) {
+    public UserPreference(int id, UUID uuid, SkinModel targetSkin, boolean keepSkin) {
+        this.id = id;
         this.uuid = uuid;
         this.targetSkin = targetSkin;
         this.keepSkin = keepSkin;
     }
 
     public UserPreference(UUID uuid) {
-        this(uuid, null, false);
+        this(-1, uuid, null, false);
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public UUID getUuid() {

@@ -15,7 +15,7 @@ public class SkinModel {
     private static final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     private transient int skinId;
-    private final transient String encodedValue;
+    private transient String encodedValue;
     private transient String encodedSignature;
 
     //the order of these fields are relevant
@@ -51,7 +51,9 @@ public class SkinModel {
         String rawJson = new String(data, StandardCharsets.UTF_8);
 
         SkinModel skinModel = gson.fromJson(rawJson, SkinModel.class);
+        skinModel.setSkinId(-1);
         skinModel.encodedSignature = signature;
+        skinModel.encodedValue = encodedData;
         return skinModel;
     }
 

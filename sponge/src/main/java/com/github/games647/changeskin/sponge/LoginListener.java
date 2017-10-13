@@ -43,7 +43,10 @@ public class LoginListener extends SharedListener {
                 setDefaultSkin(preferences, profile);
             }
         } else {
-            targetSkin = core.checkAutoUpdate(targetSkin);
+            if (!preferences.isKeepSkin()) {
+                targetSkin = core.checkAutoUpdate(targetSkin);
+            }
+
             applySkin(targetSkin, profile);
             save(targetSkin, preferences);
         }

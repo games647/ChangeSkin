@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftVersion;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
@@ -19,7 +20,6 @@ import com.google.common.collect.Lists;
 import com.nametagedit.plugin.NametagEdit;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -118,6 +118,53 @@ public class SkinUpdater implements Runnable {
             vehicle.eject();
         }
 
+        sendPacketsSelf(gameProfile);
+
+        //send the current inventory - otherwise player would have an empty inventory
+        receiver.updateInventory();
+
+        PlayerInventory inventory = receiver.getInventory();
+        inventory.setHeldItemSlot(inventory.getHeldItemSlot());
+
+        //this is sync so should be safe to call
+        //triggers updateHealth
+        double oldHealth = receiver.getHealth();
+        double maxHealth = getHealth(receiver);
+
+        //Food
+        int oldFood = receiver.getFoodLevel();
+        float oldSat = receiver.getSaturation();
+        receiver.setFoodLevel(20);
+        receiver.setFoodLevel(oldFood);
+        receiver.setSaturation(5.0F);
+        receiver.setSaturation(oldSat);
+
+        //Health
+        resetMaxHealth(receiver);
+        setMaxHealth(receiver, maxHealth);
+
+        // trigger a health update
+        receiver.setHealth(20.0F); //20 is default
+        receiver.setHealth(oldHealth);
+
+        //exp
+        float experience = receiver.getExp();
+        int totalExperience = receiver.getTotalExperience();
+        receiver.setExp(experience);
+        receiver.setTotalExperience(totalExperience);
+
+        //set to the correct hand position
+        setItemInHand(receiver);
+
+        //triggers updateAbilities
+        receiver.setWalkSpeed(receiver.getWalkSpeed());
+
+        if (Bukkit.getPluginManager().isPluginEnabled("NametagEdit")) {
+            NametagEdit.getApi().reloadNametag(receiver);
+        }
+    }
+
+    private void sendPacketsSelf(WrappedGameProfile gameProfile) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         NativeGameMode gamemode = NativeGameMode.fromBukkit(receiver.getGameMode());
 
@@ -135,9 +182,11 @@ public class SkinUpdater implements Runnable {
         addInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
         //Respawn packet
+        Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
+
         PacketContainer respawn = protocolManager.createPacket(RESPAWN);
         respawn.getIntegers().write(0, receiver.getWorld().getEnvironment().getId());
-        respawn.getDifficulties().write(0, Difficulty.valueOf(receiver.getWorld().getDifficulty().toString()));
+        respawn.getDifficulties().write(0, difficulty);
         respawn.getGameModes().write(0, gamemode);
         respawn.getWorldTypeModifier().write(0, receiver.getWorld().getWorldType());
 
@@ -163,34 +212,8 @@ public class SkinUpdater implements Runnable {
 
             //prevent the moved too quickly message
             protocolManager.sendServerPacket(receiver, teleport);
-
-            //send the current inventory - otherwise player would have an empty inventory
-            receiver.updateInventory();
-
-            PlayerInventory inventory = receiver.getInventory();
-            inventory.setHeldItemSlot(inventory.getHeldItemSlot());
-
-            //this is sync so should be safe to call
-            //triggers updateHealth
-            double oldHealth = receiver.getHealth();
-            double maxHealth = getHealth(receiver);
-            double healthScale = receiver.getHealthScale();
-
-            resetMaxHealth(receiver);
-            receiver.setHealthScale(healthScale);
-            setMaxHealth(receiver, maxHealth);
-            receiver.setHealth(oldHealth);
-
-            //set to the correct hand position
-            setItemInHand(receiver);
-            //triggers updateAbilities
-            receiver.setWalkSpeed(receiver.getWalkSpeed());
-
-            if (Bukkit.getPluginManager().isPluginEnabled("NametagEdit")) {
-                NametagEdit.getApi().reloadNametag(receiver);
-            }
         } catch (InvocationTargetException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Exception sending instant skin change packet", ex);
+            plugin.getLog().error("Exception sending instant skin change packet", ex);
         }
     }
 
@@ -198,7 +221,7 @@ public class SkinUpdater implements Runnable {
      * This is to protect against players with the health boost potion effect.
      * This stops the max health from going up when the player has health boost since it adds to the max health.
      *
-     * @param player
+     * @param player health of this player
      * @return the actual max health value
      */
     private double getHealth(Player player) {
