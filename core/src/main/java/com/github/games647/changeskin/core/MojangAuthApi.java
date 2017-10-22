@@ -4,7 +4,7 @@ import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.model.auth.AuthenticationRequest;
 import com.github.games647.changeskin.core.model.auth.AuthenticationResponse;
-import com.google.common.base.Charsets;
+import com.google.common.net.UrlEscapers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,8 +26,9 @@ public class MojangAuthApi {
     private static final String AUTH_URL = "https://authserver.mojang.com/authenticate";
     private static final String OLD_SKIN_URL = "https://skins.minecraft.net/MinecraftSkins/<playerName>.png";
 
-    private final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
     private final Logger logger;
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     public MojangAuthApi(Logger logger) {
         this.logger = logger;
@@ -39,15 +40,17 @@ public class MojangAuthApi {
             httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
 
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(httpConnection.getOutputStream()))) {
+            try (BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(httpConnection.getOutputStream(), StandardCharsets.UTF_8))) {
                 writer.append(gson.toJson(new AuthenticationRequest(email, password)));
             }
 
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(httpConnection.getInputStream(), StandardCharsets.UTF_8))) {
                 AuthenticationResponse authResponse = gson.fromJson(reader, AuthenticationResponse.class);
                 return Optional.of(new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken()));
             }
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             logger.error("Tried converting player name to uuid", ex);
         }
 
@@ -63,15 +66,14 @@ public class MojangAuthApi {
             httpConnection.setDoOutput(true);
 
             httpConnection.addRequestProperty("Authorization", "Bearer " + CommonUtil.toMojangId(accessToken));
-
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(httpConnection.getOutputStream()))) {
+            try (BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(httpConnection.getOutputStream(), StandardCharsets.UTF_8))) {
+                writer.write("model=");
                 if (slimModel) {
-                    writer.write("model=" + URLEncoder.encode("slim", Charsets.UTF_8.name()));
-                } else {
-                    writer.write("model=");
+                    writer.write("slim");
                 }
 
-                writer.write("&url=" + URLEncoder.encode(sourceUrl, Charsets.UTF_8.name()));
+                writer.write("&url=" + UrlEscapers.urlPathSegmentEscaper().escape(sourceUrl));
             }
 
             httpConnection.connect();

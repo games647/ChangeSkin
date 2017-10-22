@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,6 +58,7 @@ public class SkinStorage {
 
             jdbcUrl += "sqlite://" + database;
             config.setConnectionTestQuery("SELECT 1");
+            config.setMaximumPoolSize(1);
         } else {
             jdbcUrl += "mysql://" + host + ':' + port + '/' + database;
         }
@@ -67,7 +69,7 @@ public class SkinStorage {
 
     public void createTables() throws SQLException {
         try (InputStream in = getClass().getResourceAsStream("/create.sql");
-             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
              Connection con = dataSource.getConnection();
              Statement stmt = con.createStatement()) {
             StringBuilder builder = new StringBuilder();

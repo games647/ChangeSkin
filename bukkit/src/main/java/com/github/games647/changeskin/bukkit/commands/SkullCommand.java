@@ -18,7 +18,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Shynixn
@@ -38,9 +39,9 @@ public class SkullCommand implements CommandExecutor {
             profileField.setAccessible(true);
 
             methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
-        } catch (Exception ex) {
-            ChangeSkinBukkit plugin = JavaPlugin.getPlugin(ChangeSkinBukkit.class);
-            plugin.getLog().info("Cannot find loginProfile field for setting skin in offline mode", ex);
+        } catch (ReflectiveOperationException ex) {
+            Logger logger = LoggerFactory.getLogger(SkullCommand.class);
+            logger.info("Cannot find loginProfile field for setting skin in offline mode", ex);
         }
 
         skullProfileSetter = methodHandle;
@@ -86,7 +87,7 @@ public class SkullCommand implements CommandExecutor {
 
     private void setSkullSkin(ItemStack itemStack, SkinModel skinData) {
         try {
-            if(itemStack == null || skinData == null || itemStack.getType() != Material.SKULL_ITEM)
+            if (itemStack == null || skinData == null || itemStack.getType() != Material.SKULL_ITEM)
                 return;
 
             SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();

@@ -38,7 +38,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
     private final Path dataFolder;
     private final Logger logger;
 
-    private ChangeSkinCore core;
+    private final ChangeSkinCore core = new ChangeSkinCore(this);
 
     //We will place more than one config there (i.e. H2/SQLite database) -> sharedRoot = false
     @Inject
@@ -49,7 +49,6 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
     @Listener //load config and database
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        core = new ChangeSkinCore(this);
         try {
             core.load(true);
         } catch (Exception ex) {

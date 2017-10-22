@@ -12,7 +12,8 @@ import java.util.UUID;
 
 public class SkinModel {
 
-    private static final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     private transient int skinId;
     private transient String encodedValue;

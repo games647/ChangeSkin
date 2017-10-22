@@ -43,6 +43,7 @@ public class UserPreference {
         this.keepSkin = keepSkin;
     }
 
+    //todo: this should be optional
     public SkinModel getTargetSkin() {
         return targetSkin;
     }

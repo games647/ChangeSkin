@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -98,7 +99,8 @@ public class MojangSkinApi {
                 }
             }
 
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 GameProfile playerProfile = gson.fromJson(reader, GameProfile.class);
                 return Optional.of(playerProfile.getId());
             }
@@ -123,7 +125,8 @@ public class MojangSkinApi {
                 return Optional.empty();
             }
 
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(httpConnection.getInputStream(), StandardCharsets.UTF_8))) {
                 TexturesModel texturesModel = gson.fromJson(reader, TexturesModel.class);
 
                 SkinProperties[] properties = texturesModel.getProperties();
@@ -137,7 +140,7 @@ public class MojangSkinApi {
                     return Optional.of(SkinModel.createSkinFromEncoded(encodedSkin, signature));
                 }
             }
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             logger.error("Tried downloading skin data from Mojang", ex);
         }
 
