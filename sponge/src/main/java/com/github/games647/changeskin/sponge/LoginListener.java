@@ -5,6 +5,7 @@ import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedListener;
+import com.google.inject.Inject;
 
 import java.util.List;
 import java.util.Random;
@@ -23,7 +24,8 @@ public class LoginListener extends SharedListener {
     private final ChangeSkinSponge plugin;
     private final Random random = new Random();
 
-    public LoginListener(ChangeSkinSponge plugin) {
+    @Inject
+    LoginListener(ChangeSkinSponge plugin) {
         super(plugin.getCore());
 
         this.plugin = plugin;

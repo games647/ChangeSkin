@@ -7,6 +7,7 @@ import com.github.games647.changeskin.sponge.commands.SelectCommand;
 import com.github.games647.changeskin.sponge.commands.SetCommand;
 import com.github.games647.changeskin.sponge.commands.UploadCommand;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 
 import java.nio.file.Path;
 import java.util.UUID;
@@ -37,18 +38,21 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
     private final Path dataFolder;
     private final Logger logger;
+    private final Injector injector;
 
     private final ChangeSkinCore core = new ChangeSkinCore(this);
 
     //We will place more than one config there (i.e. H2/SQLite database) -> sharedRoot = false
     @Inject
-    public ChangeSkinSponge(Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder) {
+    public ChangeSkinSponge(Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder, Injector injector) {
         this.dataFolder = dataFolder;
         this.logger = logger;
+        this.injector = injector.createChildInjector(binder -> binder.bind(ChangeSkinCore.class).toInstance(core));
     }
 
-    @Listener //load config and database
+    @Listener
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
+        //load config and database
         try {
             core.load(true);
         } catch (Exception ex) {
@@ -56,40 +60,39 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
         }
     }
 
-    @Listener //command and event register
+    @Listener
     public void onInit(GameInitializationEvent initEvent) {
+        //command and event register
         CommandManager commandManager = Sponge.getCommandManager();
         commandManager.register(this, CommandSpec.builder()
-                .executor(new SelectCommand(this))
+                .executor(injector.getInstance(SelectCommand.class))
                 .arguments(string(of("skinName")))
                 .build(), "skin-select");
 
         commandManager.register(this, CommandSpec.builder()
-                .executor(new UploadCommand(this))
+                .executor(injector.getInstance(UploadCommand.class))
                 .arguments(string(of("url")))
                 .build(), "skin-upload");
 
         commandManager.register(this, CommandSpec.builder()
-                .executor(new SetCommand(this))
+                .executor(injector.getInstance(SetCommand.class))
                 .arguments(
                         string(of("skin")),
                         flags().flag("keep").buildWith(GenericArguments.none()))
                 .build(), "changeskin", "setskin", "skin");
 
         commandManager.register(this, CommandSpec.builder()
-                .executor(new InvalidateCommand(this))
+                .executor(injector.getInstance(InvalidateCommand.class))
                 .build(), "skininvalidate", "skin-invalidate");
 
-        Sponge.getEventManager().registerListeners(this, new LoginListener(this));
+        Sponge.getEventManager().registerListeners(this, injector.getInstance(LoginListener.class));
         RawDataChannel pluginChannel = Sponge.getChannelRegistrar().createRawChannel(this, PomData.ARTIFACT_ID);
-        pluginChannel.addListener(new BungeeListener(this, pluginChannel));
+        pluginChannel.addListener(injector.getInstance(BungeeListener.class));
     }
 
     @Listener
     public void onShutdown(GameStoppingServerEvent stoppingServerEvent) {
-        if (core != null) {
-            core.close();
-        }
+        core.close();
     }
 
     public ChangeSkinCore getCore() {

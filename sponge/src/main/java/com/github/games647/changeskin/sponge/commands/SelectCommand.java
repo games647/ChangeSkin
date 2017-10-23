@@ -2,6 +2,7 @@ package com.github.games647.changeskin.sponge.commands;
 
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.SkinSelector;
+import com.google.inject.Inject;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -15,7 +16,8 @@ public class SelectCommand implements CommandExecutor {
 
     private final ChangeSkinSponge plugin;
 
-    public SelectCommand(ChangeSkinSponge plugin) {
+    @Inject
+    SelectCommand(ChangeSkinSponge plugin) {
         this.plugin = plugin;
     }
 

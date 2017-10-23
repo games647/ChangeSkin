@@ -3,6 +3,7 @@ package com.github.games647.changeskin.sponge;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedBungeeListener;
 import com.github.games647.changeskin.sponge.tasks.SkinUpdater;
+import com.google.inject.Inject;
 
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.network.ChannelBuf;
+import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.network.RawDataListener;
 import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.scheduler.Task;
@@ -18,13 +20,16 @@ import org.spongepowered.api.scheduler.Task;
 public class BungeeListener extends SharedBungeeListener<Player> implements RawDataListener {
 
     private final ChangeSkinSponge plugin;
-    private final RawDataChannel pluginChannel;
 
-    public BungeeListener(ChangeSkinSponge plugin, RawDataChannel pluginChannel) {
+    @Inject
+    @ChannelId("changeskin")
+    private RawDataChannel pluginChannel;
+
+    @Inject
+    public BungeeListener(ChangeSkinSponge plugin) {
         super(plugin);
 
         this.plugin = plugin;
-        this.pluginChannel = pluginChannel;
     }
 
     @Override

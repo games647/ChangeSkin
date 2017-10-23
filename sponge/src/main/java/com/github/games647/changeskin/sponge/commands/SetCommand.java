@@ -1,8 +1,10 @@
 package com.github.games647.changeskin.sponge.commands;
 
+import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.NameResolver;
 import com.github.games647.changeskin.sponge.tasks.SkinDownloader;
+import com.google.inject.Inject;
 
 import java.util.UUID;
 
@@ -17,9 +19,12 @@ import org.spongepowered.api.scheduler.Task;
 public class SetCommand implements CommandExecutor {
 
     private final ChangeSkinSponge plugin;
+    private final ChangeSkinCore core;
 
-    public SetCommand(ChangeSkinSponge plugin) {
+    @Inject
+    SetCommand(ChangeSkinSponge plugin, ChangeSkinCore core) {
         this.plugin = plugin;
+        this.core = core;
     }
 
     @Override
@@ -29,7 +34,7 @@ public class SetCommand implements CommandExecutor {
             return CommandResult.empty();
         }
 
-        if (plugin.getCore().isCooldown(((Player) src).getUniqueId())) {
+        if (core.isCooldown(((Player) src).getUniqueId())) {
             plugin.sendMessage(src, "cooldown");
             return CommandResult.empty();
         }
@@ -45,7 +50,7 @@ public class SetCommand implements CommandExecutor {
         if (targetSkin.length() > 16) {
             UUID targetUUID = UUID.fromString(targetSkin);
 
-            if (plugin.getCore().getConfig().getBoolean("skinPermission")
+            if (core.getConfig().getBoolean("skinPermission")
                     && !plugin.checkWhitelistPermission(src, targetUUID, true)) {
                 return CommandResult.empty();
             }
