@@ -29,13 +29,18 @@ https://ci.xephi.fr/job/ChangeSkin/changes
 
 ## Commands
 
-* /setskin < uuid > [keep] - Sets your skin to be equal to the player with the selected uuid
-* /setskin < playerName> [keep]
+* /setskin < uuid > [keep] - Sets your skin to be equal to the player with the selected uuid. 
+* /setskin < playerName > [keep] - Sets the skin equal to the owner of that Mojang with the given playername
+* /setskin reset - Removes the current skin of the invoker
 * /setskin < onlinePlayer > < newSkinUUID/newSkinPlayerName > [keep]
 * /skinupdate [onlinePlayer] - Invalidates the database entry and fetches the fresh skin from the Mojang servers
 * /skinupload < url > Upload a skin to a mojang account
 * /skinselect < name > Choose a skin from the database which has a specified name
 * /setskull Changes the skin of a holding skull from the database which has a specified name
+
+Keep prevents the skin from auto updating. See the config for more information about auto updating.
+
+/skin, /set-skin, /changeskin can used as an alias for /setskin
 
 ## Permissions
 
