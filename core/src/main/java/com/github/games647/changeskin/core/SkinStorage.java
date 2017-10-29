@@ -107,7 +107,7 @@ public class SkinStorage {
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
-                    int prefId = resultSet.getInt(8);
+                    int prefId = resultSet.getInt(9);
 
                     SkinModel skinData = null;
                     if (resultSet.getObject(1)  != null) {
