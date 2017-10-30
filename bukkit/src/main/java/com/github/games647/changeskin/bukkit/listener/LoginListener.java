@@ -10,7 +10,7 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.collect.Multimap;
 
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -23,7 +23,6 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 public class LoginListener implements Listener {
 
     private final ChangeSkinBukkit plugin;
-    private final Random random = new Random();
 
     public LoginListener(ChangeSkinBukkit plugin) {
         this.plugin = plugin;
@@ -61,7 +60,7 @@ public class LoginListener implements Listener {
         //skin wasn't found and there are no preferences so set a default skin
         List<SkinModel> defaultSkins = plugin.getCore().getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
-            int randomIndex = random.nextInt(defaultSkins.size());
+            int randomIndex = ThreadLocalRandom.current().nextInt(defaultSkins.size());
 
             SkinModel targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {

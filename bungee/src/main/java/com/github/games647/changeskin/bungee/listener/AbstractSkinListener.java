@@ -6,7 +6,7 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedListener;
 
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -15,7 +15,6 @@ import net.md_5.bungee.api.plugin.Listener;
 public abstract class AbstractSkinListener extends SharedListener implements Listener {
 
     protected final ChangeSkinBungee plugin;
-    private final Random random = new Random();
 
     public AbstractSkinListener(ChangeSkinBungee plugin) {
         super(plugin.getCore());
@@ -27,7 +26,7 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
         //skin wasn't found and there are no preferences so set a default skin
         List<SkinModel> defaultSkins = plugin.getCore().getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
-            int randomIndex = random.nextInt(defaultSkins.size());
+            int randomIndex = ThreadLocalRandom.current().nextInt(defaultSkins.size());
 
             final SkinModel targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {

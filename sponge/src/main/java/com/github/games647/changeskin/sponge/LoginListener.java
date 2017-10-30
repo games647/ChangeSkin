@@ -8,8 +8,8 @@ import com.github.games647.changeskin.core.shared.SharedListener;
 import com.google.inject.Inject;
 
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
@@ -22,7 +22,6 @@ import org.spongepowered.api.scheduler.Task;
 public class LoginListener extends SharedListener {
 
     private final ChangeSkinSponge plugin;
-    private final Random random = new Random();
 
     @Inject
     LoginListener(ChangeSkinSponge plugin) {
@@ -65,7 +64,7 @@ public class LoginListener extends SharedListener {
     private void setDefaultSkin(UserPreference preferences, GameProfile profile) {
         List<SkinModel> defaultSkins = core.getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
-            int randomIndex = random.nextInt(defaultSkins.size());
+            int randomIndex = ThreadLocalRandom.current().nextInt(defaultSkins.size());
             SkinModel defaultSkin = defaultSkins.get(randomIndex);
             if (defaultSkin != null) {
                 preferences.setTargetSkin(defaultSkin);
