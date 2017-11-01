@@ -1,7 +1,6 @@
 package com.github.games647.changeskin.bukkit.tasks;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftVersion;
@@ -34,6 +33,7 @@ import org.bukkit.potion.PotionEffectType;
 import static com.comphenix.protocol.PacketType.Play.Server.PLAYER_INFO;
 import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
 import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
+import static com.comphenix.protocol.PacketType.Play.Server.UPDATE_HEALTH;
 
 public class SkinUpdater implements Runnable {
 
@@ -127,17 +127,10 @@ public class SkinUpdater implements Runnable {
         inventory.setHeldItemSlot(inventory.getHeldItemSlot());
 
         //this is sync so should be safe to call
+
         //triggers updateHealth
         double oldHealth = receiver.getHealth();
-        double maxHealth = getHealth(receiver);
-
-        //Food
-        int oldFood = receiver.getFoodLevel();
-        float oldSat = receiver.getSaturation();
-        receiver.setFoodLevel(20);
-        receiver.setFoodLevel(oldFood);
-        receiver.setSaturation(5.0F);
-        receiver.setSaturation(oldSat);
+        double maxHealth = getMaxHealth(receiver);
 
         //Health
         resetMaxHealth(receiver);
@@ -165,11 +158,10 @@ public class SkinUpdater implements Runnable {
     }
 
     private void sendPacketsSelf(WrappedGameProfile gameProfile) {
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         NativeGameMode gamemode = NativeGameMode.fromBukkit(receiver.getGameMode());
 
-        //remove info
-        PacketContainer removeInfo = protocolManager.createPacket(PLAYER_INFO);
+        //remove the old skin - client updates it only on a complete remove and add
+        PacketContainer removeInfo = new PacketContainer(PLAYER_INFO);
         removeInfo.getPlayerInfoAction().write(0, PlayerInfoAction.REMOVE_PLAYER);
 
         WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
@@ -177,14 +169,14 @@ public class SkinUpdater implements Runnable {
         removeInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
         //add info containing the skin data
-        PacketContainer addInfo = protocolManager.createPacket(PLAYER_INFO);
+        PacketContainer addInfo = new PacketContainer(PLAYER_INFO);
         addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
         addInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
 
-        //Respawn packet
+        //Respawn packet //notify the client that it should update the own skin
         Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
 
-        PacketContainer respawn = protocolManager.createPacket(RESPAWN);
+        PacketContainer respawn = new PacketContainer(RESPAWN);
         respawn.getIntegers().write(0, receiver.getWorld().getEnvironment().getId());
         respawn.getDifficulties().write(0, difficulty);
         respawn.getGameModes().write(0, gamemode);
@@ -192,7 +184,8 @@ public class SkinUpdater implements Runnable {
 
         Location location = receiver.getLocation().clone();
 
-        PacketContainer teleport = protocolManager.createPacket(POSITION);
+        //prevent the moved too quickly message
+        PacketContainer teleport = new PacketContainer(POSITION);
         teleport.getModifier().writeDefaults();
         teleport.getDoubles().write(0, location.getX());
         teleport.getDoubles().write(1, location.getY());
@@ -202,39 +195,23 @@ public class SkinUpdater implements Runnable {
         //send an invalid teleport id in order to let Bukkit ignore the incoming confirm packet
         teleport.getIntegers().writeSafely(0, -1337);
 
-        try {
-            //remove the old skin - client updates it only on a complete remove and add
-            protocolManager.sendServerPacket(receiver, removeInfo);
-            //adds the skin
-            protocolManager.sendServerPacket(receiver, addInfo);
-            //notify the client that it should update the own skin
-            protocolManager.sendServerPacket(receiver, respawn);
+        PacketContainer health = new PacketContainer(UPDATE_HEALTH);
+        health.getFloat().write(0, (float) receiver.getHealth());
+        health.getFloat().write(1, receiver.getSaturation());
+        health.getIntegers().write(0, receiver.getFoodLevel());
 
-            //prevent the moved too quickly message
-            protocolManager.sendServerPacket(receiver, teleport);
+        sendPackets(removeInfo, addInfo, respawn, teleport, health);
+    }
+
+    private void sendPackets(PacketContainer... packets) {
+        try {
+            for (PacketContainer packet : packets) {
+                System.out.println(packet);
+                ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, packet);
+            }
         } catch (InvocationTargetException ex) {
             plugin.getLog().error("Exception sending instant skin change packet", ex);
         }
-    }
-
-    /**
-     * This is to protect against players with the health boost potion effect.
-     * This stops the max health from going up when the player has health boost since it adds to the max health.
-     *
-     * @param player health of this player
-     * @return the actual max health value
-     */
-    private double getHealth(Player player) {
-        double health = getMaxHealth(player);
-        for(PotionEffect potionEffect : player.getActivePotionEffects()){
-            //Had to do this because doing if(potionEffect.getType() == PotionEffectType.HEALTH_BOOST)
-            //It wouldn't recognize it as the same.
-            if(potionEffect.getType().getName().equalsIgnoreCase(PotionEffectType.HEALTH_BOOST.getName())){
-                health -= ((potionEffect.getAmplifier() + 1) * 4);
-            }
-        }
-
-        return health;
     }
 
     private double getMaxHealth(Player player) {
@@ -242,7 +219,16 @@ public class SkinUpdater implements Runnable {
             return player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         }
 
-        return player.getMaxHealth();
+        double maxHealth = player.getMaxHealth();
+        for(PotionEffect potionEffect : player.getActivePotionEffects()){
+            //Had to do this because doing if(potionEffect.getType() == PotionEffectType.HEALTH_BOOST)
+            //It wouldn't recognize it as the same.
+            if(potionEffect.getType().getName().equalsIgnoreCase(PotionEffectType.HEALTH_BOOST.getName())){
+                maxHealth -= ((potionEffect.getAmplifier() + 1) * 4);
+            }
+        }
+
+        return maxHealth;
     }
 
     private void resetMaxHealth(Player player) {
