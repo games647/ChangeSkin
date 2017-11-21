@@ -82,10 +82,6 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     }
 
     public SkinStorage getStorage() {
-        if (core == null) {
-            return null;
-        }
-
         return core.getStorage();
     }
 

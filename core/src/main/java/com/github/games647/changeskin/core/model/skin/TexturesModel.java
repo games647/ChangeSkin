@@ -1,5 +1,7 @@
 package com.github.games647.changeskin.core.model.skin;
 
+import com.google.common.base.Objects;
+
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -19,5 +21,14 @@ public class TexturesModel {
 
     public SkinProperties[] getProperties() {
         return Arrays.copyOf(properties, properties.length);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("id", id)
+                .add("name", name)
+                .add("properties", Arrays.toString(properties))
+                .toString();
     }
 }

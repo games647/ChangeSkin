@@ -8,6 +8,7 @@ import com.github.games647.changeskin.sponge.commands.SetCommand;
 import com.github.games647.changeskin.sponge.commands.UploadCommand;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Singleton;
 
 import java.nio.file.Path;
 import java.util.UUID;
@@ -32,6 +33,7 @@ import static org.spongepowered.api.command.args.GenericArguments.flags;
 import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
+@Singleton
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
         , url = PomData.URL, description = PomData.DESCRIPTION)
 public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
@@ -67,7 +69,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
         commandManager.register(this, CommandSpec.builder()
                 .executor(injector.getInstance(SelectCommand.class))
                 .arguments(string(of("skinName")))
-                .build(), "skin-select");
+                .build(), "skin-select", "skinselect");
 
         commandManager.register(this, CommandSpec.builder()
                 .executor(injector.getInstance(UploadCommand.class))

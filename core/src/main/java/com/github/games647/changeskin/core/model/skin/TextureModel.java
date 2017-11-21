@@ -1,5 +1,7 @@
 package com.github.games647.changeskin.core.model.skin;
 
+import com.google.common.base.Objects;
+
 public class TextureModel {
 
     private static final String URL_PREFIX = "http://textures.minecraft.net/texture/";
@@ -32,5 +34,13 @@ public class TextureModel {
 
     public String getShortUrl() {
         return url.replace(URL_PREFIX, "");
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("url", url)
+                .add("metadata", metadata)
+                .toString();
     }
 }

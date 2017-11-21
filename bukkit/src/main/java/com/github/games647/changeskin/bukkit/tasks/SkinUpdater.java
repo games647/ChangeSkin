@@ -206,7 +206,6 @@ public class SkinUpdater implements Runnable {
     private void sendPackets(PacketContainer... packets) {
         try {
             for (PacketContainer packet : packets) {
-                System.out.println(packet);
                 ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, packet);
             }
         } catch (InvocationTargetException ex) {
