@@ -61,8 +61,13 @@ public class SkinUpdater implements Runnable {
             plugin.getCore().addCooldown(((ProxiedPlayer) invoker).getUniqueId());
         }
 
+        //check if that specific player is online
+        UserPreference preferences = plugin.getLoginSession(receiver.getPendingConnection());
+        if (preferences == null) {
+            plugin.getStorage().getPreferences(receiver.getUniqueId());
+        }
+
         //Save the target uuid from the requesting player source
-        final UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
         preferences.setTargetSkin(targetSkin);
         preferences.setKeepSkin(keepSkin);
 
