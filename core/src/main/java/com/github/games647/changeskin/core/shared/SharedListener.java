@@ -36,10 +36,12 @@ public abstract class SharedListener {
         if (ownerUUID != null) {
             core.getUuidCache().put(playerName, ownerUUID);
             SkinModel storedSkin = core.checkAutoUpdate(core.getStorage().getSkin(ownerUUID));
+            if (storedSkin == null) {
+                storedSkin = core.getSkinApi().downloadSkin(ownerUUID).orElse(null);
+            }
 
             preferences.setTargetSkin(storedSkin);
             save(storedSkin, preferences);
-            //todo: verify apply skin
             return true;
         }
 
