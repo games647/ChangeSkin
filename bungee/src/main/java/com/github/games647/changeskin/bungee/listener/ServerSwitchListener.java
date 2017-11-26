@@ -23,6 +23,10 @@ public class ServerSwitchListener extends AbstractSkinListener {
     public void onServerConnect(ServerConnectEvent connectEvent) {
         ServerInfo target = connectEvent.getTarget();
 
+        if (connectEvent.getTarget().equals(connectEvent.getPlayer().getServer().getInfo())) {
+            return;
+        }
+
         List<String> blacklist = plugin.getCore().getConfig().getStringList("server-blacklist");
         if (blacklist != null) {
             final ProxiedPlayer player = connectEvent.getPlayer();
