@@ -5,6 +5,7 @@ import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.util.List;
+import java.util.Objects;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -23,7 +24,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
     public void onServerConnect(ServerConnectEvent connectEvent) {
         ServerInfo target = connectEvent.getTarget();
 
-        if (connectEvent.getTarget().equals(connectEvent.getPlayer().getServer().getInfo())) {
+        if (Objects.equals(connectEvent.getTarget(), connectEvent.getPlayer().getServer().getInfo())) {
             return;
         }
 
