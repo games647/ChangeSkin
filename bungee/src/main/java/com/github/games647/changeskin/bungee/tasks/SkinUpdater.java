@@ -64,7 +64,7 @@ public class SkinUpdater implements Runnable {
         //check if that specific player is online
         UserPreference preferences = plugin.getLoginSession(receiver.getPendingConnection());
         if (preferences == null) {
-            plugin.getStorage().getPreferences(receiver.getUniqueId());
+            preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
         }
 
         //Save the target uuid from the requesting player source
