@@ -45,6 +45,8 @@ public class ServerSwitchListener extends AbstractSkinListener {
                     }
 
                     plugin.applySkin(player, targetSkin);
+                    SkinModel finalTargetSkin = targetSkin;
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> save(finalTargetSkin, session));
                 }
             }
         }

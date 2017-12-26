@@ -31,12 +31,16 @@ public class MessageListener extends AbstractSkinListener {
         String subChannel = dataInput.readUTF();
 
         ProxiedPlayer invoker = (ProxiedPlayer) messageEvent.getReceiver();
-        if ("PermissionsSuccess".equals(subChannel)) {
-            onPermissionSuccess(dataInput, invoker);
-        } else if ("PermissionsFailure".equals(subChannel)) {
-            plugin.sendMessage(invoker, "no-permission");
-        } else if ("ForwardCmd".equals(subChannel)) {
-            onCommandForward(invoker, dataInput);
+        switch (subChannel) {
+            case "PermissionsSuccess":
+                onPermissionSuccess(dataInput, invoker);
+                break;
+            case "PermissionsFailure":
+                plugin.sendMessage(invoker, "no-permission");
+                break;
+            case "ForwardCmd":
+                onCommandForward(invoker, dataInput);
+                break;
         }
     }
 

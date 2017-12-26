@@ -59,12 +59,16 @@ public class SkinModel {
         return skinModel;
     }
 
-    public synchronized int getSkinId() {
-        return skinId;
+    public int getSkinId() {
+        synchronized (this) {
+            return skinId;
+        }
     }
 
-    public synchronized void setSkinId(int skinId) {
-        this.skinId = skinId;
+    public void setSkinId(int skinId) {
+        synchronized (this) {
+            this.skinId = skinId;
+        }
     }
 
     public String getEncodedValue() {
