@@ -10,6 +10,7 @@ import java.util.Objects;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -24,7 +25,8 @@ public class ServerSwitchListener extends AbstractSkinListener {
     public void onServerConnect(ServerConnectEvent connectEvent) {
         ServerInfo target = connectEvent.getTarget();
 
-        if (Objects.equals(connectEvent.getTarget(), connectEvent.getPlayer().getServer().getInfo())) {
+        Server fromServer = connectEvent.getPlayer().getServer();
+        if (fromServer != null && Objects.equals(target, fromServer.getInfo())) {
             return;
         }
 
