@@ -2,12 +2,12 @@ package com.github.games647.changeskin.core.model.skin;
 
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.google.common.base.Objects;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,7 +26,7 @@ public class SkinModel {
     private final String profileName;
 
     private final boolean signatureRequired = true;
-    private final Map<TextureType, TextureModel> textures = Maps.newEnumMap(TextureType.class);
+    private final Map<TextureType, TextureModel> textures = new EnumMap<>(TextureType.class);
 
     public SkinModel(int skinId, long timestamp, UUID uuid, String name
             , boolean slimModel, String skinURL, String capeURL, byte[] signature) {

@@ -14,7 +14,6 @@ import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -23,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,7 +62,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         profileSetter = methodHandle;
     }
 
-    private final Map<PendingConnection, UserPreference> loginSessions = Maps.newConcurrentMap();
+    private final Map<PendingConnection, UserPreference> loginSessions = new HashMap<>();
     private final Property[] emptyProperties = {};
 
     private ChangeSkinCore core;

@@ -2,8 +2,6 @@ package com.github.games647.changeskin.core;
 
 import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.net.HostAndPort;
 
 import java.io.File;
@@ -13,11 +11,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,7 +31,7 @@ public class ChangeSkinCore {
 
     public static final String SKIN_KEY = "textures";
 
-    private final Map<String, String> localeMessages = Maps.newConcurrentMap();
+    private final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
     //this is thread-safe in order to save and load from different threads like the skin download
     private final Map<String, UUID> uuidCache = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
@@ -39,8 +39,8 @@ public class ChangeSkinCore {
     private final Map<String, Object> crackedNames = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
 
     private final PlatformPlugin<?> plugin;
-    private final List<SkinModel> defaultSkins = Lists.newArrayList();
-    private final List<Account> uploadAccounts = Lists.newArrayList();
+    private final List<SkinModel> defaultSkins = new ArrayList<>();
+    private final List<Account> uploadAccounts = new ArrayList<>();
     private final MojangAuthApi authApi;
 
     private MojangSkinApi skinApi;
@@ -170,7 +170,9 @@ public class ChangeSkinCore {
     private void saveDefaultFile(String fileName) {
         Path dataFolder = plugin.getPluginFolder();
         try {
-            Files.createDirectories(dataFolder);
+            if (Files.notExists(dataFolder)) {
+                Files.createDirectories(dataFolder);
+            }
 
             Path configFile = dataFolder.resolve(fileName);
             if (Files.notExists(configFile)) {

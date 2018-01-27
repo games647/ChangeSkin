@@ -24,7 +24,7 @@ public class SkinPropertyTest {
     @Test
     public void testSignatureSlim() throws Exception {
         Path stevePath = Paths.get(getClass().getResource("/skins/slimModel.json").toURI());
-        String json = Files.readAllLines(stevePath).stream().collect(Collectors.joining());
+        String json = Files.lines(stevePath).collect(Collectors.joining());
 
         TexturesModel texturesModel = gson.fromJson(json, TexturesModel.class);
         assertThat(texturesModel.getId(), is((CommonUtil.parseId("78c3a4e837e448189df8f9ce61c5efcc"))));
@@ -37,7 +37,7 @@ public class SkinPropertyTest {
     @Test
     public void testSignatureSteve() throws Exception {
         Path stevePath = Paths.get(getClass().getResource("/skins/steveModel.json").toURI());
-        String json = Files.readAllLines(stevePath).stream().collect(Collectors.joining());
+        String json = Files.lines(stevePath).collect(Collectors.joining());
 
         TexturesModel texturesModel = gson.fromJson(json, TexturesModel.class);
         assertThat(texturesModel.getId(), is((CommonUtil.parseId("0aaa2c13922a411bb6559b8c08404695"))));

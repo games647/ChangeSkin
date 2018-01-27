@@ -15,10 +15,10 @@ import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.google.common.collect.Lists;
 import com.nametagedit.plugin.NametagEdit;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -166,12 +166,12 @@ public class SkinUpdater implements Runnable {
 
         WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
         PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
-        removeInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
+        removeInfo.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
 
         //add info containing the skin data
         PacketContainer addInfo = new PacketContainer(PLAYER_INFO);
         addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
-        addInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(playerInfoData));
+        addInfo.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
 
         //Respawn packet //notify the client that it should update the own skin
         Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());

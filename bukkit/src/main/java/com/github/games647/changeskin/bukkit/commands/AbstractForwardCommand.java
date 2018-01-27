@@ -2,9 +2,10 @@ package com.github.games647.changeskin.bukkit.commands;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
+import java.util.Optional;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,11 +26,13 @@ public abstract class AbstractForwardCommand implements CommandExecutor {
         if (sender instanceof Player) {
             proxy = (Player) sender;
         } else {
-            proxy = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-            if (proxy == null) {
+            Optional<? extends Player> optPlayer = Bukkit.getOnlinePlayers().stream().findAny();
+            if (!optPlayer.isPresent()) {
                 sender.sendMessage(ChatColor.DARK_RED + "No player is online to forward this message to Bungee");
                 return;
             }
+
+            proxy = optPlayer.get();
         }
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
