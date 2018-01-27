@@ -13,14 +13,13 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 
 import static org.junit.Assert.assertThat;
 
 public class SkinPropertyTest {
 
-    private Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     @Test
     public void testSignatureSlim() throws Exception {
@@ -28,11 +27,11 @@ public class SkinPropertyTest {
         String json = Files.readAllLines(stevePath).stream().collect(Collectors.joining());
 
         TexturesModel texturesModel = gson.fromJson(json, TexturesModel.class);
-        assertThat(texturesModel.getId(), is(equalTo((CommonUtil.parseId("78c3a4e837e448189df8f9ce61c5efcc")))));
-        assertThat(texturesModel.getName(), is(equalTo("Rashomon_")));
+        assertThat(texturesModel.getId(), is((CommonUtil.parseId("78c3a4e837e448189df8f9ce61c5efcc"))));
+        assertThat(texturesModel.getName(), is("Rashomon_"));
 
         SkinProperty property = texturesModel.getProperties()[0];
-        assertThat(VerifyUtil.isValid(property.getValue(), property.getSignature()), is(equalTo(true)));
+        assertThat(VerifyUtil.isValid(property.getValue(), property.getSignature()), is(true));
     }
 
     @Test
@@ -41,10 +40,10 @@ public class SkinPropertyTest {
         String json = Files.readAllLines(stevePath).stream().collect(Collectors.joining());
 
         TexturesModel texturesModel = gson.fromJson(json, TexturesModel.class);
-        assertThat(texturesModel.getId(), is(equalTo((CommonUtil.parseId("0aaa2c13922a411bb6559b8c08404695")))));
-        assertThat(texturesModel.getName(), is(equalTo("games647")));
+        assertThat(texturesModel.getId(), is((CommonUtil.parseId("0aaa2c13922a411bb6559b8c08404695"))));
+        assertThat(texturesModel.getName(), is("games647"));
 
         SkinProperty property = texturesModel.getProperties()[0];
-        assertThat(VerifyUtil.isValid(property.getValue(), property.getSignature()), is(equalTo(true)));
+        assertThat(VerifyUtil.isValid(property.getValue(), property.getSignature()), is(true));
     }
 }

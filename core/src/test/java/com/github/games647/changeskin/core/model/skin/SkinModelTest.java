@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 
@@ -24,28 +23,28 @@ public class SkinModelTest {
     public void testParsingSlim() throws Exception {
         SkinModel skin = SkinModel.createSkinFromEncoded(SLIM_VALUE, SLIM_SIGNATURE);
 
-        assertThat(skin.getTimestamp(), is(equalTo(1517055262188L)));
-        assertThat(skin.getProfileId(), is(equalTo(CommonUtil.parseId("78c3a4e837e448189df8f9ce61c5efcc"))));
-        assertThat(skin.getProfileName(), is(equalTo("Rashomon_")));
+        assertThat(skin.getTimestamp(), is(1517055262188L));
+        assertThat(skin.getProfileId(), is(CommonUtil.parseId("78c3a4e837e448189df8f9ce61c5efcc")));
+        assertThat(skin.getProfileName(), is("Rashomon_"));
 
         Map<TextureType, TextureModel> textures = skin.getTextures();
         TextureModel skinTexture = textures.get(TextureType.SKIN);
-        assertThat(skinTexture.getUrl(), is(equalTo("http://textures.minecraft.net/texture/173567ea72ad4a22bf70bcba5fed3b8b9ea024639131bdd863c25d22f89")));
-        assertThat(skinTexture.getMetadata().getModel(), is(equalTo("slim")));
+        assertThat(skinTexture.getUrl(), is("http://textures.minecraft.net/texture/173567ea72ad4a22bf70bcba5fed3b8b9ea024639131bdd863c25d22f89"));
+        assertThat(skinTexture.getMetadata().getModel(), is("slim"));
     }
 
     @Test
     public void testParsingSteve() throws Exception {
         SkinModel skin = SkinModel.createSkinFromEncoded(STEVE_VALUE, STEVE_SIGNATURE);
 
-        assertThat(skin.getTimestamp(), is(equalTo(1517052435668L)));
-        assertThat(skin.getProfileId(), is(equalTo(CommonUtil.parseId("0aaa2c13922a411bb6559b8c08404695"))));
-        assertThat(skin.getProfileName(), is(equalTo("games647")));
+        assertThat(skin.getTimestamp(), is(1517052435668L));
+        assertThat(skin.getProfileId(), is(CommonUtil.parseId("0aaa2c13922a411bb6559b8c08404695")));
+        assertThat(skin.getProfileName(), is("games647"));
 
         Map<TextureType, TextureModel> textures = skin.getTextures();
         TextureModel skinTexture = textures.get(TextureType.SKIN);
-        assertThat(skinTexture.getUrl(), is(equalTo("http://textures.minecraft.net/texture/a2e6a3f8caea7913ab48237beea6d6a1a6f76936e3b71af4c7a08bb61c7870")));
-        assertThat(skinTexture.getMetadata(), is(nullValue()));
+        assertThat(skinTexture.getUrl(), is("http://textures.minecraft.net/texture/a2e6a3f8caea7913ab48237beea6d6a1a6f76936e3b71af4c7a08bb61c7870"));
+        assertThat(skinTexture.getMetadata(), nullValue());
     }
 
     @Test
@@ -75,12 +74,12 @@ public class SkinModelTest {
         assertThat(VerifyUtil.isValid(steveModel.getEncodedValue(), steveModel.getSignature()), is(true));
     }
 
-    private static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
+    private static byte[] hexStringToByteArray(String hexString) {
+        int len = hexString.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i+1), 16));
+            data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                    + Character.digit(hexString.charAt(i+1), 16));
         }
 
         return data;
