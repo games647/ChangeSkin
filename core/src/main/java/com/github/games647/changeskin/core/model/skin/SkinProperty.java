@@ -2,7 +2,7 @@ package com.github.games647.changeskin.core.model.skin;
 
 import com.google.common.base.Objects;
 
-public class SkinProperties {
+public class SkinProperty {
 
     private final String name = "textures";
 

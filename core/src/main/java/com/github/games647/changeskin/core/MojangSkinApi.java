@@ -3,7 +3,7 @@ package com.github.games647.changeskin.core;
 import com.github.games647.changeskin.core.model.GameProfile;
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.github.games647.changeskin.core.model.skin.SkinProperties;
+import com.github.games647.changeskin.core.model.skin.SkinProperty;
 import com.github.games647.changeskin.core.model.skin.TexturesModel;
 import com.google.common.collect.Iterables;
 import com.google.common.net.HostAndPort;
@@ -133,9 +133,9 @@ public class MojangSkinApi {
                     new InputStreamReader(httpConnection.getInputStream(), StandardCharsets.UTF_8))) {
                 TexturesModel texturesModel = gson.fromJson(reader, TexturesModel.class);
 
-                SkinProperties[] properties = texturesModel.getProperties();
+                SkinProperty[] properties = texturesModel.getProperties();
                 if (properties != null && properties.length > 0) {
-                    SkinProperties propertiesModel = properties[0];
+                    SkinProperty propertiesModel = properties[0];
 
                     //base64 encoded skin data
                     String encodedSkin = propertiesModel.getValue();

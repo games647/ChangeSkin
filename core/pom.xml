@@ -49,5 +49,19 @@
             <artifactId>bungeecord-config</artifactId>
             <version>1.12-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.25</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

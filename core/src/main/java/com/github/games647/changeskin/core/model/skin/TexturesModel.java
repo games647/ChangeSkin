@@ -9,7 +9,7 @@ public class TexturesModel {
 
     private UUID id;
     private String name;
-    private SkinProperties[] properties;
+    private SkinProperty[] properties;
 
     public UUID getId() {
         return id;
@@ -19,7 +19,7 @@ public class TexturesModel {
         return name;
     }
 
-    public SkinProperties[] getProperties() {
+    public SkinProperty[] getProperties() {
         return Arrays.copyOf(properties, properties.length);
     }
 
