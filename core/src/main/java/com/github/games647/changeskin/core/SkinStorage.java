@@ -175,12 +175,18 @@ public class SkinStorage {
                 String insertQuery = "INSERT INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin, KeepSkin) " +
                         "VALUES (?, ?, ?)";
 
-                try (PreparedStatement stmt = con.prepareStatement(insertQuery)) {
+                try (PreparedStatement stmt = con.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
                     stmt.setString(1, CommonUtil.toMojangId(preferences.getUuid()));
                     stmt.setInt(2, targetSkin == null ? -1 : targetSkin.getSkinId());
                     stmt.setBoolean(3, preferences.isKeepSkin());
 
                     stmt.executeUpdate();
+
+                    try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                        if (generatedKeys != null && generatedKeys.next()) {
+                            preferences.setId(generatedKeys.getInt(1));
+                        }
+                    }
                 }
             } else {
                 try (PreparedStatement stmt = con.prepareStatement("UPDATE " + PREFERENCES_TABLE
