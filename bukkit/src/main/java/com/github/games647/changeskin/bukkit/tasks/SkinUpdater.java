@@ -128,18 +128,6 @@ public class SkinUpdater implements Runnable {
 
         //this is sync so should be safe to call
 
-        //triggers updateHealth
-        double oldHealth = receiver.getHealth();
-        double maxHealth = getMaxHealth(receiver);
-
-        //Health
-        resetMaxHealth(receiver);
-        setMaxHealth(receiver, maxHealth);
-
-        // trigger a health update
-        receiver.setHealth(20.0F); //20 is default
-        receiver.setHealth(oldHealth);
-
         //exp
         float experience = receiver.getExp();
         int totalExperience = receiver.getTotalExperience();
@@ -147,7 +135,7 @@ public class SkinUpdater implements Runnable {
         receiver.setTotalExperience(totalExperience);
 
         //set to the correct hand position
-        setItemInHand(receiver);
+        setItemInHand();
 
         //triggers updateAbilities
         receiver.setWalkSpeed(receiver.getWalkSpeed());
@@ -173,7 +161,8 @@ public class SkinUpdater implements Runnable {
         addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
         addInfo.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
 
-        //Respawn packet //notify the client that it should update the own skin
+        //Respawn packet
+        // notify the client that it should update the own skin
         Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
 
         PacketContainer respawn = new PacketContainer(RESPAWN);
@@ -195,12 +184,27 @@ public class SkinUpdater implements Runnable {
         //send an invalid teleport id in order to let Bukkit ignore the incoming confirm packet
         teleport.getIntegers().writeSafely(0, -1337);
 
+        sendPackets(removeInfo, addInfo, respawn, teleport);
+
+        //trigger update attributes like health modifier for generic.maxHealth
+        try {
+            receiver.getClass().getDeclaredMethod("updateScaledHealth").invoke(receiver);
+        } catch (ReflectiveOperationException reflectiveEx) {
+            plugin.getLog().error("Failed to invoke updateScaledHealth for attributes", reflectiveEx);
+        }
+
         PacketContainer health = new PacketContainer(UPDATE_HEALTH);
         health.getFloat().write(0, (float) receiver.getHealth());
         health.getFloat().write(1, receiver.getSaturation());
         health.getIntegers().write(0, receiver.getFoodLevel());
+        sendPackets(health);
+    }
 
-        sendPackets(removeInfo, addInfo, respawn, teleport, health);
+    private float getScaledHealth() {
+        if (receiver.isHealthScaled())
+            return (float) (receiver.getHealth() * receiver.getHealthScale() / getMaxHealth());
+
+        return (float) receiver.getHealth();
     }
 
     private void sendPackets(PacketContainer... packets) {
@@ -213,13 +217,13 @@ public class SkinUpdater implements Runnable {
         }
     }
 
-    private double getMaxHealth(Player player) {
-        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COLOR_UPDATE) >= 0) {
-            return player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+    private double getMaxHealth() {
+        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COMBAT_UPDATE) >= 0) {
+            return receiver.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
         }
 
-        double maxHealth = player.getMaxHealth();
-        for(PotionEffect potionEffect : player.getActivePotionEffects()){
+        double maxHealth = receiver.getMaxHealth();
+        for(PotionEffect potionEffect : receiver.getActivePotionEffects()){
             //Had to do this because doing if(potionEffect.getType() == PotionEffectType.HEALTH_BOOST)
             //It wouldn't recognize it as the same.
             if(potionEffect.getType().getName().equalsIgnoreCase(PotionEffectType.HEALTH_BOOST.getName())){
@@ -230,31 +234,13 @@ public class SkinUpdater implements Runnable {
         return maxHealth;
     }
 
-    private void resetMaxHealth(Player player) {
-        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COLOR_UPDATE) >= 0) {
-            setMaxHealth(player, player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue());
-            return;
-        }
-
-        player.resetMaxHealth();
-    }
-
-    private void setMaxHealth(Player player, double health) {
-        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COLOR_UPDATE) >= 0) {
-            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
-            return;
-        }
-
-        player.setHealth(health);
-    }
-
-    private void setItemInHand(Player player) {
+    private void setItemInHand() {
         if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COMBAT_UPDATE) >= 0) {
-            player.getInventory().setItemInMainHand(player.getInventory().getItemInMainHand());
-            player.getInventory().setItemInOffHand(player.getInventory().getItemInOffHand());
+            receiver.getInventory().setItemInMainHand(receiver.getInventory().getItemInMainHand());
+            receiver.getInventory().setItemInOffHand(receiver.getInventory().getItemInOffHand());
             return;
         }
 
-        player.getInventory().setItemInHand(player.getItemInHand());
+        receiver.getInventory().setItemInHand(receiver.getItemInHand());
     }
 }
