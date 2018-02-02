@@ -73,12 +73,12 @@ public class ChangeSkinCore {
                     .stream().map(HostAndPort::fromString).collect(Collectors.toList());
             skinApi = new MojangSkinApi(plugin.getLog(), rateLimit, proxies);
 
-            loadDefaultSkins(config.getStringList("default-skins"));
-            loadAccounts(config.getStringList("upload-accounts"));
-
             if (database) {
                 setupDatabase(config.getSection("storage"));
             }
+
+            loadDefaultSkins(config.getStringList("default-skins"));
+            loadAccounts(config.getStringList("upload-accounts"));
 
             Configuration messages = loadFile("messages.yml");
 
