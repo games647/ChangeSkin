@@ -8,6 +8,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.spec.KeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.logging.Level;
@@ -21,7 +22,7 @@ public class VerifyUtil {
     static {
         URL keyUrl = VerifyUtil.class.getResource("/yggdrasil_session_pubkey.der");
         try {
-            X509EncodedKeySpec spec = new X509EncodedKeySpec(readAllBytes(keyUrl));
+            KeySpec spec = new X509EncodedKeySpec(readAllBytes(keyUrl));
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             publicKey = keyFactory.generatePublic(spec);
         } catch (Exception e) {

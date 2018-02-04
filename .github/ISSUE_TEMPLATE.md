@@ -1,6 +1,6 @@
 [//]: # (Lines in this format are considered as comments and will not be displayed.)
 [//]: #
-[//]: # (Before reporting an issue make sure you are running the latest build of the plugin and checked for duplicate issues!)
+[//]: # (Before reporting an issue make sure you are running the latest build and checked for duplicate issues!)
 
 ### What behaviour is observed:
 [//]: # (What happened?)
@@ -17,12 +17,12 @@
 ### Environment description
 [//]: # (Standalone server/Bungeecord network with version and build number , SQLite/MySQL, ...)
 
-### Plugin version or build number (don't write latest):
+### Plugin version or build number (don't write latest or the build number with #):
 [//]: # (This can be found by running `/version plugin-name`.)
 
 ### Error Log:
 [Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of the error or stacktrace (if any)
 
 ### Configuration:
-[//]: # (remember to delete any sensitive data)
+[//]: # (Remember to delete any sensitive data)
 [Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of your config.yml file 

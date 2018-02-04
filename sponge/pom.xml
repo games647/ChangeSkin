@@ -46,7 +46,6 @@
             <groupId>com.github.games647</groupId>
             <artifactId>changeskin.core</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!--Server API-->

@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
 import static com.github.games647.changeskin.core.CommonUtil.getConnection;
+import static java.util.stream.Collectors.toList;
 
 public class MojangSkinApi {
 
@@ -61,7 +61,7 @@ public class MojangSkinApi {
                 .map(proxy -> {
                     InetSocketAddress sa = new InetSocketAddress(proxy.getHostText(), proxy.getPort());
                     return new Proxy(Type.HTTP, sa);
-                }).collect(Collectors.toList());
+                }).collect(toList());
 
         this.proxies = Iterables.cycle(proxyBuilder).iterator();
     }

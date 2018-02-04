@@ -18,14 +18,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 import org.slf4j.Logger;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ChangeSkinCore {
 
@@ -70,7 +72,7 @@ public class ChangeSkinCore {
             cooldowns = CommonUtil.buildCache(cooldown, -1);
             autoUpdateDiff = config.getInt("auto-skin-update") * 60 * 1_000;
             List<HostAndPort> proxies = config.getStringList("proxies")
-                    .stream().map(HostAndPort::fromString).collect(Collectors.toList());
+                    .stream().map(HostAndPort::fromString).collect(toList());
             skinApi = new MojangSkinApi(plugin.getLog(), rateLimit, proxies);
 
             if (database) {
@@ -85,7 +87,7 @@ public class ChangeSkinCore {
             messages.getKeys()
                     .stream()
                     .filter(key -> messages.get(key) != null)
-                    .collect(Collectors.toMap(Function.identity(), messages::get))
+                    .collect(toMap(identity(), messages::get))
                     .forEach((key, message) -> {
                         String colored = CommonUtil.translateColorCodes((String) message);
                         if (!colored.isEmpty()) {

@@ -29,7 +29,6 @@ public abstract class SharedBungeeListener<P> {
         }
     }
 
-
     private void updateSkin(P player, ByteArrayDataInput dataInput) throws IllegalArgumentException {
         String playerName = dataInput.readUTF();
         P receiver = getPlayerExact(playerName);

@@ -50,7 +50,7 @@ public class CommonUtil {
 
         return builder.build(new CacheLoader<K, V>() {
             @Override
-            public V load(K key) throws Exception {
+            public V load(K key) {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         }).asMap();
