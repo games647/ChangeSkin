@@ -2,6 +2,22 @@
 
 ##### 3.0
 
+* Load the default skins after setting up the storage (Fixes #112)
+* Fix FileAlreadyExistsException for sym linked folders (Fixes #109)
+* Skip same server check for directly connecting players (Fixes #106)
+* Describe the rate-limit message more precisely
+* Ignore skin change on server switch to the same server (Fixes #101)
+* Fix restore skins on BungeeCord (Fixes #104)
+* Fix slim model ordering for correct encoding behaviour (Fixes #100)
+* Add toString methods for better debugging
+* Use ThreadLocalRandom for less overhead
+* Document reset command
+* Dependency injection in Sponge
+* Limit SQLite to only one connection (Fixes #93)
+* Update preferences without inserting new data every time
+* Fix cape encoding
+* Shared bungee listener
+* Fix gson encoding incorrect skin data
 * Use migration for sql storage
 * Merge Mojang model and changeskin model
 * Migrate SLF4J logging (Fixes #90)
