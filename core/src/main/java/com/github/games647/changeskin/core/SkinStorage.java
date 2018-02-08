@@ -121,7 +121,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to query preferences", sqlEx);
+            core.getLogger().error("Failed to query preferences {}", uuid, sqlEx);
         }
 
         return null;
@@ -139,7 +139,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to query skin data from row id", sqlEx);
+            core.getLogger().error("Failed to query skin data from row id: {}", targetSkinId, sqlEx);
         }
 
         return null;
@@ -158,7 +158,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to query skin data from uuid", sqlEx);
+            core.getLogger().error("Failed to query skin data from uuid: {}", skinUUID, sqlEx);
         }
 
         return null;
@@ -197,7 +197,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to save preferences", sqlEx);
+            core.getLogger().error("Failed to save preferences for: {}", preferences, sqlEx);
         }
     }
 
@@ -250,7 +250,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to query skin data", sqlEx);
+            core.getLogger().error("Failed to query skin data: {}", skinData, sqlEx);
         }
 
         return false;

@@ -1,7 +1,6 @@
 package com.github.games647.changeskin.core.model.skin;
 
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
-import com.google.common.base.Objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -106,15 +105,15 @@ public class SkinModel {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("skinId", skinId)
-                .add("encodedValue", encodedValue)
-                .add("encodedSignature", encodedSignature)
-                .add("timestamp", timestamp)
-                .add("profileId", profileId)
-                .add("profileName", profileName)
-                .add("signatureRequired", signatureRequired)
-                .add("textures", textures)
-                .toString();
+        return this.getClass().getSimpleName() + '{' +
+                "skinId=" + skinId +
+                ", encodedValue='" + encodedValue + '\'' +
+                ", encodedSignature='" + encodedSignature + '\'' +
+                ", timestamp=" + timestamp +
+                ", profileId=" + profileId +
+                ", profileName='" + profileName + '\'' +
+                ", signatureRequired=" + signatureRequired +
+                ", textures=" + textures +
+                '}';
     }
 }
