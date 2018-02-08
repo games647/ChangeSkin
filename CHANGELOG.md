@@ -1,5 +1,9 @@
 # Changelog
 
+##### 3.1
+
+*
+
 ##### 3.0
 
 * Load the default skins after setting up the storage (Fixes #112)
