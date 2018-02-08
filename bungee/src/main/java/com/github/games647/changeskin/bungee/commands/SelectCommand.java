@@ -13,7 +13,7 @@ public class SelectCommand extends Command {
     private final ChangeSkinBungee plugin;
 
     public SelectCommand(ChangeSkinBungee plugin) {
-        super("skin-select", plugin.getDescription().getName().toLowerCase() + ".command.skinselect", "skinselect");
+        super("skin-select", plugin.getName().toLowerCase() + ".command.skinselect", "skinselect");
 
         this.plugin = plugin;
     }

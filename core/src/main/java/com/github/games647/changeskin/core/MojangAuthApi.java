@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.slf4j.Logger;
 
 public class MojangAuthApi {
@@ -93,7 +95,7 @@ public class MojangAuthApi {
             httpConnection.connect();
 
             int responseCode = httpConnection.getResponseCode();
-            if (responseCode != 301) {
+            if (responseCode != HttpsURLConnection.HTTP_MOVED_PERM) {
                 logger.error("Invalid response from the skin server Response Code: {}", responseCode);
                 return "";
             }

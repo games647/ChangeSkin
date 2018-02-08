@@ -23,7 +23,7 @@ public class MessageListener extends AbstractSkinListener {
     @EventHandler
     public void onPluginMessage(PluginMessageEvent messageEvent) {
         String channel = messageEvent.getTag();
-        if (messageEvent.isCancelled() || !plugin.getDescription().getName().equals(channel)) {
+        if (messageEvent.isCancelled() || !plugin.getName().equals(channel)) {
             return;
         }
 

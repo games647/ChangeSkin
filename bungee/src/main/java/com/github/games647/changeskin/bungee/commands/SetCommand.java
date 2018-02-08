@@ -17,8 +17,8 @@ public class SetCommand extends Command {
     protected final ChangeSkinBungee plugin;
 
     public SetCommand(ChangeSkinBungee plugin) {
-        super("setskin", plugin.getDescription().getName().toLowerCase() + ".command.setskin", "skin"
-                , plugin.getDescription().getName(), "skin", "set-skin");
+        super("setskin", plugin.getName().toLowerCase() + ".command.setskin", "skin"
+                , plugin.getName(), "skin", "set-skin");
 
         this.plugin = plugin;
     }
@@ -40,8 +40,8 @@ public class SetCommand extends Command {
         }
 
         if (args.length > 1) {
-            if (!sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".command.setskin.other")
-                    && !sender.hasPermission(plugin.getDescription().getName().toLowerCase() + ".command.setskin.*")) {
+            if (!sender.hasPermission(plugin.getName().toLowerCase() + ".command.setskin.other")
+                    && !sender.hasPermission(plugin.getName().toLowerCase() + ".command.setskin.*")) {
                 plugin.sendMessage(sender, "no-permission-other");
                 return;
             }

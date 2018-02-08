@@ -14,7 +14,7 @@ public class InvalidateCommand extends Command {
 
     public InvalidateCommand(ChangeSkinBungee plugin) {
         super("skinupdate",
-                plugin.getDescription().getName().toLowerCase() + ".command.skinupdate",
+                plugin.getName().toLowerCase() + ".command.skinupdate",
                 "skin-update");
 
         this.plugin = plugin;
@@ -34,7 +34,7 @@ public class InvalidateCommand extends Command {
                 return;
             }
 
-            String permPrefix = plugin.getDescription().getName().toLowerCase() + ".command.skinupdate.other.";
+            String permPrefix = plugin.getName().toLowerCase() + ".command.skinupdate.other.";
             if (!sender.hasPermission(permPrefix + targetPlayer.getUniqueId())
                     && !sender.hasPermission(permPrefix + '*')) {
                 plugin.sendMessage(sender, "no-permission-other");

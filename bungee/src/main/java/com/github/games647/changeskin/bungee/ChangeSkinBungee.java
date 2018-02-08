@@ -84,7 +84,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
 
         //this is required to listen to messages from the server
-        getProxy().registerChannel(getDescription().getName());
+        getProxy().registerChannel(getName());
         getProxy().getPluginManager().registerListener(this, new MessageListener(this));
 
         getProxy().getPluginManager().registerCommand(this, new SetCommand(this));

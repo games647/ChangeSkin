@@ -15,7 +15,7 @@ public class UploadCommand extends Command {
     private final ChangeSkinBungee plugin;
 
     public UploadCommand(ChangeSkinBungee plugin) {
-        super("skin-upload", plugin.getDescription().getName().toLowerCase() + ".command.skinupload", "skinupload");
+        super("skin-upload", plugin.getName().toLowerCase() + ".command.skinupload", "skinupload");
 
         this.plugin = plugin;
     }
