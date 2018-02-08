@@ -36,7 +36,7 @@ https://ci.codemc.org/job/ChangeSkin/changes
 * /skinupdate [onlinePlayer] - Invalidates the database entry and fetches the fresh skin from the Mojang servers
 * /skinupload < url > Upload a skin to a mojang account
 * /skin-select < name > Choose a skin from the database which has a specified name
-* /setskull Changes the skin of a holding skull from the database which has a specified name
+* /skinskull Changes the skin of a holding skull from the database which has a specified name
 
 Keep prevents the skin from auto updating. See the config for more information about auto updating.
 
