@@ -77,10 +77,10 @@ public class ChangeSkinCore {
 
             if (database) {
                 setupDatabase(config.getSection("storage"));
-            }
 
-            loadDefaultSkins(config.getStringList("default-skins"));
-            loadAccounts(config.getStringList("upload-accounts"));
+                loadDefaultSkins(config.getStringList("default-skins"));
+                loadAccounts(config.getStringList("upload-accounts"));
+            }
 
             Configuration messages = loadFile("messages.yml");
 
