@@ -21,14 +21,6 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
-    <modules>
-        <module>core</module>
-        <module>bukkit</module>
-        <module>bungee</module>
-        <module>sponge</module>
-        <module>universal</module>
-    </modules>
-
     <build>
         <defaultGoal>install</defaultGoal>
         <!--Just use the project name to replace an old version of the plugin if the user does only copy-paste-->
@@ -42,4 +34,11 @@
             </resource>
         </resources>
     </build>
+
+    <modules>
+        <module>core</module>
+        <module>bukkit</module>
+        <module>bungee</module>
+        <module>sponge</module>
+    </modules>
 </project>

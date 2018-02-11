@@ -43,11 +43,17 @@
             <version>1.7.25</version>
         </dependency>
 
-        <!-- snakeyaml is present in Bungee, Spigot, Cauldron and so we could use this independent implementation -->
+        <!-- snakeyaml is present in Bungee, Spigot and so we could use this independent implementation -->
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-config</artifactId>
             <version>1.12-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
