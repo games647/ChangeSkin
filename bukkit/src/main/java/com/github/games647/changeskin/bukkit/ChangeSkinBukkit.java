@@ -50,7 +50,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         try {
             core.load(!bungeeCord);
         } catch (Exception ex) {
-            logger.error("Error loading config. Disabling plugin...", ex);
+            logger.error("Error initializing plugin. Disabling...", ex);
             setEnabled(false);
             return;
         }

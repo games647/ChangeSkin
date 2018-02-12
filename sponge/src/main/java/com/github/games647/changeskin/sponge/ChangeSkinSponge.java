@@ -38,13 +38,15 @@ import static org.spongepowered.api.text.Text.of;
         , url = PomData.URL, description = PomData.DESCRIPTION)
 public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
-    @Inject private CommandManager commandManager;
-
     private final Path dataFolder;
     private final Logger logger;
     private final Injector injector;
 
     private final ChangeSkinCore core = new ChangeSkinCore(this);
+
+    @Inject private CommandManager commandManager;
+
+    private boolean initialized;
 
     //We will place more than one config there (i.e. H2/SQLite database) -> sharedRoot = false
     @Inject
@@ -59,13 +61,17 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
         //load config and database
         try {
             core.load(true);
+            initialized = true;
         } catch (Exception ex) {
-            logger.error("Error loading config. Disabling plugin...", ex);
+            logger.error("Error initializing plugin. Disabling...", ex);
         }
     }
 
     @Listener
     public void onInit(GameInitializationEvent initEvent) {
+        if (!initialized)
+            return;
+
         //command and event register
         commandManager.register(this, CommandSpec.builder()
                 .executor(injector.getInstance(SelectCommand.class))

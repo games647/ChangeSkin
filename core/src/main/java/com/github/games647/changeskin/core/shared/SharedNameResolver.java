@@ -38,12 +38,10 @@ public abstract class SharedNameResolver implements Runnable, MessageReceiver {
                     sendMessageInvoker("no-resolve");
                 }
             } catch (NotPremiumException notPremiumEx) {
-                core.getLogger().debug("Requested not premium", notPremiumEx);
                 core.getCrackedNames().put(targetName, new Object());
 
                 sendMessageInvoker("not-premium");
             } catch (RateLimitException rateLimitEx) {
-                core.getLogger().warn("UUID Rate Limit reached", rateLimitEx);
                 sendMessageInvoker("rate-limit");
             }
         }

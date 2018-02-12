@@ -76,7 +76,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         try {
             core.load(true);
         } catch (Exception ioExc) {
-            logger.error("Error loading config. Disabling plugin...", ioExc);
+            logger.error("Error initializing plugin. Disabling...", ioExc);
             return;
         }
 
@@ -174,7 +174,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
                     //rethrow errors we shouldn't silence them like OutOfMemory
                     throw error;
                 } catch (Throwable throwable) {
-                    logger.error("Error applying skin", throwable);
+                    logger.error("Error applying skin: {} for {}", skinData, player, throwable);
                 }
             }
         } else if (skinData == null) {

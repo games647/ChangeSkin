@@ -26,10 +26,9 @@ public abstract class SharedListener {
                     ownerUUID = optUUID.get();
                 }
             } catch (NotPremiumException ex) {
-                core.getLogger().debug("Username is not premium on refetch");
                 core.getCrackedNames().put(playerName, new Object());
             } catch (RateLimitException ex) {
-                core.getLogger().warn("Rate limit reached on refetch", ex);
+                //ignore
             }
         }
 

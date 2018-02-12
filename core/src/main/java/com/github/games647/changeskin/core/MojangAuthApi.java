@@ -51,7 +51,7 @@ public class MojangAuthApi {
                 return Optional.of(new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken()));
             }
         } catch (IOException ex) {
-            logger.error("Tried converting player name to uuid", ex);
+            logger.error("Failed to authenticate user: {}", email, ex);
         }
 
         return Optional.empty();
@@ -76,7 +76,6 @@ public class MojangAuthApi {
                 writer.write("&url=" + UrlEscapers.urlPathSegmentEscaper().escape(sourceUrl));
             }
 
-            httpConnection.connect();
             logger.debug("Response code for uploading {}", httpConnection.getResponseCode());
         } catch (IOException ioEx) {
             logger.error("Tried downloading skin data from Mojang", ioEx);
@@ -101,7 +100,7 @@ public class MojangAuthApi {
             //contains the actual skin storage url which will never be deleted and is unique
             return httpConnection.getHeaderField("Location");
         } catch (IOException ioEx) {
-            logger.error("Tried looking for the old skin url", ioEx);
+            logger.error("Tried looking for the old skin url: {}", playerName, ioEx);
         }
 
         return "";

@@ -213,7 +213,7 @@ public class SkinUpdater implements Runnable {
                 ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, packet);
             }
         } catch (InvocationTargetException ex) {
-            plugin.getLog().error("Exception sending instant skin change packet", ex);
+            plugin.getLog().error("Exception sending instant skin change packet for: {}", receiver, ex);
         }
     }
 

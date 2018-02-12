@@ -98,8 +98,6 @@ public class SetCommand extends AbstractForwardCommand {
         }
     }
 
-
-
     private boolean isKeepSkin(String... args) {
         if (args.length > 0) {
             String lastArg = args[args.length - 1];
