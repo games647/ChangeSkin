@@ -72,12 +72,14 @@ public class MojangSkinApi {
             throw new NotPremiumException(playerName);
         }
 
+        Proxy proxy = null;
         try {
             HttpURLConnection connection;
             if (requests.size() >= rateLimit || Duration.between(lastRateLimit, Instant.now()).getSeconds() < 60 * 10) {
                 synchronized (proxies) {
                     if (proxies.hasNext()) {
-                        connection = getConnection(UUID_URL + playerName, proxies.next());
+                        proxy = proxies.next();
+                        connection = getConnection(UUID_URL + playerName, proxy);
                     } else {
                         return Optional.empty();
                     }
@@ -87,9 +89,10 @@ public class MojangSkinApi {
                 connection = getConnection(UUID_URL + playerName);
             }
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
-            } else if (connection.getResponseCode() == RATE_LIMIT_ID) {
+            } else if (responseCode == RATE_LIMIT_ID) {
                 logger.info("Mojang's rate-limit reached. The public IPv4 address of this server issued more than 600" +
                         " Name -> UUID requests within 10 minutes. Once those 10 minutes ended we could make requests" +
                         " again. In the meanwhile new skins can only be downloaded using the UUID directly." +
@@ -103,10 +106,15 @@ public class MojangSkinApi {
                 }
             }
 
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
-                GameProfile playerProfile = gson.fromJson(reader, GameProfile.class);
-                return Optional.of(playerProfile.getId());
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                    GameProfile playerProfile = gson.fromJson(reader, GameProfile.class);
+                    return Optional.of(playerProfile.getId());
+                }
+            } else {
+                logger.error("Received invalid response code: {} for playername: {} using proxy: {}",
+                        responseCode, playerName, proxy);
             }
         } catch (IOException ioEx) {
             logger.error("Tried converting player name: {} to uuid", playerName, ioEx);

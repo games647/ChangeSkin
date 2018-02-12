@@ -38,6 +38,8 @@ import static org.spongepowered.api.text.Text.of;
         , url = PomData.URL, description = PomData.DESCRIPTION)
 public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
+    @Inject private CommandManager commandManager;
+
     private final Path dataFolder;
     private final Logger logger;
     private final Injector injector;
@@ -65,7 +67,6 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
     @Listener
     public void onInit(GameInitializationEvent initEvent) {
         //command and event register
-        CommandManager commandManager = Sponge.getCommandManager();
         commandManager.register(this, CommandSpec.builder()
                 .executor(injector.getInstance(SelectCommand.class))
                 .arguments(string(of("skinName")))
