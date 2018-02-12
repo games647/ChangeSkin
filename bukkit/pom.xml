@@ -34,7 +34,7 @@
                             <shadedPattern>changeskin.slf4j</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>net.md_5.bungee.config/</pattern>
+                            <pattern>net.md_5.bungee.config</pattern>
                             <shadedPattern>changeskin.config</shadedPattern>
                         </relocation>
                     </relocations>

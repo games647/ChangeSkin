@@ -109,7 +109,7 @@ public class MojangSkinApi {
                 return Optional.of(playerProfile.getId());
             }
         } catch (IOException ioEx) {
-            logger.error("Tried converting player name to uuid", ioEx);
+            logger.error("Tried converting player name: {} to uuid", playerName, ioEx);
         }
 
         return Optional.empty();
@@ -145,7 +145,7 @@ public class MojangSkinApi {
                 }
             }
         } catch (IOException ex) {
-            logger.error("Tried downloading skin data from Mojang", ex);
+            logger.error("Tried downloading skin data of: {} from Mojang", ownerUUID, ex);
         }
 
         return Optional.empty();
