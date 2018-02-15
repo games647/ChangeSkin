@@ -24,11 +24,9 @@ public class MojangAuthApi {
 
     private static final String CHANGE_SKIN_URL = "https://api.mojang.com/user/profile/<uuid>/skin";
     private static final String AUTH_URL = "https://authserver.mojang.com/authenticate";
-    private static final String OLD_SKIN_URL = "https://skins.minecraft.net/MinecraftSkins/<playerName>.png";
 
     private final Logger logger;
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     public MojangAuthApi(Logger logger) {
         this.logger = logger;
@@ -80,29 +78,5 @@ public class MojangAuthApi {
         } catch (IOException ioEx) {
             logger.error("Tried downloading skin data from Mojang", ioEx);
         }
-    }
-
-    public String getSkinUrl(String playerName) {
-        String url = OLD_SKIN_URL.replace("<playerName>", playerName);
-
-        try {
-            HttpURLConnection httpConnection = CommonUtil.getConnection(url);
-            //we only need the new url not the actual content
-            httpConnection.setInstanceFollowRedirects(false);
-            httpConnection.connect();
-
-            int responseCode = httpConnection.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_MOVED_PERM) {
-                logger.error("Invalid response from the skin server Response Code: {}", responseCode);
-                return "";
-            }
-
-            //contains the actual skin storage url which will never be deleted and is unique
-            return httpConnection.getHeaderField("Location");
-        } catch (IOException ioEx) {
-            logger.error("Tried looking for the old skin url: {}", playerName, ioEx);
-        }
-
-        return "";
     }
 }

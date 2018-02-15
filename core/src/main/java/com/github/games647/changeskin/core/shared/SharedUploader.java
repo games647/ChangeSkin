@@ -4,6 +4,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.model.GameProfile;
 import com.github.games647.changeskin.core.model.auth.Account;
+import com.github.games647.changeskin.core.model.skin.TextureType;
 
 import java.util.UUID;
 
@@ -22,7 +23,9 @@ public abstract class SharedUploader implements Runnable {
     @Override
     public void run() {
         GameProfile profile = owner.getProfile();
-        String oldSkinUrl = core.getAuthApi().getSkinUrl(profile.getName());
+        String oldSkinUrl = core.getSkinApi().downloadSkin(profile.getId())
+                .map(skinModel -> skinModel.getTextures().get(TextureType.SKIN).getUrl())
+                .orElse("");
 
         UUID uuid = profile.getId();
         UUID accessToken = CommonUtil.parseId(owner.getAccessToken());
