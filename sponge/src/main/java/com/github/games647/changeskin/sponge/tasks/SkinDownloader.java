@@ -27,7 +27,7 @@ public class SkinDownloader extends SharedDownloader {
 
     @Override
     protected void scheduleApplyTask(SkinModel skinData) {
-        Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skinData, keepSkin);
+        Runnable skinUpdater = new SkinApplier(plugin, invoker, receiver, skinData, keepSkin);
         Task.builder().execute(skinUpdater).submit(plugin);
     }
 

@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bukkit.listener;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
+import com.github.games647.changeskin.bukkit.tasks.SkinApplier;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedBungeeListener;
 
@@ -37,7 +37,7 @@ public class BungeeListener extends SharedBungeeListener<Player> implements Plug
 
     @Override
     protected void runUpdater(Player receiver, SkinModel targetSkin) {
-        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, null, receiver, targetSkin, false));
+        Bukkit.getScheduler().runTask(plugin, new SkinApplier(plugin, null, receiver, targetSkin, false));
     }
 
     @Override

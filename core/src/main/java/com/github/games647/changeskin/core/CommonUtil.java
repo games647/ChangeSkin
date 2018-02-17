@@ -12,12 +12,15 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.impl.JDK14LoggerAdapter;
 
 public class CommonUtil {
+
+    private static final Pattern UUID_PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
 
     private static final int TIMEOUT = 3000;
     private static final String USER_AGENT = "ChangeSkin-Bukkit-Plugin";
@@ -26,11 +29,7 @@ public class CommonUtil {
     private static final char TRANSLATED_CHAR = '§';
 
     public static UUID parseId(String withoutDashes) {
-        return UUID.fromString(withoutDashes.substring(0, 8)
-                + '-' + withoutDashes.substring(8, 12)
-                + '-' + withoutDashes.substring(12, 16)
-                + '-' + withoutDashes.substring(16, 20)
-                + '-' + withoutDashes.substring(20, 32));
+        return UUID.fromString(UUID_PATTERN.matcher(withoutDashes).replaceAll("$1-$2-$3-$4-$5"));
     }
 
     public static String toMojangId(UUID uuid) {

@@ -28,6 +28,6 @@ public class SkinInvalidator extends SharedInvalidator {
 
     @Override
     protected void scheduleApplyTask(SkinModel skinData) {
-        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, skinData, false));
+        Bukkit.getScheduler().runTask(plugin, new SkinApplier(plugin, invoker, receiver, skinData, false));
     }
 }

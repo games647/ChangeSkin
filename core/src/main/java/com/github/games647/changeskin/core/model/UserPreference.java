@@ -51,4 +51,14 @@ public class UserPreference {
     public void setTargetSkin(SkinModel targetSkin) {
         this.targetSkin = targetSkin;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", targetSkin=" + targetSkin +
+                ", keepSkin=" + keepSkin +
+                '}';
+    }
 }

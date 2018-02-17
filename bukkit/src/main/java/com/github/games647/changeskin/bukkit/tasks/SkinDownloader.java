@@ -27,7 +27,7 @@ public class SkinDownloader extends SharedDownloader {
 
     @Override
     protected void scheduleApplyTask(SkinModel skinData) {
-        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, invoker, receiver, skinData, keepSkin));
+        Bukkit.getScheduler().runTask(plugin, new SkinApplier(plugin, invoker, receiver, skinData, keepSkin));
     }
 
     @Override

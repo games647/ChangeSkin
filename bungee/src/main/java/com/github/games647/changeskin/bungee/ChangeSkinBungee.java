@@ -7,7 +7,7 @@ import com.github.games647.changeskin.bungee.commands.UploadCommand;
 import com.github.games647.changeskin.bungee.listener.ConnectListener;
 import com.github.games647.changeskin.bungee.listener.MessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
-import com.github.games647.changeskin.bungee.tasks.SkinUpdater;
+import com.github.games647.changeskin.bungee.tasks.SkinApplier;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
@@ -135,7 +135,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
 
     //you should call this method async
     public void setSkin(ProxiedPlayer player, final SkinModel newSkin, boolean applyNow) {
-        new SkinUpdater(this, player, player, newSkin, false, false).run();
+        new SkinApplier(this, player, player, newSkin, false, false).run();
     }
 
     //you should call this method async

@@ -31,7 +31,7 @@ public class SkinDownloader extends SharedDownloader {
 
     @Override
     protected void scheduleApplyTask(SkinModel skinData) {
-        Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skinData, bukkitOp, keepSkin);
+        Runnable skinUpdater = new SkinApplier(plugin, invoker, receiver, skinData, bukkitOp, keepSkin);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
     }
 

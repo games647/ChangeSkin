@@ -9,7 +9,7 @@ import com.github.games647.changeskin.bukkit.commands.UploadCommand;
 import com.github.games647.changeskin.bukkit.listener.AsyncLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeListener;
 import com.github.games647.changeskin.bukkit.listener.LoginListener;
-import com.github.games647.changeskin.bukkit.tasks.SkinUpdater;
+import com.github.games647.changeskin.bukkit.tasks.SkinApplier;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
@@ -99,7 +99,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
     //you should call this method async
     public void setSkin(Player player, SkinModel newSkin, boolean applyNow) {
-        new SkinUpdater(this, null, player, newSkin, true).run();
+        new SkinApplier(this, null, player, newSkin, true).run();
     }
 
     //you should call this method async

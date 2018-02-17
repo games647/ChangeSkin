@@ -21,7 +21,7 @@ public class SkinSelector extends SharedSkinSelect {
 
     @Override
     protected void scheduleApplyTask(SkinModel targetSkin) {
-        Runnable skinUpdater = new SkinUpdater(plugin, receiver, receiver, targetSkin, true);
+        Runnable skinUpdater = new SkinApplier(plugin, receiver, receiver, targetSkin, true);
         Task.builder().execute(skinUpdater).submit(plugin);
     }
 

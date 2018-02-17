@@ -32,7 +32,7 @@ public class SkinInvalidator extends SharedInvalidator {
 
     @Override
     protected void scheduleApplyTask(SkinModel skinData) {
-        Runnable skinUpdater = new SkinUpdater(plugin, invoker, receiver, skinData, bukkitOp, false);
+        Runnable skinUpdater = new SkinApplier(plugin, invoker, receiver, skinData, bukkitOp, false);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, skinUpdater);
     }
 }

@@ -21,7 +21,7 @@ public class SkinSelector extends SharedSkinSelect {
 
     @Override
     protected void scheduleApplyTask(SkinModel targetSkin) {
-        Bukkit.getScheduler().runTask(plugin, new SkinUpdater(plugin, receiver, receiver, targetSkin, true));
+        Bukkit.getScheduler().runTask(plugin, new SkinApplier(plugin, receiver, receiver, targetSkin, true));
     }
 
     @Override

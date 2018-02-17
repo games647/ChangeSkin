@@ -10,7 +10,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
-public class SkinUpdater implements Runnable {
+public class SkinApplier implements Runnable {
 
     private final ChangeSkinBungee plugin;
     private final ProxiedPlayer receiver;
@@ -20,7 +20,7 @@ public class SkinUpdater implements Runnable {
     private final boolean bukkitOp;
     private final boolean keepSkin;
 
-    public SkinUpdater(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, SkinModel targetSkin
+    public SkinApplier(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, SkinModel targetSkin
             , boolean bukkitOp, boolean keepSkin) {
         this.plugin = plugin;
         this.receiver = receiver;

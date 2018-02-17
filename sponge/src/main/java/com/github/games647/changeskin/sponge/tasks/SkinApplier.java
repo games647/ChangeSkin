@@ -16,7 +16,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-public class SkinUpdater implements Runnable {
+public class SkinApplier implements Runnable {
 
     private final ChangeSkinSponge plugin;
     private final CommandSource invoker;
@@ -24,7 +24,7 @@ public class SkinUpdater implements Runnable {
     private final SkinModel targetSkin;
     private final boolean keepSkin;
 
-    public SkinUpdater(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, SkinModel targetSkin
+    public SkinApplier(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, SkinModel targetSkin
             , boolean keepSkin) {
         this.plugin = plugin;
         this.invoker = invoker;

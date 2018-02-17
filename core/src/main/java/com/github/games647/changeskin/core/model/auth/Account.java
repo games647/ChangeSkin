@@ -19,4 +19,11 @@ public class Account {
     public String getAccessToken() {
         return accessToken;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "profile=" + profile +
+                '}';
+    }
 }

@@ -35,7 +35,7 @@ import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
 import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
 import static com.comphenix.protocol.PacketType.Play.Server.UPDATE_HEALTH;
 
-public class SkinUpdater implements Runnable {
+public class SkinApplier implements Runnable {
 
     protected final ChangeSkinBukkit plugin;
     private final CommandSender invoker;
@@ -43,7 +43,7 @@ public class SkinUpdater implements Runnable {
     private final SkinModel targetSkin;
     private final boolean keepSkin;
 
-    public SkinUpdater(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver
+    public SkinApplier(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver
             , SkinModel targetSkin, boolean keepSkin) {
         this.plugin = plugin;
         this.invoker = invoker;
