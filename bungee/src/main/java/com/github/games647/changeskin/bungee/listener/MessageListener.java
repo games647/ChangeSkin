@@ -1,6 +1,8 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
+import com.github.games647.changeskin.core.messages.ForwardMessage;
+import com.github.games647.changeskin.core.messages.PermissionResultMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
@@ -31,28 +33,23 @@ public class MessageListener extends AbstractSkinListener {
         String subChannel = dataInput.readUTF();
 
         ProxiedPlayer invoker = (ProxiedPlayer) messageEvent.getReceiver();
-        switch (subChannel) {
-            case "PermissionsSuccess":
-                onPermissionSuccess(dataInput, invoker);
-                break;
-            case "PermissionsFailure":
+        if ("PermissionResult".equals(subChannel)) {
+            PermissionResultMessage message = new PermissionResultMessage();
+            message.readFrom(dataInput);
+            if (message.isSuccess()) {
+                onPermissionSuccess(message, invoker);
+            } else {
                 plugin.sendMessage(invoker, "no-permission");
-                break;
-            case "ForwardCmd":
-                onCommandForward(invoker, dataInput);
-                break;
+            }
+        } else if ("ForwardCmd".equals(subChannel)) {
+            onCommandForward(invoker, dataInput);
         }
     }
 
-    private void onPermissionSuccess(ByteArrayDataInput dataInput, ProxiedPlayer invoker) {
-        int skinId = dataInput.readInt();
-        
-        String encodedData = dataInput.readUTF();
-        String encodedSignature = dataInput.readUTF();
-        final SkinModel targetSkin = SkinModel.createSkinFromEncoded(encodedData, encodedSignature);
-        targetSkin.setSkinId(skinId);
-        
-        UUID receiverUUID = UUID.fromString(dataInput.readUTF());
+    private void onPermissionSuccess(PermissionResultMessage message, ProxiedPlayer invoker) {
+        SkinModel targetSkin = message.getSkin();
+
+        UUID receiverUUID = message.getReceiverUUID();
         ProxiedPlayer receiver = ProxyServer.getInstance().getPlayer(receiverUUID);
         if (receiver == null || !receiver.isConnected()) {
             //receiver is not online cancel
@@ -80,22 +77,21 @@ public class MessageListener extends AbstractSkinListener {
     }
 
     private void onCommandForward(CommandSender invoker, ByteArrayDataInput dataInput) {
-        String commandName = dataInput.readUTF();
-        String args = dataInput.readUTF();
-        boolean isSource = dataInput.readBoolean();
-        boolean isOp = dataInput.readBoolean();
+        ForwardMessage message = new ForwardMessage();
+        message.readFrom(dataInput);
 
-        if (isOp && isSource) {
+        if (message.isOP() && message.isSource()) {
             //bukkit op and it won't run as bungee console
             invoker.addGroups(plugin.getName() + "-OP");
         }
 
-        if (isSource) {
+        String line = message.getCommandName() + ' ' + message.getArgs();
+        if (message.isSource()) {
             //the player is the actual invoker other it's the console
-            ProxyServer.getInstance().getPluginManager().dispatchCommand(invoker, commandName + ' ' + args);
+            ProxyServer.getInstance().getPluginManager().dispatchCommand(invoker, line);
         } else {
             CommandSender console = ProxyServer.getInstance().getConsole();
-            ProxyServer.getInstance().getPluginManager().dispatchCommand(console, commandName + ' ' + args);
+            ProxyServer.getInstance().getPluginManager().dispatchCommand(console, line);
         }
     }
 }

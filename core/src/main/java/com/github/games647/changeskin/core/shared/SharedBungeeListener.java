@@ -1,6 +1,10 @@
 package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.PlatformPlugin;
+import com.github.games647.changeskin.core.messages.ChannelMessage;
+import com.github.games647.changeskin.core.messages.CheckPermMessage;
+import com.github.games647.changeskin.core.messages.PermissionResultMessage;
+import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -30,40 +34,27 @@ public abstract class SharedBungeeListener<P> {
     }
 
     private void updateSkin(P player, ByteArrayDataInput dataInput) throws IllegalArgumentException {
-        String playerName = dataInput.readUTF();
+        SkinUpdateMessage message = new SkinUpdateMessage();
+        message.readFrom(dataInput);
+
+        String playerName = message.getPlayerName();
         P receiver = getPlayerExact(playerName);
 
         plugin.getLog().info("Instant update for {}", playerName);
-
-        // SkinModel skinData = SkinModel.createSkinFromEncoded(encodedData, signature);
         runUpdater(player, null);
     }
 
     private void checkPermissions(P player, ByteArrayDataInput dataInput) {
-        int skinId = dataInput.readInt();
-        String encodedData = dataInput.readUTF();
-        String encodedSignature = dataInput.readUTF();
+        CheckPermMessage message = new CheckPermMessage();
+        message.readFrom(dataInput);
 
-        //continue on success only
-        String receiverUUID = dataInput.readUTF();
-        boolean skinPerm = dataInput.readBoolean();
-        boolean isOp = dataInput.readBoolean();
+        UUID receiverUUID = message.getReceiverUUD();
+        boolean op = message.isOp();
+        SkinModel targetSkin = message.getTargetSkin();
+        UUID skinProfile = targetSkin.getProfileId();
 
-        SkinModel targetSkin = SkinModel.createSkinFromEncoded(encodedData, encodedSignature);
-        if (isOp || checkBungeePerms(player, UUID.fromString(receiverUUID), targetSkin.getProfileId(), skinPerm)) {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("PermissionsSuccess");
-            out.writeInt(skinId);
-            out.writeUTF(encodedData);
-            out.writeUTF(encodedSignature);
-            out.writeUTF(receiverUUID);
-
-            sendMessage(player, channelName, out.toByteArray());
-        } else {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("PermissionsFailure");
-            sendMessage(player, channelName, out.toByteArray());
-        }
+        boolean success = op || checkBungeePerms(player, receiverUUID, skinProfile, message.isSkinPerm());
+        sendMessage(player, new PermissionResultMessage(success, targetSkin, receiverUUID));
     }
 
     private boolean checkBungeePerms(P player, UUID receiverUUID, UUID targetUUID, boolean skinPerm) {
@@ -86,6 +77,14 @@ public abstract class SharedBungeeListener<P> {
     }
 
     protected abstract void sendMessage(P player, String channel, byte[] data);
+
+    protected void sendMessage(P player, ChannelMessage message) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(message.getChannelName());
+
+        message.writeTo(out);
+        sendMessage(player, channelName, out.toByteArray());
+    }
 
     protected abstract void runUpdater(P receiver, SkinModel targetSkin);
 

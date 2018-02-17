@@ -1,9 +1,9 @@
 package com.github.games647.changeskin.bukkit.commands;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
+import com.github.games647.changeskin.core.messages.ChannelMessage;
+import com.github.games647.changeskin.core.messages.ForwardMessage;
 import com.google.common.base.Joiner;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 import java.util.Optional;
 
@@ -23,7 +23,8 @@ public abstract class AbstractForwardCommand implements CommandExecutor {
 
     protected void onBungeeCord(CommandSender sender, String commandName, String... args) {
         Player proxy;
-        if (sender instanceof Player) {
+        boolean isPlayer = sender instanceof Player;
+        if (isPlayer) {
             proxy = (Player) sender;
         } else {
             Optional<? extends Player> optPlayer = Bukkit.getOnlinePlayers().stream().findAny();
@@ -35,13 +36,7 @@ public abstract class AbstractForwardCommand implements CommandExecutor {
             proxy = optPlayer.get();
         }
 
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("ForwardCmd");
-        out.writeUTF(commandName);
-        out.writeUTF(Joiner.on(' ').join(args));
-        out.writeBoolean(sender instanceof Player);
-        out.writeBoolean(sender.isOp());
-
-        proxy.sendPluginMessage(plugin, plugin.getName(), out.toByteArray());
+        ChannelMessage message = new ForwardMessage(commandName, Joiner.on(' ').join(args), isPlayer, sender.isOp());
+        plugin.sendPluginMessage(proxy, message);
     }
 }

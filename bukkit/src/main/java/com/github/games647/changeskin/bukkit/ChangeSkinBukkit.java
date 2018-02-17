@@ -14,8 +14,11 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -139,6 +142,14 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
     public boolean isBungeeCord() {
         return bungeeCord;
+    }
+
+    public void sendPluginMessage(Player sender, ChannelMessage message) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(message.getChannelName());
+
+        message.writeTo(out);
+        sender.sendPluginMessage(this, getName(), out.toByteArray());
     }
 
     @Override

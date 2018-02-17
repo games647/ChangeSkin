@@ -1,10 +1,12 @@
 package com.github.games647.changeskin.bungee.tasks;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
+import com.github.games647.changeskin.core.messages.ChannelMessage;
+import com.github.games647.changeskin.core.messages.CheckPermMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
+
+import java.util.UUID;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -37,23 +39,14 @@ public class SkinApplier implements Runnable {
             return;
         }
 
+        UUID receiverUUID = receiver.getUniqueId();
         if (invoker instanceof ProxiedPlayer) {
             if (targetSkin != null && plugin.getCore().getConfig().getBoolean("bukkit-permissions")) {
                 Server server = ((ProxiedPlayer) invoker).getServer();
+                boolean skinPerm = plugin.getCore().getConfig().getBoolean("skinPermission");
 
-                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                out.writeUTF("PermissionsCheck");
-
-                //serialize it to restore on response message
-                out.writeInt(targetSkin.getSkinId());
-                out.writeUTF(targetSkin.getEncodedValue());
-                out.writeUTF(targetSkin.getSignature());
-
-                out.writeUTF(receiver.getUniqueId().toString());
-                out.writeBoolean(plugin.getCore().getConfig().getBoolean("skinPermission"));
-                out.writeBoolean(bukkitOp);
-
-                server.sendData(plugin.getName(), out.toByteArray());
+                ChannelMessage message = new CheckPermMessage(targetSkin, receiverUUID, skinPerm, bukkitOp);
+                plugin.sendPluginMessage(server, message);
                 return;
             }
 
@@ -64,7 +57,7 @@ public class SkinApplier implements Runnable {
         //check if that specific player is online
         UserPreference preferences = plugin.getLoginSession(receiver.getPendingConnection());
         if (preferences == null) {
-            preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
+            preferences = plugin.getStorage().getPreferences(receiverUUID);
         }
 
         //Save the target uuid from the requesting player source

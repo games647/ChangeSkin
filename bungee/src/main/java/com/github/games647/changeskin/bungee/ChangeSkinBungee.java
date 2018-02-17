@@ -12,6 +12,8 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.messages.ChannelMessage;
+import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataOutput;
@@ -32,6 +34,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 import net.md_5.bungee.connection.InitialHandler;
@@ -185,12 +188,16 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         }
 
         //send plugin channel update request
-        if (player.getServer() != null) {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("UpdateSkin");
-            out.writeUTF(player.getName());
+        sendPluginMessage(player.getServer(), new SkinUpdateMessage(player.getName()));
+    }
 
-            player.getServer().sendData(getDescription().getName(), out.toByteArray());
+    public void sendPluginMessage(Server server, ChannelMessage message) {
+        if (server != null) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF(message.getChannelName());
+
+            message.writeTo(out);
+            server.sendData(getName(), out.toByteArray());
         }
     }
 

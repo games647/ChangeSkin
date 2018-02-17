@@ -28,7 +28,7 @@ public class InvalidateCommand extends AbstractForwardCommand {
                 return true;
             }
 
-            String permPrefix = plugin.getDescription().getName().toLowerCase() + ".command.skinupdate.other.";
+            String permPrefix = plugin.getName().toLowerCase() + ".command.skinupdate.other.";
             if (!sender.hasPermission(permPrefix + targetPlayer.getUniqueId())
                     && !sender.hasPermission(permPrefix + '*')) {
                 plugin.sendMessage(sender, "no-permission-other");
