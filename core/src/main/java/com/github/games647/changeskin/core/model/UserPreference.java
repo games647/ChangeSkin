@@ -31,6 +31,10 @@ public class UserPreference {
         return id;
     }
 
+    public boolean isSaved() {
+        return id >= 0;
+    }
+
     public UUID getUuid() {
         return uuid;
     }

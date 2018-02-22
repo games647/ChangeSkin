@@ -4,7 +4,6 @@ import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.MetadataModel;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.model.skin.TextureModel;
-import com.github.games647.changeskin.core.model.skin.TextureType;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -23,9 +22,13 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
+import static com.github.games647.changeskin.core.model.skin.TextureType.CAPE;
+import static com.github.games647.changeskin.core.model.skin.TextureType.SKIN;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 public class SkinStorage {
 
-    private static final String PREFERENCES_TABLE = "preferences";
+    private static final String USER_TABLE = "preferences";
     private static final String DATA_TABLE = "skinData";
 
     private final ChangeSkinCore core;
@@ -99,10 +102,10 @@ public class SkinStorage {
     public UserPreference getPreferences(UUID uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, "
-                     + DATA_TABLE + ".UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature, " + PREFERENCES_TABLE + ".*"
-                     + " FROM " + PREFERENCES_TABLE
-                     + " LEFT JOIN " + DATA_TABLE + " ON " + PREFERENCES_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
-                     + " WHERE " + PREFERENCES_TABLE + ".UUID=? LIMIT 1")) {
+                     + DATA_TABLE + ".UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature, " + USER_TABLE + ".*"
+                     + " FROM " + USER_TABLE
+                     + " LEFT JOIN " + DATA_TABLE + " ON " + USER_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
+                     + " WHERE " + USER_TABLE + ".UUID=? LIMIT 1")) {
             stmt.setString(1, CommonUtil.toMojangId(uuid));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
@@ -171,11 +174,18 @@ public class SkinStorage {
         }
 
         try (Connection con = dataSource.getConnection()) {
-            if (preferences.getId() == -1) {
-                String insertQuery = "INSERT INTO " + PREFERENCES_TABLE + " (UUID, TargetSkin, KeepSkin) " +
+            if (preferences.isSaved()) {
+                try (PreparedStatement stmt = con.prepareStatement("UPDATE " + USER_TABLE
+                        + " SET TargetSkin=? WHERE UserID=?")) {
+                    stmt.setInt(1, targetSkin == null ? -1 : targetSkin.getSkinId());
+                    stmt.setInt(2, preferences.getId());
+                    stmt.executeUpdate();
+                }
+            } else {
+                String insertQuery = "INSERT INTO " + USER_TABLE + " (UUID, TargetSkin, KeepSkin) " +
                         "VALUES (?, ?, ?)";
 
-                try (PreparedStatement stmt = con.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement stmt = con.prepareStatement(insertQuery, RETURN_GENERATED_KEYS)) {
                     stmt.setString(1, CommonUtil.toMojangId(preferences.getUuid()));
                     stmt.setInt(2, targetSkin == null ? -1 : targetSkin.getSkinId());
                     stmt.setBoolean(3, preferences.isKeepSkin());
@@ -187,13 +197,6 @@ public class SkinStorage {
                             preferences.setId(generatedKeys.getInt(1));
                         }
                     }
-                }
-            } else {
-                try (PreparedStatement stmt = con.prepareStatement("UPDATE " + PREFERENCES_TABLE
-                        + " SET TargetSkin=? WHERE UUID=?")) {
-                    stmt.setInt(1, targetSkin == null ? -1 : targetSkin.getSkinId());
-                    stmt.setString(2, CommonUtil.toMojangId(preferences.getUuid()));
-                    stmt.executeUpdate();
                 }
             }
         } catch (SQLException sqlEx) {
@@ -211,7 +214,7 @@ public class SkinStorage {
             return true;
         }
 
-        TextureModel skinTexture = skinData.getTextures().get(TextureType.SKIN);
+        TextureModel skinTexture = skinData.getTextures().get(SKIN);
         String skinUrl = "";
         boolean slimModel = false;
         if (skinTexture != null) {
@@ -222,7 +225,7 @@ public class SkinStorage {
             }
         }
 
-        TextureModel capeTexture = skinData.getTextures().get(TextureType.CAPE);
+        TextureModel capeTexture = skinData.getTextures().get(CAPE);
         String capeUrl = "";
         if (capeTexture != null) {
             capeUrl = capeTexture.getShortUrl();
@@ -231,7 +234,7 @@ public class SkinStorage {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
                      + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
-                     + " (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+                     + " (?, ?, ?, ?, ?, ?, ?)", RETURN_GENERATED_KEYS)) {
 
             stmt.setLong(1, skinData.getTimestamp());
             stmt.setString(2, CommonUtil.toMojangId(skinData.getProfileId()));

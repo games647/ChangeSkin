@@ -15,17 +15,18 @@ import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.event.EventManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
+import org.spongepowered.api.network.ChannelRegistrar;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
@@ -34,8 +35,8 @@ import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
 @Singleton
-@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
-        , url = PomData.URL, description = PomData.DESCRIPTION)
+@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
+        url = PomData.URL, description = PomData.DESCRIPTION)
 public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
     private final Path dataFolder;
@@ -45,6 +46,8 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
     private final ChangeSkinCore core = new ChangeSkinCore(this);
 
     @Inject private CommandManager commandManager;
+    @Inject private EventManager eventManager;
+    @Inject private ChannelRegistrar channelRegistrar;
 
     private boolean initialized;
 
@@ -94,8 +97,8 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
                 .executor(injector.getInstance(InvalidateCommand.class))
                 .build(), "skininvalidate", "skin-invalidate");
 
-        Sponge.getEventManager().registerListeners(this, injector.getInstance(LoginListener.class));
-        RawDataChannel pluginChannel = Sponge.getChannelRegistrar().createRawChannel(this, PomData.ARTIFACT_ID);
+        eventManager.registerListeners(this, injector.getInstance(LoginListener.class));
+        RawDataChannel pluginChannel = channelRegistrar.createRawChannel(this, PomData.ARTIFACT_ID);
         pluginChannel.addListener(injector.getInstance(BungeeListener.class));
     }
 
