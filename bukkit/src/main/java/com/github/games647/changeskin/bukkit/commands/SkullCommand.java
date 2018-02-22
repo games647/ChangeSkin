@@ -101,7 +101,7 @@ public class SkullCommand implements CommandExecutor {
             //rethrow errors we shouldn't silence them like OutOfMemory
             throw error;
         } catch (Throwable throwable) {
-            plugin.getLog().info("Failed to set skull item", throwable);
+            plugin.getLog().info("Failed to set skull item {} to {}", itemStack, skinData, throwable);
         }
     }
 

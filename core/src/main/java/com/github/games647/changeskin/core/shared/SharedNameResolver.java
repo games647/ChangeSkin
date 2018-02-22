@@ -39,7 +39,6 @@ public abstract class SharedNameResolver implements Runnable, MessageReceiver {
                 }
             } catch (NotPremiumException notPremiumEx) {
                 core.getCrackedNames().put(targetName, new Object());
-
                 sendMessageInvoker("not-premium");
             } catch (RateLimitException rateLimitEx) {
                 sendMessageInvoker("rate-limit");

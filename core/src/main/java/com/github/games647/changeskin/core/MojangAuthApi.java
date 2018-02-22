@@ -76,7 +76,7 @@ public class MojangAuthApi {
 
             logger.debug("Response code for uploading {}", httpConnection.getResponseCode());
         } catch (IOException ioEx) {
-            logger.error("Tried downloading skin data from Mojang", ioEx);
+            logger.error("Tried uploading {}'s skin data {} to Mojang {}", ownerId, sourceUrl, url, ioEx);
         }
     }
 }

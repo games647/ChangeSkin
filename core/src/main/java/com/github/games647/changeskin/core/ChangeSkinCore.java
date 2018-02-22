@@ -76,7 +76,9 @@ public class ChangeSkinCore {
             skinApi = new MojangSkinApi(plugin.getLog(), rateLimit, proxies);
 
             if (database) {
-                setupDatabase(config.getSection("storage"));
+                if (!setupDatabase(config.getSection("storage"))) {
+                    return;
+                }
 
                 loadDefaultSkins(config.getStringList("default-skins"));
                 loadAccounts(config.getStringList("upload-accounts"));
@@ -95,12 +97,16 @@ public class ChangeSkinCore {
                         }
                     });
         } catch (IOException ioEx) {
-            plugin.getLog().info("Failed to load yaml files", ioEx);
+            plugin.getLog().info("Failed to load yaml file", ioEx);
         }
     }
 
-    public void setupDatabase(Configuration sqlConfig) {
+    public boolean setupDatabase(Configuration sqlConfig) {
         String driver = sqlConfig.getString("driver");
+        if (checkDriver(driver)) {
+            return false;
+        }
+
         String host = sqlConfig.get("host", "");
         int port = sqlConfig.get("port", 3306);
         String database = sqlConfig.getString("database");
@@ -112,9 +118,25 @@ public class ChangeSkinCore {
         this.storage = new SkinStorage(this, driver, host, port, database, user, password, useSSL);
         try {
             this.storage.createTables();
+            return true;
         } catch (Exception ex) {
             getLogger().error("Failed to setup database. ", ex);
         }
+
+        return false;
+    }
+
+    private boolean checkDriver(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException notFoundEx) {
+            Logger log = plugin.getLog();
+            log.warn("This driver {} is not supported on this platform", className);
+            log.warn("Please choose MySQL (Spigot+BungeeCord), SQLite (Spigot+Sponge) or MariaDB (Sponge)", notFoundEx);
+        }
+
+        return false;
     }
 
     public Logger getLogger() {
