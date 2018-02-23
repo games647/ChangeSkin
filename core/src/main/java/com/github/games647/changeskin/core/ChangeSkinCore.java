@@ -4,7 +4,6 @@ import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.net.HostAndPort;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -53,6 +52,7 @@ public class ChangeSkinCore {
 
     public ChangeSkinCore(PlatformPlugin<?> plugin) {
         this.plugin = plugin;
+
         this.authApi = new MojangAuthApi(plugin.getLog());
     }
 
@@ -103,7 +103,7 @@ public class ChangeSkinCore {
 
     public boolean setupDatabase(Configuration sqlConfig) {
         String driver = sqlConfig.getString("driver");
-        if (checkDriver(driver)) {
+        if (!checkDriver(driver)) {
             return false;
         }
 
@@ -118,9 +118,10 @@ public class ChangeSkinCore {
         this.storage = new SkinStorage(this, driver, host, port, database, user, password, useSSL);
         try {
             this.storage.createTables();
+            getLogger().info("SETUP {}", storage);
             return true;
         } catch (Exception ex) {
-            getLogger().error("Failed to setup database. ", ex);
+            getLogger().error("Failed to setup database.", ex);
         }
 
         return false;
@@ -132,8 +133,8 @@ public class ChangeSkinCore {
             return true;
         } catch (ClassNotFoundException notFoundEx) {
             Logger log = plugin.getLog();
-            log.warn("This driver {} is not supported on this platform", className);
-            log.warn("Please choose MySQL (Spigot+BungeeCord), SQLite (Spigot+Sponge) or MariaDB (Sponge)", notFoundEx);
+            log.error("Please choose for Spigot (SQLite, MySQL), Sponge (SQLite, MariaDB) or BungeeCord (MySQL)");
+            log.error("This driver {} is not supported on this platform", className, notFoundEx);
         }
 
         return false;
@@ -187,8 +188,8 @@ public class ChangeSkinCore {
             defaults = configProvider.load(defaultStream);
         }
 
-        File file = plugin.getPluginFolder().resolve(fileName).toFile();
-        return configProvider.load(file, defaults);
+        Path file = plugin.getPluginFolder().resolve(fileName);
+        return configProvider.load(Files.newBufferedReader(file), defaults);
     }
 
     private void saveDefaultFile(String fileName) {

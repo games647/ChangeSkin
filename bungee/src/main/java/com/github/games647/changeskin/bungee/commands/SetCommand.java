@@ -77,7 +77,7 @@ public class SetCommand extends Command {
 
     private void setSkin(CommandSender sender, ProxiedPlayer targetPlayer, String toSkin
             , boolean bukkitOp, boolean keepSkin) {
-        //minecraft player names has the max length of 16 characters so it could be the uuid
+        //Minecraft player names has the max length of 16 characters so it could be the uuid
         if (toSkin.length() > 16) {
             setSkinUUID(sender, targetPlayer, toSkin, bukkitOp, keepSkin);
         } else {

@@ -44,7 +44,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         try {
             bungeeCord = getServer().spigot().getConfig().getBoolean("settings.bungeecord");
         } catch (Exception | NoSuchMethodError ex) {
-            logger.warn("Cannot check bungeecord support. You use a non-spigot build");
+            logger.warn("Cannot check bungeecord support. You use a non-Spigot build");
         }
 
         saveDefaultConfig();

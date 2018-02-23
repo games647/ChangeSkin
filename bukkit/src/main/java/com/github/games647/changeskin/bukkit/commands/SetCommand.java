@@ -72,7 +72,7 @@ public class SetCommand extends AbstractForwardCommand {
     }
 
     private void setSkin(CommandSender sender, Player targetPlayer, String toSkin, boolean keepSkin) {
-        //minecraft player names has the max length of 16 characters so it could be the uuid
+        //Minecraft player names has the max length of 16 characters so it could be the uuid
         if (toSkin.length() > 16) {
             setSkinUUID(sender, targetPlayer, toSkin, keepSkin);
         } else {
