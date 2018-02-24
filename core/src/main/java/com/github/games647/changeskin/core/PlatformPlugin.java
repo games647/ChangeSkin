@@ -16,7 +16,9 @@ public interface PlatformPlugin<C> {
 
     void sendMessage(C receiver, String key);
 
-    ThreadFactory getThreadFactory();
+    default ThreadFactory getThreadFactory() {
+        return null;
+    }
 
     boolean checkWhitelistPermission(C invoker, UUID uuid, boolean sendMessage);
 }

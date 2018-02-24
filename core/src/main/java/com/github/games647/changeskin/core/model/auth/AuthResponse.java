@@ -2,7 +2,7 @@ package com.github.games647.changeskin.core.model.auth;
 
 import com.github.games647.changeskin.core.model.GameProfile;
 
-public class AuthenticationResponse {
+public class AuthResponse {
 
     private String accessToken;
     private GameProfile selectedProfile;
@@ -13,5 +13,12 @@ public class AuthenticationResponse {
 
     public GameProfile getSelectedProfile() {
         return selectedProfile;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "selectedProfile=" + selectedProfile +
+                '}';
     }
 }

@@ -2,6 +2,7 @@ package com.github.games647.changeskin.core;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.net.HttpHeaders;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -75,8 +76,8 @@ public class CommonUtil {
         HttpURLConnection httpConnection = (HttpURLConnection) new URL(url).openConnection(proxy);
         httpConnection.setConnectTimeout(TIMEOUT);
         httpConnection.setReadTimeout(2 * TIMEOUT);
-        httpConnection.setRequestProperty("Content-Type", "application/json");
-        httpConnection.setRequestProperty("User-Agent", USER_AGENT);
+        httpConnection.setRequestProperty(HttpHeaders.CONTENT_TYPE, "application/json");
+        httpConnection.setRequestProperty(HttpHeaders.USER_AGENT, USER_AGENT);
         return httpConnection;
     }
 

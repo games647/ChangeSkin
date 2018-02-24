@@ -12,7 +12,6 @@ import com.google.inject.Singleton;
 
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.ThreadFactory;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -120,11 +119,6 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
         }
 
         return false;
-    }
-
-    @Override
-    public ThreadFactory getThreadFactory() {
-        return null;
     }
 
     @Override

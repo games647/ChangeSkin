@@ -36,7 +36,6 @@ public class ChangeSkinCore {
 
     //this is thread-safe in order to save and load from different threads like the skin download
     private final Map<String, UUID> uuidCache = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
-
     private final Map<String, Object> crackedNames = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
 
     private final PlatformPlugin<?> plugin;
@@ -118,7 +117,6 @@ public class ChangeSkinCore {
         this.storage = new SkinStorage(this, driver, host, port, database, user, password, useSSL);
         try {
             this.storage.createTables();
-            getLogger().info("SETUP {}", storage);
             return true;
         } catch (Exception ex) {
             getLogger().error("Failed to setup database.", ex);

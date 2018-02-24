@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ThreadFactory;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -158,11 +157,6 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         if (message != null && receiver != null) {
             receiver.sendMessage(message);
         }
-    }
-
-    @Override
-    public ThreadFactory getThreadFactory() {
-        return null;
     }
 
     @Override

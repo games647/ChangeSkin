@@ -22,13 +22,11 @@ import java.util.Collections;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.plugin.Plugin;
 
 import static com.comphenix.protocol.PacketType.Play.Server.PLAYER_INFO;
 import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
@@ -85,6 +83,7 @@ public class SkinApplier implements Runnable {
 
     private void onInstantUpdate() {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
+
         //remove existing skins
         gameProfile.getProperties().clear();
         if (targetSkin != null) {
@@ -108,11 +107,7 @@ public class SkinApplier implements Runnable {
         Bukkit.getOnlinePlayers().stream()
                 .filter(onlinePlayer -> !onlinePlayer.equals(receiver))
                 .filter(onlinePlayer -> onlinePlayer.canSee(receiver))
-                .forEach(onlinePlayer -> {
-                    //removes the entity and display the new skin
-                    onlinePlayer.hidePlayer(receiver);
-                    onlinePlayer.showPlayer(receiver);
-                });
+                .forEach(this::hideAndShow);
     }
 
     private void sendUpdateSelf(WrappedGameProfile gameProfile) throws FieldAccessException {
@@ -203,11 +198,18 @@ public class SkinApplier implements Runnable {
         sendPackets(health);
     }
 
-    private float getScaledHealth() {
-        if (receiver.isHealthScaled())
-            return (float) (receiver.getHealth() * receiver.getHealthScale() / getMaxHealth());
+    @SuppressWarnings("deprecation")
+    private void hideAndShow(Player other) {
+        //removes the entity and display the new skin
+        try {
+            other.getClass().getDeclaredMethod("hidePlayer", Plugin.class, Player.class);
 
-        return (float) receiver.getHealth();
+            other.hidePlayer(plugin, receiver);
+            other.showPlayer(plugin, receiver);
+        } catch (NoSuchMethodException noSuckMethodEx) {
+            other.hidePlayer(receiver);
+            other.showPlayer(receiver);
+        }
     }
 
     private void sendPackets(PacketContainer... packets) {
@@ -218,23 +220,6 @@ public class SkinApplier implements Runnable {
         } catch (InvocationTargetException ex) {
             plugin.getLog().error("Exception sending instant skin change packet for: {}", receiver, ex);
         }
-    }
-
-    private double getMaxHealth() {
-        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COMBAT_UPDATE) >= 0) {
-            return receiver.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-        }
-
-        double maxHealth = receiver.getMaxHealth();
-        for(PotionEffect potionEffect : receiver.getActivePotionEffects()){
-            //Had to do this because doing if(potionEffect.getType() == PotionEffectType.HEALTH_BOOST)
-            //It wouldn't recognize it as the same.
-            if(potionEffect.getType().getName().equalsIgnoreCase(PotionEffectType.HEALTH_BOOST.getName())){
-                maxHealth -= ((potionEffect.getAmplifier() + 1) * 4);
-            }
-        }
-
-        return maxHealth;
     }
 
     private void setItemInHand() {

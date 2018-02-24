@@ -2,8 +2,8 @@ package com.github.games647.changeskin.core;
 
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.auth.Account;
-import com.github.games647.changeskin.core.model.auth.AuthenticationRequest;
-import com.github.games647.changeskin.core.model.auth.AuthenticationResponse;
+import com.github.games647.changeskin.core.model.auth.AuthRequest;
+import com.github.games647.changeskin.core.model.auth.AuthResponse;
 import com.google.common.net.UrlEscapers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -40,12 +40,12 @@ public class MojangAuthApi {
 
             try (BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(httpConnection.getOutputStream(), StandardCharsets.UTF_8))) {
-                writer.append(gson.toJson(new AuthenticationRequest(email, password)));
+                writer.append(gson.toJson(new AuthRequest(email, password)));
             }
 
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(httpConnection.getInputStream(), StandardCharsets.UTF_8))) {
-                AuthenticationResponse authResponse = gson.fromJson(reader, AuthenticationResponse.class);
+                AuthResponse authResponse = gson.fromJson(reader, AuthResponse.class);
                 return Optional.of(new Account(authResponse.getSelectedProfile(), authResponse.getAccessToken()));
             }
         } catch (IOException ex) {
