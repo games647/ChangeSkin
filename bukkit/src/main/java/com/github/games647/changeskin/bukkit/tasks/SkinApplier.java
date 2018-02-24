@@ -15,6 +15,7 @@ import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.shared.SharedApplier;
 import com.nametagedit.plugin.NametagEdit;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,7 +34,7 @@ import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
 import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
 import static com.comphenix.protocol.PacketType.Play.Server.UPDATE_HEALTH;
 
-public class SkinApplier implements Runnable {
+public class SkinApplier extends SharedApplier {
 
     protected final ChangeSkinBukkit plugin;
     private final CommandSender invoker;
@@ -43,6 +44,8 @@ public class SkinApplier implements Runnable {
 
     public SkinApplier(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver
             , SkinModel targetSkin, boolean keepSkin) {
+        super(plugin.getCore(), targetSkin, keepSkin);
+
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
@@ -52,36 +55,28 @@ public class SkinApplier implements Runnable {
 
     @Override
     public void run() {
-        if (receiver == null || !receiver.isOnline()) {
+        if (!isConnected()) {
             return;
         }
 
         //uuid was successful resolved, we could now make a cooldown check
-        if (invoker instanceof Player && plugin.getCore() != null) {
-            plugin.getCore().addCooldown(((Player) invoker).getUniqueId());
+        if (invoker instanceof Player && core != null) {
+            core.addCooldown(((Player) invoker).getUniqueId());
         }
 
-        if (plugin.getStorage() != null) {
-            //Save the target uuid from the requesting player source
-            UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
-            preferences.setTargetSkin(targetSkin);
-            preferences.setKeepSkin(keepSkin);
+        UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
+        save(preferences);
 
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                if (plugin.getStorage().save(targetSkin)) {
-                    plugin.getStorage().save(preferences);
-                }
-            });
-        }
-
-        if (plugin.getConfig().getBoolean("instantSkinChange")) {
-            onInstantUpdate();
-        } else if (invoker != null) {
-            plugin.sendMessage(invoker, "skin-changed-no-instant");
-        }
+        applySkin();
     }
 
-    private void onInstantUpdate() {
+    @Override
+    protected boolean isConnected() {
+        return receiver != null && receiver.isOnline();
+    }
+
+    @Override
+    protected void applyInstantUpdate() {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
 
         //remove existing skins
@@ -91,13 +86,21 @@ public class SkinApplier implements Runnable {
         }
 
         sendUpdate(gameProfile);
-        if (invoker != null) {
-            if (receiver.equals(invoker)) {
-                plugin.sendMessage(receiver, "skin-changed");
-            } else {
-                plugin.sendMessage(invoker, "skin-updated");
-            }
+        if (receiver.equals(invoker)) {
+            plugin.sendMessage(receiver, "skin-changed");
+        } else {
+            plugin.sendMessage(invoker, "skin-updated");
         }
+    }
+
+    @Override
+    protected void sendMessage(String key) {
+        plugin.sendMessage(invoker, key);
+    }
+
+    @Override
+    protected void runAsync(Runnable runnable) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 
     private void sendUpdate(WrappedGameProfile gameProfile) throws FieldAccessException {

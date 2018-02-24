@@ -28,11 +28,10 @@ public class NameResolver extends SharedNameResolver {
         this.bukkitOp = bukkitOp;
         this.keepSkin = keepSkin;
     }
+
     @Override
     public void sendMessageInvoker(String id) {
-        if (invoker != null) {
-            plugin.sendMessage(invoker, id);
-        }
+        plugin.sendMessage(invoker, id);
     }
 
     @Override

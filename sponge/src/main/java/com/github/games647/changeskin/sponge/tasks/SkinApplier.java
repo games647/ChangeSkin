@@ -3,6 +3,7 @@ package com.github.games647.changeskin.sponge.tasks;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.shared.SharedApplier;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
 import org.spongepowered.api.Sponge;
@@ -16,26 +17,24 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-public class SkinApplier implements Runnable {
+public class SkinApplier extends SharedApplier {
 
     private final ChangeSkinSponge plugin;
     private final CommandSource invoker;
     private final Player receiver;
-    private final SkinModel targetSkin;
-    private final boolean keepSkin;
 
     public SkinApplier(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, SkinModel targetSkin
             , boolean keepSkin) {
+        super(plugin.getCore(), targetSkin, keepSkin);
+
         this.plugin = plugin;
         this.invoker = invoker;
         this.receiver = receiver;
-        this.targetSkin = targetSkin;
-        this.keepSkin = keepSkin;
     }
 
     @Override
     public void run() {
-        if (!receiver.isOnline()) {
+        if (!isConnected()) {
             return;
         }
 
@@ -45,26 +44,19 @@ public class SkinApplier implements Runnable {
         }
 
         //Save the target uuid from the requesting player source
-        final UserPreference preferences = plugin.getCore().getStorage().getPreferences(receiver.getUniqueId());
-        preferences.setTargetSkin(targetSkin);
-        preferences.setKeepSkin(keepSkin);
+        UserPreference preferences = plugin.getCore().getStorage().getPreferences(receiver.getUniqueId());
+        save(preferences);
 
-        Task.builder().async()
-                .execute(() -> {
-                    if (plugin.getCore().getStorage().save(targetSkin)) {
-                        plugin.getCore().getStorage().save(preferences);
-                    }
-                })
-                .submit(plugin);
-
-        if (plugin.getCore().getConfig().getBoolean("instantSkinChange")) {
-            onInstantUpdate();
-        } else if (invoker != null) {
-            plugin.sendMessage(invoker, "skin-changed-no-instant");
-        }
+        applySkin();
     }
 
-    private void onInstantUpdate() {
+    @Override
+    protected boolean isConnected() {
+        return receiver.isOnline();
+    }
+
+    @Override
+    protected void applyInstantUpdate() {
         GameProfile profile = receiver.getProfile();
         if (targetSkin != null) {
             //remove existing skins
@@ -76,9 +68,19 @@ public class SkinApplier implements Runnable {
         }
 
         sendUpdate();
-        if (invoker != null) {
-            plugin.sendMessage(invoker, "skin-changed");
-        }
+        plugin.sendMessage(invoker, "skin-changed");
+    }
+
+    @Override
+    protected void sendMessage(String key) {
+        plugin.sendMessage(invoker, key);
+    }
+
+    @Override
+    protected void runAsync(Runnable runnable) {
+        Task.builder().async()
+                .execute(runnable)
+                .submit(plugin);
     }
 
     private void sendUpdate() {

@@ -5,6 +5,7 @@ import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.messages.CheckPermMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.shared.SharedApplier;
 
 import java.util.UUID;
 
@@ -12,30 +13,29 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
-public class SkinApplier implements Runnable {
+public class SkinApplier extends SharedApplier {
 
     private final ChangeSkinBungee plugin;
     private final ProxiedPlayer receiver;
-    private final SkinModel targetSkin;
+
     private final CommandSender invoker;
 
     private final boolean bukkitOp;
-    private final boolean keepSkin;
 
     public SkinApplier(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, SkinModel targetSkin
             , boolean bukkitOp, boolean keepSkin) {
+        super(plugin.getCore(), targetSkin, keepSkin);
+
         this.plugin = plugin;
         this.receiver = receiver;
-        this.targetSkin = targetSkin;
         this.invoker = invoker;
 
         this.bukkitOp = bukkitOp;
-        this.keepSkin = keepSkin;
     }
 
     @Override
     public void run() {
-        if (!receiver.isConnected()) {
+        if (!isConnected()) {
             return;
         }
 
@@ -60,17 +60,27 @@ public class SkinApplier implements Runnable {
             preferences = plugin.getStorage().getPreferences(receiverUUID);
         }
 
-        //Save the target uuid from the requesting player source
-        preferences.setTargetSkin(targetSkin);
-        preferences.setKeepSkin(keepSkin);
+        save(preferences);
+        applySkin();
+    }
 
-        plugin.getStorage().save(targetSkin);
-        plugin.getStorage().save(preferences);
+    @Override
+    protected boolean isConnected() {
+        return receiver.isConnected();
+    }
 
-        if (plugin.getCore().getConfig().getBoolean("instantSkinChange")) {
-            plugin.applySkin(receiver, targetSkin);
-        } else if (invoker != null) {
-            plugin.sendMessage(invoker, "skin-changed-no-instant");
-        }
+    @Override
+    protected void applyInstantUpdate() {
+        plugin.applySkin(receiver, targetSkin);
+    }
+
+    @Override
+    protected void sendMessage(String key) {
+        plugin.sendMessage(invoker, key);
+    }
+
+    @Override
+    protected void runAsync(Runnable runnable) {
+        runnable.run();
     }
 }
