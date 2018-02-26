@@ -32,7 +32,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
 
         ProxiedPlayer player = connectEvent.getPlayer();
 
-        List<String> blacklist = plugin.getCore().getConfig().getStringList("server-blacklist");
+        List<String> blacklist = core.getConfig().getStringList("server-blacklist");
         if (blacklist != null && blacklist.contains(targetServer.getName())) {
             //clear the skin
             plugin.applySkin(player, null);
@@ -43,12 +43,11 @@ public class ServerSwitchListener extends AbstractSkinListener {
             } else {
                 SkinModel targetSkin = session.getTargetSkin();
                 if (!session.isKeepSkin()) {
-                    targetSkin = plugin.getCore().checkAutoUpdate(targetSkin);
+                    targetSkin = core.checkAutoUpdate(targetSkin);
                 }
 
+                session.setTargetSkin(targetSkin);
                 applySave(player, session);
-                SkinModel finalTargetSkin = targetSkin;
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> save(session));
             }
         }
     }
@@ -66,7 +65,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
     private void onLazyLoad(ProxiedPlayer player) {
         UserPreference preferences = plugin.getStorage().getPreferences(player.getUniqueId());
         plugin.startSession(player.getPendingConnection(), preferences);
-        if (preferences.getTargetSkin() == null && plugin.getCore().getConfig().getBoolean("restoreSkins")) {
+        if (preferences.getTargetSkin() == null && core.getConfig().getBoolean("restoreSkins")) {
             refetchSkin(player.getName(), preferences);
             if (preferences.getTargetSkin() == null) {
                 //still no skin
