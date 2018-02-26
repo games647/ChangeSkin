@@ -64,6 +64,12 @@ public class SkinModel {
         }
     }
 
+    public boolean isSaved() {
+        synchronized (this) {
+            return skinId >= 0;
+        }
+    }
+
     public void setSkinId(int skinId) {
         synchronized (this) {
             this.skinId = skinId;

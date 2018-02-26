@@ -57,7 +57,7 @@ public class ConnectListener extends AbstractSkinListener {
         plugin.endSession(disconnectEvent.getPlayer().getPendingConnection());
     }
 
-    private void refetchSkin(final PendingConnection conn, final String playerName , final AsyncEvent<?> loginEvent) {
+    private void refetchSkin(final PendingConnection conn, final String playerName, final AsyncEvent<?> loginEvent) {
         loginEvent.registerIntent(plugin);
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
@@ -74,7 +74,6 @@ public class ConnectListener extends AbstractSkinListener {
                     }
 
                     preferences.setTargetSkin(targetSkin);
-                    save(targetSkin, preferences);
                 }
             } finally {
                 loginEvent.completeIntent(plugin);

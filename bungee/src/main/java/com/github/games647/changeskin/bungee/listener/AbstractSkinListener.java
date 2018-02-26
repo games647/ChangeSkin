@@ -31,18 +31,15 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
             final SkinModel targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
                 preferences.setTargetSkin(targetSkin);
-                plugin.applySkin(player, targetSkin);
-
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> plugin.getStorage().save(preferences));
             }
         }
     }
 
     @Override
-    public void save(final SkinModel skin, final UserPreference preferences) {
+    public void save(final UserPreference preferences) {
         //this can run in the background
         ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
-            if (plugin.getStorage().save(skin)) {
+            if (plugin.getStorage().save(preferences.getTargetSkin())) {
                 plugin.getStorage().save(preferences);
             }
         });

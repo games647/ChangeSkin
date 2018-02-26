@@ -209,7 +209,7 @@ public class SkinStorage {
             return false;
         }
 
-        if (skinData.getSkinId() != -1) {
+        if (skinData.isSaved()) {
             //skin already saved
             return true;
         }

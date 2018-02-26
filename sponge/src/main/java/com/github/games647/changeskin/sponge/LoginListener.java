@@ -49,7 +49,7 @@ public class LoginListener extends SharedListener {
             }
 
             applySkin(targetSkin, profile);
-            save(targetSkin, preferences);
+            save(preferences);
         }
     }
 
@@ -68,18 +68,18 @@ public class LoginListener extends SharedListener {
             SkinModel defaultSkin = defaultSkins.get(randomIndex);
             if (defaultSkin != null) {
                 preferences.setTargetSkin(defaultSkin);
-                save(defaultSkin, preferences);
+                save(preferences);
                 applySkin(defaultSkin, profile);
             }
         }
     }
 
     @Override
-    protected void save(final SkinModel skinData, final UserPreference preferences) {
+    protected void save(final UserPreference preferences) {
         Task.builder()
                 .async()
                 .execute(() -> {
-                    if (core.getStorage().save(skinData)) {
+                    if (core.getStorage().save(preferences.getTargetSkin())) {
                         core.getStorage().save(preferences);
                     }
                 }).submit(plugin);

@@ -58,10 +58,9 @@ public class MojangSkinApi {
         this.logger = logger;
 
         List<Proxy> proxyBuilder = proxies.stream()
-                .map(proxy -> {
-                    InetSocketAddress sa = new InetSocketAddress(proxy.getHostText(), proxy.getPort());
-                    return new Proxy(Type.HTTP, sa);
-                }).collect(toList());
+                .map(proxy -> new InetSocketAddress(proxy.getHostText(), proxy.getPort()))
+                .map(sa -> new Proxy(Type.HTTP, sa))
+                .collect(toList());
 
         this.proxies = Iterables.cycle(proxyBuilder).iterator();
     }

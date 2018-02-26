@@ -64,8 +64,10 @@ public class SkinApplier extends SharedApplier {
             core.addCooldown(((Player) invoker).getUniqueId());
         }
 
-        UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
-        save(preferences);
+        if (plugin.getStorage() != null) {
+            UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
+            save(preferences);
+        }
 
         applySkin();
     }

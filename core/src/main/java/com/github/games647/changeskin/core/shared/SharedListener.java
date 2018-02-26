@@ -40,12 +40,12 @@ public abstract class SharedListener {
             }
 
             preferences.setTargetSkin(storedSkin);
-            save(storedSkin, preferences);
+            save(preferences);
             return true;
         }
 
         return false;
     }
 
-    protected abstract void save(SkinModel skin, UserPreference preferences);
+    protected abstract void save(UserPreference preferences);
 }

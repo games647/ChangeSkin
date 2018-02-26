@@ -23,35 +23,44 @@ public class ServerSwitchListener extends AbstractSkinListener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerConnect(ServerConnectEvent connectEvent) {
-        ServerInfo target = connectEvent.getTarget();
+        ServerInfo targetServer = connectEvent.getTarget();
 
         Server fromServer = connectEvent.getPlayer().getServer();
-        if (fromServer != null && Objects.equals(target, fromServer.getInfo())) {
+        if (fromServer != null && Objects.equals(targetServer, fromServer.getInfo())) {
             return;
         }
 
-        List<String> blacklist = plugin.getCore().getConfig().getStringList("server-blacklist");
-        if (blacklist != null) {
-            final ProxiedPlayer player = connectEvent.getPlayer();
-            if (blacklist.contains(target.getName())) {
-                //clear the skin
-                plugin.applySkin(player, null);
-            } else {
-                UserPreference session = plugin.getLoginSession(player.getPendingConnection());
-                if (session == null) {
-                    ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
-                } else {
-                    SkinModel targetSkin = session.getTargetSkin();
-                    if (!session.isKeepSkin()) {
-                        targetSkin = plugin.getCore().checkAutoUpdate(targetSkin);
-                    }
+        ProxiedPlayer player = connectEvent.getPlayer();
 
-                    plugin.applySkin(player, targetSkin);
-                    SkinModel finalTargetSkin = targetSkin;
-                    ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> save(finalTargetSkin, session));
+        List<String> blacklist = plugin.getCore().getConfig().getStringList("server-blacklist");
+        if (blacklist != null && blacklist.contains(targetServer.getName())) {
+            //clear the skin
+            plugin.applySkin(player, null);
+        } else {
+            UserPreference session = plugin.getLoginSession(player.getPendingConnection());
+            if (session == null) {
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
+            } else {
+                SkinModel targetSkin = session.getTargetSkin();
+                if (!session.isKeepSkin()) {
+                    targetSkin = plugin.getCore().checkAutoUpdate(targetSkin);
                 }
+
+                applySave(player, session);
+                SkinModel finalTargetSkin = targetSkin;
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> save(session));
             }
         }
+    }
+
+    private void applySave(ProxiedPlayer player, UserPreference preference) {
+        SkinModel targetSkin = preference.getTargetSkin();
+        if (targetSkin == null) {
+            return;
+        }
+
+        plugin.applySkin(player, targetSkin);
+        save(preference);
     }
 
     private void onLazyLoad(ProxiedPlayer player) {
@@ -62,11 +71,9 @@ public class ServerSwitchListener extends AbstractSkinListener {
             if (preferences.getTargetSkin() == null) {
                 //still no skin
                 setRandomSkin(preferences, player);
-            } else {
-                plugin.applySkin(player, preferences.getTargetSkin());
             }
-        } else if (preferences.getTargetSkin() != null) {
-            plugin.applySkin(player, preferences.getTargetSkin());
         }
+
+        applySave(player, preferences);
     }
 }
