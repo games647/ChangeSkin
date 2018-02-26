@@ -3,6 +3,7 @@ package com.github.games647.changeskin.bukkit.commands;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
 import com.github.games647.changeskin.bukkit.tasks.SkinDownloader;
+import com.github.games647.changeskin.core.CooldownService;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -68,7 +69,8 @@ public class SetCommand extends AbstractForwardCommand {
     }
 
     private boolean isCooldown(CommandSender sender) {
-        return sender instanceof Player && plugin.getCore().isCooldown(((Player) sender).getUniqueId());
+        CooldownService cooldownService = plugin.getCore().getCooldownService();
+        return sender instanceof Player && cooldownService.isTracked(((Player) sender).getUniqueId());
     }
 
     private void setSkin(CommandSender sender, Player targetPlayer, String toSkin, boolean keepSkin) {

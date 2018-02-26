@@ -1,6 +1,6 @@
 package com.github.games647.changeskin.core.model.skin;
 
-import com.github.games647.changeskin.core.CommonUtil;
+import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 
 import java.util.Map;
 
@@ -42,7 +42,7 @@ public class SkinModelTest {
         SkinModel skin = SkinModel.createSkinFromEncoded(SLIM_VALUE, SLIM_SIGNATURE);
 
         assertThat(skin.getTimestamp(), is(1517055262188L));
-        assertThat(skin.getProfileId(), is(CommonUtil.parseId("78c3a4e837e448189df8f9ce61c5efcc")));
+        assertThat(skin.getProfileId(), is(UUIDTypeAdapter.parseId("78c3a4e837e448189df8f9ce61c5efcc")));
         assertThat(skin.getProfileName(), is("Rashomon_"));
 
         Map<TextureType, TextureModel> textures = skin.getTextures();
@@ -57,7 +57,7 @@ public class SkinModelTest {
         SkinModel skin = SkinModel.createSkinFromEncoded(STEVE_VALUE, STEVE_SIGNATURE);
 
         assertThat(skin.getTimestamp(), is(1517052435668L));
-        assertThat(skin.getProfileId(), is(CommonUtil.parseId("0aaa2c13922a411bb6559b8c08404695")));
+        assertThat(skin.getProfileId(), is(UUIDTypeAdapter.parseId("0aaa2c13922a411bb6559b8c08404695")));
         assertThat(skin.getProfileName(), is("games647"));
 
         Map<TextureType, TextureModel> textures = skin.getTextures();
@@ -79,7 +79,7 @@ public class SkinModelTest {
     @Test
     public void testSignatureFromSerialized() throws Exception {
         SkinModel slimModel = new SkinModel(-1, 1517001205327L,
-                CommonUtil.parseId("78c3a4e837e448189df8f9ce61c5efcc"),
+                UUIDTypeAdapter.parseId("78c3a4e837e448189df8f9ce61c5efcc"),
                 "Rashomon_", true, "173567ea72ad4a22bf70bcba5fed3b8b9ea024639131bdd863c25d22f89",
                 "",
                 hexStringToByteArray("4E204F84DD36EFE474C0EDDDDBBB471DAFD1F7E4D1A52DEEB498507258F5E04182BAF5317A4D5" +
@@ -98,7 +98,7 @@ public class SkinModelTest {
         assertThat(VerifyUtil.isValid(slimModel.getEncodedValue(), slimModel.getSignature()), is(true));
 
         SkinModel steveModel = new SkinModel(-1, 1516999838117L,
-                CommonUtil.parseId("c883f59d66214243b64b3781d9fd9530"),
+                UUIDTypeAdapter.parseId("c883f59d66214243b64b3781d9fd9530"),
                 "Malachiel", false, "e5edb4126b35ccab960276d1aecffb51f9fc1a4776eb9609a4fdbd9784e54",
                 "",
                 hexStringToByteArray("C1F320BF89677DBB8F68C12E71A5ED396EB57EC0530ED196A8533E7A6B6761F51257F41FE64EFF2" +

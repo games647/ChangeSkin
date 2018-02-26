@@ -41,9 +41,9 @@ public class SkinApplier extends SharedApplier {
 
         UUID receiverUUID = receiver.getUniqueId();
         if (invoker instanceof ProxiedPlayer) {
-            if (targetSkin != null && plugin.getCore().getConfig().getBoolean("bukkit-permissions")) {
+            if (targetSkin != null && core.getConfig().getBoolean("bukkit-permissions")) {
                 Server server = ((ProxiedPlayer) invoker).getServer();
-                boolean skinPerm = plugin.getCore().getConfig().getBoolean("skinPermission");
+                boolean skinPerm = core.getConfig().getBoolean("skinPermission");
 
                 ChannelMessage message = new CheckPermMessage(targetSkin, receiverUUID, skinPerm, bukkitOp);
                 plugin.sendPluginMessage(server, message);
@@ -51,7 +51,7 @@ public class SkinApplier extends SharedApplier {
             }
 
             //uuid was successful resolved, we could now make a cooldown check
-            plugin.getCore().addCooldown(((ProxiedPlayer) invoker).getUniqueId());
+            core.getCooldownService().trackPlayer(((ProxiedPlayer) invoker).getUniqueId());
         }
 
         //check if that specific player is online

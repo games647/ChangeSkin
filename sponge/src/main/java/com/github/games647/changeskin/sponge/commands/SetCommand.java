@@ -34,7 +34,8 @@ public class SetCommand implements CommandExecutor {
             return CommandResult.empty();
         }
 
-        if (core.isCooldown(((Player) src).getUniqueId())) {
+        UUID uniqueId = ((Player) src).getUniqueId();
+        if (core.getCooldownService().isTracked(uniqueId)) {
             plugin.sendMessage(src, "cooldown");
             return CommandResult.empty();
         }

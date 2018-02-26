@@ -1,6 +1,5 @@
 package com.github.games647.changeskin.core.model.skin;
 
-import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,7 +24,7 @@ public class SkinPropertyTest {
     @Test
     public void testSignatureSlim() throws Exception {
         TexturesModel texturesModel = loadFile("/skins/slimModel.json");
-        assertThat(texturesModel.getId(), is((CommonUtil.parseId("78c3a4e837e448189df8f9ce61c5efcc"))));
+        assertThat(texturesModel.getId(), is((UUIDTypeAdapter.parseId("78c3a4e837e448189df8f9ce61c5efcc"))));
         assertThat(texturesModel.getName(), is("Rashomon_"));
 
         SkinProperty property = texturesModel.getProperties()[0];
@@ -35,7 +34,7 @@ public class SkinPropertyTest {
     @Test
     public void testSignatureSteve() throws Exception {
         TexturesModel texturesModel = loadFile("/skins/steveModel.json");
-        assertThat(texturesModel.getId(), is((CommonUtil.parseId("0aaa2c13922a411bb6559b8c08404695"))));
+        assertThat(texturesModel.getId(), is((UUIDTypeAdapter.parseId("0aaa2c13922a411bb6559b8c08404695"))));
         assertThat(texturesModel.getName(), is("games647"));
 
         SkinProperty property = texturesModel.getProperties()[0];

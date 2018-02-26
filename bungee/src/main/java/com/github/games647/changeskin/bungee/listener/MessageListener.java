@@ -57,18 +57,18 @@ public class MessageListener extends AbstractSkinListener {
         }
 
         //add cooldown
-        plugin.getCore().addCooldown(invoker.getUniqueId());
+        core.getCooldownService().trackPlayer(invoker.getUniqueId());
         //Save the target uuid from the requesting player source
-        final UserPreference preferences = plugin.getStorage().getPreferences(receiver.getUniqueId());
+        final UserPreference preferences = core.getStorage().getPreferences(receiver.getUniqueId());
         preferences.setTargetSkin(targetSkin);
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
-            if (plugin.getStorage().save(targetSkin)) {
-                plugin.getStorage().save(preferences);
+            if (core.getStorage().save(targetSkin)) {
+                core.getStorage().save(preferences);
             }
         });
         
-        if (plugin.getCore().getConfig().getBoolean("instantSkinChange")) {
+        if (core.getConfig().getBoolean("instantSkinChange")) {
             plugin.applySkin(receiver, targetSkin);
             plugin.sendMessage(invoker, "skin-changed");
         } else {

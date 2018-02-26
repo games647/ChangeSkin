@@ -46,7 +46,8 @@ public class ChangeSkinCore {
     private MojangSkinApi skinApi;
     private Configuration config;
     private SkinStorage storage;
-    private Map<UUID, Object> cooldowns;
+    private CooldownService cooldownService;
+
     private int autoUpdateDiff;
 
     public ChangeSkinCore(PlatformPlugin<?> plugin) {
@@ -63,12 +64,8 @@ public class ChangeSkinCore {
             config = loadFile("config.yml");
             int rateLimit = config.getInt("mojang-request-limit");
 
-            int cooldown = config.getInt("cooldown");
-            if (cooldown <= 0) {
-                cooldown = 1;
-            }
+            cooldownService = new CooldownService(Duration.ofMinutes(config.getInt("cooldown")));
 
-            cooldowns = CommonUtil.buildCache(cooldown, -1);
             autoUpdateDiff = config.getInt("auto-skin-update") * 60 * 1_000;
             List<HostAndPort> proxies = config.getStringList("proxies")
                     .stream().map(HostAndPort::fromString).collect(toList());
@@ -204,7 +201,7 @@ public class ChangeSkinCore {
                 }
             }
         } catch (IOException ioExc) {
-            plugin.getLog().error("Cannot create plugin folder {}", dataFolder, ioExc);
+            plugin.getLog().error("Cannot create default file {} in {}", fileName, dataFolder, ioExc);
         }
     }
 
@@ -262,12 +259,8 @@ public class ChangeSkinCore {
         return config;
     }
 
-    public void addCooldown(UUID invoker) {
-        cooldowns.put(invoker, new Object());
-    }
-
-    public boolean isCooldown(UUID invoker) {
-        return cooldowns.containsKey(invoker);
+    public CooldownService getCooldownService() {
+        return cooldownService;
     }
 
     public List<Account> getUploadAccounts() {

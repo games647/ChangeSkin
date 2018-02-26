@@ -24,14 +24,14 @@ public class ConnectListener extends AbstractSkinListener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPostLogin(LoginEvent loginEvent) {
         if (loginEvent.isCancelled()
-                || !plugin.getCore().getConfig().getStringList("server-blacklist").isEmpty()) {
+                || !core.getConfig().getStringList("server-blacklist").isEmpty()) {
             return;
         }
 
         PendingConnection connection = loginEvent.getConnection();
         String playerName = connection.getName().toLowerCase();
 
-        if (plugin.getCore().getConfig().getBoolean("restoreSkins")) {
+        if (core.getConfig().getBoolean("restoreSkins")) {
             refetchSkin(connection, playerName, loginEvent);
         }
     }

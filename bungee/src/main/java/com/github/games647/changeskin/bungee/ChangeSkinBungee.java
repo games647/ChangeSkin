@@ -14,6 +14,7 @@ import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
+import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataOutput;
@@ -161,7 +162,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         LoginResult loginProfile = initialHandler.getLoginProfile();
         //this is null on offline mode
         if (loginProfile == null) {
-            String mojangUUID = CommonUtil.toMojangId(player.getUniqueId());
+            String mojangUUID = UUIDTypeAdapter.toMojangId(player.getUniqueId());
 
             Property[] properties = emptyProperties;
             if (skinData != null) {

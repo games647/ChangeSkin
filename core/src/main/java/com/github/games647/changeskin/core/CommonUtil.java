@@ -9,11 +9,9 @@ import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,21 +19,11 @@ import org.slf4j.impl.JDK14LoggerAdapter;
 
 public class CommonUtil {
 
-    private static final Pattern UUID_PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
-
     private static final int TIMEOUT = 3000;
     private static final String USER_AGENT = "ChangeSkin-Bukkit-Plugin";
 
     private static final char COLOR_CHAR = '&';
     private static final char TRANSLATED_CHAR = '§';
-
-    public static UUID parseId(String withoutDashes) {
-        return UUID.fromString(UUID_PATTERN.matcher(withoutDashes).replaceAll("$1-$2-$3-$4-$5"));
-    }
-
-    public static String toMojangId(UUID uuid) {
-        return uuid.toString().replace("-", "");
-    }
 
     public static <K, V> ConcurrentMap<K, V> buildCache(int seconds, int maxSize) {
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
@@ -74,8 +62,10 @@ public class CommonUtil {
 
     public static HttpURLConnection getConnection(String url, Proxy proxy) throws IOException {
         HttpURLConnection httpConnection = (HttpURLConnection) new URL(url).openConnection(proxy);
+
         httpConnection.setConnectTimeout(TIMEOUT);
         httpConnection.setReadTimeout(2 * TIMEOUT);
+
         httpConnection.setRequestProperty(HttpHeaders.CONTENT_TYPE, "application/json");
         httpConnection.setRequestProperty(HttpHeaders.USER_AGENT, USER_AGENT);
         return httpConnection;

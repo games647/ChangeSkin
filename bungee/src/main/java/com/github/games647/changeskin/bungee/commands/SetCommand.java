@@ -29,7 +29,7 @@ public class SetCommand extends Command {
         if (sender instanceof ProxiedPlayer) {
             sender.removeGroups(plugin.getName() + "-OP");
 
-            if (plugin.getCore().isCooldown(((ProxiedPlayer) sender).getUniqueId())) {
+            if (plugin.getCore().getCooldownService().isTracked(((ProxiedPlayer) sender).getUniqueId())) {
                 plugin.sendMessage(sender, "cooldown");
                 return;
             }

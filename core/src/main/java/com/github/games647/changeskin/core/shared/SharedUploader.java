@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.model.GameProfile;
+import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.model.skin.TextureType;
 
@@ -28,7 +28,7 @@ public abstract class SharedUploader implements Runnable {
                 .orElse("");
 
         UUID uuid = profile.getId();
-        UUID accessToken = CommonUtil.parseId(owner.getAccessToken());
+        UUID accessToken = UUIDTypeAdapter.parseId(owner.getAccessToken());
 
         core.getAuthApi().changeSkin(uuid, accessToken, url, false);
 

@@ -20,6 +20,7 @@ import com.nametagedit.plugin.NametagEdit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -61,7 +62,8 @@ public class SkinApplier extends SharedApplier {
 
         //uuid was successful resolved, we could now make a cooldown check
         if (invoker instanceof Player && core != null) {
-            core.addCooldown(((Player) invoker).getUniqueId());
+            UUID uniqueId = ((Player) invoker).getUniqueId();
+            core.getCooldownService().trackPlayer(uniqueId);
         }
 
         if (plugin.getStorage() != null) {

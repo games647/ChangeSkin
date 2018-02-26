@@ -24,7 +24,7 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
 
     public void setRandomSkin(final UserPreference preferences, ProxiedPlayer player) {
         //skin wasn't found and there are no preferences so set a default skin
-        List<SkinModel> defaultSkins = plugin.getCore().getDefaultSkins();
+        List<SkinModel> defaultSkins = core.getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
             int randomIndex = ThreadLocalRandom.current().nextInt(defaultSkins.size());
 
@@ -39,8 +39,8 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
     public void save(final UserPreference preferences) {
         //this can run in the background
         ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
-            if (plugin.getStorage().save(preferences.getTargetSkin())) {
-                plugin.getStorage().save(preferences);
+            if (core.getStorage().save(preferences.getTargetSkin())) {
+                core.getStorage().save(preferences);
             }
         });
     }

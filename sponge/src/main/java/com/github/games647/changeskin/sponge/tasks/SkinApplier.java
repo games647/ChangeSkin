@@ -6,6 +6,8 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedApplier;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 
+import java.util.UUID;
+
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
@@ -40,11 +42,12 @@ public class SkinApplier extends SharedApplier {
 
         //uuid was successful resolved, we could now make a cooldown check
         if (invoker instanceof Player) {
-            plugin.getCore().addCooldown(((Player) invoker).getUniqueId());
+            UUID uniqueId = ((Player) invoker).getUniqueId();
+            core.getCooldownService().trackPlayer(uniqueId);
         }
 
-        if (plugin.getCore().getStorage() != null) {
-            UserPreference preferences = plugin.getCore().getStorage().getPreferences(receiver.getUniqueId());
+        if (core.getStorage() != null) {
+            UserPreference preferences = core.getStorage().getPreferences(receiver.getUniqueId());
             save(preferences);
         }
 

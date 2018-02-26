@@ -128,7 +128,7 @@ public class MojangSkinApi {
         }
 
         //unsigned is needed in order to receive the signature
-        String uuidString = CommonUtil.toMojangId(ownerUUID);
+        String uuidString = UUIDTypeAdapter.toMojangId(ownerUUID);
         try {
             HttpURLConnection httpConnection = getConnection(String.format(SKIN_URL, uuidString));
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
