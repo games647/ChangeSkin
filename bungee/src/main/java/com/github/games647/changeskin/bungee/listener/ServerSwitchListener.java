@@ -47,19 +47,9 @@ public class ServerSwitchListener extends AbstractSkinListener {
                 }
 
                 session.setTargetSkin(targetSkin);
-                applySave(player, session);
+                plugin.applySkin(player, targetSkin);
             }
         }
-    }
-
-    private void applySave(ProxiedPlayer player, UserPreference preference) {
-        SkinModel targetSkin = preference.getTargetSkin();
-        if (targetSkin == null) {
-            return;
-        }
-
-        plugin.applySkin(player, targetSkin);
-        save(preference);
     }
 
     private void onLazyLoad(ProxiedPlayer player) {
@@ -73,6 +63,6 @@ public class ServerSwitchListener extends AbstractSkinListener {
             }
         }
 
-        applySave(player, preferences);
+        plugin.applySkin(player, preferences.getTargetSkin());
     }
 }

@@ -54,7 +54,12 @@ public class ConnectListener extends AbstractSkinListener {
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent disconnectEvent) {
-        plugin.endSession(disconnectEvent.getPlayer().getPendingConnection());
+        PendingConnection pendingConnection = disconnectEvent.getPlayer().getPendingConnection();
+        UserPreference preference = plugin.endSession(pendingConnection);
+
+        if (preference != null && preference.getTargetSkin() != null) {
+            save(preference);
+        }
     }
 
     private void refetchSkin(final PendingConnection conn, final String playerName, final AsyncEvent<?> loginEvent) {
