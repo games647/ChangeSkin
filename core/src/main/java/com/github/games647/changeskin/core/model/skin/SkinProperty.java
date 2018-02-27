@@ -2,7 +2,9 @@ package com.github.games647.changeskin.core.model.skin;
 
 public class SkinProperty {
 
-    private final String name = "textures";
+    public static final String SKIN_KEY = "textures";
+
+    private final String name = SKIN_KEY;
 
     private String value;
     private String signature;

@@ -2,7 +2,6 @@ package com.github.games647.changeskin.bukkit.commands;
 
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.lang.invoke.MethodHandle;
@@ -93,9 +92,9 @@ public class SkullCommand implements CommandExecutor {
             SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
 
             WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.randomUUID(), null);
-            skullProfileSetter.invoke(skullMeta, gameProfile.getHandle());
+            plugin.applySkin(gameProfile, skinData);
 
-            gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(skinData));
+            skullProfileSetter.invoke(skullMeta, gameProfile.getHandle());
             itemStack.setItemMeta(skullMeta);
         } catch (Error error) {
             //rethrow errors we shouldn't silence them like OutOfMemory

@@ -12,7 +12,6 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedApplier;
@@ -81,15 +80,11 @@ public class SkinApplier extends SharedApplier {
 
     @Override
     protected void applyInstantUpdate() {
-        WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
+        plugin.applySkin(receiver, targetSkin);
 
-        //remove existing skins
-        gameProfile.getProperties().clear();
-        if (targetSkin != null) {
-            gameProfile.getProperties().put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
-        }
+        sendUpdateSelf(WrappedGameProfile.fromPlayer(receiver));
+        sendUpdateOthers();
 
-        sendUpdate(gameProfile);
         if (receiver.equals(invoker)) {
             plugin.sendMessage(receiver, "skin-changed");
         } else {
@@ -107,9 +102,7 @@ public class SkinApplier extends SharedApplier {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 
-    private void sendUpdate(WrappedGameProfile gameProfile) throws FieldAccessException {
-        sendUpdateSelf(gameProfile);
-
+    private void sendUpdateOthers() throws FieldAccessException {
         //triggers an update for others player to see the new skin
         Bukkit.getOnlinePlayers().stream()
                 .filter(onlinePlayer -> !onlinePlayer.equals(receiver))
@@ -229,6 +222,7 @@ public class SkinApplier extends SharedApplier {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void setItemInHand() {
         if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.COMBAT_UPDATE) >= 0) {
             receiver.getInventory().setItemInMainHand(receiver.getInventory().getItemInMainHand());

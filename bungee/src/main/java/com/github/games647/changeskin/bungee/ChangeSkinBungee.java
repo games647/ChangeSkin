@@ -17,6 +17,7 @@ import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.model.skin.SkinProperty;
 import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -160,15 +161,16 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
 
         InitialHandler initialHandler = (InitialHandler) player.getPendingConnection();
         LoginResult loginProfile = initialHandler.getLoginProfile();
+
+        Property[] properties = emptyProperties;
+        if (skinData != null) {
+            Property prop = new Property(SkinProperty.SKIN_KEY, skinData.getEncodedValue(), skinData.getSignature());
+            properties = new Property[]{prop};
+        }
+
         //this is null on offline mode
         if (loginProfile == null) {
             String mojangUUID = UUIDTypeAdapter.toMojangId(player.getUniqueId());
-
-            Property[] properties = emptyProperties;
-            if (skinData != null) {
-                Property textures = convertToProperty(skinData);
-                properties = new Property[]{textures};
-            }
 
             if (profileSetter != null) {
                 try {
@@ -181,11 +183,8 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
                     logger.error("Error applying skin: {} for {}", skinData, player, throwable);
                 }
             }
-        } else if (skinData == null) {
-            loginProfile.setProperties(emptyProperties);
         } else {
-            Property textures = convertToProperty(skinData);
-            loginProfile.setProperties(new Property[]{textures});
+            loginProfile.setProperties(properties);
         }
 
         //send plugin channel update request
@@ -200,10 +199,6 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
             message.writeTo(out);
             server.sendData(getName(), out.toByteArray());
         }
-    }
-
-    public Property convertToProperty(SkinModel skinData) {
-        return new Property(ChangeSkinCore.SKIN_KEY, skinData.getEncodedValue(), skinData.getSignature());
     }
 
     public UserPreference getLoginSession(PendingConnection id) {

@@ -27,13 +27,13 @@ public abstract class SharedBungeeListener<P> {
         String subChannel = dataInput.readUTF();
 
         if ("UpdateSkin".equalsIgnoreCase(subChannel)) {
-            updateSkin(player, dataInput);
+            updateSkin(dataInput);
         } else if ("PermissionsCheck".equalsIgnoreCase(subChannel)) {
             checkPermissions(player, dataInput);
         }
     }
 
-    private void updateSkin(P player, ByteArrayDataInput dataInput) throws IllegalArgumentException {
+    private void updateSkin(ByteArrayDataInput dataInput) throws IllegalArgumentException {
         SkinUpdateMessage message = new SkinUpdateMessage();
         message.readFrom(dataInput);
 
@@ -41,7 +41,7 @@ public abstract class SharedBungeeListener<P> {
         P receiver = getPlayerExact(playerName);
 
         plugin.getLog().info("Instant update for {}", playerName);
-        runUpdater(player, null);
+        runUpdater(receiver, null);
     }
 
     private void checkPermissions(P player, ByteArrayDataInput dataInput) {

@@ -40,6 +40,8 @@ public class SkinStorage {
         this.core = core;
 
         HikariConfig config = new HikariConfig();
+        config.setPoolName(core.getPlugin().getName());
+
         config.setUsername(user);
         config.setPassword(pass);
         config.setDriverClassName(driver);
@@ -49,11 +51,7 @@ public class SkinStorage {
             config.setThreadFactory(threadFactory);
         }
 
-        //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         Properties properties = new Properties();
-        properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
-        properties.setProperty("useSSL", String.valueOf(useSSL));
-        config.setDataSourceProperties(properties);
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
@@ -63,11 +61,16 @@ public class SkinStorage {
             jdbcUrl += "sqlite://" + database;
             config.setConnectionTestQuery("SELECT 1");
             config.setMaximumPoolSize(1);
+
+            //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
+            properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
         } else {
             jdbcUrl += "mysql://" + host + ':' + port + '/' + database;
+            properties.setProperty("useSSL", String.valueOf(useSSL));
         }
 
         config.setJdbcUrl(jdbcUrl);
+        config.setDataSourceProperties(properties);
         this.dataSource = new HikariDataSource(config);
     }
 

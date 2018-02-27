@@ -30,8 +30,6 @@ import static java.util.stream.Collectors.toMap;
 
 public class ChangeSkinCore {
 
-    public static final String SKIN_KEY = "textures";
-
     private final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
     //this is thread-safe in order to save and load from different threads like the skin download

@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.bukkit;
 
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.commands.InvalidateCommand;
 import com.github.games647.changeskin.bukkit.commands.SelectCommand;
@@ -17,6 +18,7 @@ import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.model.skin.SkinProperty;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -75,8 +77,21 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     }
 
     public WrappedSignedProperty convertToProperty(SkinModel skinData) {
-        return WrappedSignedProperty.fromValues(ChangeSkinCore.SKIN_KEY, skinData.getEncodedValue()
+        return WrappedSignedProperty.fromValues(SkinProperty.SKIN_KEY, skinData.getEncodedValue()
                 , skinData.getSignature());
+    }
+
+    public void applySkin(Player receiver, SkinModel targetSkin) {
+        WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
+        applySkin(gameProfile, targetSkin);
+    }
+
+    public void applySkin(WrappedGameProfile profile, SkinModel targetSkin) {
+        //remove existing skins
+        profile.getProperties().clear();
+        if (targetSkin != null) {
+            profile.getProperties().put(SkinProperty.SKIN_KEY, convertToProperty(targetSkin));
+        }
     }
 
     public ChangeSkinCore getCore() {

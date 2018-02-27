@@ -57,8 +57,8 @@ public class CheckPermMessage implements ChannelMessage {
 
         //continue on success only
         receiverUUD = UUID.fromString(in.readUTF());
-        boolean skinPerm = in.readBoolean();
-        boolean isOp = in.readBoolean();
+        skinPerm = in.readBoolean();
+        isOp = in.readBoolean();
     }
 
     @Override

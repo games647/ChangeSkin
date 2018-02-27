@@ -1,6 +1,5 @@
 package com.github.games647.changeskin.sponge.tasks;
 
-import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedApplier;
@@ -14,7 +13,6 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
-import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -62,14 +60,7 @@ public class SkinApplier extends SharedApplier {
     @Override
     protected void applyInstantUpdate() {
         GameProfile profile = receiver.getProfile();
-        if (targetSkin != null) {
-            //remove existing skins
-            profile.getPropertyMap().clear();
-
-            ProfileProperty profileProperty = ProfileProperty.of(ChangeSkinCore.SKIN_KEY
-                    , targetSkin.getEncodedValue(), targetSkin.getSignature());
-            profile.getPropertyMap().put(ChangeSkinCore.SKIN_KEY, profileProperty);
-        }
+        plugin.applySkin(profile, targetSkin);
 
         sendUpdate();
         plugin.sendMessage(invoker, "skin-changed");

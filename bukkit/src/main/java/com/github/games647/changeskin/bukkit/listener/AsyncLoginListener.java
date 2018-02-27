@@ -56,7 +56,7 @@ public class AsyncLoginListener extends SharedListener implements Listener {
     }
 
     @Override
-    protected void save(final UserPreference preferences) {
+    protected void save(UserPreference preferences) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (plugin.getStorage().save(preferences.getTargetSkin())) {
                 plugin.getStorage().save(preferences);

@@ -1,13 +1,9 @@
 package com.github.games647.changeskin.bukkit.listener;
 
-import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
-import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.google.common.collect.Multimap;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -36,27 +32,24 @@ public class LoginListener implements Listener {
         }
 
         Player player = loginEvent.getPlayer();
-        WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
-        Multimap<String, WrappedSignedProperty> properties = gameProfile.getProperties();
 
         //updates to the chosen one
         UserPreference preferences = plugin.getLoginSession(player.getUniqueId());
         if (preferences == null) {
-            fallbackBukkit(player, properties);
+            fallbackBukkit(player);
         } else {
             SkinModel targetSkin = preferences.getTargetSkin();
             if (targetSkin == null) {
-                setRandomSkin(preferences, properties);
+                setRandomSkin(player, preferences);
             } else {
-                properties.clear();
-                properties.put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
+                plugin.applySkin(player, targetSkin);
             }
         }
 
         plugin.endSession(player.getUniqueId());
     }
 
-    private void setRandomSkin(final UserPreference preferences, Multimap<String, WrappedSignedProperty> properties) {
+    private void setRandomSkin(Player receiver, UserPreference preferences) {
         //skin wasn't found and there are no preferences so set a default skin
         List<SkinModel> defaultSkins = plugin.getCore().getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
@@ -65,15 +58,14 @@ public class LoginListener implements Listener {
             SkinModel targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
                 preferences.setTargetSkin(targetSkin);
-                properties.clear();
-                properties.put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
+                plugin.applySkin(receiver, targetSkin);
 
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.getStorage().save(preferences));
             }
         }
     }
 
-    private void fallbackBukkit(Player player, Multimap<String, WrappedSignedProperty> properties) {
+    private void fallbackBukkit(Player player) {
         UserPreference preferences = plugin.getStorage().getPreferences(player.getUniqueId());
         plugin.startSession(player.getUniqueId(), preferences);
 
@@ -84,11 +76,10 @@ public class LoginListener implements Listener {
                 //refetch
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, nameResolver);
             } else {
-                setRandomSkin(preferences, properties);
+                setRandomSkin(player, preferences);
             }
         } else {
-            properties.clear();
-            properties.put(ChangeSkinCore.SKIN_KEY, plugin.convertToProperty(targetSkin));
+            plugin.applySkin(player, targetSkin);
         }
     }
 }
