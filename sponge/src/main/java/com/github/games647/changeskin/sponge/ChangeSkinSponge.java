@@ -19,8 +19,6 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -32,10 +30,6 @@ import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.GameProfileManager;
 import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.text.serializer.TextSerializers;
-
-import static org.spongepowered.api.command.args.GenericArguments.flags;
-import static org.spongepowered.api.command.args.GenericArguments.string;
-import static org.spongepowered.api.text.Text.of;
 
 @Singleton
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
@@ -52,7 +46,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
     //We will place more than one config there (i.e. H2/SQLite database) -> sharedRoot = false
     @Inject
-    public ChangeSkinSponge(Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder, Injector injector) {
+    ChangeSkinSponge(Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder, Injector injector) {
         this.dataFolder = dataFolder;
         this.logger = logger;
         this.injector = injector.createChildInjector(binder -> binder.bind(ChangeSkinCore.class).toInstance(core));
@@ -74,29 +68,14 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
         if (!initialized)
             return;
 
-        CommandManager commandManager = Sponge.getCommandManager();
+        CommandManager cmdManager = Sponge.getCommandManager();
 
         //command and event register
-        commandManager.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(SelectCommand.class))
-                .arguments(string(of("skinName")))
-                .build(), "skin-select", "skinselect");
-
-        commandManager.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(UploadCommand.class))
-                .arguments(string(of("url")))
-                .build(), "skin-upload");
-
-        commandManager.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(SetCommand.class))
-                .arguments(
-                        string(of("skin")),
-                        flags().flag("keep").buildWith(GenericArguments.none()))
-                .build(), "changeskin", "setskin", "skin");
-
-        commandManager.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(InvalidateCommand.class))
-                .build(), "skininvalidate", "skin-invalidate");
+        cmdManager.register(this, injector.getInstance(SelectCommand.class).buildSpec(), "skin-select", "skinselect");
+        cmdManager.register(this, injector.getInstance(UploadCommand.class).buildSpec(), "skin-upload");
+        cmdManager.register(this, injector.getInstance(SetCommand.class).buildSpec(), "changeskin", "setskin", "skin");
+        cmdManager.register(this, injector.getInstance(InvalidateCommand.class)
+                .buildSpec(), "skininvalidate", "skin-invalidate");
 
         Sponge.getEventManager().registerListeners(this, injector.getInstance(LoginListener.class));
         RawDataChannel pluginChannel = Sponge.getChannelRegistrar().createRawChannel(this, PomData.ARTIFACT_ID);

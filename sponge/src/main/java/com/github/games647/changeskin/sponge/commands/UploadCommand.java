@@ -12,9 +12,13 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.scheduler.Task;
 
-public class UploadCommand implements CommandExecutor {
+import static org.spongepowered.api.command.args.GenericArguments.string;
+import static org.spongepowered.api.text.Text.of;
+
+public class UploadCommand implements CommandExecutor, ChangeSkinCommand {
 
     private final ChangeSkinSponge plugin;
 
@@ -40,5 +44,13 @@ public class UploadCommand implements CommandExecutor {
         }
 
         return CommandResult.success();
+    }
+
+    @Override
+    public CommandSpec buildSpec() {
+        return CommandSpec.builder()
+                .executor(this)
+                .arguments(string(of("url")))
+                .build();
     }
 }
