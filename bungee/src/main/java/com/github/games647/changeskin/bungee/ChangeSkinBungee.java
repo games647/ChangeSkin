@@ -27,9 +27,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 
 import net.md_5.bungee.api.CommandSender;
@@ -67,7 +70,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         profileSetter = methodHandle;
     }
 
-    private final Map<PendingConnection, UserPreference> loginSessions = new MapMaker().weakKeys().makeMap();
+    private final ConcurrentMap<PendingConnection, UserPreference> loginSessions = new MapMaker().weakKeys().makeMap();
     private final Property[] emptyProperties = {};
 
     private ChangeSkinCore core;
@@ -100,6 +103,9 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
 
     @Override
     public void onDisable() {
+        Collection<PendingConnection> toSave = new HashSet<>(loginSessions.keySet());
+        toSave.parallelStream().map(loginSessions::remove).filter(Objects::nonNull).forEach(core.getStorage()::save);
+
         if (core != null) {
             core.close();
         }

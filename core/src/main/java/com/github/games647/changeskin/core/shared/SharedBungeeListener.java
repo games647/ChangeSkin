@@ -3,7 +3,7 @@ package com.github.games647.changeskin.core.shared;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.messages.CheckPermMessage;
-import com.github.games647.changeskin.core.messages.PermissionResultMessage;
+import com.github.games647.changeskin.core.messages.PermResultMessage;
 import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
@@ -54,7 +54,7 @@ public abstract class SharedBungeeListener<P> {
         UUID skinProfile = targetSkin.getProfileId();
 
         boolean success = op || checkBungeePerms(player, receiverUUID, skinProfile, message.isSkinPerm());
-        sendMessage(player, new PermissionResultMessage(success, targetSkin, receiverUUID));
+        sendMessage(player, new PermResultMessage(success, targetSkin, receiverUUID));
     }
 
     private boolean checkBungeePerms(P player, UUID receiverUUID, UUID targetUUID, boolean skinPerm) {

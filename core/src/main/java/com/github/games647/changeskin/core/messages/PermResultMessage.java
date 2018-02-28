@@ -6,24 +6,24 @@ import com.google.common.io.ByteArrayDataOutput;
 
 import java.util.UUID;
 
-public class PermissionResultMessage implements ChannelMessage {
+public class PermResultMessage implements ChannelMessage {
 
-    private boolean success;
+    private boolean allowed;
     private SkinModel skin;
     private UUID receiverUUID;
 
-    public PermissionResultMessage(boolean success, SkinModel skin, UUID receiverUUID) {
-        this.success = success;
+    public PermResultMessage(boolean success, SkinModel skin, UUID receiverUUID) {
+        this.allowed = success;
         this.skin = skin;
         this.receiverUUID = receiverUUID;
     }
 
-    public PermissionResultMessage() {
+    public PermResultMessage() {
         //reading mode
     }
 
-    public boolean isSuccess() {
-        return success;
+    public boolean isAllowed() {
+        return allowed;
     }
 
     public SkinModel getSkin() {
@@ -41,7 +41,7 @@ public class PermissionResultMessage implements ChannelMessage {
 
     @Override
     public void readFrom(ByteArrayDataInput in) {
-        success = in.readBoolean();
+        allowed = in.readBoolean();
 
         int skinId = in.readInt();
         String encodedValue = in.readUTF();
@@ -55,7 +55,7 @@ public class PermissionResultMessage implements ChannelMessage {
 
     @Override
     public void writeTo(ByteArrayDataOutput out) {
-        out.writeBoolean(success);
+        out.writeBoolean(allowed);
 
         out.writeInt(skin.getSkinId());
         out.writeUTF(skin.getEncodedValue());

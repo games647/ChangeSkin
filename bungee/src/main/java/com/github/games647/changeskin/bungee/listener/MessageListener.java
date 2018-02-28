@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.messages.ForwardMessage;
-import com.github.games647.changeskin.core.messages.PermissionResultMessage;
+import com.github.games647.changeskin.core.messages.PermResultMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
@@ -34,9 +34,9 @@ public class MessageListener extends AbstractSkinListener {
 
         ProxiedPlayer invoker = (ProxiedPlayer) messageEvent.getReceiver();
         if ("PermissionResult".equals(subChannel)) {
-            PermissionResultMessage message = new PermissionResultMessage();
+            PermResultMessage message = new PermResultMessage();
             message.readFrom(dataInput);
-            if (message.isSuccess()) {
+            if (message.isAllowed()) {
                 onPermissionSuccess(message, invoker);
             } else {
                 plugin.sendMessage(invoker, "no-permission");
@@ -46,7 +46,7 @@ public class MessageListener extends AbstractSkinListener {
         }
     }
 
-    private void onPermissionSuccess(PermissionResultMessage message, ProxiedPlayer invoker) {
+    private void onPermissionSuccess(PermResultMessage message, ProxiedPlayer invoker) {
         SkinModel targetSkin = message.getSkin();
 
         UUID receiverUUID = message.getReceiverUUID();
