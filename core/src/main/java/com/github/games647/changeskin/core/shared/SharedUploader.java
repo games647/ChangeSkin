@@ -39,7 +39,7 @@ public abstract class SharedUploader implements Runnable {
             core.getAuthApi().changeSkin(uuid, accessToken, oldSkinUrl, false);
             String localeMessage = core.getMessage("skin-uploaded")
                     .replace("{0}", owner.getProfile().getName())
-                    .replace("{1}", "Skin-" + skinData.getSkinId());
+                    .replace("{1}", "Skin-" + skinData.getRowId());
             sendMessageInvoker(localeMessage);
         });
     }

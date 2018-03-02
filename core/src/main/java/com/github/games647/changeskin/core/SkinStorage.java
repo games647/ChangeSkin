@@ -173,7 +173,7 @@ public class SkinStorage {
 
     public void save(UserPreference preferences) {
         SkinModel targetSkin = preferences.getTargetSkin();
-        if (targetSkin != null && targetSkin.getSkinId() == -1) {
+        if (targetSkin != null && !targetSkin.isSaved()) {
             throw new IllegalArgumentException("Tried saving preferences without skin");
         }
 
@@ -181,7 +181,7 @@ public class SkinStorage {
             if (preferences.isSaved()) {
                 try (PreparedStatement stmt = con.prepareStatement("UPDATE " + USER_TABLE
                         + " SET TargetSkin=? WHERE UserID=?")) {
-                    stmt.setInt(1, targetSkin == null ? -1 : targetSkin.getSkinId());
+                    stmt.setInt(1, targetSkin == null ? -1 : targetSkin.getRowId());
                     stmt.setInt(2, preferences.getId());
                     stmt.executeUpdate();
                 }
@@ -191,7 +191,7 @@ public class SkinStorage {
 
                 try (PreparedStatement stmt = con.prepareStatement(insertQuery, RETURN_GENERATED_KEYS)) {
                     stmt.setString(1, UUIDTypeAdapter.toMojangId(preferences.getUuid()));
-                    stmt.setInt(2, targetSkin == null ? -1 : targetSkin.getSkinId());
+                    stmt.setInt(2, targetSkin == null ? -1 : targetSkin.getRowId());
                     stmt.setBoolean(3, preferences.isKeepSkin());
 
                     stmt.executeUpdate();
@@ -252,7 +252,7 @@ public class SkinStorage {
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys != null && generatedKeys.next()) {
-                    skinData.setSkinId(generatedKeys.getInt(1));
+                    skinData.setRowId(generatedKeys.getInt(1));
                     return true;
                 }
             }

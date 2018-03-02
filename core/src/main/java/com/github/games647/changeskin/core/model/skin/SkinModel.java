@@ -15,7 +15,7 @@ public class SkinModel {
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
-    private transient int skinId;
+    private transient int rowId;
     private transient String encodedValue;
     private transient String encodedSignature;
 
@@ -27,9 +27,9 @@ public class SkinModel {
     private final boolean signatureRequired = true;
     private final Map<TextureType, TextureModel> textures = new EnumMap<>(TextureType.class);
 
-    public SkinModel(int skinId, long timestamp, UUID uuid, String name
+    public SkinModel(int rowId, long timestamp, UUID uuid, String name
             , boolean slimModel, String skinURL, String capeURL, byte[] signature) {
-        this.skinId = skinId;
+        this.rowId = rowId;
 
         this.timestamp = timestamp;
         this.profileId = uuid;
@@ -52,27 +52,27 @@ public class SkinModel {
         String rawJson = new String(data, StandardCharsets.UTF_8);
 
         SkinModel skinModel = gson.fromJson(rawJson, SkinModel.class);
-        skinModel.setSkinId(-1);
+        skinModel.setRowId(-1);
         skinModel.encodedSignature = signature;
         skinModel.encodedValue = encodedData;
         return skinModel;
     }
 
-    public int getSkinId() {
+    public int getRowId() {
         synchronized (this) {
-            return skinId;
+            return rowId;
         }
     }
 
     public boolean isSaved() {
         synchronized (this) {
-            return skinId >= 0;
+            return rowId >= 0;
         }
     }
 
-    public void setSkinId(int skinId) {
+    public void setRowId(int rowId) {
         synchronized (this) {
-            this.skinId = skinId;
+            this.rowId = rowId;
         }
     }
 
@@ -112,7 +112,7 @@ public class SkinModel {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + '{' +
-                "skinId=" + skinId +
+                "rowId=" + rowId +
                 ", encodedValue='" + encodedValue + '\'' +
                 ", encodedSignature='" + encodedSignature + '\'' +
                 ", timestamp=" + timestamp +

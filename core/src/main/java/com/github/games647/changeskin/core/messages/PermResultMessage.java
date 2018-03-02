@@ -48,7 +48,7 @@ public class PermResultMessage implements ChannelMessage {
         String encodedSignature = in.readUTF();
 
         skin = SkinModel.createSkinFromEncoded(encodedValue, encodedSignature);
-        skin.setSkinId(skinId);
+        skin.setRowId(skinId);
 
         receiverUUID = UUID.fromString(in.readUTF());
     }
@@ -57,7 +57,7 @@ public class PermResultMessage implements ChannelMessage {
     public void writeTo(ByteArrayDataOutput out) {
         out.writeBoolean(allowed);
 
-        out.writeInt(skin.getSkinId());
+        out.writeInt(skin.getRowId());
         out.writeUTF(skin.getEncodedValue());
         out.writeUTF(skin.getSignature());
         out.writeUTF(receiverUUID.toString());

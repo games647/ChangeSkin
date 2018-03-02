@@ -53,7 +53,7 @@ public class CheckPermMessage implements ChannelMessage {
         String encodedSignature = in.readUTF();
 
         targetSkin = SkinModel.createSkinFromEncoded(encodedData, encodedSignature);
-        targetSkin.setSkinId(skinId);
+        targetSkin.setRowId(skinId);
 
         //continue on success only
         receiverUUD = UUID.fromString(in.readUTF());
@@ -63,7 +63,7 @@ public class CheckPermMessage implements ChannelMessage {
 
     @Override
     public void writeTo(ByteArrayDataOutput out) {
-        out.writeInt(targetSkin.getSkinId());
+        out.writeInt(targetSkin.getRowId());
         out.writeUTF(targetSkin.getEncodedValue());
         out.writeUTF(targetSkin.getSignature());
 
