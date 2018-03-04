@@ -3,9 +3,10 @@ package com.github.games647.changeskin.bungee.tasks;
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.messages.CheckPermMessage;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedApplier;
+import com.github.games647.craftapi.model.skin.SkinProperty;
 
 import java.util.UUID;
 
@@ -22,7 +23,7 @@ public class SkinApplier extends SharedApplier {
 
     private final boolean bukkitOp;
 
-    public SkinApplier(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, SkinModel targetSkin
+    public SkinApplier(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, StoredSkin targetSkin
             , boolean bukkitOp, boolean keepSkin) {
         super(plugin.getCore(), targetSkin, keepSkin);
 
@@ -71,7 +72,8 @@ public class SkinApplier extends SharedApplier {
 
     @Override
     protected void applyInstantUpdate() {
-        plugin.applySkin(receiver, targetSkin);
+        SkinProperty skinData = plugin.getCore().getResolver().encodeSkin(targetSkin, targetSkin.getSignature());
+        plugin.applySkin(receiver, skinData);
     }
 
     @Override

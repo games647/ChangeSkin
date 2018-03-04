@@ -14,10 +14,10 @@ import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
-import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.github.games647.changeskin.core.model.skin.SkinProperty;
+import com.github.games647.craftapi.UUIDAdapter;
+import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -145,15 +145,15 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     }
 
     //you should call this method async
-    public void setSkin(ProxiedPlayer player, final SkinModel newSkin, boolean applyNow) {
+    public void setSkin(ProxiedPlayer player, final StoredSkin newSkin, boolean applyNow) {
         new SkinApplier(this, player, player, newSkin, false, false).run();
     }
 
     //you should call this method async
     public void setSkin(ProxiedPlayer player, UUID targetSkin, boolean applyNow) {
-        SkinModel newSkin = core.getStorage().getSkin(targetSkin);
+        StoredSkin newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
-            Optional<SkinModel> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
+            Optional<StoredSkin> downloadSkin = core.getResolver().downloadSkin(targetSkin);
             if (downloadSkin.isPresent()) {
                 newSkin = downloadSkin.get();
             }
@@ -162,7 +162,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         setSkin(player, newSkin, applyNow);
     }
 
-    public void applySkin(ProxiedPlayer player, SkinModel skinData) {
+    public void applySkin(ProxiedPlayer player, SkinProperty skinData) {
         logger.debug("Applying skin for {}", player.getName());
 
         InitialHandler initialHandler = (InitialHandler) player.getPendingConnection();
@@ -170,13 +170,13 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
 
         Property[] properties = emptyProperties;
         if (skinData != null) {
-            Property prop = new Property(SkinProperty.SKIN_KEY, skinData.getEncodedValue(), skinData.getSignature());
+            Property prop = new Property(SkinProperty.TEXTURE_KEY, skinData.getValue(), skinData.getSignature());
             properties = new Property[]{prop};
         }
 
         //this is null on offline mode
         if (loginProfile == null) {
-            String mojangUUID = UUIDTypeAdapter.toMojangId(player.getUniqueId());
+            String mojangUUID = UUIDAdapter.toMojangId(player.getUniqueId());
 
             if (profileSetter != null) {
                 try {

@@ -2,6 +2,7 @@ package com.github.games647.changeskin.bukkit.listener;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.bukkit.tasks.NameResolver;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
@@ -38,7 +39,7 @@ public class LoginListener implements Listener {
         if (preferences == null) {
             fallbackBukkit(player);
         } else {
-            SkinModel targetSkin = preferences.getTargetSkin();
+            StoredSkin targetSkin = preferences.getTargetSkin();
             if (targetSkin == null) {
                 setRandomSkin(player, preferences);
             } else {
@@ -51,11 +52,11 @@ public class LoginListener implements Listener {
 
     private void setRandomSkin(Player receiver, UserPreference preferences) {
         //skin wasn't found and there are no preferences so set a default skin
-        List<SkinModel> defaultSkins = plugin.getCore().getDefaultSkins();
+        List<StoredSkin> defaultSkins = plugin.getCore().getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
             int randomIndex = ThreadLocalRandom.current().nextInt(defaultSkins.size());
 
-            SkinModel targetSkin = defaultSkins.get(randomIndex);
+            StoredSkin targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
                 preferences.setTargetSkin(targetSkin);
                 plugin.applySkin(receiver, targetSkin);
@@ -69,7 +70,7 @@ public class LoginListener implements Listener {
         UserPreference preferences = plugin.getStorage().getPreferences(player.getUniqueId());
         plugin.startSession(player.getUniqueId(), preferences);
 
-        SkinModel targetSkin = preferences.getTargetSkin();
+        StoredSkin targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
             if (plugin.getConfig().getBoolean("restoreSkins")) {
                 Runnable nameResolver = new NameResolver(plugin, null, player.getName(), player, false);

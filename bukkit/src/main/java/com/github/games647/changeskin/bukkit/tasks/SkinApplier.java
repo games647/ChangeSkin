@@ -12,6 +12,7 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedApplier;
@@ -39,11 +40,11 @@ public class SkinApplier extends SharedApplier {
     protected final ChangeSkinBukkit plugin;
     private final CommandSender invoker;
     private final Player receiver;
-    private final SkinModel targetSkin;
+    private final StoredSkin targetSkin;
     private final boolean keepSkin;
 
     public SkinApplier(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver
-            , SkinModel targetSkin, boolean keepSkin) {
+            , StoredSkin targetSkin, boolean keepSkin) {
         super(plugin.getCore(), targetSkin, keepSkin);
 
         this.plugin = plugin;

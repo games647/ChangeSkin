@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.model.StoredSkin;
 
 public abstract class SharedSkinSelect implements Runnable, MessageReceiver {
 
@@ -15,7 +15,7 @@ public abstract class SharedSkinSelect implements Runnable, MessageReceiver {
 
     @Override
     public void run() {
-        SkinModel targetSkin = core.getStorage().getSkin(targetId);
+        StoredSkin targetSkin = core.getStorage().getSkin(targetId);
         if (targetSkin == null) {
             sendMessageInvoker("skin-not-found");
             return;
@@ -24,5 +24,5 @@ public abstract class SharedSkinSelect implements Runnable, MessageReceiver {
         scheduleApplyTask(targetSkin);
     }
 
-    protected abstract void scheduleApplyTask(SkinModel targetSkin);
+    protected abstract void scheduleApplyTask(StoredSkin targetSkin);
 }

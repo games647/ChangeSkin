@@ -2,7 +2,7 @@ package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.NotPremiumException;
-import com.github.games647.changeskin.core.RateLimitException;
+import com.github.games647.craftapi.resolver.RateLimitException;
 
 import java.util.Optional;
 import java.util.UUID;

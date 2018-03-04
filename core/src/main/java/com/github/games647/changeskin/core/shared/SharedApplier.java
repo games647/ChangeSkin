@@ -1,17 +1,17 @@
 package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 public abstract class SharedApplier implements Runnable {
 
     protected final ChangeSkinCore core;
 
-    protected final SkinModel targetSkin;
+    protected final StoredSkin targetSkin;
     protected final boolean keepSkin;
 
-    public SharedApplier(ChangeSkinCore core, SkinModel targetSkin, boolean keepSkin) {
+    public SharedApplier(ChangeSkinCore core, StoredSkin targetSkin, boolean keepSkin) {
         this.core = core;
         this.targetSkin = targetSkin;
         this.keepSkin = keepSkin;

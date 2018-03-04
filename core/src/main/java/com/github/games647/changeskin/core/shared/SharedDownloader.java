@@ -1,8 +1,11 @@
 package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.craftapi.resolver.RateLimitException;
 
+import java.io.IOException;
 import java.util.UUID;
 
 public abstract class SharedDownloader implements Runnable, MessageReceiver {
@@ -22,9 +25,13 @@ public abstract class SharedDownloader implements Runnable, MessageReceiver {
 
     @Override
     public void run() {
-        SkinModel storedSkin = core.getStorage().getSkin(targetUUID);
+        StoredSkin storedSkin = core.getStorage().getSkin(targetUUID);
         if (storedSkin == null) {
-            storedSkin = core.getSkinApi().downloadSkin(targetUUID).orElse(null);
+            try {
+                storedSkin = core.getResolver().downloadSkin(targetUUID).orElse(null);
+            } catch (IOException | RateLimitException ex) {
+                core.getLogger().error("Failled to download skin", ex);
+            }
         } else {
             storedSkin = core.checkAutoUpdate(storedSkin);
         }
@@ -36,5 +43,5 @@ public abstract class SharedDownloader implements Runnable, MessageReceiver {
         scheduleApplyTask(storedSkin);
     }
 
-    protected abstract void scheduleApplyTask(SkinModel skinData);
+    protected abstract void scheduleApplyTask(StoredSkin skinData);
 }

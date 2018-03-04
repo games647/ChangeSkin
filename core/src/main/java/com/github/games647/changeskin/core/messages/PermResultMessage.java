@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.core.messages;
 
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -9,10 +10,10 @@ import java.util.UUID;
 public class PermResultMessage implements ChannelMessage {
 
     private boolean allowed;
-    private SkinModel skin;
+    private StoredSkin skin;
     private UUID receiverUUID;
 
-    public PermResultMessage(boolean success, SkinModel skin, UUID receiverUUID) {
+    public PermResultMessage(boolean success, StoredSkin skin, UUID receiverUUID) {
         this.allowed = success;
         this.skin = skin;
         this.receiverUUID = receiverUUID;
@@ -26,7 +27,7 @@ public class PermResultMessage implements ChannelMessage {
         return allowed;
     }
 
-    public SkinModel getSkin() {
+    public StoredSkin getSkin() {
         return skin;
     }
 

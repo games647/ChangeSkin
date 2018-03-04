@@ -5,7 +5,7 @@ import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.messages.CheckPermMessage;
 import com.github.games647.changeskin.core.messages.PermResultMessage;
 import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -50,8 +50,8 @@ public abstract class SharedBungeeListener<P> {
 
         UUID receiverUUID = message.getReceiverUUD();
         boolean op = message.isOp();
-        SkinModel targetSkin = message.getTargetSkin();
-        UUID skinProfile = targetSkin.getProfileId();
+        StoredSkin targetSkin = message.getTargetSkin();
+        UUID skinProfile = targetSkin.getOwnerId();
 
         boolean success = op || checkBungeePerms(player, receiverUUID, skinProfile, message.isSkinPerm());
         sendMessage(player, new PermResultMessage(success, targetSkin, receiverUUID));
@@ -86,7 +86,7 @@ public abstract class SharedBungeeListener<P> {
         sendMessage(player, channelName, out.toByteArray());
     }
 
-    protected abstract void runUpdater(P receiver, SkinModel targetSkin);
+    protected abstract void runUpdater(P receiver, StoredSkin targetSkin);
 
     protected abstract P getPlayerExact(String name);
 

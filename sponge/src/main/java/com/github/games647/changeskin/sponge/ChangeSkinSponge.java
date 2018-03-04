@@ -2,12 +2,11 @@ package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.PlatformPlugin;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.github.games647.changeskin.core.model.skin.SkinProperty;
 import com.github.games647.changeskin.sponge.commands.InvalidateCommand;
 import com.github.games647.changeskin.sponge.commands.SelectCommand;
 import com.github.games647.changeskin.sponge.commands.SetCommand;
 import com.github.games647.changeskin.sponge.commands.UploadCommand;
+import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
@@ -105,15 +104,15 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
         return false;
     }
 
-    public void applySkin(GameProfile profile, SkinModel targetSkin) {
+    public void applySkin(GameProfile profile, SkinProperty targetSkin) {
         //remove existing skins
         profile.getPropertyMap().clear();
 
         if (targetSkin != null) {
             GameProfileManager profileManager = Sponge.getServer().getGameProfileManager();
-            ProfileProperty profileProperty = profileManager.createProfileProperty(SkinProperty.SKIN_KEY
-                    , targetSkin.getEncodedValue(), targetSkin.getSignature());
-            profile.getPropertyMap().put(SkinProperty.SKIN_KEY, profileProperty);
+            ProfileProperty profileProperty = profileManager.createProfileProperty(SkinProperty.TEXTURE_KEY,
+                    targetSkin.getValue(), targetSkin.getSignature());
+            profile.getPropertyMap().put(SkinProperty.TEXTURE_KEY, profileProperty);
         }
     }
 

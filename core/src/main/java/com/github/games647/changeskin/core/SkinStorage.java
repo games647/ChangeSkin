@@ -1,10 +1,10 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.github.games647.changeskin.core.model.skin.MetadataModel;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.github.games647.changeskin.core.model.skin.TextureModel;
+import com.github.games647.craftapi.UUIDAdapter;
+import com.github.games647.craftapi.model.skin.Texture;
+import com.github.games647.craftapi.model.skin.TextureType;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -18,13 +18,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
-import static com.github.games647.changeskin.core.model.skin.TextureType.CAPE;
-import static com.github.games647.changeskin.core.model.skin.TextureType.SKIN;
+import static com.github.games647.craftapi.model.skin.TextureType.CAPE;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class SkinStorage {
@@ -110,13 +112,13 @@ public class SkinStorage {
                      + " FROM " + USER_TABLE
                      + " LEFT JOIN " + DATA_TABLE + " ON " + USER_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
                      + " WHERE " + USER_TABLE + ".UUID=? LIMIT 1")) {
-            stmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
+            stmt.setString(1, UUIDAdapter.toMojangId(uuid));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
                     int prefId = resultSet.getInt(9);
 
-                    SkinModel skinData = null;
+                    StoredSkin skinData = null;
                     if (resultSet.getObject(1)  != null) {
                         skinData = parseSkinData(resultSet);
                     }
@@ -134,7 +136,7 @@ public class SkinStorage {
         return null;
     }
 
-    public SkinModel getSkin(int targetSkinId) {
+    public StoredSkin getSkin(int targetSkinId) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
                      "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1")) {
@@ -152,12 +154,12 @@ public class SkinStorage {
         return null;
     }
 
-    public SkinModel getSkin(UUID skinUUID) {
+    public StoredSkin getSkin(UUID skinUUID) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
                      "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE
                      + " WHERE UUID=? ORDER BY Timestamp DESC LIMIT 1")) {
-            stmt.setString(1, UUIDTypeAdapter.toMojangId(skinUUID));
+            stmt.setString(1, UUIDAdapter.toMojangId(skinUUID));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -172,7 +174,7 @@ public class SkinStorage {
     }
 
     public void save(UserPreference preferences) {
-        SkinModel targetSkin = preferences.getTargetSkin();
+        StoredSkin targetSkin = preferences.getTargetSkin();
         if (targetSkin != null && targetSkin.getSkinId() == -1) {
             throw new IllegalArgumentException("Tried saving preferences without skin");
         }
@@ -190,7 +192,7 @@ public class SkinStorage {
                         "VALUES (?, ?, ?)";
 
                 try (PreparedStatement stmt = con.prepareStatement(insertQuery, RETURN_GENERATED_KEYS)) {
-                    stmt.setString(1, UUIDTypeAdapter.toMojangId(preferences.getUuid()));
+                    stmt.setString(1, UUIDAdapter.toMojangId(preferences.getUuid()));
                     stmt.setInt(2, targetSkin == null ? -1 : targetSkin.getSkinId());
                     stmt.setBoolean(3, preferences.isKeepSkin());
 
@@ -208,7 +210,7 @@ public class SkinStorage {
         }
     }
 
-    public boolean save(SkinModel skinData) {
+    public boolean save(StoredSkin skinData) {
         if (skinData == null) {
             return false;
         }
@@ -218,31 +220,20 @@ public class SkinStorage {
             return true;
         }
 
-        TextureModel skinTexture = skinData.getTextures().get(SKIN);
-        String skinUrl = "";
-        boolean slimModel = false;
-        if (skinTexture != null) {
-            skinUrl = skinTexture.getShortUrl();
-            MetadataModel metadata = skinTexture.getMetadata();
-            if (metadata != null) {
-                slimModel = true;
-            }
-        }
+        Optional<Texture> skinTexture = skinData.getTexture(TextureType.SKIN);
+        String skinUrl = skinTexture.map(Texture::getShortUrl).orElse("");
+        boolean slimModel = skinTexture.map(Texture::getMetadata).map(Optional::isPresent).orElse(false);
 
-        TextureModel capeTexture = skinData.getTextures().get(CAPE);
-        String capeUrl = "";
-        if (capeTexture != null) {
-            capeUrl = capeTexture.getShortUrl();
-        }
+        Optional<Texture> capeTexture = skinData.getTexture(CAPE);
+        String capeUrl = capeTexture.map(Texture::getShortUrl).orElse("");
 
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
                      + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
                      + " (?, ?, ?, ?, ?, ?, ?)", RETURN_GENERATED_KEYS)) {
-
-            stmt.setLong(1, skinData.getTimestamp());
-            stmt.setString(2, UUIDTypeAdapter.toMojangId(skinData.getProfileId()));
-            stmt.setString(3, skinData.getProfileName());
+            stmt.setTimestamp(1, Timestamp.from(skinData.getTimestamp()));
+            stmt.setString(2, UUIDAdapter.toMojangId(skinData.getOwnerId()));
+            stmt.setString(3, skinData.getOwnerName());
             stmt.setBoolean(4, slimModel);
             stmt.setString(5, skinUrl);
             stmt.setString(6, capeUrl);
@@ -269,10 +260,10 @@ public class SkinStorage {
         }
     }
 
-    private SkinModel parseSkinData(ResultSet resultSet) throws SQLException {
+    private StoredSkin parseSkinData(ResultSet resultSet) throws SQLException {
         int skinId = resultSet.getInt(1);
-        long timestamp = resultSet.getLong(2);
-        UUID uuid = UUIDTypeAdapter.parseId(resultSet.getString(3));
+        Instant timestamp = resultSet.getTimestamp(2).toInstant();
+        UUID uuid = UUIDAdapter.parseId(resultSet.getString(3));
         String name = resultSet.getString(4);
 
         boolean slimModel = resultSet.getBoolean(5);
@@ -281,6 +272,6 @@ public class SkinStorage {
         String capeUrl = resultSet.getString(7);
 
         byte[] signature = resultSet.getBytes(8);
-        return new SkinModel(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
+        return new StoredSkin(skinId, timestamp, uuid, name, slimModel, skinUrl, capeUrl, signature);
     }
 }

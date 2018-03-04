@@ -16,9 +16,11 @@ import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.model.skin.SkinProperty;
+import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -76,21 +78,20 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         this.core.close();
     }
 
-    public WrappedSignedProperty convertToProperty(SkinModel skinData) {
-        return WrappedSignedProperty.fromValues(SkinProperty.SKIN_KEY, skinData.getEncodedValue()
-                , skinData.getSignature());
+    public WrappedSignedProperty convertToProperty(SkinProperty skinData) {
+        return WrappedSignedProperty.fromValues(SkinProperty.TEXTURE_KEY, skinData.getValue(), skinData.getSignature());
     }
 
-    public void applySkin(Player receiver, SkinModel targetSkin) {
+    public void applySkin(Player receiver, SkinProperty targetSkin) {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
         applySkin(gameProfile, targetSkin);
     }
 
-    public void applySkin(WrappedGameProfile profile, SkinModel targetSkin) {
+    public void applySkin(WrappedGameProfile profile, SkinProperty targetSkin) {
         //remove existing skins
         profile.getProperties().clear();
         if (targetSkin != null) {
-            profile.getProperties().put(SkinProperty.SKIN_KEY, convertToProperty(targetSkin));
+            profile.getProperties().put(SkinProperty.TEXTURE_KEY, convertToProperty(targetSkin));
         }
     }
 
@@ -115,15 +116,15 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     }
 
     //you should call this method async
-    public void setSkin(Player player, SkinModel newSkin, boolean applyNow) {
+    public void setSkin(Player player, StoredSkin newSkin, boolean applyNow) {
         new SkinApplier(this, null, player, newSkin, true).run();
     }
 
     //you should call this method async
     public void setSkin(Player player, UUID targetSkin, boolean applyNow) {
-        SkinModel newSkin = core.getStorage().getSkin(targetSkin);
+        StoredSkin newSkin = core.getStorage().getSkin(targetSkin);
         if (newSkin == null) {
-            Optional<SkinModel> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
+            Optional<StoredSkin> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
             if (downloadSkin.isPresent()) {
                 newSkin = downloadSkin.get();
             }

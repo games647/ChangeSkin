@@ -1,7 +1,5 @@
 package com.github.games647.changeskin.core.model;
 
-import com.github.games647.changeskin.core.model.skin.SkinModel;
-
 import java.util.UUID;
 
 public class UserPreference {
@@ -9,10 +7,10 @@ public class UserPreference {
     private int id;
 
     private final UUID uuid;
-    private SkinModel targetSkin;
+    private StoredSkin targetSkin;
     private boolean keepSkin;
 
-    public UserPreference(int id, UUID uuid, SkinModel targetSkin, boolean keepSkin) {
+    public UserPreference(int id, UUID uuid, StoredSkin targetSkin, boolean keepSkin) {
         this.id = id;
         this.uuid = uuid;
         this.targetSkin = targetSkin;
@@ -48,11 +46,11 @@ public class UserPreference {
     }
 
     //todo: this should be optional
-    public SkinModel getTargetSkin() {
+    public StoredSkin getTargetSkin() {
         return targetSkin;
     }
 
-    public void setTargetSkin(SkinModel targetSkin) {
+    public void setTargetSkin(StoredSkin targetSkin) {
         this.targetSkin = targetSkin;
     }
 

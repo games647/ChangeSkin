@@ -20,7 +20,7 @@ public class SkinSelector extends SharedSkinSelect {
     }
 
     @Override
-    protected void scheduleApplyTask(SkinModel targetSkin) {
+    protected void scheduleApplyTask(StoredSkin targetSkin) {
         Runnable skinUpdater = new SkinApplier(plugin, receiver, receiver, targetSkin, true);
         Task.builder().execute(skinUpdater).submit(plugin);
     }

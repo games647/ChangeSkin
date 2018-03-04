@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.sponge.tasks;
 
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedDownloader;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
@@ -26,7 +27,7 @@ public class SkinDownloader extends SharedDownloader {
     }
 
     @Override
-    protected void scheduleApplyTask(SkinModel skinData) {
+    protected void scheduleApplyTask(StoredSkin skinData) {
         Runnable skinUpdater = new SkinApplier(plugin, invoker, receiver, skinData, keepSkin);
         Task.builder().execute(skinUpdater).submit(plugin);
     }

@@ -1,11 +1,20 @@
 package com.github.games647.changeskin.core;
 
-import com.github.games647.changeskin.core.model.auth.Account;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.craftapi.RotatingProxySelector;
+import com.github.games647.craftapi.model.auth.Account;
+import com.github.games647.craftapi.model.skin.SkinModel;
+import com.github.games647.craftapi.model.skin.SkinProperty;
+import com.github.games647.craftapi.resolver.MojangResolver;
+import com.github.games647.craftapi.resolver.RateLimitException;
 import com.google.common.net.HostAndPort;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -15,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,33 +35,27 @@ import net.md_5.bungee.config.YamlConfiguration;
 import org.slf4j.Logger;
 
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class ChangeSkinCore {
 
     private final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
-    //this is thread-safe in order to save and load from different threads like the skin download
-    private final Map<String, UUID> uuidCache = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
-    private final Map<String, Object> crackedNames = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
-
     private final PlatformPlugin<?> plugin;
-    private final List<SkinModel> defaultSkins = new ArrayList<>();
+    private final List<StoredSkin> defaultSkins = new ArrayList<>();
     private final List<Account> uploadAccounts = new ArrayList<>();
-    private final MojangAuthApi authApi;
 
-    private MojangSkinApi skinApi;
+    private final MojangResolver resolver = new MojangResolver();
+
     private Configuration config;
     private SkinStorage storage;
     private CooldownService cooldownService;
 
-    private int autoUpdateDiff;
+    private Duration autoUpdateDiff;
 
     public ChangeSkinCore(PlatformPlugin<?> plugin) {
         this.plugin = plugin;
-
-        this.authApi = new MojangAuthApi(plugin.getLog());
     }
 
     public void load(boolean database) {
@@ -60,14 +64,20 @@ public class ChangeSkinCore {
 
         try {
             config = loadFile("config.yml");
-            int rateLimit = config.getInt("mojang-request-limit");
 
             cooldownService = new CooldownService(Duration.ofMinutes(config.getInt("cooldown")));
+            autoUpdateDiff = Duration.ofMinutes(config.getInt("auto-skin-update"));
 
-            autoUpdateDiff = config.getInt("auto-skin-update") * 60 * 1_000;
-            List<HostAndPort> proxies = config.getStringList("proxies")
-                    .stream().map(HostAndPort::fromString).collect(toList());
-            skinApi = new MojangSkinApi(plugin.getLog(), rateLimit, proxies);
+            int rateLimit = config.getInt("mojang-request-limit");
+            Set<Proxy> proxies = config.getStringList("proxies")
+                    .stream()
+                    .map(HostAndPort::fromString)
+                    .map(proxy -> new InetSocketAddress(proxy.getHostText(), proxy.getPort()))
+                    .map(sa -> new Proxy(Type.HTTP, sa))
+                    .collect(toSet());
+
+            resolver.setMaxNameRequests(rateLimit);
+            resolver.setProxySelector(new RotatingProxySelector(proxies));
 
             if (database) {
                 if (!setupDatabase(config.getSection("storage"))) {
@@ -141,19 +151,11 @@ public class ChangeSkinCore {
         return plugin;
     }
 
-    public Map<String, UUID> getUuidCache() {
-        return uuidCache;
-    }
-
-    public Map<String, Object> getCrackedNames() {
-        return crackedNames;
-    }
-
     public String getMessage(String key) {
         return localeMessages.get(key);
     }
 
-    public List<SkinModel> getDefaultSkins() {
+    public List<StoredSkin> getDefaultSkins() {
         return defaultSkins;
     }
 
@@ -162,11 +164,18 @@ public class ChangeSkinCore {
             return null;
         }
 
-        long difference = Duration.between(Instant.ofEpochMilli(oldSkin.getTimestamp()), Instant.now()).getSeconds();
-        if (autoUpdateDiff > 0 && difference > autoUpdateDiff) {
-            Optional<SkinModel> updatedSkin = skinApi.downloadSkin(oldSkin.getProfileId());
-            if (updatedSkin.isPresent() && !Objects.equals(updatedSkin.get(), oldSkin)) {
-                return updatedSkin.get();
+        Duration difference = Duration.between(oldSkin.getTimestamp(), Instant.now());
+        if (difference.compareTo(autoUpdateDiff) >= 0) {
+            try {
+                Optional<SkinProperty> property = resolver.downloadSkin(oldSkin.getOwnerId());
+                if (property.isPresent()) {
+                    SkinModel updateSkin = resolver.decodeSkin(property.get());
+                    if (!Objects.equals(updateSkin, oldSkin)) {
+                        return updateSkin;
+                    }
+                }
+            } catch (IOException | RateLimitException ex) {
+                plugin.getLog().warn("Failed to update skin", ex);
             }
         }
 
@@ -206,13 +215,19 @@ public class ChangeSkinCore {
     private void loadDefaultSkins(Iterable<String> defaults) {
         for (String uuidString : defaults) {
             UUID ownerUUID = UUID.fromString(uuidString);
-            SkinModel skinData = storage.getSkin(ownerUUID);
+            StoredSkin skinData = storage.getSkin(ownerUUID);
             if (skinData == null) {
-                Optional<SkinModel> optSkin = skinApi.downloadSkin(ownerUUID);
-                if (optSkin.isPresent()) {
-                    skinData = optSkin.get();
-                    uuidCache.put(skinData.getProfileName(), skinData.getProfileId());
-                    storage.save(skinData);
+                try {
+                    Optional<SkinProperty> skinProperty = resolver.downloadSkin(ownerUUID);
+                    if (skinProperty.isPresent()) {
+                        SkinProperty property = skinProperty.get();
+                        SkinModel skinModel = resolver.decodeSkin(property);
+
+                        storage.save(property);
+                        skinData = property;
+                    }
+                } catch (IOException | RateLimitException ex) {
+                    getLogger().error("Failed download default skin", ex);
                 }
             }
 
@@ -225,28 +240,27 @@ public class ChangeSkinCore {
             String email = line.split(":")[0];
             String password = line.split(":")[1];
 
-            authApi.authenticate(email, password).ifPresent(account -> {
+            try {
+                Account account = resolver.authenticate(email, password);
+
                 plugin.getLog().info("Authenticated user {}", account.getProfile().getId());
                 uploadAccounts.add(account);
-            });
+            } catch (IOException ex) {
+                plugin.getLog().error("Failed to authenticate user: {}", email, ex);
+            }
         }
     }
 
     public void close() {
         defaultSkins.clear();
-        uuidCache.clear();
 
         if (storage != null) {
             storage.close();
         }
     }
 
-    public MojangSkinApi getSkinApi() {
-        return skinApi;
-    }
-
-    public MojangAuthApi getAuthApi() {
-        return authApi;
+    public MojangResolver getResolver() {
+        return resolver;
     }
 
     public SkinStorage getStorage() {

@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.sponge.tasks;
 
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedApplier;
@@ -23,7 +24,7 @@ public class SkinApplier extends SharedApplier {
     private final CommandSource invoker;
     private final Player receiver;
 
-    public SkinApplier(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, SkinModel targetSkin
+    public SkinApplier(ChangeSkinSponge plugin, CommandSource invoker, Player receiver, StoredSkin targetSkin
             , boolean keepSkin) {
         super(plugin.getCore(), targetSkin, keepSkin);
 

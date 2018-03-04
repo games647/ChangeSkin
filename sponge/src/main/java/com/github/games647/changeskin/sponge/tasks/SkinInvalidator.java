@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.sponge.tasks;
 
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedInvalidator;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
@@ -25,7 +26,7 @@ public class SkinInvalidator extends SharedInvalidator {
     }
 
     @Override
-    protected void scheduleApplyTask(SkinModel skinData) {
+    protected void scheduleApplyTask(StoredSkin skinData) {
         Runnable skinUpdater = new SkinApplier(plugin, invoker, invoker, skinData, false);
         Task.builder().execute(skinUpdater).submit(plugin);
     }

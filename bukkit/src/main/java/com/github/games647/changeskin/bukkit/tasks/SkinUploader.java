@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bukkit.tasks;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.shared.SharedUploader;
+import com.github.games647.craftapi.model.auth.Account;
 
 import org.bukkit.command.CommandSender;
 

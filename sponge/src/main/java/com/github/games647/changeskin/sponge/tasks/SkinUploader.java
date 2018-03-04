@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.sponge.tasks;
 
-import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.shared.SharedUploader;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
+import com.github.games647.craftapi.model.auth.Account;
 
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.serializer.TextSerializers;

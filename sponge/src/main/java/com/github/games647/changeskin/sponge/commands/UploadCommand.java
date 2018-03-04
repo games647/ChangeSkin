@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.sponge.commands;
 
-import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.tasks.SkinUploader;
+import com.github.games647.craftapi.model.auth.Account;
 import com.google.inject.Inject;
 
 import java.util.List;

@@ -2,7 +2,8 @@ package com.github.games647.changeskin.bukkit.commands;
 
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
+import com.github.games647.changeskin.core.model.StoredSkin;
+import com.github.games647.craftapi.model.skin.SkinProperty;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -67,7 +68,10 @@ public class SkullCommand implements CommandExecutor {
                 Player player = (Player) sender;
                 int targetId = Integer.parseInt(targetName);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                    applySkin(player, plugin.getStorage().getSkin(targetId));
+                    StoredSkin skin = plugin.getStorage().getSkin(targetId);
+
+                    SkinProperty property = plugin.getCore().getResolver().encodeSkin(skin, skin.getSignature());
+                    applySkin(player, property);
                 });
             } catch (NumberFormatException numberFormatException) {
                 plugin.sendMessage(sender, "invalid-skin-name");
@@ -77,14 +81,14 @@ public class SkullCommand implements CommandExecutor {
         return true;
     }
 
-    private void applySkin(Player player, SkinModel skinData) {
+    private void applySkin(Player player, SkinProperty skinData) {
         Bukkit.getScheduler().runTask(plugin, () -> {
             setSkullSkin(player.getInventory().getItem(player.getInventory().getHeldItemSlot()), skinData);
             player.updateInventory();
         });
     }
 
-    private void setSkullSkin(ItemStack itemStack, SkinModel skinData) {
+    private void setSkullSkin(ItemStack itemStack, SkinProperty skinData) {
         try {
             if (itemStack == null || skinData == null || itemStack.getType() != Material.SKULL_ITEM)
                 return;

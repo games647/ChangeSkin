@@ -1,9 +1,11 @@
 package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.SkinStorage;
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedListener;
+import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.google.inject.Inject;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public class LoginListener extends SharedListener {
         UUID playerUUID = profile.getUniqueId();
 
         UserPreference preferences = storage.getPreferences(playerUUID);
-        SkinModel targetSkin = preferences.getTargetSkin();
+        StoredSkin targetSkin = preferences.getTargetSkin();
         if (targetSkin == null) {
             if (!core.getConfig().getBoolean("restoreSkins")
                     || !refetchSkin(profile.getName().get(), preferences)) {
@@ -44,20 +46,23 @@ public class LoginListener extends SharedListener {
                 targetSkin = core.checkAutoUpdate(targetSkin);
             }
 
-            plugin.applySkin(profile, targetSkin);
+            SkinProperty property = core.getResolver().encodeSkin(targetSkin, targetSkin.getSignature());
+            plugin.applySkin(profile, property);
             save(preferences);
         }
     }
 
     private void setDefaultSkin(UserPreference preferences, GameProfile profile) {
-        List<SkinModel> defaultSkins = core.getDefaultSkins();
+        List<StoredSkin> defaultSkins = core.getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
             int randomIndex = ThreadLocalRandom.current().nextInt(defaultSkins.size());
-            SkinModel defaultSkin = defaultSkins.get(randomIndex);
+            StoredSkin defaultSkin = defaultSkins.get(randomIndex);
             if (defaultSkin != null) {
                 preferences.setTargetSkin(defaultSkin);
                 save(preferences);
-                plugin.applySkin(profile, defaultSkin);
+
+                SkinProperty prop = plugin.getCore().getResolver().encodeSkin(defaultSkin, defaultSkin.getSignature());
+                plugin.applySkin(profile, prop);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.core.messages;
 
+import com.github.games647.changeskin.core.model.StoredSkin;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -8,13 +9,13 @@ import java.util.UUID;
 
 public class CheckPermMessage implements ChannelMessage {
 
-    private SkinModel targetSkin;
+    private StoredSkin targetSkin;
 
     private UUID receiverUUD;
     private boolean skinPerm;
     private boolean isOp;
 
-    public CheckPermMessage(SkinModel targetSkin, UUID receiverUUD, boolean skinPerm, boolean isOp) {
+    public CheckPermMessage(StoredSkin targetSkin, UUID receiverUUD, boolean skinPerm, boolean isOp) {
         this.targetSkin = targetSkin;
         this.receiverUUD = receiverUUD;
         this.skinPerm = skinPerm;
@@ -25,7 +26,7 @@ public class CheckPermMessage implements ChannelMessage {
         //reading mode
     }
 
-    public SkinModel getTargetSkin() {
+    public StoredSkin getTargetSkin() {
         return targetSkin;
     }
 
