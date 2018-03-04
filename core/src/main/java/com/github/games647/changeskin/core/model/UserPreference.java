@@ -34,12 +34,12 @@ public class UserPreference {
         return saveLock;
     }
 
-    public int getRowId() {
+    public synchronized int getRowId() {
         //this lock should be acquired in the save method
         return rowId;
     }
 
-    public void setRowId(int rowId) {
+    public synchronized void setRowId(int rowId) {
         //this lock should be acquired in the save method
         this.rowId = rowId;
     }
@@ -77,12 +77,7 @@ public class UserPreference {
     }
 
     @Override
-    public String toString() {
-        int rowId;
-        synchronized (this) {
-            rowId = this.rowId;
-        }
-
+    public synchronized String toString() {
         return this.getClass().getSimpleName() + '{' +
                 "rowId=" + rowId +
                 ", uuid=" + uuid +

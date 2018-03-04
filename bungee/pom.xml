@@ -56,7 +56,7 @@
 
     <repositories>
         <repository>
-            <rowId>lucko-repo</rowId>
+            <id>lucko-repo</id>
             <url>https://ci.lucko.me/plugin/repository/everything</url>
         </repository>
     </repositories>

@@ -18,7 +18,7 @@
     <repositories>
         <!--Sponge-API-->
         <repository>
-            <rowId>sponge-repo</rowId>
+            <id>sponge-repo</id>
             <url>https://repo.spongepowered.org/maven</url>
         </repository>
     </repositories>
@@ -31,7 +31,7 @@
                 <version>1.0.0</version>
                 <executions>
                     <execution>
-                        <rowId>filter-src</rowId>
+                        <id>filter-src</id>
                         <goals>
                             <goal>filter-sources</goal>
                         </goals>

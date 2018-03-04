@@ -111,7 +111,7 @@ public class SkinModel {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return this.getClass().getSimpleName() + '{' +
                 "rowId=" + rowId +
                 ", encodedValue='" + encodedValue + '\'' +
