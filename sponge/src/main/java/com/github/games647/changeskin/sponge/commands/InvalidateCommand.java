@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.sponge.commands;
 
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
+import com.github.games647.changeskin.sponge.PomData;
 import com.github.games647.changeskin.sponge.tasks.SkinInvalidator;
 import com.google.inject.Inject;
 
@@ -41,6 +42,7 @@ public class InvalidateCommand implements CommandExecutor, ChangeSkinCommand {
     public CommandSpec buildSpec() {
         return CommandSpec.builder()
                 .executor(this)
+                .permission(PomData.ARTIFACT_ID + ".command.skinupdate")
                 .build();
     }
 }

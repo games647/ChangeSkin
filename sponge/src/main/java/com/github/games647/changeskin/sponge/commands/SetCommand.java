@@ -2,6 +2,7 @@ package com.github.games647.changeskin.sponge.commands;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
+import com.github.games647.changeskin.sponge.PomData;
 import com.github.games647.changeskin.sponge.tasks.NameResolver;
 import com.github.games647.changeskin.sponge.tasks.SkinDownloader;
 import com.google.inject.Inject;
@@ -81,6 +82,7 @@ public class SetCommand implements CommandExecutor, ChangeSkinCommand {
                 .arguments(
                         string(of("skin")),
                         flags().flag("keep").buildWith(GenericArguments.none()))
+                .permission(PomData.ARTIFACT_ID + ".command.setskin")
                 .build();
     }
 }

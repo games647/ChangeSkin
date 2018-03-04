@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.sponge.commands;
 
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
+import com.github.games647.changeskin.sponge.PomData;
 import com.github.games647.changeskin.sponge.tasks.SkinSelector;
 import com.google.inject.Inject;
 
@@ -51,6 +52,7 @@ public class SelectCommand implements CommandExecutor, ChangeSkinCommand {
         return CommandSpec.builder()
                 .executor(this)
                 .arguments(string(of("skinName")))
+                .permission(PomData.ARTIFACT_ID + ".command.skinselect")
                 .build();
     }
 }
