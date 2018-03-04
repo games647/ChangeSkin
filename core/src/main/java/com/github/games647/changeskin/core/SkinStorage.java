@@ -117,7 +117,7 @@ public class SkinStorage {
                     int prefId = resultSet.getInt(9);
 
                     SkinModel skinData = null;
-                    if (resultSet.getObject(1)  != null) {
+                    if (resultSet.getObject(1) != null) {
                         skinData = parseSkinData(resultSet);
                     }
 
@@ -177,12 +177,13 @@ public class SkinStorage {
             throw new IllegalArgumentException("Tried saving preferences without skin");
         }
 
+        preferences.getSaveLock().lock();
         try (Connection con = dataSource.getConnection()) {
             if (preferences.isSaved()) {
                 try (PreparedStatement stmt = con.prepareStatement("UPDATE " + USER_TABLE
                         + " SET TargetSkin=? WHERE UserID=?")) {
                     stmt.setInt(1, targetSkin == null ? -1 : targetSkin.getRowId());
-                    stmt.setInt(2, preferences.getId());
+                    stmt.setInt(2, preferences.getRowId());
                     stmt.executeUpdate();
                 }
             } else {
@@ -198,13 +199,15 @@ public class SkinStorage {
 
                     try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                         if (generatedKeys != null && generatedKeys.next()) {
-                            preferences.setId(generatedKeys.getInt(1));
+                            preferences.setRowId(generatedKeys.getInt(1));
                         }
                     }
                 }
             }
         } catch (SQLException sqlEx) {
             core.getLogger().error("Failed to save preferences for: {}", preferences, sqlEx);
+        } finally {
+            preferences.getSaveLock().unlock();
         }
     }
 
@@ -213,51 +216,56 @@ public class SkinStorage {
             return false;
         }
 
-        if (skinData.isSaved()) {
-            //skin already saved
-            return true;
-        }
-
-        TextureModel skinTexture = skinData.getTextures().get(SKIN);
-        String skinUrl = "";
-        boolean slimModel = false;
-        if (skinTexture != null) {
-            skinUrl = skinTexture.getShortUrl();
-            MetadataModel metadata = skinTexture.getMetadata();
-            if (metadata != null) {
-                slimModel = true;
+        skinData.getSaveLock().lock();
+        try {
+            if (skinData.isSaved()) {
+                //skin already saved
+                return true;
             }
-        }
 
-        TextureModel capeTexture = skinData.getTextures().get(CAPE);
-        String capeUrl = "";
-        if (capeTexture != null) {
-            capeUrl = capeTexture.getShortUrl();
-        }
+            TextureModel skinTexture = skinData.getTextures().get(SKIN);
+            String skinUrl = "";
+            boolean slimModel = false;
+            if (skinTexture != null) {
+                skinUrl = skinTexture.getShortUrl();
+                MetadataModel metadata = skinTexture.getMetadata();
+                if (metadata != null) {
+                    slimModel = true;
+                }
+            }
 
-        try (Connection con = dataSource.getConnection();
-             PreparedStatement stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
-                     + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
-                     + " (?, ?, ?, ?, ?, ?, ?)", RETURN_GENERATED_KEYS)) {
+            TextureModel capeTexture = skinData.getTextures().get(CAPE);
+            String capeUrl = "";
+            if (capeTexture != null) {
+                capeUrl = capeTexture.getShortUrl();
+            }
 
-            stmt.setLong(1, skinData.getTimestamp());
-            stmt.setString(2, UUIDTypeAdapter.toMojangId(skinData.getProfileId()));
-            stmt.setString(3, skinData.getProfileName());
-            stmt.setBoolean(4, slimModel);
-            stmt.setString(5, skinUrl);
-            stmt.setString(6, capeUrl);
-            stmt.setBytes(7, Base64.getDecoder().decode(skinData.getSignature()));
+            try (Connection con = dataSource.getConnection();
+                 PreparedStatement stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
+                         + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
+                         + " (?, ?, ?, ?, ?, ?, ?)", RETURN_GENERATED_KEYS)) {
 
-            stmt.executeUpdate();
+                stmt.setLong(1, skinData.getTimestamp());
+                stmt.setString(2, UUIDTypeAdapter.toMojangId(skinData.getProfileId()));
+                stmt.setString(3, skinData.getProfileName());
+                stmt.setBoolean(4, slimModel);
+                stmt.setString(5, skinUrl);
+                stmt.setString(6, capeUrl);
+                stmt.setBytes(7, Base64.getDecoder().decode(skinData.getSignature()));
 
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys != null && generatedKeys.next()) {
-                    skinData.setRowId(generatedKeys.getInt(1));
-                    return true;
+                stmt.executeUpdate();
+
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys != null && generatedKeys.next()) {
+                        skinData.setRowId(generatedKeys.getInt(1));
+                        return true;
+                    }
                 }
             }
         } catch (SQLException sqlEx) {
             core.getLogger().error("Failed to query skin data: {}", skinData, sqlEx);
+        } finally {
+            skinData.getSaveLock().unlock();
         }
 
         return false;

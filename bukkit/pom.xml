@@ -54,19 +54,19 @@
     <repositories>
         <!--Bukkit-Server-API -->
         <repository>
-            <id>spigot-repo</id>
+            <rowId>spigot-repo</rowId>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
 
         <!--ProtocolLib-->
         <repository>
-            <id>dmulloy2-repo</id>
+            <rowId>dmulloy2-repo</rowId>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
 
         <!--NameTagEdit-->
         <repository>
-            <id>upstream</id>
+            <rowId>upstream</rowId>
             <url>http://ci.nametagedit.com/plugin/repository/everything/</url>
         </repository>
     </repositories>

@@ -29,14 +29,14 @@
         <plugins>
             <plugin>
                 <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
+                <artifactId>git-commit-rowId-plugin</artifactId>
                 <version>2.2.4</version>
                 <configuration>
                     <failOnNoGitDirectory>false</failOnNoGitDirectory>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>get-the-git-infos</id>
+                        <rowId>get-the-git-infos</rowId>
                         <goals>
                             <goal>revision</goal>
                         </goals>

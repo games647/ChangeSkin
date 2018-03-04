@@ -3,17 +3,20 @@ package com.github.games647.changeskin.core.model;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class UserPreference {
 
-    private int id;
-
     private final UUID uuid;
+    private final Lock saveLock = new ReentrantLock();
+
+    private int rowId;
     private SkinModel targetSkin;
     private boolean keepSkin;
 
-    public UserPreference(int id, UUID uuid, SkinModel targetSkin, boolean keepSkin) {
-        this.id = id;
+    public UserPreference(int rowId, UUID uuid, SkinModel targetSkin, boolean keepSkin) {
+        this.rowId = rowId;
         this.uuid = uuid;
         this.targetSkin = targetSkin;
         this.keepSkin = keepSkin;
@@ -23,43 +26,65 @@ public class UserPreference {
         this(-1, uuid, null, false);
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public boolean isSaved() {
-        return id >= 0;
-    }
-
     public UUID getUuid() {
         return uuid;
     }
 
-    public boolean isKeepSkin() {
+    public Lock getSaveLock() {
+        return saveLock;
+    }
+
+    public int getRowId() {
+        //this lock should be acquired in the save method
+        return rowId;
+    }
+
+    public void setRowId(int rowId) {
+        //this lock should be acquired in the save method
+        this.rowId = rowId;
+    }
+
+    public boolean isSaved() {
+        //this lock should be acquired in the save method
+        return rowId >= 0;
+    }
+
+    public synchronized boolean isKeepSkin() {
         return keepSkin;
     }
 
-    public void setKeepSkin(boolean keepSkin) {
-        this.keepSkin = keepSkin;
+    public synchronized void setKeepSkin(boolean keepSkin) {
+        saveLock.lock();
+        try {
+            this.keepSkin = keepSkin;
+        } finally {
+            saveLock.unlock();
+        }
     }
 
     //todo: this should be optional
-    public SkinModel getTargetSkin() {
+    public synchronized SkinModel getTargetSkin() {
         return targetSkin;
     }
 
-    public void setTargetSkin(SkinModel targetSkin) {
-        this.targetSkin = targetSkin;
+    public synchronized void setTargetSkin(SkinModel targetSkin) {
+        saveLock.lock();
+        try {
+            this.targetSkin = targetSkin;
+        } finally {
+            saveLock.unlock();
+        }
     }
 
     @Override
     public String toString() {
+        int rowId;
+        synchronized (this) {
+            rowId = this.rowId;
+        }
+
         return this.getClass().getSimpleName() + '{' +
-                "id=" + id +
+                "rowId=" + rowId +
                 ", uuid=" + uuid +
                 ", targetSkin=" + targetSkin +
                 ", keepSkin=" + keepSkin +

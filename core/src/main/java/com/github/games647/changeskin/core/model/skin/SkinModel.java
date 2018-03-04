@@ -9,6 +9,8 @@ import java.util.Base64;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class SkinModel {
 
@@ -18,6 +20,8 @@ public class SkinModel {
     private transient int rowId;
     private transient String encodedValue;
     private transient String encodedSignature;
+
+    private final transient Lock saveLock = new ReentrantLock();
 
     //the order of these fields are relevant
     private final long timestamp;
@@ -58,22 +62,23 @@ public class SkinModel {
         return skinModel;
     }
 
-    public int getRowId() {
-        synchronized (this) {
-            return rowId;
-        }
+    public synchronized int getRowId() {
+        //this lock should be acquired in the save method
+        return rowId;
     }
 
-    public boolean isSaved() {
-        synchronized (this) {
+    public synchronized boolean isSaved() {
+        //this lock should be acquired in the save method
             return rowId >= 0;
-        }
     }
 
-    public void setRowId(int rowId) {
-        synchronized (this) {
-            this.rowId = rowId;
-        }
+    public synchronized void setRowId(int rowId) {
+        //this lock should be acquired in the save method
+        this.rowId = rowId;
+    }
+
+    public Lock getSaveLock() {
+        return saveLock;
     }
 
     public String getEncodedValue() {
@@ -82,10 +87,6 @@ public class SkinModel {
 
     public String getSignature() {
         return encodedSignature;
-    }
-
-    private void setEncodedSignature(String encodedSignature) {
-        this.encodedSignature = encodedSignature;
     }
 
     public long getTimestamp() {
