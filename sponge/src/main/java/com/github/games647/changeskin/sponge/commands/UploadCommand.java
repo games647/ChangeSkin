@@ -2,6 +2,7 @@ package com.github.games647.changeskin.sponge.commands;
 
 import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
+import com.github.games647.changeskin.sponge.PomData;
 import com.github.games647.changeskin.sponge.tasks.SkinUploader;
 import com.google.inject.Inject;
 
@@ -51,6 +52,7 @@ public class UploadCommand implements CommandExecutor, ChangeSkinCommand {
         return CommandSpec.builder()
                 .executor(this)
                 .arguments(string(of("url")))
+                .permission(PomData.ARTIFACT_ID + ".command.skinupload.base")
                 .build();
     }
 }

@@ -29,20 +29,28 @@ https://ci.codemc.org/job/ChangeSkin/changes
 
 ## Commands
 
-* /setskin < uuid > [keep] - Sets your skin to be equal to the player with the selected uuid. 
-* /setskin < playerName > [keep] - Sets the skin equal to the owner of that Mojang with the given playername
-* /setskin reset - Removes the current skin of the invoker
-* /setskin < onlinePlayer > < newSkinUUID/newSkinPlayerName > [keep]
-* /skinupdate [onlinePlayer] - Invalidates the database entry and fetches the fresh skin from the Mojang servers
-* /skinupload < url > Upload a skin to a mojang account
-* /skin-select < name > Choose a skin from the database which has a specified name
-* /skinskull Changes the skin of a holding skull from the database which has a specified name
+    /setskin <uuid> [keep] - Sets your skin to be equal to the player with the selected uuid. 
+    /setskin <playerName> [keep] - Sets the skin equal to the owner of that Mojang with the given playername
+    /setskin reset - Removes the current skin of the invoker
+    /setskin <onlinePlayer> <newSkinUUID/newSkinPlayerName> [keep]
+    /skinupdate [onlinePlayer] - Invalidates the database entry and fetches the fresh skin from the Mojang servers
+    /skinupload <url> Upload a skin to a mojang account
+    /skin-select <name> Choose a skin from the database which has a specified name
+    /skinskull Changes the skin of a holding skull from the database which has a specified name
 
 Keep prevents the skin from auto updating. See the config for more information about auto updating.
 
 /skin, /set-skin, /changeskin can used as an alias for /setskin
 
 ## Permissions
+
+For Sponge users
+
+    Sponge uses a different permissions model. This means changeskin.command.setskin includes all child permissions.
+    (Including changeskin.command.setskin.other). To workaround this please use 
+    changeskin.command.<command>.base instead of changeskin.command.<command> to give the permission only to modify 
+    their own skin. **This workaround will be removed in the next major version 4.0. Then the Bukkit and BungeeCord
+    will have the same logic.
 
 * changeskin.command.skinupdate - Command to refresh the own skin
 * changeskin.command.skinupdate.other.uuid - Allowed to update the skin of that specific user

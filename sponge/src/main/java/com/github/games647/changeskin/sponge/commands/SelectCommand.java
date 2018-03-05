@@ -52,7 +52,7 @@ public class SelectCommand implements CommandExecutor, ChangeSkinCommand {
         return CommandSpec.builder()
                 .executor(this)
                 .arguments(string(of("skinName")))
-                .permission(PomData.ARTIFACT_ID + ".command.skinselect")
+                .permission(PomData.ARTIFACT_ID + ".command.skinselect.base")
                 .build();
     }
 }

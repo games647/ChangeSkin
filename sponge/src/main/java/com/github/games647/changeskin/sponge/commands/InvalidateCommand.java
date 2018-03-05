@@ -42,7 +42,7 @@ public class InvalidateCommand implements CommandExecutor, ChangeSkinCommand {
     public CommandSpec buildSpec() {
         return CommandSpec.builder()
                 .executor(this)
-                .permission(PomData.ARTIFACT_ID + ".command.skinupdate")
+                .permission(PomData.ARTIFACT_ID + ".command.skinupdate.base")
                 .build();
     }
 }

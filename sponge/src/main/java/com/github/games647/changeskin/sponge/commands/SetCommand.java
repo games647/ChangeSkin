@@ -81,7 +81,7 @@ public class SetCommand implements CommandExecutor, ChangeSkinCommand {
                 .arguments(
                         string(of("skin")),
                         flags().flag("keep").buildWith(GenericArguments.none()))
-                .permission(PomData.ARTIFACT_ID + ".command.setskin")
+                .permission(PomData.ARTIFACT_ID + ".command.setskin.base")
                 .build();
     }
 }
