@@ -4,6 +4,8 @@ import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
+import java.util.Optional;
+
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -23,8 +25,7 @@ public class ConnectListener extends AbstractSkinListener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPostLogin(LoginEvent loginEvent) {
-        if (loginEvent.isCancelled()
-                || !core.getConfig().getStringList("server-blacklist").isEmpty()) {
+        if (loginEvent.isCancelled() || !core.getConfig().getStringList("server-blacklist").isEmpty()) {
             return;
         }
 
@@ -46,8 +47,8 @@ public class ConnectListener extends AbstractSkinListener {
             return;
         }
 
-        SkinModel targetSkin = preferences.getTargetSkin();
-        if (targetSkin == null) {
+        Optional<SkinModel> optSkin = preferences.getTargetSkin();
+        if (!optSkin.isPresent()) {
             setRandomSkin(preferences, player);
         }
     }
@@ -57,7 +58,7 @@ public class ConnectListener extends AbstractSkinListener {
         PendingConnection pendingConnection = disconnectEvent.getPlayer().getPendingConnection();
         UserPreference preference = plugin.endSession(pendingConnection);
 
-        if (preference != null && preference.getTargetSkin() != null) {
+        if (preference != null) {
             save(preference);
         }
     }
@@ -70,15 +71,16 @@ public class ConnectListener extends AbstractSkinListener {
                 UserPreference preferences = plugin.getStorage().getPreferences(conn.getUniqueId());
                 plugin.startSession(conn, preferences);
 
-                SkinModel targetSkin = preferences.getTargetSkin();
-                if (targetSkin == null) {
-                    refetchSkin(playerName, preferences);
-                } else {
+                Optional<SkinModel> optSkin = preferences.getTargetSkin();
+                if (optSkin.isPresent()) {
+                    SkinModel targetSkin = optSkin.get();
                     if (!preferences.isKeepSkin()) {
                         targetSkin = core.checkAutoUpdate(targetSkin);
                     }
 
                     preferences.setTargetSkin(targetSkin);
+                } else {
+                    refetchSkin(playerName, preferences);
                 }
             } finally {
                 loginEvent.completeIntent(plugin);

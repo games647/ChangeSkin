@@ -6,6 +6,7 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -31,17 +32,18 @@ public class ServerSwitchListener extends AbstractSkinListener {
         }
 
         ProxiedPlayer player = connectEvent.getPlayer();
+        UserPreference session = plugin.getLoginSession(player.getPendingConnection());
 
         List<String> blacklist = core.getConfig().getStringList("server-blacklist");
         if (blacklist != null && blacklist.contains(targetServer.getName())) {
             //clear the skin
             plugin.applySkin(player, null);
+        } else if (session == null) {
+            ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
         } else {
-            UserPreference session = plugin.getLoginSession(player.getPendingConnection());
-            if (session == null) {
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
-            } else {
-                SkinModel targetSkin = session.getTargetSkin();
+            Optional<SkinModel> optSkin = session.getTargetSkin();
+            if (optSkin.isPresent()) {
+                SkinModel targetSkin = optSkin.get();
                 if (!session.isKeepSkin()) {
                     targetSkin = core.checkAutoUpdate(targetSkin);
                 }
@@ -55,14 +57,16 @@ public class ServerSwitchListener extends AbstractSkinListener {
     private void onLazyLoad(ProxiedPlayer player) {
         UserPreference preferences = plugin.getStorage().getPreferences(player.getUniqueId());
         plugin.startSession(player.getPendingConnection(), preferences);
-        if (preferences.getTargetSkin() == null && core.getConfig().getBoolean("restoreSkins")) {
+        if (!preferences.getTargetSkin().isPresent() && core.getConfig().getBoolean("restoreSkins")) {
             refetchSkin(player.getName(), preferences);
-            if (preferences.getTargetSkin() == null) {
+            if (!preferences.getTargetSkin().isPresent()) {
                 //still no skin
                 setRandomSkin(preferences, player);
             }
         }
 
-        plugin.applySkin(player, preferences.getTargetSkin());
+        if (preferences.getTargetSkin().isPresent()) {
+            plugin.applySkin(player, preferences.getTargetSkin().get());
+        }
     }
 }

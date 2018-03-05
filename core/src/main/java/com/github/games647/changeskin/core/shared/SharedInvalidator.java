@@ -4,6 +4,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class SharedInvalidator implements Runnable, MessageReceiver {
@@ -19,13 +20,12 @@ public abstract class SharedInvalidator implements Runnable, MessageReceiver {
     @Override
     public void run() {
         UserPreference preferences = core.getStorage().getPreferences(receiverUUID);
-        SkinModel ownedSkin = preferences.getTargetSkin();
-        if (ownedSkin == null) {
-            sendMessageInvoker("dont-have-skin");
-        } else {
+        Optional<SkinModel> ownedSkin = preferences.getTargetSkin();
+        if (ownedSkin.isPresent()) {
             sendMessageInvoker("invalidate-request");
-
-            core.getSkinApi().downloadSkin(ownedSkin.getProfileId()).ifPresent(this::scheduleApplyTask);
+            core.getSkinApi().downloadSkin(ownedSkin.get().getProfileId()).ifPresent(this::scheduleApplyTask);
+        } else {
+            sendMessageInvoker("dont-have-skin");
         }
     }
 

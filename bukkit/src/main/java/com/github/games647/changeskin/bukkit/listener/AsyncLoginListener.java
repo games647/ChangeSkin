@@ -5,6 +5,7 @@ import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedListener;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -35,30 +36,36 @@ public class AsyncLoginListener extends SharedListener implements Listener {
         UUID playerUuid = preLoginEvent.getUniqueId();
         String playerName = preLoginEvent.getName();
 
-        UserPreference preferences = plugin.getStorage().getPreferences(playerUuid);
+        UserPreference preferences = core.getStorage().getPreferences(playerUuid);
         if (preferences == null) {
             return;
         }
 
         plugin.startSession(playerUuid, preferences);
 
-        SkinModel targetSkin = preferences.getTargetSkin();
-        if (targetSkin == null && plugin.getConfig().getBoolean("restoreSkins")) {
-            refetchSkin(playerName, preferences);
-        } else {
+        Optional<SkinModel> optSkin = preferences.getTargetSkin();
+        if (optSkin.isPresent()) {
+            SkinModel targetSkin = optSkin.get();
             if (!preferences.isKeepSkin()) {
                 targetSkin = core.checkAutoUpdate(targetSkin);
             }
 
             preferences.setTargetSkin(targetSkin);
             save(preferences);
+        } else if (core.getConfig().getBoolean("restoreSkins")) {
+            refetchSkin(playerName, preferences);
         }
     }
 
     @Override
     protected void save(UserPreference preferences) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (plugin.getStorage().save(preferences.getTargetSkin())) {
+            Optional<SkinModel> optSkin = preferences.getTargetSkin();
+            if (optSkin.isPresent()) {
+                if (plugin.getStorage().save(optSkin.get())) {
+                    plugin.getStorage().save(preferences);
+                }
+            } else {
                 plugin.getStorage().save(preferences);
             }
         });

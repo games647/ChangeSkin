@@ -6,6 +6,7 @@ import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
@@ -38,11 +39,11 @@ public class LoginListener implements Listener {
         if (preferences == null) {
             fallbackBukkit(player);
         } else {
-            SkinModel targetSkin = preferences.getTargetSkin();
-            if (targetSkin == null) {
-                setRandomSkin(player, preferences);
+            Optional<SkinModel> targetSkin = preferences.getTargetSkin();
+            if (targetSkin.isPresent()) {
+                plugin.applySkin(player, targetSkin.get());
             } else {
-                plugin.applySkin(player, targetSkin);
+                setRandomSkin(player, preferences);
             }
         }
 
@@ -69,17 +70,15 @@ public class LoginListener implements Listener {
         UserPreference preferences = plugin.getStorage().getPreferences(player.getUniqueId());
         plugin.startSession(player.getUniqueId(), preferences);
 
-        SkinModel targetSkin = preferences.getTargetSkin();
-        if (targetSkin == null) {
-            if (plugin.getConfig().getBoolean("restoreSkins")) {
-                Runnable nameResolver = new NameResolver(plugin, null, player.getName(), player, false);
-                //refetch
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, nameResolver);
-            } else {
-                setRandomSkin(player, preferences);
-            }
+        Optional<SkinModel> targetSkin = preferences.getTargetSkin();
+        if (targetSkin.isPresent()) {
+            plugin.applySkin(player, targetSkin.get());
+        } else if (plugin.getConfig().getBoolean("restoreSkins")) {
+            //refetch
+            Runnable nameResolver = new NameResolver(plugin, null, player.getName(), player, false);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, nameResolver);
         } else {
-            plugin.applySkin(player, targetSkin);
+            setRandomSkin(player, preferences);
         }
     }
 }

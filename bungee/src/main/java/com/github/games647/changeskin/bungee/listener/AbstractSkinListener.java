@@ -6,6 +6,7 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedListener;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 import net.md_5.bungee.api.ProxyServer;
@@ -39,7 +40,12 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
     public void save(final UserPreference preferences) {
         //this can run in the background
         ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
-            if (core.getStorage().save(preferences.getTargetSkin())) {
+            Optional<SkinModel> optSkin = preferences.getTargetSkin();
+            if (optSkin.isPresent()) {
+                if (core.getStorage().save(optSkin.get())) {
+                    core.getStorage().save(preferences);
+                }
+            } else {
                 core.getStorage().save(preferences);
             }
         });

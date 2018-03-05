@@ -172,7 +172,7 @@ public class SkinStorage {
     }
 
     public void save(UserPreference preferences) {
-        SkinModel targetSkin = preferences.getTargetSkin();
+        SkinModel targetSkin = preferences.getTargetSkin().orElse(null);
         if (targetSkin != null && !targetSkin.isSaved()) {
             throw new IllegalArgumentException("Tried saving preferences without skin");
         }

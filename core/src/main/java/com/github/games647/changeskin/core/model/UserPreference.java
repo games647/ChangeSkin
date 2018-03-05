@@ -2,6 +2,7 @@ package com.github.games647.changeskin.core.model;
 
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -62,9 +63,8 @@ public class UserPreference {
         }
     }
 
-    //todo: this should be optional
-    public synchronized SkinModel getTargetSkin() {
-        return targetSkin;
+    public synchronized Optional<SkinModel> getTargetSkin() {
+        return Optional.ofNullable(targetSkin);
     }
 
     public synchronized void setTargetSkin(SkinModel targetSkin) {

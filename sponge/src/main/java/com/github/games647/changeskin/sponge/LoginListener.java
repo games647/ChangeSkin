@@ -7,6 +7,7 @@ import com.github.games647.changeskin.core.shared.SharedListener;
 import com.google.inject.Inject;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -33,19 +34,19 @@ public class LoginListener extends SharedListener {
         UUID playerUUID = profile.getUniqueId();
 
         UserPreference preferences = storage.getPreferences(playerUUID);
-        SkinModel targetSkin = preferences.getTargetSkin();
-        if (targetSkin == null) {
-            if (!core.getConfig().getBoolean("restoreSkins")
-                    || !refetchSkin(profile.getName().get(), preferences)) {
-                setDefaultSkin(preferences, profile);
-            }
-        } else {
+        Optional<SkinModel> optSkin = preferences.getTargetSkin();
+        if (optSkin.isPresent()) {
+            SkinModel targetSkin = optSkin.get();
             if (!preferences.isKeepSkin()) {
                 targetSkin = core.checkAutoUpdate(targetSkin);
             }
 
             plugin.applySkin(profile, targetSkin);
             save(preferences);
+        } else {
+            if (!core.getConfig().getBoolean("restoreSkins") || !refetchSkin(profile.getName().get(), preferences)) {
+                setDefaultSkin(preferences, profile);
+            }
         }
     }
 
@@ -67,7 +68,12 @@ public class LoginListener extends SharedListener {
         Task.builder()
                 .async()
                 .execute(() -> {
-                    if (core.getStorage().save(preferences.getTargetSkin())) {
+                    Optional<SkinModel> optSkin = preferences.getTargetSkin();
+                    if (optSkin.isPresent()) {
+                        if (core.getStorage().save(optSkin.get())) {
+                            core.getStorage().save(preferences);
+                        }
+                    } else {
                         core.getStorage().save(preferences);
                     }
                 }).submit(plugin);
