@@ -92,7 +92,7 @@ public class SetCommand extends Command {
         try {
             UUID uuid = UUID.fromString(targetUUID);
             if (plugin.getCore().getConfig().getBoolean("skinPermission")
-                    && !plugin.checkWhitelistPermission(sender, uuid, true)) {
+                    && !plugin.hasSkinPermission(sender, uuid, true)) {
                 return;
             }
 

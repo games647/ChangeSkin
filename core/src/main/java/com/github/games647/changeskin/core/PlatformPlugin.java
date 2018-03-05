@@ -20,5 +20,5 @@ public interface PlatformPlugin<C> {
         return null;
     }
 
-    boolean checkWhitelistPermission(C invoker, UUID uuid, boolean sendMessage);
+    boolean hasSkinPermission(C invoker, UUID uuid, boolean sendMessage);
 }

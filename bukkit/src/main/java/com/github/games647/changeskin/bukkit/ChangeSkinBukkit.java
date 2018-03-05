@@ -133,7 +133,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     }
 
     @Override
-    public boolean checkWhitelistPermission(CommandSender invoker, UUID uuid, boolean sendMessage) {
+    public boolean hasSkinPermission(CommandSender invoker, UUID uuid, boolean sendMessage) {
         if (invoker.hasPermission(getName().toLowerCase() + ".skin.whitelist." + uuid)) {
             return true;
         }

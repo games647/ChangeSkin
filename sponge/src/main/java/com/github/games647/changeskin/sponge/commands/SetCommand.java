@@ -58,8 +58,7 @@ public class SetCommand implements CommandExecutor, ChangeSkinCommand {
         if (targetSkin.length() > 16) {
             UUID targetUUID = UUID.fromString(targetSkin);
 
-            if (core.getConfig().getBoolean("skinPermission")
-                    && !plugin.checkWhitelistPermission(src, targetUUID, true)) {
+            if (core.getConfig().getBoolean("skinPermission") && !plugin.hasSkinPermission(src, targetUUID, true)) {
                 return CommandResult.empty();
             }
 

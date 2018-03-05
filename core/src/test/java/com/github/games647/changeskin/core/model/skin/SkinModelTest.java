@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 
 import static org.junit.Assert.assertThat;
@@ -45,6 +46,8 @@ public class SkinModelTest {
         assertThat(skin.getProfileId(), is(UUIDTypeAdapter.parseId("78c3a4e837e448189df8f9ce61c5efcc")));
         assertThat(skin.getProfileName(), is("Rashomon_"));
 
+        assertThat(skin.getSaveLock(), notNullValue());
+
         Map<TextureType, TextureModel> textures = skin.getTextures();
         TextureModel skinTexture = textures.get(TextureType.SKIN);
         assertThat(skinTexture.getUrl(), is("http://textures.minecraft.net/texture/173567ea72ad4a22bf70bcba5fed3" +
@@ -59,6 +62,8 @@ public class SkinModelTest {
         assertThat(skin.getTimestamp(), is(1517052435668L));
         assertThat(skin.getProfileId(), is(UUIDTypeAdapter.parseId("0aaa2c13922a411bb6559b8c08404695")));
         assertThat(skin.getProfileName(), is("games647"));
+
+        assertThat(skin.getSaveLock(), notNullValue());
 
         Map<TextureType, TextureModel> textures = skin.getTextures();
         TextureModel skinTexture = textures.get(TextureType.SKIN);

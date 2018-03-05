@@ -21,7 +21,8 @@ public class SkinModel {
     private transient String encodedValue;
     private transient String encodedSignature;
 
-    private final transient Lock saveLock = new ReentrantLock();
+    //this can be null if initialized by gson
+    private transient Lock saveLock = new ReentrantLock();
 
     //the order of these fields are relevant
     private final long timestamp;
@@ -69,7 +70,7 @@ public class SkinModel {
 
     public synchronized boolean isSaved() {
         //this lock should be acquired in the save method
-            return rowId >= 0;
+        return rowId >= 0;
     }
 
     public synchronized void setRowId(int rowId) {
@@ -78,6 +79,10 @@ public class SkinModel {
     }
 
     public Lock getSaveLock() {
+        if (saveLock == null) {
+            saveLock = new ReentrantLock();
+        }
+
         return saveLock;
     }
 

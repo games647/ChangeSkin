@@ -57,6 +57,6 @@ public class BungeeListener extends SharedBungeeListener<Player> implements Plug
 
     @Override
     protected boolean checkWhitelistPermission(Player player, UUID targetUUID) {
-        return plugin.checkWhitelistPermission(player, targetUUID, false);
+        return plugin.hasSkinPermission(player, targetUUID, false);
     }
 }
