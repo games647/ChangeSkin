@@ -64,7 +64,7 @@ public class SkinModel {
         return skinModel;
     }
 
-    public synchronized int getRowId() {
+    public int getRowId() {
         getLazyLock().readLock().lock();
         try {
             return rowId;
@@ -73,7 +73,7 @@ public class SkinModel {
         }
     }
 
-    public synchronized boolean isSaved() {
+    public boolean isSaved() {
         getLazyLock().readLock().lock();
         try {
             return rowId >= 0;
@@ -82,7 +82,7 @@ public class SkinModel {
         }
     }
 
-    public synchronized void setRowId(int rowId) {
+    public void setRowId(int rowId) {
         getLazyLock().writeLock().lock();
         try {
             this.rowId = rowId;

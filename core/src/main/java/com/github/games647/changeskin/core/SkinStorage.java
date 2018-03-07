@@ -23,6 +23,8 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
+import org.slf4j.Logger;
+
 import static com.github.games647.changeskin.core.model.skin.TextureType.CAPE;
 import static com.github.games647.changeskin.core.model.skin.TextureType.SKIN;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -32,12 +34,12 @@ public class SkinStorage {
     private static final String USER_TABLE = "preferences";
     private static final String DATA_TABLE = "skinData";
 
-    private final ChangeSkinCore core;
+    private final Logger logger;
     private final HikariDataSource dataSource;
 
     public SkinStorage(ChangeSkinCore core, String driver, String host, int port, String database
             , String user, String pass, boolean useSSL) {
-        this.core = core;
+        this.logger = core.getLogger();
 
         HikariConfig config = new HikariConfig();
         config.setPoolName(core.getPlugin().getName());
@@ -99,7 +101,7 @@ public class SkinStorage {
 
             stmt.executeBatch();
         } catch (IOException ioEx) {
-            core.getLogger().error("Failed to load migration file", ioEx);
+            logger.error("Failed to load migration file", ioEx);
         }
     }
 
@@ -128,7 +130,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to query preferences {}", uuid, sqlEx);
+            logger.error("Failed to query preferences {}", uuid, sqlEx);
         }
 
         return null;
@@ -146,7 +148,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to query skin data from row id: {}", targetSkinId, sqlEx);
+            logger.error("Failed to query skin data from row id: {}", targetSkinId, sqlEx);
         }
 
         return null;
@@ -165,7 +167,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to query skin data from uuid: {}", skinUUID, sqlEx);
+            logger.error("Failed to query skin data from uuid: {}", skinUUID, sqlEx);
         }
 
         return null;
@@ -205,7 +207,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to save preferences for: {}", preferences, sqlEx);
+            logger.error("Failed to save preferences for: {}", preferences, sqlEx);
         } finally {
             preferences.getSaveLock().unlock();
         }
@@ -263,7 +265,7 @@ public class SkinStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().error("Failed to query skin data: {}", skinData, sqlEx);
+            logger.error("Failed to query skin data: {}", skinData, sqlEx);
         } finally {
             skinData.getSaveLock().unlock();
         }

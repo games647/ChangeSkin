@@ -50,7 +50,6 @@ public class ChangeSkinCore {
 
     public ChangeSkinCore(PlatformPlugin<?> plugin) {
         this.plugin = plugin;
-
         this.authApi = new MojangAuthApi(plugin.getLog());
     }
 

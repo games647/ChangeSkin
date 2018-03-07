@@ -38,8 +38,7 @@ public class SelectCommand implements CommandExecutor, ChangeSkinCommand {
         try {
             int targetId = Integer.parseInt(skinName);
             Player receiver = (Player) src;
-            Task.builder().async()
-                    .execute(new SkinSelector(plugin, receiver, targetId)).submit(plugin);
+            Task.builder().async().execute(new SkinSelector(plugin, receiver, targetId)).submit(plugin);
         } catch (NumberFormatException numberFormatException) {
             plugin.sendMessage(src, "invalid-skin-name");
         }

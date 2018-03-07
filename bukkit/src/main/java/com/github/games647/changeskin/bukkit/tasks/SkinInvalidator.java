@@ -13,6 +13,7 @@ public class SkinInvalidator extends SharedInvalidator {
     private final ChangeSkinBukkit plugin;
     private final CommandSender invoker;
     private final Player receiver;
+
     public SkinInvalidator(ChangeSkinBukkit plugin, CommandSender invoker, Player receiver) {
         super(plugin.getCore(), receiver.getUniqueId());
 

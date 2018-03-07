@@ -41,6 +41,7 @@ import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
@@ -88,17 +89,18 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
             return;
         }
 
-        getProxy().getPluginManager().registerListener(this, new ConnectListener(this));
-        getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
+        PluginManager pluginManager = getProxy().getPluginManager();
+        pluginManager.registerListener(this, new ConnectListener(this));
+        pluginManager.registerListener(this, new ServerSwitchListener(this));
 
         //this is required to listen to messages from the server
         getProxy().registerChannel(getName());
-        getProxy().getPluginManager().registerListener(this, new MessageListener(this));
+        pluginManager.registerListener(this, new MessageListener(this));
 
-        getProxy().getPluginManager().registerCommand(this, new SetCommand(this));
-        getProxy().getPluginManager().registerCommand(this, new InvalidateCommand(this));
-        getProxy().getPluginManager().registerCommand(this, new UploadCommand(this));
-        getProxy().getPluginManager().registerCommand(this, new SelectCommand(this));
+        pluginManager.registerCommand(this, new SetCommand(this));
+        pluginManager.registerCommand(this, new InvalidateCommand(this));
+        pluginManager.registerCommand(this, new UploadCommand(this));
+        pluginManager.registerCommand(this, new SelectCommand(this));
     }
 
     @Override

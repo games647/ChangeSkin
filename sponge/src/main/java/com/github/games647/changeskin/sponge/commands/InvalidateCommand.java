@@ -31,10 +31,7 @@ public class InvalidateCommand implements CommandExecutor, ChangeSkinCommand {
         }
 
         Player receiver = (Player) src;
-        Task.builder()
-                .async()
-                .execute(new SkinInvalidator(plugin, receiver))
-                .submit(plugin);
+        Task.builder().async().execute(new SkinInvalidator(plugin, receiver)).submit(plugin);
         return CommandResult.success();
     }
 
