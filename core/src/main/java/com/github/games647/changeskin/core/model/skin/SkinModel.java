@@ -10,7 +10,8 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class SkinModel {
 
@@ -22,7 +23,7 @@ public class SkinModel {
     private transient String encodedSignature;
 
     //this can be null if initialized by gson
-    private transient Lock saveLock = new ReentrantLock();
+    private transient ReadWriteLock lock = new ReentrantReadWriteLock();
 
     //the order of these fields are relevant
     private final long timestamp;
@@ -64,26 +65,42 @@ public class SkinModel {
     }
 
     public synchronized int getRowId() {
-        //this lock should be acquired in the save method
-        return rowId;
+        getLazyLock().readLock().lock();
+        try {
+            return rowId;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public synchronized boolean isSaved() {
-        //this lock should be acquired in the save method
-        return rowId >= 0;
+        getLazyLock().readLock().lock();
+        try {
+            return rowId >= 0;
+        } finally {
+            getLazyLock().readLock().unlock();
+        }
     }
 
     public synchronized void setRowId(int rowId) {
-        //this lock should be acquired in the save method
-        this.rowId = rowId;
+        getLazyLock().writeLock().lock();
+        try {
+            this.rowId = rowId;
+        } finally {
+            getLazyLock().writeLock().unlock();
+        }
+    }
+
+    private ReadWriteLock getLazyLock() {
+        if (lock == null) {
+            lock = new ReentrantReadWriteLock();
+        }
+
+        return lock;
     }
 
     public Lock getSaveLock() {
-        if (saveLock == null) {
-            saveLock = new ReentrantLock();
-        }
-
-        return saveLock;
+        return getLazyLock().writeLock();
     }
 
     public String getEncodedValue() {
@@ -116,7 +133,16 @@ public class SkinModel {
     }
 
     @Override
-    public synchronized String toString() {
+    public String toString() {
+        int rowId;
+
+        getLazyLock().readLock().lock();
+        try {
+            rowId = this.rowId;
+        } finally {
+            getLazyLock().readLock().unlock();
+        }
+
         return this.getClass().getSimpleName() + '{' +
                 "rowId=" + rowId +
                 ", encodedValue='" + encodedValue + '\'' +

@@ -5,12 +5,13 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class UserPreference {
 
     private final UUID uuid;
-    private final Lock saveLock = new ReentrantLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private int rowId;
     private SkinModel targetSkin;
@@ -32,57 +33,84 @@ public class UserPreference {
     }
 
     public Lock getSaveLock() {
-        return saveLock;
+        return lock.writeLock();
     }
 
-    public synchronized int getRowId() {
-        //this lock should be acquired in the save method
-        return rowId;
-    }
-
-    public synchronized void setRowId(int rowId) {
-        //this lock should be acquired in the save method
-        this.rowId = rowId;
-    }
-
-    public boolean isSaved() {
-        //this lock should be acquired in the save method
-        return rowId >= 0;
-    }
-
-    public synchronized boolean isKeepSkin() {
-        return keepSkin;
-    }
-
-    public synchronized void setKeepSkin(boolean keepSkin) {
-        saveLock.lock();
+    public int getRowId() {
+        lock.readLock().lock();
         try {
-            this.keepSkin = keepSkin;
+            return rowId;
         } finally {
-            saveLock.unlock();
+            lock.readLock().unlock();
         }
     }
 
-    public synchronized Optional<SkinModel> getTargetSkin() {
-        return Optional.ofNullable(targetSkin);
+    public void setRowId(int rowId) {
+        lock.writeLock().lock();
+        try {
+            this.rowId = rowId;
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
-    public synchronized void setTargetSkin(SkinModel targetSkin) {
-        saveLock.lock();
+    public boolean isSaved() {
+        lock.readLock().lock();
+        try {
+            return rowId >= 0;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean isKeepSkin() {
+        lock.readLock().lock();
+        try {
+            return keepSkin;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public void setKeepSkin(boolean keepSkin) {
+        lock.writeLock().lock();
+        try {
+            this.keepSkin = keepSkin;
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public Optional<SkinModel> getTargetSkin() {
+        lock.writeLock().lock();
+        try {
+            return Optional.ofNullable(targetSkin);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public void setTargetSkin(SkinModel targetSkin) {
+        lock.writeLock().lock();
         try {
             this.targetSkin = targetSkin;
         } finally {
-            saveLock.unlock();
+            lock.writeLock().unlock();
         }
     }
 
     @Override
-    public synchronized String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "rowId=" + rowId +
-                ", uuid=" + uuid +
-                ", targetSkin=" + targetSkin +
-                ", keepSkin=" + keepSkin +
-                '}';
+    public String toString() {
+        lock.readLock().lock();
+        try {
+            return this.getClass().getSimpleName() + '{' +
+                    "rowId=" + rowId +
+                    ", uuid=" + uuid +
+                    ", targetSkin=" + targetSkin +
+                    ", keepSkin=" + keepSkin +
+                    '}';
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 }
