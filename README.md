@@ -11,7 +11,7 @@ all players who still have the default steve or alex skin.
 
 ## Dev builds
 
-https://ci.codemc.org/job/ChangeSkin/changes
+https://ci.codemc.org/job/Games647/job/ChangeSkin/changes
 
 ## Features
 

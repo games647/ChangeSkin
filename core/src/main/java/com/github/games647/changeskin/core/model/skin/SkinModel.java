@@ -69,7 +69,7 @@ public class SkinModel {
         try {
             return rowId;
         } finally {
-            lock.readLock().unlock();
+            getLazyLock().readLock().unlock();
         }
     }
 

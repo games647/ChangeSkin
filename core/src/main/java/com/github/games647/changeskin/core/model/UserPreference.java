@@ -82,7 +82,7 @@ public class UserPreference {
     }
 
     public Optional<SkinModel> getTargetSkin() {
-        lock.writeLock().lock();
+        lock.readLock().lock();
         try {
             return Optional.ofNullable(targetSkin);
         } finally {

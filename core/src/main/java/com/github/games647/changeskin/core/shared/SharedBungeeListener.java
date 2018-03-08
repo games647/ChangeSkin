@@ -41,7 +41,7 @@ public abstract class SharedBungeeListener<P> {
         P receiver = getPlayerExact(playerName);
 
         plugin.getLog().info("Instant update for {}", playerName);
-        runUpdater(receiver, null);
+        runUpdater(receiver);
     }
 
     private void checkPermissions(P player, ByteArrayDataInput dataInput) {
@@ -86,7 +86,7 @@ public abstract class SharedBungeeListener<P> {
         sendMessage(player, channelName, out.toByteArray());
     }
 
-    protected abstract void runUpdater(P receiver, SkinModel targetSkin);
+    protected abstract void runUpdater(P receiver);
 
     protected abstract P getPlayerExact(String name);
 
