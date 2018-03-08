@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Base64;
 import java.util.Properties;
 import java.util.UUID;
@@ -184,17 +185,27 @@ public class SkinStorage {
             if (preferences.isSaved()) {
                 try (PreparedStatement stmt = con.prepareStatement("UPDATE " + USER_TABLE
                         + " SET TargetSkin=? WHERE UserID=?")) {
-                    stmt.setInt(1, targetSkin == null ? -1 : targetSkin.getRowId());
+                    if (targetSkin == null) {
+                        stmt.setNull(1, Types.INTEGER);
+                    } else {
+                        stmt.setInt(1, targetSkin.getRowId());
+                    }
+
                     stmt.setInt(2, preferences.getRowId());
                     stmt.executeUpdate();
                 }
             } else {
+                if (targetSkin == null) {
+                    //don't save empty preferences
+                    return;
+                }
+
                 String insertQuery = "INSERT INTO " + USER_TABLE + " (UUID, TargetSkin, KeepSkin) " +
                         "VALUES (?, ?, ?)";
 
                 try (PreparedStatement stmt = con.prepareStatement(insertQuery, RETURN_GENERATED_KEYS)) {
                     stmt.setString(1, UUIDTypeAdapter.toMojangId(preferences.getUuid()));
-                    stmt.setInt(2, targetSkin == null ? -1 : targetSkin.getRowId());
+                    stmt.setInt(2, targetSkin.getRowId());
                     stmt.setBoolean(3, preferences.isKeepSkin());
 
                     stmt.executeUpdate();
