@@ -81,7 +81,6 @@ public class SetCommand extends Command {
         if (toSkin.length() > 16) {
             setSkinUUID(sender, targetPlayer, toSkin, bukkitOp, keepSkin);
         } else {
-            plugin.sendMessage(sender, "queue-name-resolve");
             Runnable nameResolver = new NameResolver(plugin, sender, targetPlayer, toSkin, bukkitOp, keepSkin);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, nameResolver);
         }

@@ -51,7 +51,6 @@ public abstract class SharedNameResolver implements Runnable, MessageReceiver {
                 return;
             }
 
-            sendMessageInvoker("skin-downloading");
             scheduleDownloader(uuid);
         }
     }
