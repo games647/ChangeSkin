@@ -1,6 +1,6 @@
 # Eclipse stuff
-/.classpath
-/.project
+.classpath
+.project
 /.settings
 
 # NetBeans
