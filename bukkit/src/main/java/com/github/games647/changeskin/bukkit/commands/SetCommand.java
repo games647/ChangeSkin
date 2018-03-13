@@ -78,7 +78,6 @@ public class SetCommand extends AbstractForwardCommand {
         if (toSkin.length() > 16) {
             setSkinUUID(sender, targetPlayer, toSkin, keepSkin);
         } else {
-            plugin.sendMessage(sender, "queue-name-resolve");
             Runnable nameResolver = new NameResolver(plugin, sender, toSkin, targetPlayer, keepSkin);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, nameResolver);
         }

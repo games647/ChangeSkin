@@ -67,7 +67,6 @@ public class SetCommand implements CommandExecutor, ChangeSkinCommand {
             return CommandResult.success();
         }
 
-        plugin.sendMessage(src, "queue-name-resolve");
         Runnable nameResolver = new NameResolver(plugin, src, targetSkin, receiver, keepSkin);
         Task.builder().async().execute(nameResolver).submit(plugin);
         return CommandResult.success();

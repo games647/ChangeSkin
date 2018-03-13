@@ -14,13 +14,13 @@
 # bla: ''
 
 # Cooldown is activated and the user typed in the changeskin command too fast
-cooldown: '&4Please wait. You cannot change the skin so fast'
+cooldown: '&4Please wait, you cannot change your skin that fast!'
 
 # Specific skin permissions are activated and the user doesn't have the permission for the supplied skin
 no-permission: "&4You don't have the permission to set this skin"
 
 # User has no permission to set the skin of other players
-no-permission-other: '&4No permission to change other skins'
+no-permission-other: "&4You don't have the permission permission to set other players' skins"
 
 # User wanted to set the skin of another player who isn't online
 not-online: "&4This player isn't online"
@@ -31,32 +31,26 @@ no-skin: '&4You have to provide the skin you want to change to'
 # Only players can have in game skins
 no-console: '&4You have to be a player to set your own skin'
 
-# UUID resolve request was sent to the mojang servers and is waiting for a response
-queue-name-resolve: '&6Queued name to uuid resolve'
-
 # Supplied username is cannot be resolved because of connection problems
-no-resolve: "&4UUID couldn't be resolved"
+no-resolve: "&4The username's UUID couldn't be resolved"
 
 # UUID was successful resolved
-uuid-resolved: '&2UUID was successful resolved from the player name'
+uuid-resolved: '&2UUID was successfuly resolved, downloading the skin.'
 
 # Skin preferences was reset to the default value
 reset: '&2Resetting preferences to the default value'
 
 # Queuing skin change
-skin-change-queue: '&6Queued Skin change'
+skin-change-queue: '&6A skin change was queued.'
 
 # The supplied UUID is not in the correct format Example: 550e8400-e29b-11d4-a716-446655440000
-invalid-uuid: '&2Invalid UUID'
-
-# Skin is downloading form the mojang servers
-skin-downloading: '&2The skin is now downloading'
+invalid-uuid: '&2The provided UUID was invalid.'
 
 # Instant updates was disabled, so the players have to relogin
-skin-changed-no-instant: '&2Skin was changed. Relogin to see the changes'
+skin-changed-no-instant: '&2Your skin was changed, please relogin to see the changes'
 
 # Skin was successful updates
-skin-changed: '&2You received a new skin'
+skin-changed: '&2You received your new skin!'
 
 # On name to username rate-limiting
 rate-limit: '&4Name to UUID rate-limit reached. Please wait some time or submit the uuid of your target skin'
@@ -68,11 +62,11 @@ not-premium: '&4This is not the username of a paid account'
 dont-have-skin: "&4You don't have a skin to invalidate the skin"
 
 # Invalidate request is sent to the database and mojang
-invalidate-request: '&2Invalidate request sent'
+invalidate-request: '&2A request to invalidate the skin was sent.'
 
 # The skin of another was updated
 # This message is sent to the invoker of the command if it's not the same person
-skin-updated: '&2Target skin was updated'
+skin-updated: "&2The target player's skin was updated"
 
 # User tried to upload a new skin, but it misses the skin url and optionally save name
 upload-noargs: '&4The skin url and optional a name is missing'
@@ -81,7 +75,7 @@ upload-noargs: '&4The skin url and optional a name is missing'
 no-accounts: '&4There are no configured accounts to upload skins'
 
 # User entered an invalid url for upload a skin
-no-valid-url: '&4The url have to start with http or https'
+no-valid-url: '&4The URL has to start with http:// or https://'
 
 # A new skin was successful uploaded, downloaded to the database and reverted to the old skin
 # {0} represents the uuid of account which was used for uploading
@@ -89,7 +83,7 @@ no-valid-url: '&4The url have to start with http or https'
 skin-uploaded: '&2A new skin was uploaded using {0} and saved as {1}'
 
 # All accounts currently have cooldown. This is set to one minute per account because of rate-limiting from Mojang
-accounts-cooldown: '&4Every account currently has cooldown'
+accounts-cooldown: '&4Every account currently has a cooldown of 1 minute.'
 
 # User tried to upload a new skin, but it misses the skin url and optionally save name
 select-noargs: '&4The skin id is missing'
