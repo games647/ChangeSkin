@@ -1,14 +1,14 @@
 # Eclipse stuff
 .classpath
 .project
-/.settings
+.settings/
 
 # NetBeans
-*/nbproject
+nbproject/*
 nb-configuration.xml
 
 # maven
-*/target
+target/*
 
 # vim
 .*.sw[a-p]
@@ -17,10 +17,10 @@ nb-configuration.xml
 hs_err_pid*
 
 # various other potential build files
-*/build/
-/bin
-/dist
-/manifest.mf
+build/*
+bin/
+dist/
+manifest.mf/
 *.log
 
 # Mac filesystem dust
