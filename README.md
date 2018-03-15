@@ -5,7 +5,9 @@
 This plugin allows your players to change their skins with a simple command. You can choose every skin that another Minecraft user currently has.
 It is also possible to set a custom standard skin. If you want to, this plugin can set this standard skin for all players who still have the default Steve or Alex skin.
 
-## Dev builds
+## Development builds
+
+Development builds of this project can be acquired at the provided continuous integration server.
 
 https://ci.codemc.org/job/Games647/job/ChangeSkin/changes
 

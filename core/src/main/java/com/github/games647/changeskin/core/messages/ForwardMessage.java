@@ -59,4 +59,14 @@ public class ForwardMessage implements ChannelMessage {
         out.writeBoolean(isSource);
         out.writeBoolean(isOP);
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "commandName='" + commandName + '\'' +
+                ", args='" + args + '\'' +
+                ", isSource=" + isSource +
+                ", isOP=" + isOP +
+                '}';
+    }
 }

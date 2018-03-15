@@ -33,4 +33,11 @@ public class SkinUpdateMessage implements ChannelMessage {
     public void writeTo(ByteArrayDataOutput out) {
         out.writeUTF(playerName);
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "playerName='" + playerName + '\'' +
+                '}';
+    }
 }

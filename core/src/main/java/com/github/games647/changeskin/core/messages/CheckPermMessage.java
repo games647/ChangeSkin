@@ -48,12 +48,12 @@ public class CheckPermMessage implements ChannelMessage {
 
     @Override
     public void readFrom(ByteArrayDataInput in) {
-        int skinId = in.readInt();
+        int rowId = in.readInt();
         String encodedData = in.readUTF();
         String encodedSignature = in.readUTF();
 
         targetSkin = SkinModel.createSkinFromEncoded(encodedData, encodedSignature);
-        targetSkin.setRowId(skinId);
+        targetSkin.setRowId(rowId);
 
         //continue on success only
         receiverUUD = UUID.fromString(in.readUTF());
@@ -68,5 +68,17 @@ public class CheckPermMessage implements ChannelMessage {
         out.writeUTF(targetSkin.getSignature());
 
         out.writeUTF(receiverUUD.toString());
+        out.writeBoolean(skinPerm);
+        out.writeBoolean(isOp);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "targetSkin=" + targetSkin +
+                ", receiverUUD=" + receiverUUD +
+                ", skinPerm=" + skinPerm +
+                ", isOp=" + isOp +
+                '}';
     }
 }

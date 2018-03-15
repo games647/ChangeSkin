@@ -62,4 +62,13 @@ public class PermResultMessage implements ChannelMessage {
         out.writeUTF(skin.getSignature());
         out.writeUTF(receiverUUID.toString());
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "allowed=" + allowed +
+                ", skin=" + skin +
+                ", receiverUUID=" + receiverUUID +
+                '}';
+    }
 }
