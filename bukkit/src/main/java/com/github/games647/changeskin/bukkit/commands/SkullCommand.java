@@ -85,10 +85,10 @@ public class SkullCommand implements CommandExecutor {
     }
 
     private void setSkullSkin(ItemStack itemStack, SkinModel skinData) {
-        try {
-            if (itemStack == null || skinData == null || itemStack.getType() != Material.SKULL_ITEM)
-                return;
+        if (itemStack == null || skinData == null || itemStack.getType() != Material.SKULL_ITEM)
+            return;
 
+        try {
             SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
 
             WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.randomUUID(), null);
@@ -96,11 +96,11 @@ public class SkullCommand implements CommandExecutor {
 
             skullProfileSetter.invoke(skullMeta, gameProfile.getHandle());
             itemStack.setItemMeta(skullMeta);
-        } catch (Error error) {
-            //rethrow errors we shouldn't silence them like OutOfMemory
-            throw error;
+        } catch (Exception ex) {
+            plugin.getLog().info("Failed to set skull item {} to {}", itemStack, skinData, ex);
         } catch (Throwable throwable) {
-            plugin.getLog().info("Failed to set skull item {} to {}", itemStack, skinData, throwable);
+            //rethrow errors we shouldn't silence them like OutOfMemory
+            throw (Error) throwable;
         }
     }
 

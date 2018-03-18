@@ -43,12 +43,12 @@ public class PermResultMessage implements ChannelMessage {
     public void readFrom(ByteArrayDataInput in) {
         allowed = in.readBoolean();
 
-        int skinId = in.readInt();
+        int rowId = in.readInt();
         String encodedValue = in.readUTF();
         String encodedSignature = in.readUTF();
 
         skin = SkinModel.createSkinFromEncoded(encodedValue, encodedSignature);
-        skin.setRowId(skinId);
+        skin.setRowId(rowId);
 
         receiverUUID = UUID.fromString(in.readUTF());
     }

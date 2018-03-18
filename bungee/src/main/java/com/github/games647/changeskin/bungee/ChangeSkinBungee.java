@@ -55,6 +55,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     //speed by letting the JVM optimize this
     //MethodHandle is only faster for static final fields
     private static final MethodHandle profileSetter;
+    private static final Property[] emptyProperties = {};
 
     static {
         MethodHandle methodHandle = null;
@@ -72,7 +73,6 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     }
 
     private final ConcurrentMap<PendingConnection, UserPreference> loginSessions = new MapMaker().weakKeys().makeMap();
-    private final Property[] emptyProperties = {};
 
     private ChangeSkinCore core;
     private Logger logger;
@@ -185,7 +185,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
                     LoginResult loginResult = new LoginResult(mojangUUID, player.getName(), properties);
                     profileSetter.invokeExact(initialHandler, loginResult);
                 } catch (Error error) {
-                    //rethrow errors we shouldn't silence them like OutOfMemory
+                    // rethrow errors we shouldn't silence them like OutOfMemoryError
                     throw error;
                 } catch (Throwable throwable) {
                     logger.error("Error applying skin: {} for {}", skinData, player, throwable);
