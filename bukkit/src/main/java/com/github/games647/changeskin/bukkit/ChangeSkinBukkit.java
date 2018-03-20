@@ -8,24 +8,20 @@ import com.github.games647.changeskin.bukkit.commands.UploadCommand;
 import com.github.games647.changeskin.bukkit.listener.AsyncLoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeListener;
 import com.github.games647.changeskin.bukkit.listener.LoginListener;
-import com.github.games647.changeskin.bukkit.tasks.SkinApplier;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.slf4j.Logger;
@@ -37,7 +33,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     private final ChangeSkinCore core = new ChangeSkinCore(this);
 
     private boolean bungeeCord;
-    private final BukkitSkinAPI api = new BukkitSkinAPI();
+    private final BukkitSkinAPI api = new BukkitSkinAPI(this);
 
     @Override
     public void onEnable() {
@@ -96,24 +92,6 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
     public void endSession(UUID id) {
         loginSessions.remove(id);
-    }
-
-    //you should call this method async
-    public void setSkin(Player player, SkinModel newSkin, boolean applyNow) {
-        new SkinApplier(this, null, player, newSkin, true).run();
-    }
-
-    //you should call this method async
-    public void setSkin(Player player, UUID targetSkin, boolean applyNow) {
-        SkinModel newSkin = core.getStorage().getSkin(targetSkin);
-        if (newSkin == null) {
-            Optional<SkinModel> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
-            if (downloadSkin.isPresent()) {
-                newSkin = downloadSkin.get();
-            }
-        }
-
-        setSkin(player, newSkin, applyNow);
     }
 
     @Override

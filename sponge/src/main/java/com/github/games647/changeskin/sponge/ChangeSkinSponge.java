@@ -36,7 +36,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
     private final Injector injector;
 
     private final ChangeSkinCore core = new ChangeSkinCore(this);
-    private final SpongeSkinAPI api = new SpongeSkinAPI();
+    private final SpongeSkinAPI api = new SpongeSkinAPI(this);
 
     private boolean initialized;
 

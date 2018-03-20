@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.bungee;
 
+import com.github.games647.changeskin.bungee.tasks.SkinApplier;
 import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
@@ -9,6 +10,8 @@ import com.github.games647.changeskin.core.shared.ChangeSkinAPI;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.util.Optional;
+import java.util.UUID;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
@@ -82,15 +85,32 @@ public class BungeeSkinAPI implements ChangeSkinAPI<ProxiedPlayer, LoginResult> 
         profile.setProperties(properties);
     }
 
-    private Property[] toProperties(SkinModel targetSkin) {
-        Property[] properties = emptyProperties;
-        if (targetSkin != null) {
-            String encodedValue = targetSkin.getEncodedValue();
-            String signature = targetSkin.getSignature();
-            Property prop = new Property(SkinProperty.SKIN_KEY, encodedValue, signature);
-            properties = new Property[]{prop};
+    @Override
+    public void setPersistentSkin(ProxiedPlayer player, SkinModel newSkin, boolean applyNow) {
+        new SkinApplier(plugin, player, player, newSkin, false, false).run();
+    }
+
+    @Override
+    public void setPersistentSkin(ProxiedPlayer player, UUID targetSkinId, boolean applyNow) {
+        SkinModel newSkin = plugin.getStorage().getSkin(targetSkinId);
+        if (newSkin == null) {
+            Optional<SkinModel> downloadSkin = plugin.getCore().getSkinApi().downloadSkin(targetSkinId);
+            if (downloadSkin.isPresent()) {
+                newSkin = downloadSkin.get();
+            }
         }
 
-        return properties;
+        setPersistentSkin(player, newSkin, applyNow);
+    }
+
+    private Property[] toProperties(SkinModel targetSkin) {
+        if (targetSkin == null) {
+            return emptyProperties;
+        }
+
+        String encodedValue = targetSkin.getEncodedValue();
+        String signature = targetSkin.getSignature();
+        Property prop = new Property(SkinProperty.SKIN_KEY, encodedValue, signature);
+        return new Property[]{prop};
     }
 }

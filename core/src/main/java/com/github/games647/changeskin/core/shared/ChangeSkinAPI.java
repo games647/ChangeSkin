@@ -2,6 +2,8 @@ package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
+import java.util.UUID;
+
 /**
  * ChangeSkin API
  *
@@ -16,7 +18,9 @@ public interface ChangeSkinAPI<P, W> {
 
     //todo: refresh (instant update) player
 
-    //todo: setPersistentSkin
+    void setPersistentSkin(P player, SkinModel newSkin, boolean applyNow);
+
+    void setPersistentSkin(P player, UUID newSkin, boolean applyNow);
 
     //todo: setRandomSkin
     //todo: setSkin

@@ -7,14 +7,12 @@ import com.github.games647.changeskin.bungee.commands.UploadCommand;
 import com.github.games647.changeskin.bungee.listener.ConnectListener;
 import com.github.games647.changeskin.bungee.listener.MessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
-import com.github.games647.changeskin.bungee.tasks.SkinApplier;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -24,7 +22,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
@@ -32,7 +29,6 @@ import java.util.concurrent.ThreadFactory;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -119,24 +115,6 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
                 .setDaemon(true)
                 .setThreadFactory(new GroupedThreadFactory(this, getName()))
                 .build();
-    }
-
-    //you should call this method async
-    public void setSkin(ProxiedPlayer player, final SkinModel newSkin, boolean applyNow) {
-        new SkinApplier(this, player, player, newSkin, false, false).run();
-    }
-
-    //you should call this method async
-    public void setSkin(ProxiedPlayer player, UUID targetSkin, boolean applyNow) {
-        SkinModel newSkin = core.getStorage().getSkin(targetSkin);
-        if (newSkin == null) {
-            Optional<SkinModel> downloadSkin = core.getSkinApi().downloadSkin(targetSkin);
-            if (downloadSkin.isPresent()) {
-                newSkin = downloadSkin.get();
-            }
-        }
-
-        setSkin(player, newSkin, applyNow);
     }
 
     public void sendPluginMessage(Server server, ChannelMessage message) {

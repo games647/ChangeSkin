@@ -2,6 +2,7 @@ package com.github.games647.changeskin.bukkit.commands;
 
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
+import com.github.games647.changeskin.bukkit.ServerVersion;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.lang.invoke.MethodHandle;
@@ -32,8 +33,9 @@ public class SkullCommand implements CommandExecutor {
     static {
         MethodHandle methodHandle = null;
         try {
-            String serverVersion = getServerVersion();
-            Class<?> clazz = Class.forName("org.bukkit.craftbukkit." + serverVersion + ".inventory.CraftMetaSkull");
+            ServerVersion version = new ServerVersion(Bukkit.getServer().getClass());
+
+            Class<?> clazz = Class.forName(version.getOBCPackage() + ".inventory.CraftMetaSkull");
             Field profileField = clazz.getDeclaredField("profile");
             profileField.setAccessible(true);
 
@@ -102,10 +104,5 @@ public class SkullCommand implements CommandExecutor {
             //rethrow errors we shouldn't silence them like OutOfMemory
             throw (Error) throwable;
         }
-    }
-
-    private static String getServerVersion() {
-        return Bukkit.getServer().getClass().getPackage().getName()
-                .replace(".",  ",").split(",")[3];
     }
 }
