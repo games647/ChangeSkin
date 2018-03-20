@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.bukkit;
 
+import com.github.games647.changeskin.bukkit.command.InfoCommand;
 import com.github.games647.changeskin.bukkit.command.InvalidateCommand;
 import com.github.games647.changeskin.bukkit.command.SelectCommand;
 import com.github.games647.changeskin.bukkit.command.SetCommand;
@@ -114,6 +115,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         getCommand("skinselect").setExecutor(new SelectCommand(this));
         getCommand("skinupload").setExecutor(new UploadCommand(this));
         getCommand("skinskull").setExecutor(new SkullCommand(this));
+        getCommand("skin-info").setExecutor(new InfoCommand(this));
     }
 
     public boolean isBungeeCord() {

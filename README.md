@@ -35,6 +35,7 @@ https://ci.codemc.org/job/Games647/job/ChangeSkin/changes
     /skinupload <url> - Upload a skin to a mojang account
     /skin-select <name> - Choose a skin from the database which has a specified name
     /skinskull - Changes the skin of a holding skull from the database which has a specified name
+    /skin-info - Show details about the currently assigned skin like skin url owner name, uuid and more
 
 Keep prevents the skin from auto updating. See the config for more information about auto updating.
 
@@ -58,6 +59,7 @@ For Sponge users:
 * changeskin.command.skinselect - Select a skin from the database
 * changeskin.command.skinupload - Upload a skin to one of the configured accounts
 * changeskin.command.skinskull - Use the skull command
+* changeskin.command.skininfo - Use the info command
 
 Whitelist and blacklist permissions
 

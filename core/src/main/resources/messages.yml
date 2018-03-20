@@ -35,7 +35,7 @@ no-console: '&4You have to be a player to set your own skin'
 no-resolve: "&4The username's UUID couldn't be resolved"
 
 # UUID was successful resolved
-uuid-resolved: '&2UUID was successfuly resolved, downloading the skin.'
+uuid-resolved: '&2UUID was successfully resolved, downloading the skin.'
 
 # Skin preferences was reset to the default value
 reset: '&2Resetting preferences to the default value'
@@ -91,5 +91,15 @@ select-noargs: '&4The skin id is missing'
 # User tried to choose a skin from an invalid skin name
 invalid-skin-name: '&4Invalid skin name'
 
-# User tried to select a custom skin by it's id, but it wasn't found
+# User tried to show details about his/her skin or tried to select a custom skin by it's id, but it wasn't found.
 skin-not-found: '&4Skin not found'
+
+# Skin info command
+skin-info: '&2Your skin: /newline
+&7Row id: &3{0} /newline
+&7Owner id: &3{1} /newline
+&7Owner name: &3{2} /newline
+&7Time fetched: &3{3} /newline
+&7Skin URL: &3{4} /newline
+&7Skin metadata: &3{5} /newline
+&7Cape URL: &3{6}'

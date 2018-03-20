@@ -1,4 +1,4 @@
-package com.github.games647.changeskin.sponge.commands;
+package com.github.games647.changeskin.sponge.command;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;

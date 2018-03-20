@@ -86,7 +86,7 @@ public class ChangeSkinCore {
                     .forEach((key, message) -> {
                         String colored = CommonUtil.translateColorCodes((String) message);
                         if (!colored.isEmpty()) {
-                            localeMessages.put(key, colored);
+                            localeMessages.put(key, colored.replace("/newline", "\n"));
                         }
                     });
         } catch (IOException ioEx) {

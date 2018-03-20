@@ -44,6 +44,11 @@ commands:
         aliases: [skin-skull]
         usage: /<command> <name>
 
+    skin-info:
+        description: 'Show details about the currently assigned skin'
+        permission: ${project.parent.artifactId}.command.skininfo
+        usage: /<command>
+
 permissions:
     ${project.parent.artifactId}.command.*:
         children:
@@ -53,6 +58,7 @@ permissions:
             ${project.parent.artifactId}.command.skinname: true
             ${project.parent.artifactId}.command.skinselect: true
             ${project.parent.artifactId}.command.skinupdate.other.*: true
+            ${project.parent.artifactId}.command.skininfo: true
 
     ${project.parent.artifactId}.command.skinupdate:
         description: 'Updates the current skin'
@@ -62,6 +68,8 @@ permissions:
         description: 'Gives your current skin a name'
     ${project.parent.artifactId}.command.skinselect:
         description: 'Choose a skin from the database which has a specified name'
+    ${project.parent.artifactId}.command.skininfo:
+        description: 'Show details about the currently assigned skin'
 
     ${project.parent.artifactId}.command.skinupdate.other.*:
         children:

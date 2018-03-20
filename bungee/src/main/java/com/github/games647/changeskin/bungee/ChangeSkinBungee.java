@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.bungee;
 
+import com.github.games647.changeskin.bungee.command.InfoCommand;
 import com.github.games647.changeskin.bungee.command.InvalidateCommand;
 import com.github.games647.changeskin.bungee.command.SelectCommand;
 import com.github.games647.changeskin.bungee.command.SetCommand;
@@ -64,10 +65,12 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         getProxy().registerChannel(getName());
         pluginManager.registerListener(this, new MessageListener(this));
 
+        //register commands
         pluginManager.registerCommand(this, new SetCommand(this));
         pluginManager.registerCommand(this, new InvalidateCommand(this));
         pluginManager.registerCommand(this, new UploadCommand(this));
         pluginManager.registerCommand(this, new SelectCommand(this));
+        pluginManager.registerCommand(this, new InfoCommand(this));
     }
 
     @Override

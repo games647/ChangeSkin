@@ -1,8 +1,8 @@
-package com.github.games647.changeskin.sponge.commands;
+package com.github.games647.changeskin.sponge.command;
 
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.PomData;
-import com.github.games647.changeskin.sponge.task.SkinSelector;
+import com.github.games647.changeskin.sponge.task.SkinInvalidator;
 import com.google.inject.Inject;
 
 import org.spongepowered.api.command.CommandResult;
@@ -13,15 +13,12 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
-import static org.spongepowered.api.command.args.GenericArguments.string;
-import static org.spongepowered.api.text.Text.of;
-
-public class SelectCommand implements CommandExecutor, ChangeSkinCommand {
+public class InvalidateCommand implements CommandExecutor, ChangeSkinCommand {
 
     private final ChangeSkinSponge plugin;
 
     @Inject
-    SelectCommand(ChangeSkinSponge plugin) {
+    InvalidateCommand(ChangeSkinSponge plugin) {
         this.plugin = plugin;
     }
 
@@ -32,16 +29,8 @@ public class SelectCommand implements CommandExecutor, ChangeSkinCommand {
             return CommandResult.empty();
         }
 
-        String skinName = args.<String>getOne("skinName").get().toLowerCase().replace("skin-", "");
-
-        try {
-            int targetId = Integer.parseInt(skinName);
-            Player receiver = (Player) src;
-            Task.builder().async().execute(new SkinSelector(plugin, receiver, targetId)).submit(plugin);
-        } catch (NumberFormatException numberFormatException) {
-            plugin.sendMessage(src, "invalid-skin-name");
-        }
-
+        Player receiver = (Player) src;
+        Task.builder().async().execute(new SkinInvalidator(plugin, receiver)).submit(plugin);
         return CommandResult.success();
     }
 
@@ -49,8 +38,7 @@ public class SelectCommand implements CommandExecutor, ChangeSkinCommand {
     public CommandSpec buildSpec() {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(string(of("skinName")))
-                .permission(PomData.ARTIFACT_ID + ".command.skinselect.base")
+                .permission(PomData.ARTIFACT_ID + ".command.skinupdate.base")
                 .build();
     }
 }

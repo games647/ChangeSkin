@@ -2,10 +2,11 @@ package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.PlatformPlugin;
-import com.github.games647.changeskin.sponge.commands.InvalidateCommand;
-import com.github.games647.changeskin.sponge.commands.SelectCommand;
-import com.github.games647.changeskin.sponge.commands.SetCommand;
-import com.github.games647.changeskin.sponge.commands.UploadCommand;
+import com.github.games647.changeskin.sponge.command.InfoCommand;
+import com.github.games647.changeskin.sponge.command.InvalidateCommand;
+import com.github.games647.changeskin.sponge.command.SelectCommand;
+import com.github.games647.changeskin.sponge.command.SetCommand;
+import com.github.games647.changeskin.sponge.command.UploadCommand;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
@@ -68,6 +69,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
         //command and event register
         cmdManager.register(this, injector.getInstance(SelectCommand.class).buildSpec(), "skin-select", "skinselect");
+        cmdManager.register(this, injector.getInstance(InfoCommand.class).buildSpec(), "skin-info");
         cmdManager.register(this, injector.getInstance(UploadCommand.class).buildSpec(), "skin-upload");
         cmdManager.register(this, injector.getInstance(SetCommand.class).buildSpec(), "changeskin", "setskin", "skin");
         cmdManager.register(this, injector.getInstance(InvalidateCommand.class)
