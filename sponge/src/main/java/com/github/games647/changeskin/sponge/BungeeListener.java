@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.shared.SharedBungeeListener;
-import com.github.games647.changeskin.sponge.tasks.SkinApplier;
+import com.github.games647.changeskin.sponge.task.SkinApplier;
 import com.google.inject.Inject;
 
 import java.util.UUID;

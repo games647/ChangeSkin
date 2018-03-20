@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bukkit.listener;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
-import com.github.games647.changeskin.bukkit.tasks.SkinApplier;
+import com.github.games647.changeskin.bukkit.task.SkinApplier;
 import com.github.games647.changeskin.core.shared.SharedBungeeListener;
 
 import java.util.UUID;

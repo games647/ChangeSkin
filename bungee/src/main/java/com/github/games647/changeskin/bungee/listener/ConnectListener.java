@@ -22,7 +22,6 @@ public class ConnectListener extends AbstractSkinListener {
         super(plugin);
     }
 
-
     @EventHandler(priority = EventPriority.HIGH)
     public void onPostLogin(LoginEvent loginEvent) {
         if (loginEvent.isCancelled() || !core.getConfig().getStringList("server-blacklist").isEmpty()) {

@@ -1,10 +1,10 @@
 package com.github.games647.changeskin.core.shared;
 
 import com.github.games647.changeskin.core.PlatformPlugin;
-import com.github.games647.changeskin.core.messages.ChannelMessage;
-import com.github.games647.changeskin.core.messages.CheckPermMessage;
-import com.github.games647.changeskin.core.messages.PermResultMessage;
-import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
+import com.github.games647.changeskin.core.message.ChannelMessage;
+import com.github.games647.changeskin.core.message.CheckPermMessage;
+import com.github.games647.changeskin.core.message.PermResultMessage;
+import com.github.games647.changeskin.core.message.SkinUpdateMessage;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;

@@ -1,9 +1,9 @@
 package com.github.games647.changeskin.bungee;
 
-import com.github.games647.changeskin.bungee.commands.InvalidateCommand;
-import com.github.games647.changeskin.bungee.commands.SelectCommand;
-import com.github.games647.changeskin.bungee.commands.SetCommand;
-import com.github.games647.changeskin.bungee.commands.UploadCommand;
+import com.github.games647.changeskin.bungee.command.InvalidateCommand;
+import com.github.games647.changeskin.bungee.command.SelectCommand;
+import com.github.games647.changeskin.bungee.command.SetCommand;
+import com.github.games647.changeskin.bungee.command.UploadCommand;
 import com.github.games647.changeskin.bungee.listener.ConnectListener;
 import com.github.games647.changeskin.bungee.listener.MessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
@@ -11,7 +11,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
-import com.github.games647.changeskin.core.messages.ChannelMessage;
+import com.github.games647.changeskin.core.message.ChannelMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;

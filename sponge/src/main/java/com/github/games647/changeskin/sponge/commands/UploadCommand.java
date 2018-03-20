@@ -4,7 +4,7 @@ import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.PomData;
-import com.github.games647.changeskin.sponge.tasks.SkinUploader;
+import com.github.games647.changeskin.sponge.task.SkinUploader;
 import com.google.inject.Inject;
 
 import java.util.List;

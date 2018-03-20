@@ -2,7 +2,7 @@ package com.github.games647.changeskin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.github.games647.changeskin.bukkit.tasks.SkinApplier;
+import com.github.games647.changeskin.bukkit.task.SkinApplier;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.model.skin.SkinProperty;
 import com.github.games647.changeskin.core.shared.ChangeSkinAPI;

@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bungee;
 
-import com.github.games647.changeskin.bungee.tasks.SkinApplier;
-import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
+import com.github.games647.changeskin.bungee.task.SkinApplier;
+import com.github.games647.changeskin.core.message.SkinUpdateMessage;
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.model.skin.SkinProperty;
