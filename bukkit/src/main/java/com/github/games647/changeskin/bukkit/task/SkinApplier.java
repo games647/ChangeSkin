@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -30,6 +31,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 
 import static com.comphenix.protocol.PacketType.Play.Server.PLAYER_INFO;
+import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
 import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
 
 public class SkinApplier extends SharedApplier {
@@ -131,9 +133,6 @@ public class SkinApplier extends SharedApplier {
             plugin.getLog().error("Failed to invoke updateScaledHealth for attributes", reflectiveEx);
         }
 
-        //prevent the moved too quickly message
-        receiver.teleport(receiver.getLocation());
-
         //tell NameTagEdit to refresh the scoreboard
         if (Bukkit.getPluginManager().isPluginEnabled("NametagEdit")) {
             NametagEdit.getApi().reloadNametag(receiver);
@@ -163,7 +162,20 @@ public class SkinApplier extends SharedApplier {
         respawn.getGameModes().write(0, gamemode);
         respawn.getWorldTypeModifier().write(0, receiver.getWorld().getWorldType());
 
-        sendPackets(removeInfo, addInfo, respawn);
+        Location location = receiver.getLocation().clone();
+
+        //prevent the moved too quickly message
+        PacketContainer teleport = new PacketContainer(POSITION);
+        teleport.getModifier().writeDefaults();
+        teleport.getDoubles().write(0, location.getX());
+        teleport.getDoubles().write(1, location.getY());
+        teleport.getDoubles().write(2, location.getZ());
+        teleport.getFloat().write(0, location.getYaw());
+        teleport.getFloat().write(1, location.getPitch());
+        //send an invalid teleport id in order to let Bukkit ignore the incoming confirm packet
+        teleport.getIntegers().writeSafely(0, -1337);
+
+        sendPackets(removeInfo, addInfo, respawn, teleport);
     }
 
     @SuppressWarnings("deprecation")
