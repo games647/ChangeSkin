@@ -1,12 +1,15 @@
 # ChangeSkin config
 
 # Here you can specify default skins for player who do not have a skin
-# The entries from this list will be selected in random order
+# The entries from this list will be selected in random order.
+#
+# This list should either contain the UUID of the skin owner or the row id inside the skin database.
 #
 # Lists are created like this:
 #default-skins:
 #    - 0aaa2c13-922a-411b-b655-9b8c08404695
 #    - 069a79f4-44e9-4726-a5be-fca90e38aaf5
+#    - 1337 # Row ID inside the database
 #
 # If this list is empty no skin will be selected
 default-skins: []
@@ -38,9 +41,7 @@ skinPermission: false
 # A number in seconds which the player have to wait before changing the skin again
 cooldown: 0
 
-# How many requests should be established until the plugin uses the third-party API https://mcapi.ca/
-# Once this number is reached in a range of ten minutes it will start connecting to https://mcapi.ca/ for the next ten
-# minutes.
+# How many requests should be established to the Mojang API
 # This option exists in order to workaround the rate-limiting. Name -> UUID are fetched in the same way like heads
 mojang-request-limit: 600
 

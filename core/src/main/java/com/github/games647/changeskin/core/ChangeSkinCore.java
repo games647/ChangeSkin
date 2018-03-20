@@ -3,6 +3,7 @@ package com.github.games647.changeskin.core;
 import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.google.common.net.HostAndPort;
+import com.google.common.primitives.Ints;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -203,8 +204,13 @@ public class ChangeSkinCore {
     }
 
     private void loadDefaultSkins(Iterable<String> defaults) {
-        for (String uuidString : defaults) {
-            UUID ownerUUID = UUID.fromString(uuidString);
+        for (String id : defaults) {
+            Integer rowId = Ints.tryParse(id);
+            if (rowId != null) {
+                Optional.ofNullable(storage.getSkin(rowId)).ifPresent(defaultSkins::add);
+            }
+
+            UUID ownerUUID = UUID.fromString(id);
             SkinModel skinData = storage.getSkin(ownerUUID);
             if (skinData == null) {
                 Optional<SkinModel> optSkin = skinApi.downloadSkin(ownerUUID);
