@@ -81,7 +81,6 @@ public class SkinApplier extends SharedApplier {
 
         //triggers an update for others player to see the new skin
         Sponge.getServer().getOnlinePlayers().stream()
-                .filter(onlinePlayer -> onlinePlayer.equals(receiver))
                 .filter(onlinePlayer -> onlinePlayer.canSee(receiver))
                 .forEach(onlinePlayer -> {
                     //removes the entity and display the new skin

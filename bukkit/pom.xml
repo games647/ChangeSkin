@@ -95,6 +95,7 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Trigger nametag refresh, because this plugin works with packets -->
         <dependency>
             <groupId>com.nametagedit</groupId>
             <artifactId>nametagedit</artifactId>
