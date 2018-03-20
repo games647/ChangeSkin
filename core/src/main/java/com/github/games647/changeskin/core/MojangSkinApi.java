@@ -6,6 +6,7 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.model.skin.SkinProperty;
 import com.github.games647.changeskin.core.model.skin.TexturesModel;
 import com.google.common.collect.Iterables;
+import com.google.common.io.CharStreams;
 import com.google.common.net.HostAndPort;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -112,8 +113,11 @@ public class MojangSkinApi {
                     return Optional.of(playerProfile.getId());
                 }
             } else {
-                logger.error("Received invalid response code: {} for playername: {} using proxy: {}",
-                        responseCode, playerName, proxy);
+                logger.error("Received response code: {} for {} using proxy: {}", responseCode, playerName, proxy);
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                    logger.error("Error stream: {}", CharStreams.toString(reader));
+                }
             }
         } catch (IOException ioEx) {
             logger.error("Tried converting player name: {} to uuid", playerName, ioEx);
