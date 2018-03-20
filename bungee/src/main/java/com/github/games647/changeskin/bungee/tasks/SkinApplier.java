@@ -71,7 +71,7 @@ public class SkinApplier extends SharedApplier {
 
     @Override
     protected void applyInstantUpdate() {
-        plugin.applySkin(receiver, targetSkin);
+        plugin.getApi().applySkin(receiver, targetSkin);
     }
 
     @Override

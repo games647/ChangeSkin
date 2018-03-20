@@ -69,7 +69,7 @@ public class MessageListener extends AbstractSkinListener {
         });
         
         if (core.getConfig().getBoolean("instantSkinChange")) {
-            plugin.applySkin(receiver, targetSkin);
+            plugin.getApi().applySkin(receiver, targetSkin);
             plugin.sendMessage(invoker, "skin-changed");
         } else {
             plugin.sendMessage(invoker, "skin-changed-no-instant");

@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.bukkit.tasks;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftVersion;
@@ -80,7 +81,7 @@ public class SkinApplier extends SharedApplier {
 
     @Override
     protected void applyInstantUpdate() {
-        plugin.applySkin(receiver, targetSkin);
+        plugin.getApi().applySkin(receiver, targetSkin);
 
         sendUpdateSelf(WrappedGameProfile.fromPlayer(receiver));
         sendUpdateOthers();
@@ -214,8 +215,9 @@ public class SkinApplier extends SharedApplier {
 
     private void sendPackets(PacketContainer... packets) {
         try {
+            ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
             for (PacketContainer packet : packets) {
-                ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, packet);
+                protocolManager.sendServerPacket(receiver, packet);
             }
         } catch (InvocationTargetException ex) {
             plugin.getLog().error("Exception sending instant skin change packet for: {}", receiver, ex);

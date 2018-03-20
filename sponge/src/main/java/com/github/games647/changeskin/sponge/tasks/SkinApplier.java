@@ -12,7 +12,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.tab.TabListEntry;
-import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -59,8 +58,7 @@ public class SkinApplier extends SharedApplier {
 
     @Override
     protected void applyInstantUpdate() {
-        GameProfile profile = receiver.getProfile();
-        plugin.applySkin(profile, targetSkin);
+        plugin.getApi().applySkin(receiver, targetSkin);
 
         sendUpdate();
         plugin.sendMessage(invoker, "skin-changed");

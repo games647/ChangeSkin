@@ -13,19 +13,13 @@ import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
-import com.github.games647.changeskin.core.messages.SkinUpdateMessage;
-import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.github.games647.changeskin.core.model.skin.SkinProperty;
 import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -43,36 +37,13 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
-import net.md_5.bungee.connection.InitialHandler;
-import net.md_5.bungee.connection.LoginResult;
-import net.md_5.bungee.connection.LoginResult.Property;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSender> {
 
-    //speed by letting the JVM optimize this
-    //MethodHandle is only faster for static final fields
-    private static final MethodHandle profileSetter;
-    private static final Property[] emptyProperties = {};
-
-    static {
-        MethodHandle methodHandle = null;
-        try {
-            Field profileField = InitialHandler.class.getDeclaredField("loginProfile");
-            profileField.setAccessible(true);
-
-            methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
-        } catch (Exception ex) {
-            Logger logger = LoggerFactory.getLogger("ChangeSkin");
-            logger.info("Cannot find loginProfile field for setting skin in offline mode", ex);
-        }
-
-        profileSetter = methodHandle;
-    }
-
     private final ConcurrentMap<PendingConnection, UserPreference> loginSessions = new MapMaker().weakKeys().makeMap();
+    private final BungeeSkinAPI api = new BungeeSkinAPI(this);
 
     private ChangeSkinCore core;
     private Logger logger;
@@ -116,6 +87,10 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     @Override
     public String getName() {
         return getDescription().getName();
+    }
+
+    public BungeeSkinAPI getApi() {
+        return api;
     }
 
     @Override
@@ -162,41 +137,6 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         }
 
         setSkin(player, newSkin, applyNow);
-    }
-
-    public void applySkin(ProxiedPlayer player, SkinModel skinData) {
-        logger.debug("Applying skin for {}", player.getName());
-
-        InitialHandler initialHandler = (InitialHandler) player.getPendingConnection();
-        LoginResult loginProfile = initialHandler.getLoginProfile();
-
-        Property[] properties = emptyProperties;
-        if (skinData != null) {
-            Property prop = new Property(SkinProperty.SKIN_KEY, skinData.getEncodedValue(), skinData.getSignature());
-            properties = new Property[]{prop};
-        }
-
-        //this is null on offline mode
-        if (loginProfile == null) {
-            String mojangUUID = UUIDTypeAdapter.toMojangId(player.getUniqueId());
-
-            if (profileSetter != null) {
-                try {
-                    LoginResult loginResult = new LoginResult(mojangUUID, player.getName(), properties);
-                    profileSetter.invokeExact(initialHandler, loginResult);
-                } catch (Error error) {
-                    // rethrow errors we shouldn't silence them like OutOfMemoryError
-                    throw error;
-                } catch (Throwable throwable) {
-                    logger.error("Error applying skin: {} for {}", skinData, player, throwable);
-                }
-            }
-        } else {
-            loginProfile.setProperties(properties);
-        }
-
-        //send plugin channel update request
-        sendPluginMessage(player.getServer(), new SkinUpdateMessage(player.getName()));
     }
 
     public void sendPluginMessage(Server server, ChannelMessage message) {

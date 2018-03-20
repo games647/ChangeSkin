@@ -1,7 +1,5 @@
 package com.github.games647.changeskin.bukkit;
 
-import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.changeskin.bukkit.commands.InvalidateCommand;
 import com.github.games647.changeskin.bukkit.commands.SelectCommand;
 import com.github.games647.changeskin.bukkit.commands.SetCommand;
@@ -18,7 +16,6 @@ import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.messages.ChannelMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
-import com.github.games647.changeskin.core.model.skin.SkinProperty;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -30,6 +27,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.slf4j.Logger;
 
 public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
@@ -39,6 +37,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     private final ChangeSkinCore core = new ChangeSkinCore(this);
 
     private boolean bungeeCord;
+    private final BukkitSkinAPI api = new BukkitSkinAPI();
 
     @Override
     public void onEnable() {
@@ -48,7 +47,6 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
             logger.warn("Cannot check bungeecord support. You use a non-Spigot build");
         }
 
-        saveDefaultConfig();
         registerCommands();
 
         try {
@@ -76,26 +74,12 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         this.core.close();
     }
 
-    public WrappedSignedProperty convertToProperty(SkinModel skinData) {
-        return WrappedSignedProperty.fromValues(SkinProperty.SKIN_KEY, skinData.getEncodedValue()
-                , skinData.getSignature());
-    }
-
-    public void applySkin(Player receiver, SkinModel targetSkin) {
-        WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
-        applySkin(gameProfile, targetSkin);
-    }
-
-    public void applySkin(WrappedGameProfile profile, SkinModel targetSkin) {
-        //remove existing skins
-        profile.getProperties().clear();
-        if (targetSkin != null) {
-            profile.getProperties().put(SkinProperty.SKIN_KEY, convertToProperty(targetSkin));
-        }
-    }
-
     public ChangeSkinCore getCore() {
         return core;
+    }
+
+    public BukkitSkinAPI getApi() {
+        return api;
     }
 
     public SkinStorage getStorage() {
@@ -158,7 +142,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         return bungeeCord;
     }
 
-    public void sendPluginMessage(Player sender, ChannelMessage message) {
+    public void sendPluginMessage(PluginMessageRecipient sender, ChannelMessage message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(message.getChannelName());
 

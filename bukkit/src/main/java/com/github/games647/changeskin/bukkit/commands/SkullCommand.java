@@ -92,7 +92,7 @@ public class SkullCommand implements CommandExecutor {
             SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
 
             WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.randomUUID(), null);
-            plugin.applySkin(gameProfile, skinData);
+            plugin.getApi().applyProperties(gameProfile, skinData);
 
             skullProfileSetter.invoke(skullMeta, gameProfile.getHandle());
             itemStack.setItemMeta(skullMeta);

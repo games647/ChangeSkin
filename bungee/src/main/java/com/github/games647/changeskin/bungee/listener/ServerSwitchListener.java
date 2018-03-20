@@ -37,7 +37,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
         List<String> blacklist = core.getConfig().getStringList("server-blacklist");
         if (blacklist != null && blacklist.contains(targetServer.getName())) {
             //clear the skin
-            plugin.applySkin(player, null);
+            plugin.getApi().applySkin(player, null);
         } else if (session == null) {
             ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
         } else {
@@ -49,7 +49,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
                 }
 
                 session.setTargetSkin(targetSkin);
-                plugin.applySkin(player, targetSkin);
+                plugin.getApi().applySkin(player, targetSkin);
             }
         }
     }
@@ -66,7 +66,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
         }
 
         if (preferences.getTargetSkin().isPresent()) {
-            plugin.applySkin(player, preferences.getTargetSkin().get());
+            plugin.getApi().applySkin(player, preferences.getTargetSkin().get());
         }
     }
 }

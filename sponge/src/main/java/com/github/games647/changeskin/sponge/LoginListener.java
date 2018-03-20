@@ -41,10 +41,11 @@ public class LoginListener extends SharedListener {
                 targetSkin = core.checkAutoUpdate(targetSkin);
             }
 
-            plugin.applySkin(profile, targetSkin);
+            plugin.getApi().applyProperties(profile, targetSkin);
             save(preferences);
         } else {
-            if (!core.getConfig().getBoolean("restoreSkins") || !refetchSkin(profile.getName().get(), preferences)) {
+            String playerName = profile.getName().get();
+            if (!core.getConfig().getBoolean("restoreSkins") || !refetchSkin(playerName, preferences)) {
                 setDefaultSkin(preferences, profile);
             }
         }
@@ -58,7 +59,7 @@ public class LoginListener extends SharedListener {
             if (defaultSkin != null) {
                 preferences.setTargetSkin(defaultSkin);
                 save(preferences);
-                plugin.applySkin(profile, defaultSkin);
+                plugin.getApi().applyProperties(profile, defaultSkin);
             }
         }
     }

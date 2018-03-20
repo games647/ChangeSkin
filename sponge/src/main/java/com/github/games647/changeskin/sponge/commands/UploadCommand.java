@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.sponge.commands;
 
+import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.model.auth.Account;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.PomData;
@@ -21,10 +22,12 @@ import static org.spongepowered.api.text.Text.of;
 public class UploadCommand implements CommandExecutor, ChangeSkinCommand {
 
     private final ChangeSkinSponge plugin;
+    private final ChangeSkinCore core;
 
     @Inject
-    UploadCommand(ChangeSkinSponge plugin) {
+    UploadCommand(ChangeSkinSponge plugin, ChangeSkinCore core) {
         this.plugin = plugin;
+        this.core = core;
     }
 
     @Override

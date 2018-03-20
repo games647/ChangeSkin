@@ -41,7 +41,7 @@ public class LoginListener implements Listener {
         } else {
             Optional<SkinModel> targetSkin = preferences.getTargetSkin();
             if (targetSkin.isPresent()) {
-                plugin.applySkin(player, targetSkin.get());
+                plugin.getApi().applySkin(player, targetSkin.get());
             } else {
                 setRandomSkin(player, preferences);
             }
@@ -59,7 +59,7 @@ public class LoginListener implements Listener {
             SkinModel targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
                 preferences.setTargetSkin(targetSkin);
-                plugin.applySkin(receiver, targetSkin);
+                plugin.getApi().applySkin(receiver, targetSkin);
 
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.getStorage().save(preferences));
             }
@@ -72,7 +72,7 @@ public class LoginListener implements Listener {
 
         Optional<SkinModel> targetSkin = preferences.getTargetSkin();
         if (targetSkin.isPresent()) {
-            plugin.applySkin(player, targetSkin.get());
+            plugin.getApi().applySkin(player, targetSkin.get());
         } else if (plugin.getConfig().getBoolean("restoreSkins")) {
             //refetch
             Runnable nameResolver = new NameResolver(plugin, null, player.getName(), player, false);
