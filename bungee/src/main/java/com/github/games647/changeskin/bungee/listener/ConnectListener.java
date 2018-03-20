@@ -31,9 +31,7 @@ public class ConnectListener extends AbstractSkinListener {
         PendingConnection connection = loginEvent.getConnection();
         String playerName = connection.getName().toLowerCase();
 
-        if (core.getConfig().getBoolean("restoreSkins")) {
-            refetchSkin(connection, playerName, loginEvent);
-        }
+        loadProfile(connection, playerName, loginEvent);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -62,7 +60,7 @@ public class ConnectListener extends AbstractSkinListener {
         }
     }
 
-    private void refetchSkin(final PendingConnection conn, final String playerName, final AsyncEvent<?> loginEvent) {
+    private void loadProfile(final PendingConnection conn, final String playerName, final AsyncEvent<?> loginEvent) {
         loginEvent.registerIntent(plugin);
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
@@ -78,7 +76,7 @@ public class ConnectListener extends AbstractSkinListener {
                     }
 
                     preferences.setTargetSkin(targetSkin);
-                } else {
+                } else if (core.getConfig().getBoolean("restoreSkins")) {
                     refetchSkin(playerName, preferences);
                 }
             } finally {
