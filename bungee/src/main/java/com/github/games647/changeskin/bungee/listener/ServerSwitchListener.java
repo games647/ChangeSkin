@@ -60,7 +60,7 @@ public class ServerSwitchListener extends AbstractSkinListener {
             refetchSkin(player.getName(), preferences);
             if (!preferences.getTargetSkin().isPresent()) {
                 //still no skin
-                setRandomSkin(preferences, player);
+                getRandomSkin().ifPresent(preferences::setTargetSkin);
             }
         }
 

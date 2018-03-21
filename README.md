@@ -75,6 +75,11 @@ Blacklist
 
 => This means all skins are allowed except the ones with the uuid in the blacklist list
 
+## Requirements
+
+* Java 8
+* Spigot or any fork of it (example: Paper)
+
 ## Upload a skin to the database
 
 1. Put a Minecraft account into the config
@@ -84,6 +89,7 @@ Blacklist
 5. Type /skin-select 3 or /skin-select skin-3
 
 ## How to install on BungeeCord
+
 1. Install the plugin on both BungeeCord and Bukkit server
 2. Activate BungeeCord support in your Spigot configuration (`bungeecord: true` in spigot.yml)
 3. Check the settings of the ChangeSkin config in the BungeeCord instance

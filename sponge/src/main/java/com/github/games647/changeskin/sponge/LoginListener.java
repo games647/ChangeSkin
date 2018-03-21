@@ -6,10 +6,8 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedListener;
 import com.google.inject.Inject;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -52,15 +50,11 @@ public class LoginListener extends SharedListener {
     }
 
     private void setDefaultSkin(UserPreference preferences, GameProfile profile) {
-        List<SkinModel> defaultSkins = core.getDefaultSkins();
-        if (!defaultSkins.isEmpty()) {
-            int randomIndex = ThreadLocalRandom.current().nextInt(defaultSkins.size());
-            SkinModel defaultSkin = defaultSkins.get(randomIndex);
-            if (defaultSkin != null) {
-                preferences.setTargetSkin(defaultSkin);
-                save(preferences);
-                plugin.getApi().applyProperties(profile, defaultSkin);
-            }
+        Optional<SkinModel> randomSkin = getRandomSkin();
+        if (randomSkin.isPresent()) {
+            SkinModel targetSkin = randomSkin.get();
+            preferences.setTargetSkin(targetSkin);
+            plugin.getApi().applyProperties(profile, targetSkin);
         }
     }
 

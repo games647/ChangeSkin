@@ -6,8 +6,10 @@ import com.github.games647.changeskin.core.RateLimitException;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class SharedListener {
 
@@ -45,6 +47,17 @@ public abstract class SharedListener {
         }
 
         return false;
+    }
+
+    protected Optional<SkinModel> getRandomSkin() {
+        //skin wasn't found and there are no preferences so set a default skin
+        List<SkinModel> defaultSkins = core.getDefaultSkins();
+        if (!defaultSkins.isEmpty()) {
+            int index = ThreadLocalRandom.current().nextInt(defaultSkins.size());
+            return Optional.of(defaultSkins.get(index));
+        }
+
+        return Optional.empty();
     }
 
     protected abstract void save(UserPreference preferences);

@@ -46,7 +46,7 @@ public class ConnectListener extends AbstractSkinListener {
         }
 
         if (!preferences.getTargetSkin().isPresent()) {
-            setRandomSkin(preferences, player);
+            getRandomSkin().ifPresent(preferences::setTargetSkin);
         }
 
         preferences.getTargetSkin().ifPresent(skin -> plugin.getApi().applySkin(player, skin));

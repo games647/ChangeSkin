@@ -6,9 +6,8 @@ import com.github.games647.changeskin.bukkit.command.SelectCommand;
 import com.github.games647.changeskin.bukkit.command.SetCommand;
 import com.github.games647.changeskin.bukkit.command.SkullCommand;
 import com.github.games647.changeskin.bukkit.command.UploadCommand;
-import com.github.games647.changeskin.bukkit.listener.AsyncLoginListener;
-import com.github.games647.changeskin.bukkit.listener.BungeeListener;
 import com.github.games647.changeskin.bukkit.listener.LoginListener;
+import com.github.games647.changeskin.bukkit.listener.BungeeListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
@@ -62,7 +61,6 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeListener(this));
         } else {
             getServer().getPluginManager().registerEvents(new LoginListener(this), this);
-            getServer().getPluginManager().registerEvents(new AsyncLoginListener(this), this);
         }
     }
 
