@@ -28,6 +28,11 @@ public class ServerSwitchListener extends AbstractSkinListener {
 
         Server fromServer = connectEvent.getPlayer().getServer();
         if (fromServer != null && Objects.equals(targetServer, fromServer.getInfo())) {
+            //check if we are switching to the same server
+            return;
+        }
+
+        if (!isBlacklistEnabled()) {
             return;
         }
 
@@ -35,22 +40,16 @@ public class ServerSwitchListener extends AbstractSkinListener {
         UserPreference session = plugin.getLoginSession(player.getPendingConnection());
 
         List<String> blacklist = core.getConfig().getStringList("server-blacklist");
-        if (blacklist != null && blacklist.contains(targetServer.getName())) {
+        if (blacklist.contains(targetServer.getName())) {
             //clear the skin
             plugin.getApi().applySkin(player, null);
         } else if (session == null) {
+            //lazy load
             ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> onLazyLoad(player));
         } else {
+            //player switched to an enabled server
             Optional<SkinModel> optSkin = session.getTargetSkin();
-            if (optSkin.isPresent()) {
-                SkinModel targetSkin = optSkin.get();
-                if (!session.isKeepSkin()) {
-                    targetSkin = core.checkAutoUpdate(targetSkin);
-                }
-
-                session.setTargetSkin(targetSkin);
-                plugin.getApi().applySkin(player, targetSkin);
-            }
+            optSkin.ifPresent(skin -> plugin.getApi().applySkin(player, skin));
         }
     }
 

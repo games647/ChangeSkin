@@ -23,13 +23,13 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
         this.plugin = plugin;
     }
 
-    public void setRandomSkin(final UserPreference preferences, ProxiedPlayer player) {
+    public void setRandomSkin(UserPreference preferences, ProxiedPlayer player) {
         //skin wasn't found and there are no preferences so set a default skin
         List<SkinModel> defaultSkins = core.getDefaultSkins();
         if (!defaultSkins.isEmpty()) {
             int randomIndex = ThreadLocalRandom.current().nextInt(defaultSkins.size());
 
-            final SkinModel targetSkin = defaultSkins.get(randomIndex);
+            SkinModel targetSkin = defaultSkins.get(randomIndex);
             if (targetSkin != null) {
                 preferences.setTargetSkin(targetSkin);
             }
@@ -49,5 +49,10 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
                 core.getStorage().save(preferences);
             }
         });
+    }
+
+    protected boolean isBlacklistEnabled() {
+        List<String> blacklist = core.getConfig().getStringList("server-blacklist");
+        return blacklist != null && !blacklist.isEmpty();
     }
 }

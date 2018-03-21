@@ -49,8 +49,7 @@ mojang-request-limit: 600
 # Here you can ignore certain servers in order to make use of lazy loading -> load the player data only
 # if they are on the allowed servers
 #
-# This can be used against bot attacks
-# If this is empty, nothing will be ignored
+# This can be used against bot attacks. If this is empty, nothing will be ignored.
 server-blacklist: []
 # Lists are created like this:
 #server-blacklist:

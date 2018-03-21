@@ -24,30 +24,32 @@ public class ConnectListener extends AbstractSkinListener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPostLogin(LoginEvent loginEvent) {
-        if (loginEvent.isCancelled() || !core.getConfig().getStringList("server-blacklist").isEmpty()) {
+        if (loginEvent.isCancelled() || isBlacklistEnabled()) {
             return;
         }
 
         PendingConnection connection = loginEvent.getConnection();
         String playerName = connection.getName().toLowerCase();
 
-        loadProfile(connection, playerName, loginEvent);
+        loginEvent.registerIntent(plugin);
+        Runnable task = () -> loadProfile(loginEvent, connection, playerName);
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLogin(PostLoginEvent postLoginEvent) {
         ProxiedPlayer player = postLoginEvent.getPlayer();
 
-        //updates to the chosen one
         UserPreference preferences = plugin.getLoginSession(player.getPendingConnection());
-        if (preferences == null) {
+        if (preferences == null || isBlacklistEnabled()) {
             return;
         }
 
-        Optional<SkinModel> optSkin = preferences.getTargetSkin();
-        if (!optSkin.isPresent()) {
+        if (!preferences.getTargetSkin().isPresent()) {
             setRandomSkin(preferences, player);
         }
+
+        preferences.getTargetSkin().ifPresent(skin -> plugin.getApi().applySkin(player, skin));
     }
 
     @EventHandler
@@ -60,28 +62,24 @@ public class ConnectListener extends AbstractSkinListener {
         }
     }
 
-    private void loadProfile(final PendingConnection conn, final String playerName, final AsyncEvent<?> loginEvent) {
-        loginEvent.registerIntent(plugin);
+    private void loadProfile(AsyncEvent<?> loginEvent, PendingConnection conn, String playerName) {
+        try {
+            UserPreference preferences = plugin.getStorage().getPreferences(conn.getUniqueId());
+            plugin.startSession(conn, preferences);
 
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
-            try {
-                UserPreference preferences = plugin.getStorage().getPreferences(conn.getUniqueId());
-                plugin.startSession(conn, preferences);
-
-                Optional<SkinModel> optSkin = preferences.getTargetSkin();
-                if (optSkin.isPresent()) {
-                    SkinModel targetSkin = optSkin.get();
-                    if (!preferences.isKeepSkin()) {
-                        targetSkin = core.checkAutoUpdate(targetSkin);
-                    }
-
-                    preferences.setTargetSkin(targetSkin);
-                } else if (core.getConfig().getBoolean("restoreSkins")) {
-                    refetchSkin(playerName, preferences);
+            Optional<SkinModel> optSkin = preferences.getTargetSkin();
+            if (optSkin.isPresent()) {
+                SkinModel targetSkin = optSkin.get();
+                if (!preferences.isKeepSkin()) {
+                    targetSkin = core.checkAutoUpdate(targetSkin);
                 }
-            } finally {
-                loginEvent.completeIntent(plugin);
+
+                preferences.setTargetSkin(targetSkin);
+            } else if (core.getConfig().getBoolean("restoreSkins")) {
+                refetchSkin(playerName, preferences);
             }
-        });
+        } finally {
+            loginEvent.completeIntent(plugin);
+        }
     }
 }
