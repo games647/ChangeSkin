@@ -18,7 +18,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.Base64;
 import java.util.Properties;
 import java.util.UUID;
@@ -183,16 +182,19 @@ public class SkinStorage {
         preferences.getSaveLock().lock();
         try (Connection con = dataSource.getConnection()) {
             if (preferences.isSaved()) {
-                try (PreparedStatement stmt = con.prepareStatement("UPDATE " + USER_TABLE
-                        + " SET TargetSkin=? WHERE UserID=?")) {
-                    if (targetSkin == null) {
-                        stmt.setNull(1, Types.INTEGER);
-                    } else {
-                        stmt.setInt(1, targetSkin.getRowId());
+                if (targetSkin == null) {
+                    try (PreparedStatement stmt = con.prepareStatement("DELETE FROM " + USER_TABLE
+                            + " WHERE UserID=?")) {
+                        stmt.setInt(1, preferences.getRowId());
+                        stmt.executeUpdate();
                     }
-
-                    stmt.setInt(2, preferences.getRowId());
-                    stmt.executeUpdate();
+                } else {
+                    try (PreparedStatement stmt = con.prepareStatement("UPDATE " + USER_TABLE
+                            + " SET TargetSkin=? WHERE UserID=?")) {
+                        stmt.setInt(1, targetSkin.getRowId());
+                        stmt.setInt(2, preferences.getRowId());
+                        stmt.executeUpdate();
+                    }
                 }
             } else {
                 if (targetSkin == null) {
