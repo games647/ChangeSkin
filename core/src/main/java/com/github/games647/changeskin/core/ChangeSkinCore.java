@@ -62,7 +62,7 @@ public class ChangeSkinCore {
             config = loadFile("config.yml");
             int rateLimit = config.getInt("mojang-request-limit");
 
-            cooldownService = new CooldownService(Duration.ofMinutes(config.getInt("cooldown")));
+            cooldownService = new CooldownService(Duration.ofSeconds(config.getInt("cooldown")));
 
             autoUpdateDiff = config.getInt("auto-skin-update") * 60 * 1_000;
             List<HostAndPort> proxies = config.getStringList("proxies")
