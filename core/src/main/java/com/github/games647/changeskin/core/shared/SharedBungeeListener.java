@@ -53,27 +53,26 @@ public abstract class SharedBungeeListener<P> {
         SkinModel targetSkin = message.getTargetSkin();
         UUID skinProfile = targetSkin.getProfileId();
 
-        boolean success = op || checkBungeePerms(player, receiverUUID, skinProfile, message.isSkinPerm());
+        boolean success = op || checkBungeePerms(player, receiverUUID, message.isSkinPerm(), skinProfile);
         sendMessage(player, new PermResultMessage(success, targetSkin, receiverUUID));
     }
 
-    private boolean checkBungeePerms(P player, UUID receiverUUID, UUID targetUUID, boolean skinPerm) {
-        String pluginName = plugin.getName().toLowerCase();
+    private boolean checkBungeePerms(P player, UUID receiverUUID, boolean skinPerm, UUID targetUUID) {
         if (getUUID(player).equals(receiverUUID)) {
-            boolean hasCommandPerm = hasPermission(player, pluginName + ".command.setskin");
-            if (skinPerm) {
-                return hasCommandPerm && checkWhitelistPermission(player, targetUUID);
-            } else {
-                return hasCommandPerm;
-            }
-        } else {
-            boolean hasCommandPerm = hasPermission(player, pluginName + ".command.setskin.other");
-            if (skinPerm) {
-                return hasCommandPerm && checkWhitelistPermission(player, targetUUID);
-            } else {
-                return hasCommandPerm;
-            }
+            return checkPerm(player, "command.setskin", skinPerm, targetUUID);
         }
+
+        return checkPerm(player, "command.setskin.other", skinPerm, targetUUID);
+    }
+
+    private boolean checkPerm(P invoker, String node, boolean skinPerm, UUID targetUUID) {
+        String pluginName = plugin.getName().toLowerCase();
+        boolean hasCommandPerm = hasPermission(invoker, pluginName +  '.' + node);
+        if (skinPerm) {
+            return hasCommandPerm && checkWhitelistPermission(invoker, targetUUID);
+        }
+
+        return hasCommandPerm;
     }
 
     protected abstract void sendMessage(P player, String channel, byte[] data);
