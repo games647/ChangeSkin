@@ -115,7 +115,7 @@ public class MojangSkinApi {
             } else {
                 logger.error("Received response code: {} for {} using proxy: {}", responseCode, playerName, proxy);
                 try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                        new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8))) {
                     logger.error("Error stream: {}", CharStreams.toString(reader));
                 }
             }
