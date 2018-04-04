@@ -7,10 +7,10 @@ import com.google.common.primitives.Ints;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +47,7 @@ public class ChangeSkinCore {
     private SkinStorage storage;
     private CooldownService cooldownService;
 
-    private int autoUpdateDiff;
+    private Duration autoUpdateDiff;
 
     public ChangeSkinCore(PlatformPlugin<?> plugin) {
         this.plugin = plugin;
@@ -64,7 +64,7 @@ public class ChangeSkinCore {
 
             cooldownService = new CooldownService(Duration.ofSeconds(config.getInt("cooldown")));
 
-            autoUpdateDiff = config.getInt("auto-skin-update") * 60 * 1_000;
+            autoUpdateDiff = Duration.ofMinutes(config.getInt("auto-skin-update"));
             List<HostAndPort> proxies = config.getStringList("proxies")
                     .stream().map(HostAndPort::fromString).collect(toList());
             skinApi = new MojangSkinApi(plugin.getLog(), rateLimit, proxies);
@@ -162,8 +162,7 @@ public class ChangeSkinCore {
             return null;
         }
 
-        long difference = Duration.between(Instant.ofEpochMilli(oldSkin.getTimestamp()), Instant.now()).getSeconds();
-        if (autoUpdateDiff > 0 && difference > autoUpdateDiff) {
+        if (oldSkin.isOutdated(autoUpdateDiff)) {
             Optional<SkinModel> updatedSkin = skinApi.downloadSkin(oldSkin.getProfileId());
             if (updatedSkin.isPresent() && !Objects.equals(updatedSkin.get(), oldSkin)) {
                 return updatedSkin.get();
@@ -182,7 +181,9 @@ public class ChangeSkinCore {
         }
 
         Path file = plugin.getPluginFolder().resolve(fileName);
-        return configProvider.load(Files.newBufferedReader(file), defaults);
+        try (Reader reader = Files.newBufferedReader(file)) {
+            return configProvider.load(reader, defaults);
+        }
     }
 
     private void saveDefaultFile(String fileName) {

@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.EnumMap;
 import java.util.Map;
@@ -97,6 +99,11 @@ public class SkinModel {
         }
 
         return lock;
+    }
+
+    public boolean isOutdated(Duration autoUpdateDiff) {
+        Duration difference = Duration.between(Instant.ofEpochMilli(timestamp), Instant.now());
+        return !autoUpdateDiff.isNegative() && difference.compareTo(autoUpdateDiff) >= 0;
     }
 
     public Lock getSaveLock() {
