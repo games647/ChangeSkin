@@ -17,9 +17,7 @@ public class SkinApplier extends SharedApplier {
 
     private final ChangeSkinBungee plugin;
     private final ProxiedPlayer receiver;
-
     private final CommandSender invoker;
-
     private final boolean bukkitOp;
 
     public SkinApplier(ChangeSkinBungee plugin, CommandSender invoker, ProxiedPlayer receiver, SkinModel targetSkin

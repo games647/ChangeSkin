@@ -2,6 +2,7 @@ package com.github.games647.changeskin.core;
 
 import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class CooldownServiceTest {
         UUID uniqueId = UUID.randomUUID();
         cooldown.trackPlayer(uniqueId);
 
-        Thread.sleep(1_001);
+        TimeUnit.SECONDS.sleep(1);
 
         assertThat(cooldown.isTracked(uniqueId), is(false));
     }

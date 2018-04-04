@@ -2,14 +2,9 @@
 
 ## Description
 
-This plugin allows your players to change their skins with a simple command. You can choose every skin that another Minecraft user currently has.
-It is also possible to set a custom standard skin. If you want to, this plugin can set this standard skin for all players who still have the default Steve or Alex skin.
-
-## Development builds
-
-Development builds of this project can be acquired at the provided continuous integration server.
-
-https://ci.codemc.org/job/Games647/job/ChangeSkin/changes
+This plugin allows your players to change their skins with a simple command. You can choose every skin that another
+Minecraft user currently has. It is also possible to set a custom standard skin. If you want to, this plugin can set
+this standard skin for all players who still have the default Steve or Alex skin.
 
 ## Features
 
@@ -21,7 +16,7 @@ https://ci.codemc.org/job/Games647/job/ChangeSkin/changes
 * Lightweight
 * Easy to use
 * Implemented cache to benefit performance
-* Nearly no mojang ratelimits due to caching
+* Nearly no mojang rate limits due to caching
 * No client modification needed
 * Possibility to set a standard skin
 
@@ -30,7 +25,7 @@ https://ci.codemc.org/job/Games647/job/ChangeSkin/changes
     /setskin <uuid> [keep] - Sets your skin to be the same as the player with the selected uuid. 
     /setskin <username> [keep] - Sets the skin equal to the owner of that Mojang account with the given username.
     /setskin reset - Resets the skin of the invoker to his one.
-    /setskin <onlinePlayer> <newSkinUUID/newSkinPlayerName> [keep]
+    /setskin <onlinePlayer> <newSkinUUID|newSkinPlayerName> [keep]
     /skinupdate [onlinePlayer] - Invalidates the database entry and fetches the fresh skin from the Mojang servers.
     /skinupload <url> - Upload a skin to a mojang account
     /skin-select <name> - Choose a skin from the database which has a specified name
@@ -61,7 +56,7 @@ For Sponge users:
 * changeskin.command.skinskull - Use the skull command
 * changeskin.command.skininfo - Use the info command
 
-Whitelist and blacklist permissions
+### Whitelist and blacklist permissions
 
 Whitelist
 
@@ -77,8 +72,22 @@ Blacklist
 
 ## Requirements
 
-* Java 8
-* Spigot or any fork of it (example: Paper)
+* Java 8+
+* Minecraft server software
+    * Spigot 1.8+ or any fork of it (ex: Paper)
+    * Sponge 7+
+    * BungeeCord 1.12+ (Keep in mind that BungeeCord is backwards compatible)
+
+## Development builds
+
+Development builds of this project can be acquired at the provided CI (continuous integration) server. It contains the
+latest changes from the Source-Code in preparation for the following release. This means they could contain new
+features, bug fixes and other changes since the last release.
+
+Nevertheless builds are only tested using a small set of automated and minor manual tests. Therefore they **could**
+contain new bugs and are likely to be less stable than released versions.
+
+https://ci.codemc.org/job/Games647/job/ChangeSkin/changes
 
 ## Upload a skin to the database
 

@@ -15,13 +15,14 @@
 [//]: # (This can be found by running `/pl`)
 
 ### Environment description
-[//]: # (Standalone server/Bungeecord network with version and build number , SQLite/MySQL, ...)
+[//]: # (Standalone server/Bungeecord network with version and build number, SQLite/MySQL, ...)
 
-### Plugin version or build number (don't write latest or the build number with #):
+### Plugin version or build number:
+[//]: # (Don't write latest or the build number with #. #Number is used to reference to other tickets.)
 [//]: # (This can be found by running `/version plugin-name`.)
 
 ### Error Log:
-[Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of the error or stacktrace (if any)
+[Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of the error (if any)
 
 ### Configuration:
 [//]: # (Remember to delete any sensitive data)

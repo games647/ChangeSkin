@@ -22,6 +22,8 @@ public interface ChangeSkinAPI<P, W> {
 
     void setPersistentSkin(P player, UUID newSkin, boolean applyNow);
 
+    //todo: convert SkinModel to property model and vice versa
+
     //todo: setRandomSkin
     //todo: setSkin
     //todo: clearSkin
