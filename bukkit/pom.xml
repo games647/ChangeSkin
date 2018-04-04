@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.games647</groupId>
         <artifactId>changeskin</artifactId>
-        <version>3.1</version>
+        <version>3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -72,6 +72,7 @@
     </repositories>
 
     <dependencies>
+        <!--Plugin core-->
         <dependency>
             <groupId>com.github.games647</groupId>
             <artifactId>changeskin.core</artifactId>

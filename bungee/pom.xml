@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.games647</groupId>
         <artifactId>changeskin</artifactId>
-        <version>3.1</version>
+        <version>3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -55,6 +55,7 @@
     </build>
 
     <repositories>
+        <!--BungeeCord-->
         <repository>
             <id>codemc-repo</id>
             <url>https://repo.codemc.org/repository/maven-public/</url>
@@ -62,12 +63,14 @@
     </repositories>
 
     <dependencies>
+        <!--Plugin core-->
         <dependency>
             <groupId>com.github.games647</groupId>
             <artifactId>changeskin.core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
+        <!--Server API with non-api classes that are necessary to set the skin-->
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>

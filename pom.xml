@@ -8,12 +8,24 @@
     <packaging>pom</packaging>
 
     <name>ChangeSkin</name>
-    <version>3.1</version>
+    <version>3.1-SNAPSHOT</version>
 
     <url>https://dev.bukkit.org/bukkit-plugins/changeskin/</url>
     <description>
         Change your Minecraft skin in-game
     </description>
+
+    <!--Deployment configuration for the Maven repository-->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>codemc-snapshots</id>
+            <url>https://repo.codemc.org/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.org/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,6 +39,7 @@
         <finalName>${project.name}</finalName>
 
         <plugins>
+            <!--Expose git variables for version names-->
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
@@ -48,7 +61,7 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <!--Replace variables-->
+                <!--Replace maven variables-->
                 <filtering>true</filtering>
             </resource>
         </resources>

@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.games647</groupId>
         <artifactId>changeskin</artifactId>
-        <version>3.1</version>
+        <version>3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -15,6 +15,7 @@
     <name>ChangeSkinCore</name>
 
     <dependencies>
+        <!-- JSON implementation -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -22,6 +23,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--Core utility classes-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -33,7 +35,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.7.6</version>
+            <version>3.0.0</version>
         </dependency>
 
         <!--Logging framework implements slf4j which is required by hikari-->
@@ -56,6 +58,7 @@
             </exclusions>
         </dependency>
 
+        <!--Unit testing-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
