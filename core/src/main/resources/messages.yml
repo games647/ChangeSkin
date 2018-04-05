@@ -101,5 +101,5 @@ skin-info: '&2Your skin: /newline
 &7Owner name: &3{2} /newline
 &7Time fetched: &3{3} /newline
 &7Skin URL: &3{4} /newline
-&7Skin metadata: &3{5} /newline
+&7Skin model: &3{5} /newline
 &7Cape URL: &3{6}'

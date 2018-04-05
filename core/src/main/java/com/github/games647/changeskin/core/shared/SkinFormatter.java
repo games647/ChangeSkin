@@ -6,14 +6,19 @@ import com.github.games647.changeskin.core.model.skin.TextureModel;
 import com.github.games647.changeskin.core.model.skin.TextureType;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
 public class SkinFormatter implements BiFunction<String, SkinModel, String> {
+
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter
+            .ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.MEDIUM)
+            .withZone(ZoneId.systemDefault());
 
     @Override
     public String apply(String template, SkinModel skin) {
@@ -28,18 +33,20 @@ public class SkinFormatter implements BiFunction<String, SkinModel, String> {
 
         Map<TextureType, TextureModel> textures = skin.getTextures();
         Optional<TextureModel> skinTexture = Optional.ofNullable(textures.get(TextureType.SKIN));
-        String skinUrl = skinTexture.map(TextureModel::getUrl).orElse("");
-        String metadata = skinTexture.map(TextureModel::getMetadata).map(MetadataModel::getModel).orElse("");
-        String capeUrl = Optional.ofNullable(textures.get(TextureType.CAPE)).map(TextureModel::getUrl).orElse("");
+        Optional<TextureModel> capeTexture = Optional.ofNullable(textures.get(TextureType.CAPE));
 
-        String time = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeFetched), ZoneId.systemDefault()).toString();
+        String skinUrl = skinTexture.map(TextureModel::getShortUrl).orElse("");
+        String slimModel = skinTexture.map(TextureModel::getMetadata).map(MetadataModel::getModel).orElse("Steve");
+
+        String capeUrl = capeTexture.map(TextureModel::getShortUrl).orElse(" - ");
+
+        String timeFormat = timeFormatter.format(Instant.ofEpochMilli(timeFetched));
         return template.replace("{0}", Integer.toString(rowId))
                 .replace("{1}", ownerId.toString())
                 .replace("{2}", ownerName)
-                .replace("{3}", time)
+                .replace("{3}", timeFormat)
                 .replace("{4}", skinUrl)
-                .replace("{5}", metadata)
+                .replace("{5}", slimModel)
                 .replace("{6}", capeUrl);
-
     }
 }
