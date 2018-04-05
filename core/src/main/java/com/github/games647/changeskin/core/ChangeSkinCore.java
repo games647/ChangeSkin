@@ -173,17 +173,26 @@ public class ChangeSkinCore {
     }
 
     private Configuration loadFile(String fileName) throws IOException {
-        Configuration defaults;
-
         ConfigurationProvider configProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+
+        Configuration defaults;
         try (InputStream defaultStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
             defaults = configProvider.load(defaultStream);
         }
 
         Path file = plugin.getPluginFolder().resolve(fileName);
+
+        Configuration config;
         try (Reader reader = Files.newBufferedReader(file)) {
-            return configProvider.load(reader, defaults);
+            config = configProvider.load(reader);
         }
+
+        //explicitly add keys here, because Configuration.getKeys doesn't return the keys from the default configuration
+        for (String key : defaults.getKeys()) {
+            config.set(key, defaults.get(key));
+        }
+
+        return config;
     }
 
     private void saveDefaultFile(String fileName) {
