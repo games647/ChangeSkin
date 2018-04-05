@@ -189,7 +189,7 @@ public class ChangeSkinCore {
 
         //explicitly add keys here, because Configuration.getKeys doesn't return the keys from the default configuration
         for (String key : defaults.getKeys()) {
-            config.set(key, defaults.get(key, config.get(key)));
+            config.set(key, config.get(key));
         }
 
         return config;
