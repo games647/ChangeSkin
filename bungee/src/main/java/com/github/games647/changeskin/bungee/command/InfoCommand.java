@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -32,7 +31,7 @@ public class InfoCommand extends Command {
         }
 
         ProxiedPlayer player = (ProxiedPlayer) sender;
-        UserPreference preference = plugin.getLoginSession((PendingConnection) player);
+        UserPreference preference = plugin.getLoginSession(player.getPendingConnection());
         Optional<SkinModel> optSkin = preference.getTargetSkin();
         if (optSkin.isPresent()) {
             String template = plugin.getCore().getMessage("skin-info");
