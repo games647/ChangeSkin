@@ -18,7 +18,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class SkinModel {
 
     private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
+            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter())
+            .create();
+
+    private static final Gson legacyGson = new GsonBuilder()
+            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter())
+            .registerTypeAdapter(TextureModel.class, new LegacyTextureAdapter())
+            .create();
+    private static final long LEGACY_TIMESTAMP = 1516492800000L;
 
     private transient int rowId;
     private transient String encodedValue;
@@ -135,7 +142,16 @@ public class SkinModel {
     }
 
     private String serializeData() {
-        String json = gson.toJson(this);
+        String json;
+
+        //at ~21 january 2018 Mojang changed the encoding format from metadata + url to url + metadata. This means
+        //the signature is no longer valid
+        if (timestamp <= LEGACY_TIMESTAMP) {
+            json = legacyGson.toJson(this);
+        } else {
+            json = gson.toJson(this);
+        }
+
         return Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
     }
 

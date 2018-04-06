@@ -1,6 +1,5 @@
 package com.github.games647.changeskin.core.shared;
 
-import com.github.games647.changeskin.core.model.skin.MetadataModel;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.model.skin.TextureModel;
 import com.github.games647.changeskin.core.model.skin.TextureType;
@@ -36,7 +35,7 @@ public class SkinFormatter implements BiFunction<String, SkinModel, String> {
         Optional<TextureModel> capeTexture = Optional.ofNullable(textures.get(TextureType.CAPE));
 
         String skinUrl = skinTexture.map(TextureModel::getShortUrl).orElse("");
-        String slimModel = skinTexture.map(TextureModel::getMetadata).map(MetadataModel::getModel).orElse("Steve");
+        String slimModel = skinTexture.map(TextureModel::isSlim).map(slim -> "Alex").orElse("Steve");
 
         String capeUrl = capeTexture.map(TextureModel::getShortUrl).orElse(" - ");
 

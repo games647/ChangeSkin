@@ -2,13 +2,13 @@ package com.github.games647.changeskin.core.model.skin;
 
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 
+import java.util.Base64;
 import java.util.Map;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 
 import static org.junit.Assert.assertThat;
 
@@ -26,6 +26,18 @@ public class SkinModelTest {
             "DbCF4xN+on1/kLgyje7TjTUQnMAs5CWRWulVnt3aOOon0mUk2xMkv6B6WwW1n0MAU2jbhhp3s/cEQFrdr1f5IMLQ/OEXo2u5PPbHzyUI" +
             "So0JhuZQLNNUG2ZuLpi+eo3DccfOM/HllaBPOuA5rHU46slTgxI4edTKsG+C2vbUSFo1+vq4TFyEkoY2G0I6aRWVpDQosAxw=";
 
+    private static final String OLD_SLIM_VALUE = "eyJ0aW1lc3RhbXAiOjE1MDQ2Mjk1ODUxMjEsInByb2ZpbGVJZCI6IjNkOWNmOTZiN2M" +
+            "yNzRiZWVhZDFiOWQ0NTM3NTRjYjc2IiwicHJvZmlsZU5hbWUiOiJOaWtha2EiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHV" +
+            "yZXMiOnsiU0tJTiI6eyJtZXRhZGF0YSI6eyJtb2RlbCI6InNsaW0ifSwidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQ" +
+            "vdGV4dHVyZS83ZjY5Mjk5MmIxOGJmMmY3MTVlMDc3NTNkYmM3YmJlZjU0M2FhYTI2ZThlM2YxYWY0NGI5ZjU0Njg5ODM0ZWEifX19";
+    private static final String OLD_SLIM_SIGNATURE = "FqiJXjKiEp3J9tK/VL/AwmB9ZHSvbOy9J9If1SYkiJM1WvhINm3kAeLOCeL/Tr8" +
+            "FvwuP0uHiLbn5P0b5qglIjxIt9RIZeJT/PazsXHuVQO0yTub1+mftu4EwtTxKj0fX1PV7vsXhlL43nZ/ucQFyRISYctbvHTaUayGmiLu" +
+            "tPkHnSqKOv3iM06svzS4UvjOnP8/llflVgt7cYjln1Tn0Y2sSwHpVedcLcBroDIXBM1z369gavI6i9VG+BbLPm+wj7+bi78jbBxrUmxv" +
+            "svD9uBEdwZub6W1ZGGk4ev0D7jucoC494PNOSpojOdOKgH1ctHwxkjONiTmBmq0g5I1I6JQSS5F9+K/kPtMh0vtT3ff9AZxjAQ+dNyYr" +
+            "IQWh4ma19pNVyKQNtXjacowoXmAPeKzajklc6/u8ZFAwiJzPZsIKhVrUZBUXPQ/mJzlbryORqid05rjWOnhHqIDGtyEz2+aof84uk20E" +
+            "nENDznmtq+GsuzEo6IPDf/H20Y/+9WIOzgY32LK0s6wGQschgyNHiFIyMbmzLnHwgoOXm67s6fKWa9ovgTzcXndsO5hDjjL3En2NfPAD" +
+            "kXZP1u201FW8Px6qZUhSXOxmJSqPDYSlEaiZw5yx2Vtq/ylSoZsG8iFWezIg9cxF4Z1lLkPeQMioFX9EvL0anlitc/TUFtOFoiHA=";
+
     private static final String STEVE_VALUE = "eyJ0aW1lc3RhbXAiOjE1MTcwNTI0MzU2NjgsInByb2ZpbGVJZCI6IjBhYWEyYzEzOTIyYT" +
             "QxMWJiNjU1OWI4YzA4NDA0Njk1IiwicHJvZmlsZU5hbWUiOiJnYW1lczY0NyIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dX" +
             "JlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTJlNmEzZjhjYWVhNzkxM2FiND" +
@@ -37,6 +49,20 @@ public class SkinModelTest {
             "xsdGaZtYEB5nsdF6lehRWLWVYhUX5nHk2HCfkGboXjhmFgcCLzFcV+YSC//P0CN2GDBlVGUPybTxceRjg7UoA4O9mn+1bLvTD7C8/G8k" +
             "RpqLRNK9/Wm8cf2sMbNCP6gPSlGao1nIuZsg7+eRih1G1LilJwtOaFhFeH+Pu+CUMCIZPxLtjTwZopG8P0FAwCTpO0gJJrqyMT+pozGA" +
             "fJ3mbt4uzuq5Mg1XYjazqEz5Zg8n0JwdTP0ZkoiVy4VMDeQz+C31bUmPcSDLxpJYF3uKQCGlbL1UZshcnQHXEEUhwb3bqjPKA=";
+
+    public static final String CAPE_VALUE = "eyJ0aW1lc3RhbXAiOjE1MjAyNzc1NzIzMjIsInByb2ZpbGVJZCI6IjYxNjk5YjJlZDMyNzRh" +
+            "MDE5ZjFlMGVhOGMzZjA2YmM2IiwicHJvZmlsZU5hbWUiOiJEaW5uZXJib25lIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1" +
+            "cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jZDZiZTkxNWIyNjE2NDNmZDEz" +
+            "NjIxZWU0ZTk5YzllNTQxYTU1MWQ4MDI3MjY4N2EzYjU2MTgzYjk4MWZiOWEifSwiQ0FQRSI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMu" +
+            "bWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2VlYzNjYWJmYWVlZDVkYWZlNjFjNjU0NjI5N2U4NTNhNTQ3YzM5ZWMyMzhkN2M0NGJmNGViNGE0" +
+            "OWRjMWYyYzAifX19";
+    public static final String CAPE_SIGNATURE = "qiURFe/44jgLijrsWAyKbhbQcCJ6Cv0yj1qWpuoY7dH+OA5RIoipxxg5rmAAUSD9SUxB" +
+            "ieVdsX1poc4U4OBfnkiwBKz/yIhpT9QQgN0mBOIX7seNf9/Acnvw75neGqn7LKpvHz8Kxn5zwsd8MGzXmpZR4n2Clwb+IjO7TX13v03E" +
+            "GxbjMJzRKTGMzLCeQDaXk1G13uYy6q6yrf8fPK2FAaeHbMnr1Csj11up+seTAy19A3fK27P05OT6nHlkUNhF5e/h4Qtjd/V98/JfAUTw" +
+            "mLca5gu2VRERXvDUm6rnP4paYawhH0YXQwVSCOujqjI2p4V/mnbTTILz4MFKRwwzwnmfcr6/LgC7kDpe6H3VvK3x/Y5chKl8aUNUC8b+" +
+            "cX0cDKE8dRSm0BirQjEmA6W76+AF6A7pSWufc7FnhyFROxpc/Z+qfBSwgT85BWqc7LmAgjoZLD+kZzF/hvsJlFrfaTZNZ5z7I26h0mke" +
+            "E2fwVoNmiHIDOPAgCkehv/HfEg5r45Q30MkxXFzsV9UEkFINo3GZOq8p3NTjhlj7OGjUQWpMiKu62+LWohGIm6NbKq2aYM/cPs0jSZ3s" +
+            "9lbofsHsEl301JyyI0OCbR4ltpgt6SpXOGInkVsbqbrRenL2gBun2fga0NNezgQHs0rZHXCnVGLuVm2kUJvSF9RgxwhXhKY=";
 
     @Test
     public void testParsingSlim() throws Exception {
@@ -52,7 +78,7 @@ public class SkinModelTest {
         TextureModel skinTexture = textures.get(TextureType.SKIN);
         assertThat(skinTexture.getUrl(), is("http://textures.minecraft.net/texture/173567ea72ad4a22bf70bcba5fed3" +
                 "b8b9ea024639131bdd863c25d22f89"));
-        assertThat(skinTexture.getMetadata().getModel(), is("slim"));
+        assertThat(skinTexture.isSlim(), is(true));
     }
 
     @Test
@@ -69,7 +95,7 @@ public class SkinModelTest {
         TextureModel skinTexture = textures.get(TextureType.SKIN);
         assertThat(skinTexture.getUrl(), is("http://textures.minecraft.net/texture/a2e6a3f8caea7913ab48237beea6d" +
                 "6a1a6f76936e3b71af4c7a08bb61c7870"));
-        assertThat(skinTexture.getMetadata(), nullValue());
+        assertThat(skinTexture.isSlim(), is(false));
     }
 
     @Test
@@ -83,52 +109,29 @@ public class SkinModelTest {
 
     @Test
     public void testSignatureFromSerialized() throws Exception {
-        SkinModel slimModel = new SkinModel(-1, 1517001205327L,
+        SkinModel oldSlimModel = new SkinModel(-1, 1504629585121L,
+                UUIDTypeAdapter.parseId("3d9cf96b7c274beead1b9d453754cb76"),
+                "Nikaka", true, "7f692992b18bf2f715e07753dbc7bbef543aaa26e8e3f1af44b9f54689834ea",
+                "", Base64.getDecoder().decode(OLD_SLIM_SIGNATURE));
+        assertThat(VerifyUtil.isValid(oldSlimModel.getEncodedValue(), oldSlimModel.getSignature()), is(true));
+
+        SkinModel slimModel = new SkinModel(-1, 1517055262188L,
                 UUIDTypeAdapter.parseId("78c3a4e837e448189df8f9ce61c5efcc"),
                 "Rashomon_", true, "173567ea72ad4a22bf70bcba5fed3b8b9ea024639131bdd863c25d22f89",
-                "",
-                hexStringToByteArray("4E204F84DD36EFE474C0EDDDDBBB471DAFD1F7E4D1A52DEEB498507258F5E04182BAF5317A4D5" +
-                        "A4E4E84C75E23B01B8CDEC21286F7CDB7F93C8252FAB2DE216C1512120BCCCA9AC0BBBFFB7195F9F466C48EF77" +
-                        "681215ED5D6525602221BEB3FCABEA95C8711D727E392AEC95DC090E780A3FCA8E43B518A49E17C32389D80759" +
-                        "31C97DFB0D1BAE00A94BC662451AE85B7CC0FA6BE5D9D48986959504DD2EB36F6AEA4BD3818BCDFC9C0F17FD0A" +
-                        "6F0F4E3172E0790C31D1293CE4051F32F4592279E89DE71061B1AC20BEDA20511EE0A1246FB8481837141F7301" +
-                        "C003D6119D99A617BC224F946D190BA7442E7EA43901D0B2AE9867C1EF35E94B9BB33FFED63EBB1C645AB32E0F" +
-                        "4488AD4B4AF176DE80736FFA1058457CB8BA8789D394856DEF2339697BE8756097B13AA75A24DB534BF19E11B2" +
-                        "98983F4129C24802251F228DC9F968E35E30DA0A47C0995255EDFAC0E68019805AC661EAC16E2A5A96E79609E9" +
-                        "448CBC157EFC3708CB0AE4A0D9B7895B2D4043865D8433253B62F61A6D96687CCD4DF13D94AEE95CBDF5462F8C" +
-                        "2C717A5F92BA2AE56D86908F85C68E4EB4B2CEB62AC576DF617870CA454FB6BD03AB619B97B34A14C1E073246F" +
-                        "11C7550DFA2F34EBCA34D48CC23FC9EA98B316624D3D90678B109C7559373FFFECE755258C5CC2BF86E3D52F43" +
-                        "E33B5D0EFABF1C779D44482ADC63B5EBF919A4736CEB9CB"));
-
+                "", Base64.getDecoder().decode(SLIM_SIGNATURE));
         assertThat(VerifyUtil.isValid(slimModel.getEncodedValue(), slimModel.getSignature()), is(true));
 
-        SkinModel steveModel = new SkinModel(-1, 1516999838117L,
-                UUIDTypeAdapter.parseId("c883f59d66214243b64b3781d9fd9530"),
-                "Malachiel", false, "e5edb4126b35ccab960276d1aecffb51f9fc1a4776eb9609a4fdbd9784e54",
-                "",
-                hexStringToByteArray("C1F320BF89677DBB8F68C12E71A5ED396EB57EC0530ED196A8533E7A6B6761F51257F41FE64EFF2" +
-                        "EDF0FCC4893ABC15300D1ABAC258770D5BCA292B562607C7D26AEEE7AC49BF59A50FC2CE247A53D9E53154D34C80" +
-                        "920CDCAC458E31C37A4D42A2BDD34674DEC4C3D04ECF0E1960D6172B6F0CDC8BB5D4B956C77071E7276CDBC28469" +
-                        "A38584F14283CD624B782E75B51FD87AEE02A62127ECB3147F6383AD3ED165239C503778FCEE41C1E648C4AC7D9A" +
-                        "DEEB2ACF18C78722E4C1A331ECC373C2D84A3E5473D4A8D8818C22C54F7601A0713D9EC7B70C0E7709DED19DFAA5" +
-                        "CF3F832A8AF1B4B522BBEB64F9808120FAD39AC53095075818B896BD8405660866F752B850714E6441A8162349B3" +
-                        "1F5469F84DF001EF071C190145820405B0457FD1A8CB8455190D87AD1870CDEFF53B66CFD09192CC8D911B69E3EF" +
-                        "F06F8A5554FE5E7AF00B2E87FBEBFE47F2FC65CF4EBB675F5C1285B8D149B194B83C19A34CE718F56858890A1CDB" +
-                        "52CF8E3316111A8637C5801FAD46BAFDF9B190DF4DE4B0CB3B80D398374A0B106519FE4ABCC6919AC656FDD4B669" +
-                        "5E8D0D291C3D5D6448DAA48F9CE18AA770217BF938DFE47A1FF310D206AB0EA0C77F1D3C5922366DAA6D53646907" +
-                        "AE339C95EEE21B41BF078D89FF45AC82E8BD52085367D6CF046D40D5ACA0A029991D7DC917C46D3AA6413020135B" +
-                        "F73B3D23B01030971EE00BFD6"));
+        SkinModel steveModel = new SkinModel(-1, 1517052435668L,
+                UUIDTypeAdapter.parseId("0aaa2c13922a411bb6559b8c08404695"),
+                "games647", false, "a2e6a3f8caea7913ab48237beea6d6a1a6f76936e3b71af4c7a08bb61c7870",
+                "", Base64.getDecoder().decode(STEVE_SIGNATURE));
         assertThat(VerifyUtil.isValid(steveModel.getEncodedValue(), steveModel.getSignature()), is(true));
-    }
 
-    private static byte[] hexStringToByteArray(String hexString) {
-        int len = hexString.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
-                    + Character.digit(hexString.charAt(i+1), 16));
-        }
+        SkinModel capeModel = new SkinModel(-1, 1520277572322L,
+                UUIDTypeAdapter.parseId("61699b2ed3274a019f1e0ea8c3f06bc6"),
+                "Dinnerbone", false, "cd6be915b261643fd13621ee4e99c9e541a551d80272687a3b56183b981fb9a",
+                "eec3cabfaeed5dafe61c6546297e853a547c39ec238d7c44bf4eb4a49dc1f2c0", Base64.getDecoder().decode(CAPE_SIGNATURE));
 
-        return data;
+        assertThat(VerifyUtil.isValid(capeModel.getEncodedValue(), capeModel.getSignature()), is(true));
     }
 }

@@ -2,7 +2,6 @@ package com.github.games647.changeskin.core;
 
 import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.github.games647.changeskin.core.model.skin.MetadataModel;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.model.skin.TextureModel;
 import com.zaxxer.hikari.HikariConfig;
@@ -243,10 +242,7 @@ public class SkinStorage {
             boolean slimModel = false;
             if (skinTexture != null) {
                 skinUrl = skinTexture.getShortUrl();
-                MetadataModel metadata = skinTexture.getMetadata();
-                if (metadata != null) {
-                    slimModel = true;
-                }
+                slimModel = skinTexture.isSlim();
             }
 
             TextureModel capeTexture = skinData.getTextures().get(CAPE);

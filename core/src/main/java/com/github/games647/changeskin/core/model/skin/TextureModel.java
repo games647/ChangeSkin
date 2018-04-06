@@ -1,17 +1,20 @@
 package com.github.games647.changeskin.core.model.skin;
 
+import java.util.Collections;
+import java.util.Map;
+
 public class TextureModel {
 
     private static final String URL_PREFIX = "http://textures.minecraft.net/texture/";
 
     private final String url;
-    private MetadataModel metadata;
+    private Map<String, String> metadata;
 
     public TextureModel(String shortUrl, boolean slimModel) {
         this.url = URL_PREFIX + shortUrl;
 
         if (slimModel) {
-            metadata = new MetadataModel();
+            metadata = Collections.singletonMap("model", "slim");
         }
     }
 
@@ -19,11 +22,8 @@ public class TextureModel {
         this(shortUrl, false);
     }
 
-    /**
-     * @return can be null if not slim or this is a cape
-     */
-    public MetadataModel getMetadata() {
-        return metadata;
+    public boolean isSlim() {
+        return metadata != null && metadata.containsKey("model");
     }
 
     public String getUrl() {
