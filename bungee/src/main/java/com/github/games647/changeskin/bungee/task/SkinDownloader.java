@@ -37,6 +37,6 @@ public class SkinDownloader extends SharedDownloader {
 
     @Override
     public void sendMessageInvoker(String id) {
-        plugin.sendMessage(invoker, id);
+        plugin.getLocaleManager().sendMessage(invoker, id);
     }
 }

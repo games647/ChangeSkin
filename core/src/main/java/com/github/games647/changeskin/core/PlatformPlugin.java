@@ -1,5 +1,7 @@
 package com.github.games647.changeskin.core;
 
+import com.github.games647.changeskin.core.shared.ChangeSkinAPI;
+
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
@@ -12,9 +14,11 @@ public interface PlatformPlugin<C> {
 
     Path getPluginFolder();
 
-    Logger getLog();
+    ChangeSkinAPI<?, ?> getApi();
 
-    void sendMessage(C receiver, String key);
+    LocaleManager<C> getLocaleManager();
+
+    Logger getLog();
 
     default ThreadFactory getThreadFactory() {
         return null;

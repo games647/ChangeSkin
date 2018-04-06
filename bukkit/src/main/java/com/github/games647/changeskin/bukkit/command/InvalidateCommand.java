@@ -24,14 +24,14 @@ public class InvalidateCommand extends AbstractForwardCommand {
         if (args.length > 0) {
             Player targetPlayer = Bukkit.getPlayerExact(args[0]);
             if (targetPlayer == null) {
-                plugin.sendMessage(sender, "not-online");
+                plugin.getLocaleManager().sendMessage(sender, "not-online");
                 return true;
             }
 
             String permPrefix = plugin.getName().toLowerCase() + ".command.skinupdate.other.";
             if (!sender.hasPermission(permPrefix + targetPlayer.getUniqueId())
                     && !sender.hasPermission(permPrefix + '*')) {
-                plugin.sendMessage(sender, "no-permission-other");
+                plugin.getLocaleManager().sendMessage(sender, "no-permission-other");
                 return true;
             }
 
@@ -41,7 +41,7 @@ public class InvalidateCommand extends AbstractForwardCommand {
         }
 
         if (!(sender instanceof Player)) {
-            plugin.sendMessage(sender, "no-console");
+            plugin.getLocaleManager().sendMessage(sender, "no-console");
             return true;
         }
 

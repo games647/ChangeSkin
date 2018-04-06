@@ -8,9 +8,9 @@ import com.github.games647.changeskin.core.shared.SkinFormatter;
 import java.util.Optional;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public class InfoCommand extends Command {
 
@@ -26,7 +26,7 @@ public class InfoCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] strings) {
         if (!(sender instanceof ProxiedPlayer)) {
-            plugin.sendMessage(sender, "no-console");
+            plugin.getLocaleManager().sendMessage(sender, "no-console");
             return;
         }
 
@@ -34,10 +34,11 @@ public class InfoCommand extends Command {
         UserPreference preference = plugin.getLoginSession(player.getPendingConnection());
         Optional<SkinModel> optSkin = preference.getTargetSkin();
         if (optSkin.isPresent()) {
-            String template = plugin.getCore().getMessage("skin-info");
-            sender.sendMessage(TextComponent.fromLegacyText(formatter.apply(template, optSkin.get())));
+            String template = plugin.getLocaleManager().getLocalizedMessage(player, "skin-info");
+            String formatted = formatter.apply(template, optSkin.get());
+            sender.sendMessage(ComponentSerializer.parse(formatted));
         } else {
-            plugin.sendMessage(sender, "skin-not-found");
+            plugin.getLocaleManager().sendMessage(sender, "skin-not-found");
         }
     }
 }

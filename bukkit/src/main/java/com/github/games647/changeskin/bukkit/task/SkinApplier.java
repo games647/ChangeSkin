@@ -86,15 +86,15 @@ public class SkinApplier extends SharedApplier {
         sendUpdateOthers();
 
         if (receiver.equals(invoker)) {
-            plugin.sendMessage(receiver, "skin-changed");
+            plugin.getLocaleManager().sendMessage(receiver, "skin-changed");
         } else {
-            plugin.sendMessage(invoker, "skin-updated");
+            plugin.getLocaleManager().sendMessage(invoker, "skin-updated");
         }
     }
 
     @Override
     protected void sendMessage(String key) {
-        plugin.sendMessage(invoker, key);
+        plugin.getLocaleManager().sendMessage(invoker, key);
     }
 
     @Override

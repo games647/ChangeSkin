@@ -10,6 +10,7 @@ import com.github.games647.changeskin.bungee.listener.MessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
+import com.github.games647.changeskin.core.LocaleManager;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.message.ChannelMessage;
@@ -28,7 +29,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -42,12 +42,15 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     private final ConcurrentMap<PendingConnection, UserPreference> loginSessions = new MapMaker().weakKeys().makeMap();
     private final BungeeSkinAPI api = new BungeeSkinAPI(this);
 
+    private BungeeLocaleManager localeManager;
     private ChangeSkinCore core;
     private Logger logger;
 
     @Override
     public void onEnable() {
         logger = CommonUtil.createLoggerFromJDK(getLogger());
+        localeManager = new BungeeLocaleManager(logger, getPluginFolder());
+        localeManager.loadMessages();
 
         core = new ChangeSkinCore(this);
         try {
@@ -88,8 +91,14 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         return getDescription().getName();
     }
 
+    @Override
     public BungeeSkinAPI getApi() {
         return api;
+    }
+
+    @Override
+    public LocaleManager<CommandSender> getLocaleManager() {
+        return localeManager;
     }
 
     @Override
@@ -100,14 +109,6 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     @Override
     public Path getPluginFolder() {
         return getDataFolder().toPath();
-    }
-
-    @Override
-    public void sendMessage(CommandSender receiver, String key) {
-        String message = core.getMessage(key);
-        if (message != null && receiver != null) {
-            receiver.sendMessage(TextComponent.fromLegacyText(message));
-        }
     }
 
     @Override
@@ -158,7 +159,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
             if (invoker.hasPermission('-' + getName().toLowerCase() + ".skin.whitelist." + uuid)) {
                 //blacklisted explicit
                 if (sendMessage) {
-                    sendMessage(invoker, "no-permission");
+                    localeManager.sendMessage(invoker, "no-permission");
                 }
 
                 return false;
@@ -169,7 +170,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
 
         //disallow - not whitelisted or blacklisted
         if (sendMessage) {
-            sendMessage(invoker, "no-permission");
+            localeManager.sendMessage(invoker, "no-permission");
         }
 
         return false;

@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
+import com.github.games647.changeskin.core.LocaleManager;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.sponge.command.InfoCommand;
 import com.github.games647.changeskin.sponge.command.InvalidateCommand;
@@ -25,7 +26,6 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 @Singleton
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
@@ -38,6 +38,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
     private final ChangeSkinCore core = new ChangeSkinCore(this);
     private final SpongeSkinAPI api = new SpongeSkinAPI(this);
+    private final SpongeLocaleManager localeManager;
 
     private boolean initialized;
 
@@ -47,10 +48,14 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
         this.dataFolder = dataFolder;
         this.logger = logger;
         this.injector = injector.createChildInjector(binder -> binder.bind(ChangeSkinCore.class).toInstance(core));
+
+        this.localeManager = new SpongeLocaleManager(logger, dataFolder);
     }
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
+        localeManager.loadMessages();
+
         //load config and database
         try {
             core.load(true);
@@ -90,6 +95,11 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
     }
 
     @Override
+    public LocaleManager<CommandSource> getLocaleManager() {
+        return localeManager;
+    }
+
+    @Override
     public boolean hasSkinPermission(CommandSource invoker, UUID uuid, boolean sendMessage) {
         if (invoker.hasPermission(PomData.ARTIFACT_ID + ".skin.whitelist." + uuid)) {
             return true;
@@ -97,12 +107,13 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
         //disallow - not whitelisted or blacklisted
         if (sendMessage) {
-            sendMessage(invoker, "no-permission");
+            localeManager.sendMessage(invoker, "no-permission");
         }
 
         return false;
     }
 
+    @Override
     public SpongeSkinAPI getApi() {
         return api;
     }
@@ -120,13 +131,5 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
     @Override
     public Logger getLog() {
         return logger;
-    }
-
-    @Override
-    public void sendMessage(CommandSource receiver, String key) {
-        String message = core.getMessage(key);
-        if (message != null && receiver != null) {
-            receiver.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(message));
-        }
     }
 }

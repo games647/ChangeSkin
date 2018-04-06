@@ -8,6 +8,8 @@ import com.github.games647.changeskin.core.shared.SkinFormatter;
 import java.util.Optional;
 import java.util.UUID;
 
+import net.md_5.bungee.chat.ComponentSerializer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,7 +28,7 @@ public class InfoCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            plugin.sendMessage(sender, "no-console");
+            plugin.getLocaleManager().sendMessage(sender, "no-console");
             return true;
         }
 
@@ -45,10 +47,11 @@ public class InfoCommand implements CommandExecutor {
         if (player != null) {
             Optional<SkinModel> optSkin = preference.getTargetSkin();
             if (optSkin.isPresent()) {
-                String template = plugin.getCore().getMessage("skin-info");
-                player.sendMessage(formatter.apply(template, optSkin.get()));
+                String template = plugin.getLocaleManager().getLocalizedMessage(player, "skin-info");
+                String formatted = formatter.apply(template, optSkin.get());
+                player.spigot().sendMessage(ComponentSerializer.parse(formatted));
             } else {
-                plugin.sendMessage(player, "skin-not-found");
+                plugin.getLocaleManager().sendMessage(player, "skin-not-found");
             }
         }
     }

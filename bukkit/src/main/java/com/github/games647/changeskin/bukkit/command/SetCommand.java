@@ -27,7 +27,7 @@ public class SetCommand extends AbstractForwardCommand {
         }
 
         if (isCooldown(sender)) {
-            plugin.sendMessage(sender, "cooldown");
+            plugin.getLocaleManager().sendMessage(sender, "cooldown");
             return true;
         }
 
@@ -37,7 +37,7 @@ public class SetCommand extends AbstractForwardCommand {
 
         if (args.length > 1) {
             if (!sender.hasPermission(command.getPermission() + ".other")) {
-                plugin.sendMessage(sender, "no-permission-other");
+                plugin.getLocaleManager().sendMessage(sender, "no-permission-other");
                 return true;
             }
 
@@ -46,7 +46,7 @@ public class SetCommand extends AbstractForwardCommand {
 
             Player targetPlayer = Bukkit.getPlayerExact(targetPlayerName);
             if (targetPlayer == null) {
-                plugin.sendMessage(sender, "not-online");
+                plugin.getLocaleManager().sendMessage(sender, "not-online");
             } else {
                 setSkin(sender, targetPlayer, toSkin, isKeepSkin(args));
             }
@@ -59,10 +59,10 @@ public class SetCommand extends AbstractForwardCommand {
 
                 setSkin(sender, (Player) sender, args[0], isKeepSkin(args));
             } else {
-                plugin.sendMessage(sender, "no-skin");
+                plugin.getLocaleManager().sendMessage(sender, "no-skin");
             }
         } else {
-            plugin.sendMessage(sender, "no-console");
+            plugin.getLocaleManager().sendMessage(sender, "no-console");
         }
 
         return true;
@@ -90,11 +90,11 @@ public class SetCommand extends AbstractForwardCommand {
                 return;
             }
 
-            plugin.sendMessage(sender, "skin-change-queue");
+            plugin.getLocaleManager().sendMessage(sender, "skin-change-queue");
             Runnable skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid, keepSkin);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, skinDownloader);
         } catch (IllegalArgumentException illegalArgumentException) {
-            plugin.sendMessage(sender, "invalid-uuid");
+            plugin.getLocaleManager().sendMessage(sender, "invalid-uuid");
         }
     }
 

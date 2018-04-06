@@ -74,7 +74,7 @@ public class SkinApplier extends SharedApplier {
 
     @Override
     protected void sendMessage(String key) {
-        plugin.sendMessage(invoker, key);
+        plugin.getLocaleManager().sendMessage(invoker, key);
     }
 
     @Override

@@ -6,10 +6,11 @@ import com.github.games647.changeskin.bukkit.command.SelectCommand;
 import com.github.games647.changeskin.bukkit.command.SetCommand;
 import com.github.games647.changeskin.bukkit.command.SkullCommand;
 import com.github.games647.changeskin.bukkit.command.UploadCommand;
-import com.github.games647.changeskin.bukkit.listener.LoginListener;
 import com.github.games647.changeskin.bukkit.listener.BungeeListener;
+import com.github.games647.changeskin.bukkit.listener.LoginListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
+import com.github.games647.changeskin.core.LocaleManager;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.message.ChannelMessage;
@@ -30,13 +31,18 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
     private final ConcurrentMap<UUID, UserPreference> loginSessions = CommonUtil.buildCache(2 * 60, -1);
     private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
-    private final ChangeSkinCore core = new ChangeSkinCore(this);
 
-    private boolean bungeeCord;
+    private final ChangeSkinCore core = new ChangeSkinCore(this);
     private final BukkitSkinAPI api = new BukkitSkinAPI(this);
+
+    private BukkitLocaleManager localeManager;
+    private boolean bungeeCord;
 
     @Override
     public void onEnable() {
+        localeManager = new BukkitLocaleManager(logger, getPluginFolder());
+        localeManager.loadMessages();
+
         try {
             bungeeCord = getServer().spigot().getConfig().getBoolean("settings.bungeecord");
         } catch (Exception | NoSuchMethodError ex) {
@@ -77,6 +83,11 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
         return api;
     }
 
+    @Override
+    public LocaleManager<CommandSender> getLocaleManager() {
+        return localeManager;
+    }
+
     public SkinStorage getStorage() {
         return core.getStorage();
     }
@@ -101,7 +112,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
         //disallow - not whitelisted or blacklisted
         if (sendMessage) {
-            sendMessage(invoker, "no-permission");
+            localeManager.sendMessage(invoker, "no-permission");
         }
 
         return false;
@@ -126,14 +137,6 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
         message.writeTo(out);
         sender.sendPluginMessage(this, getName(), out.toByteArray());
-    }
-
-    @Override
-    public void sendMessage(CommandSender receiver, String key) {
-        String message = core.getMessage(key);
-        if (message != null && receiver != null) {
-            receiver.sendMessage(message);
-        }
     }
 
     @Override

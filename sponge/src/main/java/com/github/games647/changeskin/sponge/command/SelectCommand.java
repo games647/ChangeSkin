@@ -28,7 +28,7 @@ public class SelectCommand implements CommandExecutor, ChangeSkinCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         if (!(src instanceof Player)) {
-            plugin.sendMessage(src, "no-console");
+            plugin.getLocaleManager().sendMessage(src, "no-console");
             return CommandResult.empty();
         }
 
@@ -39,7 +39,7 @@ public class SelectCommand implements CommandExecutor, ChangeSkinCommand {
             Player receiver = (Player) src;
             Task.builder().async().execute(new SkinSelector(plugin, receiver, targetId)).submit(plugin);
         } catch (NumberFormatException numberFormatException) {
-            plugin.sendMessage(src, "invalid-skin-name");
+            plugin.getLocaleManager().sendMessage(src, "invalid-skin-name");
         }
 
         return CommandResult.success();

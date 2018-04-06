@@ -34,7 +34,7 @@ public class InfoCommand implements CommandExecutor, ChangeSkinCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            plugin.sendMessage(src, "no-console");
+            plugin.getLocaleManager().sendMessage(src, "no-console");
             return CommandResult.empty();
         }
 
@@ -64,13 +64,13 @@ public class InfoCommand implements CommandExecutor, ChangeSkinCommand {
 
             Optional<SkinModel> optSkin = preference.getTargetSkin();
             if (optSkin.isPresent()) {
-                String template = plugin.getCore().getMessage("skin-info");
+                String template = plugin.getLocaleManager().getLocalizedMessage(player, "skin-info");
                 String formatted = formatter.apply(template, optSkin.get());
 
-                Text text = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(formatted);
+                Text text = TextSerializers.JSON.deserialize(formatted);
                 player.sendMessage(text);
             } else {
-                plugin.sendMessage(player, "skin-not-found");
+                plugin.getLocaleManager().sendMessage(player, "skin-not-found");
             }
         }
     }

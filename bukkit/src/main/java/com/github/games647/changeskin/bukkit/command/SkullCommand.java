@@ -57,12 +57,12 @@ public class SkullCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            plugin.sendMessage(sender, "no-console");
+            plugin.getLocaleManager().sendMessage(sender, "no-console");
             return true;
         }
 
         if (args.length == 0) {
-            plugin.sendMessage(sender, "select-noargs");
+            plugin.getLocaleManager().sendMessage(sender, "select-noargs");
         } else {
             String targetName = args[0].toLowerCase().replace("skin-", "");
             try {
@@ -72,7 +72,7 @@ public class SkullCommand implements CommandExecutor {
                     applySkin(player, plugin.getStorage().getSkin(targetId));
                 });
             } catch (NumberFormatException numberFormatException) {
-                plugin.sendMessage(sender, "invalid-skin-name");
+                plugin.getLocaleManager().sendMessage(sender, "invalid-skin-name");
             }
         }
 

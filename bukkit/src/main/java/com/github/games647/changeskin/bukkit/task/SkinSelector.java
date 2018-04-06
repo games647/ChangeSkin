@@ -26,6 +26,6 @@ public class SkinSelector extends SharedSkinSelect {
 
     @Override
     public void sendMessageInvoker(String id) {
-        plugin.sendMessage(receiver, id);
+        plugin.getLocaleManager().sendMessage(receiver, id);
     }
 }

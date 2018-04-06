@@ -39,7 +39,7 @@ public class MessageListener extends AbstractSkinListener {
             if (message.isAllowed()) {
                 onPermissionSuccess(message, invoker);
             } else {
-                plugin.sendMessage(invoker, "no-permission");
+                plugin.getLocaleManager().sendMessage(invoker, "no-permission");
             }
         } else if ("ForwardCmd".equals(subChannel)) {
             onCommandForward(invoker, dataInput);
@@ -70,9 +70,9 @@ public class MessageListener extends AbstractSkinListener {
         
         if (core.getConfig().getBoolean("instantSkinChange")) {
             plugin.getApi().applySkin(receiver, targetSkin);
-            plugin.sendMessage(invoker, "skin-changed");
+            plugin.getLocaleManager().sendMessage(invoker, "skin-changed");
         } else {
-            plugin.sendMessage(invoker, "skin-changed-no-instant");
+            plugin.getLocaleManager().sendMessage(invoker, "skin-changed-no-instant");
         }
     }
 

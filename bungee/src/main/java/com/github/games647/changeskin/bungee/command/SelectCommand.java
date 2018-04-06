@@ -21,12 +21,12 @@ public class SelectCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) {
-            plugin.sendMessage(sender, "no-console");
+            plugin.getLocaleManager().sendMessage(sender, "no-console");
             return;
         }
 
         if (args.length == 0) {
-            plugin.sendMessage(sender, "select-noargs");
+            plugin.getLocaleManager().sendMessage(sender, "select-noargs");
         } else {
             String targetName = args[0].toLowerCase().replace("skin-", "");
             try {
@@ -34,7 +34,7 @@ public class SelectCommand extends Command {
                 Runnable skinSelector = new SkinSelector(plugin, (ProxiedPlayer) sender, targetId);
                 ProxyServer.getInstance().getScheduler().runAsync(plugin, skinSelector);
             } catch (NumberFormatException numberFormatException) {
-                plugin.sendMessage(sender, "invalid-skin-name");
+                plugin.getLocaleManager().sendMessage(sender, "invalid-skin-name");
             }
         }
     }

@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -25,13 +24,9 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import org.slf4j.Logger;
 
-import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ChangeSkinCore {
-
-    private final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
     //this is thread-safe in order to save and load from different threads like the skin download
     private final Map<String, UUID> uuidCache = CommonUtil.buildCache(3 * 60 * 60, 1024 * 5);
@@ -55,7 +50,7 @@ public class ChangeSkinCore {
     }
 
     public void load(boolean database) {
-        saveDefaultFile("messages.yml");
+        saveDefaultFile("lang/en.json");
         saveDefaultFile("config.yml");
 
         try {
@@ -77,25 +72,12 @@ public class ChangeSkinCore {
                 loadDefaultSkins(config.getStringList("default-skins"));
                 loadAccounts(config.getStringList("upload-accounts"));
             }
-
-            Configuration messages = loadFile("messages.yml");
-
-            messages.getKeys()
-                    .stream()
-                    .filter(key -> messages.get(key) != null)
-                    .collect(toMap(identity(), messages::get))
-                    .forEach((key, message) -> {
-                        String colored = CommonUtil.translateColorCodes((String) message);
-                        if (!colored.isEmpty()) {
-                            localeMessages.put(key, colored.replace("/newline", "\n"));
-                        }
-                    });
         } catch (IOException ioEx) {
-            plugin.getLog().info("Failed to load yaml file", ioEx);
+            plugin.getLog().info("Failed to load configuration file", ioEx);
         }
     }
 
-    public boolean setupDatabase(Configuration sqlConfig) {
+    private boolean setupDatabase(Configuration sqlConfig) {
         String driver = sqlConfig.getString("driver");
         if (!checkDriver(driver)) {
             return false;
@@ -149,10 +131,6 @@ public class ChangeSkinCore {
         return crackedNames;
     }
 
-    public String getMessage(String key) {
-        return localeMessages.get(key);
-    }
-
     public List<SkinModel> getDefaultSkins() {
         return defaultSkins;
     }
@@ -198,14 +176,14 @@ public class ChangeSkinCore {
     private void saveDefaultFile(String fileName) {
         Path dataFolder = plugin.getPluginFolder();
         try {
-            if (Files.notExists(dataFolder)) {
-                Files.createDirectories(dataFolder);
+            Path file = dataFolder.resolve(fileName);
+            if (Files.notExists(file.getParent())) {
+                Files.createDirectories(file.getParent());
             }
 
-            Path configFile = dataFolder.resolve(fileName);
-            if (Files.notExists(configFile)) {
+            if (Files.notExists(file)) {
                 try (InputStream defaultStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
-                    Files.copy(defaultStream, configFile);
+                    Files.copy(defaultStream, file);
                 }
             }
         } catch (IOException ioExc) {

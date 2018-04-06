@@ -22,20 +22,20 @@ public class UploadCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            plugin.sendMessage(sender, "upload-noargs");
+            plugin.getLocaleManager().sendMessage(sender, "upload-noargs");
         } else {
             String url = args[0];
             if (url.startsWith("http://") || url.startsWith("https://")) {
                 List<Account> accounts = plugin.getCore().getUploadAccounts();
                 if (accounts.isEmpty()) {
-                    plugin.sendMessage(sender, "no-accounts");
+                    plugin.getLocaleManager().sendMessage(sender, "no-accounts");
                 } else {
                     Account uploadAccount = accounts.get(0);
                     Runnable skinUploader = new SkinUploader(plugin, sender, uploadAccount, url);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, skinUploader);
                 }
             } else {
-                plugin.sendMessage(sender, "no-valid-url");
+                plugin.getLocaleManager().sendMessage(sender, "no-valid-url");
             }
         }
 

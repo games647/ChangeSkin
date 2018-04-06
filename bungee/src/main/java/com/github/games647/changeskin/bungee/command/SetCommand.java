@@ -30,7 +30,7 @@ public class SetCommand extends Command {
             sender.removeGroups(plugin.getName() + "-OP");
 
             if (plugin.getCore().getCooldownService().isTracked(((ProxiedPlayer) sender).getUniqueId())) {
-                plugin.sendMessage(sender, "cooldown");
+                plugin.getLocaleManager().sendMessage(sender, "cooldown");
                 return;
             }
         }
@@ -42,7 +42,7 @@ public class SetCommand extends Command {
         if (args.length > 1) {
             if (!sender.hasPermission(plugin.getName().toLowerCase() + ".command.setskin.other")
                     && !sender.hasPermission(plugin.getName().toLowerCase() + ".command.setskin.*")) {
-                plugin.sendMessage(sender, "no-permission-other");
+                plugin.getLocaleManager().sendMessage(sender, "no-permission-other");
                 return;
             }
 
@@ -51,7 +51,7 @@ public class SetCommand extends Command {
 
             ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(targetPlayerName);
             if (targetPlayer == null) {
-                plugin.sendMessage(sender, "not-online");
+                plugin.getLocaleManager().sendMessage(sender, "not-online");
             } else {
                 setSkin(sender, targetPlayer, toSkin, isOp, isKeepSkin(args));
             }
@@ -64,10 +64,10 @@ public class SetCommand extends Command {
 
                 setSkin(sender, (ProxiedPlayer) sender, args[0], isOp, isKeepSkin(args));
             } else {
-                plugin.sendMessage(sender, "no-skin");
+                plugin.getLocaleManager().sendMessage(sender, "no-skin");
             }
         } else {
-            plugin.sendMessage(sender, "no-console");
+            plugin.getLocaleManager().sendMessage(sender, "no-console");
         }
     }
 
@@ -95,12 +95,12 @@ public class SetCommand extends Command {
                 return;
             }
 
-            plugin.sendMessage(sender, "skin-change-queue");
+            plugin.getLocaleManager().sendMessage(sender, "skin-change-queue");
 
             Runnable skinDownloader = new SkinDownloader(plugin, sender, receiverPayer, uuid, bukkitOp, keepSkin);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, skinDownloader);
         } catch (IllegalArgumentException illegalArgumentException) {
-            plugin.sendMessage(sender, "invalid-uuid");
+            plugin.getLocaleManager().sendMessage(sender, "invalid-uuid");
         }
     }
 

@@ -36,13 +36,13 @@ public class SetCommand implements CommandExecutor, ChangeSkinCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         if (!(src instanceof Player)) {
-            plugin.sendMessage(src, "no-console");
+            plugin.getLocaleManager().sendMessage(src, "no-console");
             return CommandResult.empty();
         }
 
         UUID uniqueId = ((Player) src).getUniqueId();
         if (core.getCooldownService().isTracked(uniqueId)) {
-            plugin.sendMessage(src, "cooldown");
+            plugin.getLocaleManager().sendMessage(src, "cooldown");
             return CommandResult.empty();
         }
 
@@ -61,7 +61,7 @@ public class SetCommand implements CommandExecutor, ChangeSkinCommand {
                 return CommandResult.empty();
             }
 
-            plugin.sendMessage(src, "skin-change-queue");
+            plugin.getLocaleManager().sendMessage(src, "skin-change-queue");
             Runnable skinDownloader = new SkinDownloader(plugin, src, receiver, targetUUID, keepSkin);
             Task.builder().async().execute(skinDownloader).submit(plugin);
             return CommandResult.success();

@@ -1,0 +1,171 @@
+{
+  "cooldown": {
+    "color": "dark_red",
+    "text": "Please wait, you cannot change your skin that fast!"
+  },
+  "no-permission": {
+    "color": "dark_red",
+    "text": "You don't have the permission to set this skin"
+  },
+  "no-permission-other": {
+    "color": "dark_red",
+    "text": "You don't have the permission permission to set other players skins"
+  },
+  "not-online": {
+    "color": "dark_red",
+    "text": "This player isn't online"
+  },
+  "no-skin": {
+    "color": "dark_red",
+    "text": "You have to provide the skin you want to change to"
+  },
+  "no-console": {
+    "color": "dark_red",
+    "text": "You have to be a player to set your own skin"
+  },
+  "no-resolve": {
+    "color": "dark_red",
+    "text": "The username's UUID couldn't be resolved"
+  },
+  "uuid-resolved": {
+    "color": "dark_green",
+    "text": "UUID was successfully resolved, downloading the skin."
+  },
+  "reset": {
+    "color": "dark_green",
+    "text": "Resetting preferences to the default value"
+  },
+  "skin-change-queue": {
+    "color": "gold",
+    "text": "A skin change was queued."
+  },
+  "invalid-uuid": {
+    "color": "dark_green",
+    "text": "The provided UUID was invalid."
+  },
+  "skin-changed-no-instant": {
+    "color": "dark_green",
+    "text": "Your skin was changed, please relogin to see the changes"
+  },
+  "skin-changed": {
+    "color": "dark_green",
+    "text": "You received your new skin!"
+  },
+  "rate-limit": {
+    "color": "dark_red",
+    "text": "Name to UUID rate-limit reached. Please wait some time or submit the uuid of your target skin"
+  },
+  "not-premium": {
+    "color": "dark_red",
+    "text": "This is not the username of a paid account"
+  },
+  "dont-have-skin": {
+    "color": "dark_red",
+    "text": "You don't have a skin to invalidate the skin"
+  },
+  "invalidate-request": {
+    "color": "dark_green",
+    "text": "A request to invalidate the skin was sent."
+  },
+  "skin-updated": {
+    "color": "dark_green",
+    "text": "The target player's skin was updated"
+  },
+  "upload-noargs": {
+    "color": "dark_red",
+    "text": "The skin url and optional a name is missing"
+  },
+  "no-accounts": {
+    "color": "dark_red",
+    "text": "There are no configured accounts to upload skins"
+  },
+  "no-valid-url": {
+    "color": "dark_red",
+    "text": "The URL has to start with http:// or https://"
+  },
+  "skin-uploaded": {
+    "color": "dark_green",
+    "text": "A new skin was uploaded using {0} and saved as {1}"
+  },
+  "accounts-cooldown": {
+    "color": "dark_red",
+    "text": "Every account currently has a cooldown of 1 minute."
+  },
+  "select-noargs": {
+    "color": "dark_red",
+    "text": "The skin id is missing"
+  },
+  "invalid-skin-name": {
+    "color": "dark_red",
+    "text": "Invalid skin name"
+  },
+  "skin-not-found": {
+    "color": "dark_red",
+    "text": "Skin not found"
+  },
+  "skin-info": {
+    "extra": [
+      {
+        "color": "dark_green",
+        "text": "Your skin: /newline "
+      },
+      {
+        "color": "gray",
+        "text": "Row id: "
+      },
+      {
+        "color": "dark_aqua",
+        "text": "{0} /newline "
+      },
+      {
+        "color": "gray",
+        "text": "Owner id: "
+      },
+      {
+        "color": "dark_aqua",
+        "text": "{1} /newline "
+      },
+      {
+        "color": "gray",
+        "text": "Owner name: "
+      },
+      {
+        "color": "dark_aqua",
+        "text": "{2} /newline "
+      },
+      {
+        "color": "gray",
+        "text": "Time fetched: "
+      },
+      {
+        "color": "dark_aqua",
+        "text": "{3} /newline "
+      },
+      {
+        "color": "gray",
+        "text": "Skin URL: "
+      },
+      {
+        "color": "dark_aqua",
+        "text": "{4} /newline "
+      },
+      {
+        "color": "gray",
+        "text": "Skin model: "
+      },
+      {
+        "color": "dark_aqua",
+        "text": "{5} /newline "
+      },
+      {
+        "color": "gray",
+        "text": "Cape URL: "
+      },
+      {
+        "color": "dark_aqua",
+        "text": "{6}"
+      }
+    ],
+    "text": ""
+  }
+}

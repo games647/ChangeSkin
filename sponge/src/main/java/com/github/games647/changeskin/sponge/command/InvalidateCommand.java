@@ -25,7 +25,7 @@ public class InvalidateCommand implements CommandExecutor, ChangeSkinCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         if (!(src instanceof Player)) {
-            plugin.sendMessage(src, "no-console");
+            plugin.getLocaleManager().sendMessage(src, "no-console");
             return CommandResult.empty();
         }
 
