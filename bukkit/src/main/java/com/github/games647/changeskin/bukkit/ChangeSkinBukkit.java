@@ -10,7 +10,6 @@ import com.github.games647.changeskin.bukkit.listener.BungeeListener;
 import com.github.games647.changeskin.bukkit.listener.LoginListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
-import com.github.games647.changeskin.core.LocaleManager;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.message.ChannelMessage;
@@ -84,7 +83,7 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     }
 
     @Override
-    public LocaleManager<CommandSender> getLocaleManager() {
+    public BukkitLocaleManager getLocaleManager() {
         return localeManager;
     }
 

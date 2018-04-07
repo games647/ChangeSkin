@@ -111,7 +111,7 @@ public abstract class LocaleManager<R> {
         return locales.getOrDefault(locale.getLanguage(), defaultLocale).getMessage(messageKey);
     }
 
-    protected abstract Locale getLocale(R receiver);
+    public abstract Locale getLocale(R receiver);
 
     protected abstract void sendLocalizedMessage(R receiver, String json);
 

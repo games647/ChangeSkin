@@ -18,7 +18,7 @@ public class BungeeLocaleManager extends LocaleManager<CommandSender> {
     }
 
     @Override
-    protected Locale getLocale(CommandSender receiver) {
+    public Locale getLocale(CommandSender receiver) {
         if (receiver instanceof ProxiedPlayer) {
             return ((ProxiedPlayer) receiver).getLocale();
         }

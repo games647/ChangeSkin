@@ -10,7 +10,6 @@ import com.github.games647.changeskin.bungee.listener.MessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
-import com.github.games647.changeskin.core.LocaleManager;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.message.ChannelMessage;
@@ -97,7 +96,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     }
 
     @Override
-    public LocaleManager<CommandSender> getLocaleManager() {
+    public BungeeLocaleManager getLocaleManager() {
         return localeManager;
     }
 

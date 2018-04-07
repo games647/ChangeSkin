@@ -1,7 +1,6 @@
 package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.LocaleManager;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.sponge.command.InfoCommand;
 import com.github.games647.changeskin.sponge.command.InvalidateCommand;
@@ -95,7 +94,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
     }
 
     @Override
-    public LocaleManager<CommandSource> getLocaleManager() {
+    public SpongeLocaleManager getLocaleManager() {
         return localeManager;
     }
 

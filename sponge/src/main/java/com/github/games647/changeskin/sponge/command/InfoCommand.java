@@ -5,6 +5,7 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SkinFormatter;
 import com.github.games647.changeskin.sponge.ChangeSkinSponge;
 import com.github.games647.changeskin.sponge.PomData;
+import com.github.games647.changeskin.sponge.SpongeLocaleManager;
 import com.google.inject.Inject;
 
 import java.util.Optional;
@@ -63,14 +64,15 @@ public class InfoCommand implements CommandExecutor, ChangeSkinCommand {
             Player player = optPlayer.get();
 
             Optional<SkinModel> optSkin = preference.getTargetSkin();
+            SpongeLocaleManager localeManager = plugin.getLocaleManager();
             if (optSkin.isPresent()) {
-                String template = plugin.getLocaleManager().getLocalizedMessage(player, "skin-info");
-                String formatted = formatter.apply(template, optSkin.get());
+                String template = localeManager.getLocalizedMessage(player, "skin-info");
+                String formatted = formatter.formatSkin(template, optSkin.get(), localeManager.getLocale(player));
 
                 Text text = TextSerializers.JSON.deserialize(formatted);
                 player.sendMessage(text);
             } else {
-                plugin.getLocaleManager().sendMessage(player, "skin-not-found");
+                localeManager.sendMessage(player, "skin-not-found");
             }
         }
     }

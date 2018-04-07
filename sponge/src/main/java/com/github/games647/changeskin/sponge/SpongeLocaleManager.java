@@ -16,7 +16,7 @@ public class SpongeLocaleManager extends LocaleManager<CommandSource> {
     }
 
     @Override
-    protected Locale getLocale(CommandSource receiver) {
+    public Locale getLocale(CommandSource receiver) {
         return receiver.getLocale();
     }
 

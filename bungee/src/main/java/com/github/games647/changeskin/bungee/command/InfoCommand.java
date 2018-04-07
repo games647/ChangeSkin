@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.bungee.command;
 
+import com.github.games647.changeskin.bungee.BungeeLocaleManager;
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
@@ -25,8 +26,9 @@ public class InfoCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] strings) {
+        BungeeLocaleManager localeManager = plugin.getLocaleManager();
         if (!(sender instanceof ProxiedPlayer)) {
-            plugin.getLocaleManager().sendMessage(sender, "no-console");
+            localeManager.sendMessage(sender, "no-console");
             return;
         }
 
@@ -34,11 +36,11 @@ public class InfoCommand extends Command {
         UserPreference preference = plugin.getLoginSession(player.getPendingConnection());
         Optional<SkinModel> optSkin = preference.getTargetSkin();
         if (optSkin.isPresent()) {
-            String template = plugin.getLocaleManager().getLocalizedMessage(player, "skin-info");
-            String formatted = formatter.apply(template, optSkin.get());
+            String template = localeManager.getLocalizedMessage(player, "skin-info");
+            String formatted = formatter.formatSkin(template, optSkin.get(), localeManager.getLocale(player));
             sender.sendMessage(ComponentSerializer.parse(formatted));
         } else {
-            plugin.getLocaleManager().sendMessage(sender, "skin-not-found");
+            localeManager.sendMessage(sender, "skin-not-found");
         }
     }
 }

@@ -8,19 +8,18 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiFunction;
 
-public class SkinFormatter implements BiFunction<String, SkinModel, String> {
+public class SkinFormatter {
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter
             .ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.MEDIUM)
             .withZone(ZoneId.systemDefault());
 
-    @Override
-    public String apply(String template, SkinModel skin) {
+    public String formatSkin(String template, SkinModel skin, Locale locale) {
         if (template == null) {
             return null;
         }
@@ -39,7 +38,7 @@ public class SkinFormatter implements BiFunction<String, SkinModel, String> {
 
         String capeUrl = capeTexture.map(TextureModel::getShortUrl).orElse(" - ");
 
-        String timeFormat = timeFormatter.format(Instant.ofEpochMilli(timeFetched));
+        String timeFormat = timeFormatter.withLocale(locale).format(Instant.ofEpochMilli(timeFetched));
         return template.replace("{0}", Integer.toString(rowId))
                 .replace("{1}", ownerId.toString())
                 .replace("{2}", ownerName)

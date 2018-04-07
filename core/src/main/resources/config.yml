@@ -18,7 +18,7 @@ default-skins: []
 # this will try to re-download using the username of the player
 restoreSkins: false
 
-# Should the skins apply instantly without re-login
+# Should the skins formatSkin instantly without re-login
 # The player will be invisible for a shorten time
 instantSkinChange: true
 

@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.bukkit.command;
 
+import com.github.games647.changeskin.bukkit.BukkitLocaleManager;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
@@ -46,12 +47,13 @@ public class InfoCommand implements CommandExecutor {
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
             Optional<SkinModel> optSkin = preference.getTargetSkin();
+            BukkitLocaleManager localeManager = plugin.getLocaleManager();
             if (optSkin.isPresent()) {
-                String template = plugin.getLocaleManager().getLocalizedMessage(player, "skin-info");
-                String formatted = formatter.apply(template, optSkin.get());
+                String template = localeManager.getLocalizedMessage(player, "skin-info");
+                String formatted = formatter.formatSkin(template, optSkin.get(), localeManager.getLocale(player));
                 player.spigot().sendMessage(ComponentSerializer.parse(formatted));
             } else {
-                plugin.getLocaleManager().sendMessage(player, "skin-not-found");
+                localeManager.sendMessage(player, "skin-not-found");
             }
         }
     }

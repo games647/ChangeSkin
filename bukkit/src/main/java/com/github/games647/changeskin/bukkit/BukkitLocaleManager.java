@@ -18,17 +18,10 @@ public class BukkitLocaleManager extends LocaleManager<CommandSender> {
     }
 
     @Override
-    protected Locale getLocale(CommandSender receiver) {
+    public Locale getLocale(CommandSender receiver) {
         if (receiver instanceof Player) {
             String locale = ((Player) receiver).getLocale();
-
-            //remove the country code
-            int lastUnderscore = locale.lastIndexOf('_');
-            if (lastUnderscore > 0) {
-                locale = locale.substring(0, lastUnderscore);
-            }
-
-            return Locale.forLanguageTag(locale);
+            return Locale.forLanguageTag(locale.replace('_', '-'));
         }
 
         return Locale.getDefault();
