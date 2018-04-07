@@ -86,6 +86,20 @@ public class ServerVersion {
         return packageVersion;
     }
 
+    /**
+     * @return class in the NMS package
+     */
+    public Class<?> getMinecraftClass(String className) throws ClassNotFoundException {
+        return Class.forName(nmsPackage + '.' + className);
+    }
+
+    /**
+     * @return class in the OBC package
+     */
+    public Class<?> getCraftbukkitClass(String className) throws ClassNotFoundException {
+        return Class.forName(obcPackage + '.' + className);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {

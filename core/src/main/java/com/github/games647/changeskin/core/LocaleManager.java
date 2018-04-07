@@ -25,7 +25,7 @@ public abstract class LocaleManager<R> {
     private static final String LANG_FOLDER = "lang";
     private static final String EXT = ".json";
 
-    private final Logger logger;
+    protected final Logger logger;
     private final Path dataFolder;
 
     private final Gson gson = new Gson();

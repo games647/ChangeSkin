@@ -9,6 +9,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,8 +19,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author Shynixn
@@ -34,15 +34,10 @@ public class SkullCommand implements CommandExecutor {
         MethodHandle methodHandle = null;
         try {
             ServerVersion version = new ServerVersion(Bukkit.getServer().getClass());
-
-            Class<?> clazz = Class.forName(version.getOBCPackage() + ".inventory.CraftMetaSkull");
-            Field profileField = clazz.getDeclaredField("profile");
-            profileField.setAccessible(true);
-
-            methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
+            methodHandle = findProfileField(version);
         } catch (ReflectiveOperationException ex) {
-            Logger logger = LoggerFactory.getLogger(SkullCommand.class);
-            logger.info("Cannot find loginProfile field for setting skin in offline mode", ex);
+            java.util.logging.Logger logger = JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLogger();
+            logger.log(Level.WARNING, "Cannot find loginProfile field for setting skin in offline mode", ex);
         }
 
         skullProfileSetter = methodHandle;
@@ -104,5 +99,14 @@ public class SkullCommand implements CommandExecutor {
             //rethrow errors we shouldn't silence them like OutOfMemory
             throw (Error) throwable;
         }
+    }
+
+    private static MethodHandle findProfileField(ServerVersion version)
+            throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+        Class<?> clazz = version.getCraftbukkitClass("inventory.CraftMetaSkull");
+        Field profileField = clazz.getDeclaredField("profile");
+        profileField.setAccessible(true);
+
+        return MethodHandles.lookup().unreflectSetter(profileField);
     }
 }
