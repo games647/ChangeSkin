@@ -31,7 +31,7 @@ public class UploadCommand implements CommandExecutor {
                     plugin.sendMessage(sender, "no-accounts");
                 } else {
                     Account uploadAccount = accounts.get(0);
-                    Runnable skinUploader = new SkinUploader(plugin, sender, uploadAccount, url);
+                    Runnable skinUploader = new SkinUploader(plugin, uploadAccount, url, sender);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, skinUploader);
                 }
             } else {

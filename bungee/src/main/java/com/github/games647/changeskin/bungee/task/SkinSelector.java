@@ -22,8 +22,8 @@ public class SkinSelector extends SharedSkinSelect {
 
     @Override
     protected void scheduleApplyTask(SkinModel targetSkin) {
-        ProxyServer.getInstance().getScheduler()
-                .runAsync(plugin, new SkinApplier(plugin, receiver, receiver, targetSkin, false, true));
+        Runnable task = new SkinApplier(plugin, receiver, receiver, targetSkin, false, true);
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
     }
 
     @Override

@@ -68,14 +68,21 @@ invalidate-request: '&2A request to invalidate the skin was sent.'
 # This message is sent to the invoker of the command if it's not the same person
 skin-updated: "&2The target player's skin was updated"
 
-# User tried to upload a new skin, but it misses the skin url and optionally save name
-upload-noargs: '&4The skin url and optional a name is missing'
+# User tried to upload a new skin, but it misses the skin URL and optionally save name
+upload-noargs: '&4The skin URL and optional a name is missing'
 
 # There are no configured accounts to upload skins
 no-accounts: '&4There are no configured accounts to upload skins'
 
-# User entered an invalid url for upload a skin
+# User entered an invalid URL for upload a skin
 no-valid-url: '&4The URL has to start with http:// or https://'
+
+# We can only access the skin of the same owner (UUID) only with a time interval of one minute. Otherwise we
+# we get a 429 rate limit error.
+#
+# This message informs the user that the old URL was successful retrieved in order to revert to the old skin and
+# the new skin will be uploaded after the rate-limit will expire.
+skin-change-queued: '&4Old skin URL was successful retrieved from Mojang. The new skin will be uploaded in one minute and reverted afterwards.'
 
 # A new skin was successful uploaded, downloaded to the database and reverted to the old skin
 # {0} represents the uuid of account which was used for uploading
@@ -85,7 +92,7 @@ skin-uploaded: '&2A new skin was uploaded using {0} and saved as {1}'
 # All accounts currently have cooldown. This is set to one minute per account because of rate-limiting from Mojang
 accounts-cooldown: '&4Every account currently has a cooldown of 1 minute.'
 
-# User tried to upload a new skin, but it misses the skin url and optionally save name
+# User tried to upload a new skin, but it misses the skin URL and optionally save name
 select-noargs: '&4The skin id is missing'
 
 # User tried to choose a skin from an invalid skin name
