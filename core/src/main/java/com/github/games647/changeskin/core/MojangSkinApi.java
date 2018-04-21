@@ -37,7 +37,6 @@ import static java.util.stream.Collectors.toList;
 
 public class MojangSkinApi {
 
-    private static final int RATE_LIMIT_ID = 429;
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s" +
             "?unsigned=false";
@@ -47,16 +46,15 @@ public class MojangSkinApi {
     private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
     private final Iterator<Proxy> proxies;
     private final Logger logger;
-    private final int rateLimit;
 
-    private final Map<Object, Object> requests = CommonUtil.buildCache(10, -1);
+    private final RateLimiter rateLimiter;
     private final Map<UUID, Object> crackedUUID = CommonUtil.buildCache(60, -1);
 
     private Instant lastRateLimit = Instant.now().minus(10, ChronoUnit.MINUTES);
 
     public MojangSkinApi(Logger logger, int rateLimit, Collection<HostAndPort> proxies) {
-        this.rateLimit = Math.max(rateLimit, 600);
         this.logger = logger;
+        this.rateLimiter = new RateLimiter(Duration.ofMinutes(10), Math.max(rateLimit, 600));
 
         List<Proxy> proxyBuilder = proxies.stream()
                 .map(proxy -> new InetSocketAddress(proxy.getHostText(), proxy.getPort()))
@@ -75,7 +73,7 @@ public class MojangSkinApi {
         Proxy proxy = null;
         try {
             HttpURLConnection connection;
-            if (requests.size() >= rateLimit || Duration.between(lastRateLimit, Instant.now()).getSeconds() < 60 * 10) {
+            if (!rateLimiter.tryAcquire() || Duration.between(lastRateLimit, Instant.now()).getSeconds() < 60 * 10) {
                 synchronized (proxies) {
                     if (proxies.hasNext()) {
                         proxy = proxies.next();
@@ -85,14 +83,13 @@ public class MojangSkinApi {
                     }
                 }
             } else {
-                requests.put(new Object(), new Object());
                 connection = getConnection(UUID_URL + playerName);
             }
 
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
                 throw new NotPremiumException(playerName);
-            } else if (responseCode == RATE_LIMIT_ID) {
+            } else if (responseCode == RateLimitException.RATE_LIMIT_ID) {
                 logger.info("Mojang's rate-limit reached. The public IPv4 address of this server issued more than 600" +
                         " Name -> UUID requests within 10 minutes. Once those 10 minutes ended we could make requests" +
                         " again. In the meanwhile new skins can only be downloaded using the UUID directly." +
