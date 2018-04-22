@@ -24,7 +24,8 @@ public class RateLimiter  {
 
         Instant now = Instant.now();
         synchronized (requests) {
-            if (requests.isEmpty()) {
+            //fill the deque first
+            if (requests.size() < maximumRequests) {
                 requests.push(now);
                 return true;
             }
@@ -32,13 +33,8 @@ public class RateLimiter  {
             //check oldest entry if it's expired
             Instant oldest = requests.getLast();
             if (Duration.between(oldest, now).compareTo(expireDuration) >= 0) {
+                //remove oldest (tail) entry and add newest to the head
                 requests.removeLast();
-                requests.push(now);
-                return true;
-            }
-
-            //oldest entry didn't expired try to insert a new one
-            if (requests.size() < maximumRequests) {
                 requests.push(now);
                 return true;
             }

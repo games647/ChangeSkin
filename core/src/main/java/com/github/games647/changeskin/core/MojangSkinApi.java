@@ -73,7 +73,9 @@ public class MojangSkinApi {
         Proxy proxy = null;
         try {
             HttpURLConnection connection;
-            if (!rateLimiter.tryAcquire() || Duration.between(lastRateLimit, Instant.now()).getSeconds() < 60 * 10) {
+            if (Duration.between(lastRateLimit, Instant.now()).getSeconds() < 60 * 10 && rateLimiter.tryAcquire()) {
+                connection = getConnection(UUID_URL + playerName);
+            } else {
                 synchronized (proxies) {
                     if (proxies.hasNext()) {
                         proxy = proxies.next();
@@ -82,8 +84,6 @@ public class MojangSkinApi {
                         return Optional.empty();
                     }
                 }
-            } else {
-                connection = getConnection(UUID_URL + playerName);
             }
 
             int responseCode = connection.getResponseCode();
