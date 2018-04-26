@@ -74,7 +74,7 @@ Blacklist
 
 * Java 8+
 * Minecraft server software
-    * Spigot 1.8+ or any fork of it (ex: Paper)
+    * Spigot 1.8.8+ or any fork of it (ex: Paper)
     * Sponge 7+
     * BungeeCord 1.12+ (Keep in mind that BungeeCord is backwards compatible)
 
@@ -84,7 +84,7 @@ Development builds of this project can be acquired at the provided CI (continuou
 latest changes from the Source-Code in preparation for the following release. This means they could contain new
 features, bug fixes and other changes since the last release.
 
-Nevertheless builds are only tested using a small set of automated and minor manual tests. Therefore they **could**
+Nevertheless builds are only tested using a small set of automated and a few manual tests. Therefore they **could**
 contain new bugs and are likely to be less stable than released versions.
 
 https://ci.codemc.org/job/Games647/job/ChangeSkin/changes
