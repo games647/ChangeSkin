@@ -27,21 +27,22 @@ public abstract class SharedBungeeListener<P> {
         String subChannel = dataInput.readUTF();
 
         if ("UpdateSkin".equalsIgnoreCase(subChannel)) {
-            updateSkin(dataInput);
+            updateSkin(player, dataInput);
         } else if ("PermissionsCheck".equalsIgnoreCase(subChannel)) {
             checkPermissions(player, dataInput);
         }
     }
 
-    private void updateSkin(ByteArrayDataInput dataInput) throws IllegalArgumentException {
+    private void updateSkin(P sender, ByteArrayDataInput dataInput) throws IllegalArgumentException {
         SkinUpdateMessage message = new SkinUpdateMessage();
         message.readFrom(dataInput);
 
         String playerName = message.getPlayerName();
         P receiver = getPlayerExact(playerName);
 
+        //unnecessary to send the skin, the properties will be send by BungeeCord
         plugin.getLog().info("Instant update for {}", playerName);
-        runUpdater(receiver);
+        runUpdater(sender, receiver, null);
     }
 
     private void checkPermissions(P player, ByteArrayDataInput dataInput) {
@@ -85,7 +86,7 @@ public abstract class SharedBungeeListener<P> {
         sendMessage(player, channelName, out.toByteArray());
     }
 
-    protected abstract void runUpdater(P receiver);
+    protected abstract void runUpdater(P sender, P receiver, SkinModel targetSkin);
 
     protected abstract P getPlayerExact(String name);
 

@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.sponge;
 
+import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.SharedBungeeListener;
 import com.github.games647.changeskin.sponge.task.SkinApplier;
 import com.google.inject.Inject;
@@ -43,8 +44,8 @@ public class BungeeListener extends SharedBungeeListener<Player> implements RawD
     }
 
     @Override
-    protected void runUpdater(Player receiver) {
-        Runnable skinUpdater = new SkinApplier(plugin, null, receiver, null, false);
+    protected void runUpdater(Player sender, Player receiver, SkinModel targetSkin) {
+        Runnable skinUpdater = new SkinApplier(plugin, sender, receiver, targetSkin, false);
         Task.builder().execute(skinUpdater).submit(plugin);
     }
 
