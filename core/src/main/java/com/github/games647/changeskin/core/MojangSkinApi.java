@@ -163,21 +163,22 @@ public class MojangSkinApi {
     }
 
     public Optional<SkinModel> downloadSkin(UUID ownerUUID) {
-        if (crackedUUID.containsKey(ownerUUID)) {
+        if (crackedUUID.containsKey(ownerUUID) || ownerUUID == null) {
             return Optional.empty();
         }
 
         //unsigned is needed in order to receive the signature
         String uuidString = UUIDTypeAdapter.toMojangId(ownerUUID);
         try {
-            HttpURLConnection httpConnection = getConnection(String.format(SKIN_URL, uuidString));
-            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
+            HttpURLConnection conn = getConnection(String.format(SKIN_URL, uuidString));
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT) {
                 crackedUUID.put(ownerUUID, new Object());
                 return Optional.empty();
             }
 
             try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(httpConnection.getInputStream(), StandardCharsets.UTF_8))) {
+                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))
+            ) {
                 return parseSkinTexture(reader);
             }
         } catch (IOException ex) {

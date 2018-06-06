@@ -1,5 +1,6 @@
 package com.github.games647.changeskin.sponge.task;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.task.SharedApplier;
@@ -80,13 +81,8 @@ public class SkinApplier extends SharedApplier {
         sendUpdateSelf();
 
         //triggers an update for others player to see the new skin
-        Sponge.getServer().getOnlinePlayers().stream()
-                .filter(onlinePlayer -> onlinePlayer.canSee(receiver))
-                .forEach(onlinePlayer -> {
-                    //removes the entity and display the new skin
-                    onlinePlayer.offer(Keys.VANISH, true);
-                    onlinePlayer.offer(Keys.VANISH, false);
-                });
+        receiver.offer(Keys.VANISH, true);
+        receiver.offer(Keys.VANISH, false);
     }
 
     private void sendUpdateSelf() {
@@ -100,6 +96,7 @@ public class SkinApplier extends SharedApplier {
                 .build());
 
         Location<World> oldLocation = receiver.getLocation();
+        Vector3d rotation = receiver.getRotation();
         World receiverWorld = receiver.getWorld();
         Sponge.getServer().getWorlds()
                 .stream()
@@ -107,7 +104,7 @@ public class SkinApplier extends SharedApplier {
                 .findFirst()
                 .ifPresent(world -> {
                     receiver.setLocation(world.getSpawnLocation());
-                    receiver.setLocation(oldLocation);
+                    receiver.setLocationAndRotation(oldLocation, rotation);
                 });
     }
 }
