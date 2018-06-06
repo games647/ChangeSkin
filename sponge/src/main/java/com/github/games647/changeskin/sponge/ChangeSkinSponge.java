@@ -77,7 +77,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
         Sponge.getEventManager().registerListeners(this, injector.getInstance(LoginListener.class));
         RawDataChannel pluginChannel = Sponge.getChannelRegistrar().createRawChannel(this, PomData.ARTIFACT_ID);
-        pluginChannel.addListener(injector.getInstance(BungeeListener.class));
+        pluginChannel.addListener(new BungeeListener(this));
     }
 
     @Listener

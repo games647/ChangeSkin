@@ -20,16 +20,14 @@ import org.spongepowered.api.scheduler.Task;
 public class BungeeListener extends SharedBungeeListener<Player> implements RawDataListener {
 
     private final ChangeSkinSponge plugin;
+    private final RawDataChannel pluginChannel;
 
     @Inject
-    @ChannelId("changeskin")
-    private RawDataChannel pluginChannel;
-
-    @Inject
-    BungeeListener(ChangeSkinSponge plugin) {
+    BungeeListener(ChangeSkinSponge plugin, @ChannelId("changeskin") RawDataChannel pluginChannel) {
         super(plugin);
 
         this.plugin = plugin;
+        this.pluginChannel = pluginChannel;
     }
 
     @Override
