@@ -5,6 +5,8 @@ import com.google.common.io.ByteArrayDataOutput;
 
 public class ForwardMessage implements ChannelMessage {
 
+    public static final String FORWARD_COMMAND_CHANNEL = "ForwardCmd";
+
     private String commandName;
     private String args;
     private boolean isSource;
@@ -39,7 +41,7 @@ public class ForwardMessage implements ChannelMessage {
 
     @Override
     public String getChannelName() {
-        return "ForwardCmd";
+        return FORWARD_COMMAND_CHANNEL;
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.google.common.io.ByteArrayDataOutput;
 
 public class SkinUpdateMessage implements ChannelMessage {
 
+    public static final String UPDATE_SKIN_CHANNEL = "UpdateSkin";
+
     private String playerName;
 
     public SkinUpdateMessage(String playerName) {
@@ -21,7 +23,7 @@ public class SkinUpdateMessage implements ChannelMessage {
 
     @Override
     public String getChannelName() {
-        return "UpdateSkin";
+        return UPDATE_SKIN_CHANNEL;
     }
 
     @Override

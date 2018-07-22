@@ -2,6 +2,8 @@ package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.PlatformPlugin;
+import com.github.games647.changeskin.sponge.bungee.CheckPermissionListener;
+import com.github.games647.changeskin.sponge.bungee.UpdateSkinListener;
 import com.github.games647.changeskin.sponge.command.InfoCommand;
 import com.github.games647.changeskin.sponge.command.InvalidateCommand;
 import com.github.games647.changeskin.sponge.command.SelectCommand;
@@ -15,6 +17,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.Platform.Type;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandSource;
@@ -24,11 +27,16 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
+import org.spongepowered.api.network.ChannelRegistrar;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import static com.github.games647.changeskin.core.message.CheckPermMessage.CHECK_PERM_CHANNEL;
+import static com.github.games647.changeskin.core.message.SkinUpdateMessage.UPDATE_SKIN_CHANNEL;
+import static com.github.games647.changeskin.sponge.PomData.ARTIFACT_ID;
+
 @Singleton
-@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
+@Plugin(id = ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
         url = PomData.URL, description = PomData.DESCRIPTION)
 public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
@@ -76,8 +84,13 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
                 .buildSpec(), "skininvalidate", "skin-invalidate");
 
         Sponge.getEventManager().registerListeners(this, injector.getInstance(LoginListener.class));
-        RawDataChannel pluginChannel = Sponge.getChannelRegistrar().createRawChannel(this, PomData.ARTIFACT_ID);
-        pluginChannel.addListener(new BungeeListener(this, pluginChannel));
+
+        //incoming channel
+        ChannelRegistrar channelRegistrar = Sponge.getChannelRegistrar();
+        RawDataChannel updateChannel = channelRegistrar.getOrCreateRaw(this, ARTIFACT_ID + ':' + UPDATE_SKIN_CHANNEL);
+        RawDataChannel permChannel = channelRegistrar.getOrCreateRaw(this, ARTIFACT_ID + ':' + CHECK_PERM_CHANNEL);
+        updateChannel.addListener(Type.SERVER, injector.getInstance(UpdateSkinListener.class));
+        permChannel.addListener(Type.SERVER, injector.getInstance(CheckPermissionListener.class));
     }
 
     @Listener
@@ -91,7 +104,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
     @Override
     public boolean hasSkinPermission(CommandSource invoker, UUID uuid, boolean sendMessage) {
-        if (invoker.hasPermission(PomData.ARTIFACT_ID + ".skin.whitelist." + uuid)) {
+        if (invoker.hasPermission(ARTIFACT_ID + ".skin.whitelist." + uuid)) {
             return true;
         }
 

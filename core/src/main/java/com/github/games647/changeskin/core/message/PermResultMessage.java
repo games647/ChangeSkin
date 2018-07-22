@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public class PermResultMessage implements ChannelMessage {
 
+    public static final String PERMISSION_RESULT_CHANNEL = "PermissionResult";
+
     private boolean allowed;
     private SkinModel skin;
     private UUID receiverUUID;
@@ -36,7 +38,7 @@ public class PermResultMessage implements ChannelMessage {
 
     @Override
     public String getChannelName() {
-        return "PermissionResult";
+        return PERMISSION_RESULT_CHANNEL;
     }
 
     @Override

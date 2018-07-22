@@ -1,13 +1,13 @@
 package com.github.games647.changeskin.bukkit;
 
+import com.github.games647.changeskin.bukkit.bungee.CheckPermissionListener;
+import com.github.games647.changeskin.bukkit.bungee.SkinUpdateListener;
 import com.github.games647.changeskin.bukkit.command.InfoCommand;
 import com.github.games647.changeskin.bukkit.command.InvalidateCommand;
 import com.github.games647.changeskin.bukkit.command.SelectCommand;
 import com.github.games647.changeskin.bukkit.command.SetCommand;
 import com.github.games647.changeskin.bukkit.command.SkullCommand;
 import com.github.games647.changeskin.bukkit.command.UploadCommand;
-import com.github.games647.changeskin.bukkit.listener.LoginListener;
-import com.github.games647.changeskin.bukkit.listener.BungeeListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
@@ -23,8 +23,14 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.slf4j.Logger;
+
+import static com.github.games647.changeskin.core.message.CheckPermMessage.CHECK_PERM_CHANNEL;
+import static com.github.games647.changeskin.core.message.ForwardMessage.FORWARD_COMMAND_CHANNEL;
+import static com.github.games647.changeskin.core.message.PermResultMessage.PERMISSION_RESULT_CHANNEL;
+import static com.github.games647.changeskin.core.message.SkinUpdateMessage.UPDATE_SKIN_CHANNEL;
 
 public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
@@ -57,8 +63,16 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
             logger.info("BungeeCord detected. Activating BungeeCord support");
             logger.info("Make sure you installed the plugin on BungeeCord too");
 
-            getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
-            getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeListener(this));
+            //outgoing
+            Messenger messenger = getServer().getMessenger();
+            messenger.registerOutgoingPluginChannel(this, getName() + ':' + PERMISSION_RESULT_CHANNEL);
+            messenger.registerOutgoingPluginChannel(this, getName() + ':' + FORWARD_COMMAND_CHANNEL);
+
+            //incoming
+            String updateChannel = getName() + ':' + UPDATE_SKIN_CHANNEL;
+            String permissionChannel = getName() + ':' + CHECK_PERM_CHANNEL;
+            messenger.registerIncomingPluginChannel(this, updateChannel, new SkinUpdateListener(this));
+            messenger.registerIncomingPluginChannel(this, permissionChannel, new CheckPermissionListener(this));
         } else {
             getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         }
@@ -122,10 +136,8 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
     public void sendPluginMessage(PluginMessageRecipient sender, ChannelMessage message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(message.getChannelName());
-
         message.writeTo(out);
-        sender.sendPluginMessage(this, getName(), out.toByteArray());
+        sender.sendPluginMessage(this, getName() + ':' + message.getChannelName(), out.toByteArray());
     }
 
     @Override

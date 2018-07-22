@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public class CheckPermMessage implements ChannelMessage {
 
+    public static final String CHECK_PERM_CHANNEL = "PermissionsCheck";
+
     private SkinModel targetSkin;
 
     private UUID receiverUUD;
@@ -43,7 +45,7 @@ public class CheckPermMessage implements ChannelMessage {
 
     @Override
     public String getChannelName() {
-        return "PermissionsCheck";
+        return CHECK_PERM_CHANNEL;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.github.games647.changeskin.bukkit.listener;
+package com.github.games647.changeskin.bukkit;
 
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.UserPreference;

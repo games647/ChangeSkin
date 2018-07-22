@@ -6,13 +6,15 @@ import com.github.games647.changeskin.bungee.command.SelectCommand;
 import com.github.games647.changeskin.bungee.command.SetCommand;
 import com.github.games647.changeskin.bungee.command.UploadCommand;
 import com.github.games647.changeskin.bungee.listener.ConnectListener;
-import com.github.games647.changeskin.bungee.listener.MessageListener;
+import com.github.games647.changeskin.bungee.listener.PluginMessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.message.ChannelMessage;
+import com.github.games647.changeskin.core.message.ForwardMessage;
+import com.github.games647.changeskin.core.message.PermResultMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
@@ -61,9 +63,10 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         pluginManager.registerListener(this, new ConnectListener(this));
         pluginManager.registerListener(this, new ServerSwitchListener(this));
 
-        //this is required to listen to messages from the server
-        getProxy().registerChannel(getName());
-        pluginManager.registerListener(this, new MessageListener(this));
+        //this is required to listen to incoming messages from the server
+        getProxy().registerChannel(getName() + ':' + PermResultMessage.PERMISSION_RESULT_CHANNEL);
+        getProxy().registerChannel(getName() + ':' + ForwardMessage.FORWARD_COMMAND_CHANNEL);
+        pluginManager.registerListener(this, new PluginMessageListener(this));
 
         //register commands
         pluginManager.registerCommand(this, new SetCommand(this));
@@ -123,10 +126,8 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
     public void sendPluginMessage(Server server, ChannelMessage message) {
         if (server != null) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF(message.getChannelName());
-
             message.writeTo(out);
-            server.sendData(getName(), out.toByteArray());
+            server.sendData(getName() + ':' + message.getChannelName(), out.toByteArray());
         }
     }
 

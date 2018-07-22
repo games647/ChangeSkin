@@ -16,24 +16,29 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.event.EventHandler;
 
-public class MessageListener extends AbstractSkinListener {
+public class PluginMessageListener extends AbstractSkinListener {
 
-    public MessageListener(ChangeSkinBungee plugin) {
+    private final String permissionResultChannel;
+    private final String forwardCommandChannel;
+
+    public PluginMessageListener(ChangeSkinBungee plugin) {
         super(plugin);
+
+        this.permissionResultChannel = plugin.getName() + ':' + PermResultMessage.PERMISSION_RESULT_CHANNEL;
+        this.forwardCommandChannel = plugin.getName() + ':' + ForwardMessage.FORWARD_COMMAND_CHANNEL;
     }
 
     @EventHandler
     public void onPluginMessage(PluginMessageEvent messageEvent) {
         String channel = messageEvent.getTag();
-        if (messageEvent.isCancelled() || !plugin.getName().equals(channel)) {
+        if (messageEvent.isCancelled()) {
             return;
         }
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(messageEvent.getData());
-        String subChannel = dataInput.readUTF();
 
         ProxiedPlayer invoker = (ProxiedPlayer) messageEvent.getReceiver();
-        if ("PermissionResult".equals(subChannel)) {
+        if (channel.equals(permissionResultChannel)) {
             PermResultMessage message = new PermResultMessage();
             message.readFrom(dataInput);
             if (message.isAllowed()) {
@@ -41,7 +46,7 @@ public class MessageListener extends AbstractSkinListener {
             } else {
                 plugin.sendMessage(invoker, "no-permission");
             }
-        } else if ("ForwardCmd".equals(subChannel)) {
+        } else if (channel.equals(forwardCommandChannel)) {
             onCommandForward(invoker, dataInput);
         }
     }
