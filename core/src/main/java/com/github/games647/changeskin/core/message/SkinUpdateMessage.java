@@ -5,7 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 
 public class SkinUpdateMessage implements ChannelMessage {
 
-    public static final String UPDATE_SKIN_CHANNEL = "UpdateSkin";
+    public static final String UPDATE_SKIN_CHANNEL = "SkinUp";
 
     private String playerName;
 

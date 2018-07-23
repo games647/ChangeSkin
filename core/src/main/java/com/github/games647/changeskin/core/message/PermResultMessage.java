@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class PermResultMessage implements ChannelMessage {
 
-    public static final String PERMISSION_RESULT_CHANNEL = "PermissionResult";
+    public static final String PERMISSION_RESULT_CHANNEL = "PerRes";
 
     private boolean allowed;
     private SkinModel skin;
