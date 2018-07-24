@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.NamespaceKey;
+import com.github.games647.changeskin.core.message.NamespaceKey;
 import com.github.games647.changeskin.core.message.ForwardMessage;
 import com.github.games647.changeskin.core.message.PermResultMessage;
 import com.github.games647.changeskin.core.model.UserPreference;

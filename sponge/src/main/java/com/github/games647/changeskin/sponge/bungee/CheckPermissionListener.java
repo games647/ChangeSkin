@@ -1,6 +1,6 @@
 package com.github.games647.changeskin.sponge.bungee;
 
-import com.github.games647.changeskin.core.NamespaceKey;
+import com.github.games647.changeskin.core.message.NamespaceKey;
 import com.github.games647.changeskin.core.message.CheckPermMessage;
 import com.github.games647.changeskin.core.message.PermResultMessage;
 import com.github.games647.changeskin.core.model.skin.SkinModel;

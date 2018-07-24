@@ -1,4 +1,4 @@
-package com.github.games647.changeskin.core;
+package com.github.games647.changeskin.core.message;
 
 public class NamespaceKey {
 
@@ -11,7 +11,7 @@ public class NamespaceKey {
         this.namespace = namespace.toLowerCase();
         this.key = key.toLowerCase();
 
-        this.combined = namespace + ':' + key;
+        this.combined = this.namespace + ':' + this.key;
     }
 
     public String getCombinedName()  {

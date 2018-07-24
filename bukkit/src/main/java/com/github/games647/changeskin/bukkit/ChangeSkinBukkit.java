@@ -10,7 +10,7 @@ import com.github.games647.changeskin.bukkit.command.SkullCommand;
 import com.github.games647.changeskin.bukkit.command.UploadCommand;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
-import com.github.games647.changeskin.core.NamespaceKey;
+import com.github.games647.changeskin.core.message.NamespaceKey;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.message.ChannelMessage;

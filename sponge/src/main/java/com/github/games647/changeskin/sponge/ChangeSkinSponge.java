@@ -1,7 +1,7 @@
 package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.NamespaceKey;
+import com.github.games647.changeskin.core.message.NamespaceKey;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.sponge.bungee.CheckPermissionListener;
 import com.github.games647.changeskin.sponge.bungee.UpdateSkinListener;
