@@ -10,6 +10,7 @@ import com.github.games647.changeskin.bukkit.command.SkullCommand;
 import com.github.games647.changeskin.bukkit.command.UploadCommand;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
+import com.github.games647.changeskin.core.NamespaceKey;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.message.ChannelMessage;
@@ -65,12 +66,14 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
 
             //outgoing
             Messenger messenger = getServer().getMessenger();
-            messenger.registerOutgoingPluginChannel(this, getName() + ':' + PERMISSION_RESULT_CHANNEL);
-            messenger.registerOutgoingPluginChannel(this, getName() + ':' + FORWARD_COMMAND_CHANNEL);
+            String permissionResultChannel = new NamespaceKey(getName(), PERMISSION_RESULT_CHANNEL).getCombinedName();
+            String forwardChannel = new NamespaceKey(getName(), FORWARD_COMMAND_CHANNEL).getCombinedName();
+            messenger.registerOutgoingPluginChannel(this, permissionResultChannel);
+            messenger.registerOutgoingPluginChannel(this, forwardChannel);
 
             //incoming
-            String updateChannel = getName() + ':' + UPDATE_SKIN_CHANNEL;
-            String permissionChannel = getName() + ':' + CHECK_PERM_CHANNEL;
+            String updateChannel = new NamespaceKey(getName(), UPDATE_SKIN_CHANNEL).getCombinedName();
+            String permissionChannel = new NamespaceKey(getName(), CHECK_PERM_CHANNEL).getCombinedName();
             messenger.registerIncomingPluginChannel(this, updateChannel, new SkinUpdateListener(this));
             messenger.registerIncomingPluginChannel(this, permissionChannel, new CheckPermissionListener(this));
         } else {
@@ -137,7 +140,9 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     public void sendPluginMessage(PluginMessageRecipient sender, ChannelMessage message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         message.writeTo(out);
-        sender.sendPluginMessage(this, getName() + ':' + message.getChannelName(), out.toByteArray());
+
+        NamespaceKey channel = new NamespaceKey(getName(), message.getChannelName());
+        sender.sendPluginMessage(this, channel.getCombinedName(), out.toByteArray());
     }
 
     @Override

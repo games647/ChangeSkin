@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.sponge;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
+import com.github.games647.changeskin.core.NamespaceKey;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.sponge.bungee.CheckPermissionListener;
 import com.github.games647.changeskin.sponge.bungee.UpdateSkinListener;
@@ -86,9 +87,11 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
         Sponge.getEventManager().registerListeners(this, injector.getInstance(LoginListener.class));
 
         //incoming channel
-        ChannelRegistrar channelRegistrar = Sponge.getChannelRegistrar();
-        RawDataChannel updateChannel = channelRegistrar.getOrCreateRaw(this, ARTIFACT_ID + ':' + UPDATE_SKIN_CHANNEL);
-        RawDataChannel permChannel = channelRegistrar.getOrCreateRaw(this, ARTIFACT_ID + ':' + CHECK_PERM_CHANNEL);
+        ChannelRegistrar channelReg = Sponge.getChannelRegistrar();
+        String updateChannelName = new NamespaceKey(ARTIFACT_ID, UPDATE_SKIN_CHANNEL).getCombinedName();
+        String permissionChannelName = new NamespaceKey(ARTIFACT_ID, CHECK_PERM_CHANNEL).getCombinedName();
+        RawDataChannel updateChannel = channelReg.getOrCreateRaw(this, updateChannelName);
+        RawDataChannel permChannel = channelReg.getOrCreateRaw(this, permissionChannelName);
         updateChannel.addListener(Type.SERVER, injector.getInstance(UpdateSkinListener.class));
         permChannel.addListener(Type.SERVER, injector.getInstance(CheckPermissionListener.class));
     }

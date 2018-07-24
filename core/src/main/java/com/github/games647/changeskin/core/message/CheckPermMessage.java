@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class CheckPermMessage implements ChannelMessage {
 
-    public static final String CHECK_PERM_CHANNEL = "ChkPer";
+    public static final String CHECK_PERM_CHANNEL = "chk-perm";
 
     private SkinModel targetSkin;
 

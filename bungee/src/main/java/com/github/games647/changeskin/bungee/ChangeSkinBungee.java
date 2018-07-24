@@ -10,11 +10,10 @@ import com.github.games647.changeskin.bungee.listener.PluginMessageListener;
 import com.github.games647.changeskin.bungee.listener.ServerSwitchListener;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
+import com.github.games647.changeskin.core.NamespaceKey;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.message.ChannelMessage;
-import com.github.games647.changeskin.core.message.ForwardMessage;
-import com.github.games647.changeskin.core.message.PermResultMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
@@ -38,6 +37,9 @@ import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
 import org.slf4j.Logger;
+
+import static com.github.games647.changeskin.core.message.ForwardMessage.FORWARD_COMMAND_CHANNEL;
+import static com.github.games647.changeskin.core.message.PermResultMessage.PERMISSION_RESULT_CHANNEL;
 
 public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSender> {
 
@@ -64,8 +66,8 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         pluginManager.registerListener(this, new ServerSwitchListener(this));
 
         //this is required to listen to incoming messages from the server
-        getProxy().registerChannel(getName() + ':' + PermResultMessage.PERMISSION_RESULT_CHANNEL);
-        getProxy().registerChannel(getName() + ':' + ForwardMessage.FORWARD_COMMAND_CHANNEL);
+        getProxy().registerChannel(new NamespaceKey(getName(), PERMISSION_RESULT_CHANNEL).getCombinedName());
+        getProxy().registerChannel(new NamespaceKey(getName(), FORWARD_COMMAND_CHANNEL).getCombinedName());
         pluginManager.registerListener(this, new PluginMessageListener(this));
 
         //register commands
@@ -127,7 +129,9 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
         if (server != null) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             message.writeTo(out);
-            server.sendData(getName() + ':' + message.getChannelName(), out.toByteArray());
+
+            NamespaceKey channel = new NamespaceKey(getName(), message.getChannelName());
+            server.sendData(channel.getCombinedName(), out.toByteArray());
         }
     }
 

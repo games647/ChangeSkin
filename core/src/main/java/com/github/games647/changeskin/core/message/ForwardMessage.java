@@ -5,7 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 
 public class ForwardMessage implements ChannelMessage {
 
-    public static final String FORWARD_COMMAND_CHANNEL = "CmdFrw";
+    public static final String FORWARD_COMMAND_CHANNEL = "cmd-frw";
 
     private String commandName;
     private String args;

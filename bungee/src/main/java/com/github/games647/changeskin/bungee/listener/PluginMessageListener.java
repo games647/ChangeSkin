@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
+import com.github.games647.changeskin.core.NamespaceKey;
 import com.github.games647.changeskin.core.message.ForwardMessage;
 import com.github.games647.changeskin.core.message.PermResultMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
@@ -16,6 +17,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.event.EventHandler;
 
+import static com.github.games647.changeskin.core.message.ForwardMessage.FORWARD_COMMAND_CHANNEL;
+import static com.github.games647.changeskin.core.message.PermResultMessage.PERMISSION_RESULT_CHANNEL;
+
 public class PluginMessageListener extends AbstractSkinListener {
 
     private final String permissionResultChannel;
@@ -24,14 +28,14 @@ public class PluginMessageListener extends AbstractSkinListener {
     public PluginMessageListener(ChangeSkinBungee plugin) {
         super(plugin);
 
-        this.permissionResultChannel = plugin.getName() + ':' + PermResultMessage.PERMISSION_RESULT_CHANNEL;
-        this.forwardCommandChannel = plugin.getName() + ':' + ForwardMessage.FORWARD_COMMAND_CHANNEL;
+        this.permissionResultChannel = new NamespaceKey(plugin.getName(), PERMISSION_RESULT_CHANNEL).getCombinedName();
+        this.forwardCommandChannel = new NamespaceKey(plugin.getName(), FORWARD_COMMAND_CHANNEL).getCombinedName();
     }
 
     @EventHandler
     public void onPluginMessage(PluginMessageEvent messageEvent) {
         String channel = messageEvent.getTag();
-        if (messageEvent.isCancelled() || !channel.startsWith(plugin.getName())) {
+        if (messageEvent.isCancelled() || !channel.startsWith(plugin.getName().toLowerCase())) {
             return;
         }
 
