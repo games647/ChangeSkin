@@ -14,6 +14,9 @@ dev-url: ${project.url}
 # Without ProtocolLib the plugin does not work at all
 depend: [ProtocolLib]
 
+# This plugin don't have to be transformed for compatibility with Minecraft >= 1.13
+api-version: 1.13
+
 commands:
     setskin:
         description: 'Sets a new skin'
