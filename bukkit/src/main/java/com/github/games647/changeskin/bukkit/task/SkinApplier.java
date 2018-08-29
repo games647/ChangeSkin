@@ -231,6 +231,7 @@ public class SkinApplier extends SharedApplier {
 
     private PacketContainer createTeleportPacket(Location location) {
         PacketContainer teleport = new PacketContainer(POSITION);
+        teleport.getModifier().writeDefaults();
 
         teleport.getDoubles().write(0, location.getX());
         teleport.getDoubles().write(1, location.getY());
