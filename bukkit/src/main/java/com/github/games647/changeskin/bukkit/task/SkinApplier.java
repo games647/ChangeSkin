@@ -4,6 +4,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
+import com.comphenix.protocol.utility.MinecraftReflection;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
@@ -18,6 +20,7 @@ import com.github.games647.changeskin.core.shared.task.SharedApplier;
 import com.nametagedit.plugin.NametagEdit;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -140,40 +143,34 @@ public class SkinApplier extends SharedApplier {
     }
 
     private void sendPacketsSelf(WrappedGameProfile gameProfile) {
-        NativeGameMode gamemode = NativeGameMode.fromBukkit(receiver.getGameMode());
-        WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
-        PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
+        PacketContainer removeInfo;
+        PacketContainer addInfo;
+        PacketContainer respawn;
+        PacketContainer teleport;
 
-        //remove the old skin - client updates it only on a complete remove and add
-        PacketContainer removeInfo = new PacketContainer(PLAYER_INFO);
-        removeInfo.getPlayerInfoAction().write(0, PlayerInfoAction.REMOVE_PLAYER);
-        removeInfo.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
+        try {
+            NativeGameMode gamemode = NativeGameMode.fromBukkit(receiver.getGameMode());
+            WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
+            PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
 
-        //add info containing the skin data
-        PacketContainer addInfo = removeInfo.deepClone();
-        addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
+            //remove the old skin - client updates it only on a complete remove and add
+            removeInfo = new PacketContainer(PLAYER_INFO);
+            removeInfo.getPlayerInfoAction().write(0, PlayerInfoAction.REMOVE_PLAYER);
+            removeInfo.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
 
-        // Respawn packet - notify the client that it should update the own skin
-        Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
+            //add info containing the skin data
+            addInfo = removeInfo.deepClone();
+            addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
 
-        PacketContainer respawn = new PacketContainer(RESPAWN);
-        respawn.getIntegers().write(0, receiver.getWorld().getEnvironment().getId());
-        respawn.getDifficulties().write(0, difficulty);
-        respawn.getGameModes().write(0, gamemode);
-        respawn.getWorldTypeModifier().write(0, receiver.getWorld().getWorldType());
+            // Respawn packet - notify the client that it should update the own skin
+            respawn = createRespawnPacket(gamemode);
 
-        Location location = receiver.getLocation().clone();
-
-        //prevent the moved too quickly message
-        PacketContainer teleport = new PacketContainer(POSITION);
-        teleport.getModifier().writeDefaults();
-        teleport.getDoubles().write(0, location.getX());
-        teleport.getDoubles().write(1, location.getY());
-        teleport.getDoubles().write(2, location.getZ());
-        teleport.getFloat().write(0, location.getYaw());
-        teleport.getFloat().write(1, location.getPitch());
-        //send an invalid teleport id in order to let Bukkit ignore the incoming confirm packet
-        teleport.getIntegers().writeSafely(0, -1337);
+            //prevent the moved too quickly message
+            teleport = createTeleportPacket(receiver.getLocation().clone());
+        } catch (ReflectiveOperationException reflectiveEx) {
+            plugin.getLog().error("Error occured preparing packets. Cancelling self update", reflectiveEx);
+            return;
+        }
 
         sendPackets(removeInfo, addInfo, respawn, teleport);
     }
@@ -201,5 +198,48 @@ public class SkinApplier extends SharedApplier {
         } catch (InvocationTargetException ex) {
             plugin.getLog().error("Exception sending instant skin change packet for: {}", receiver, ex);
         }
+    }
+
+    private PacketContainer createRespawnPacket(NativeGameMode gamemode) throws ReflectiveOperationException {
+        PacketContainer respawn = new PacketContainer(RESPAWN);
+
+        Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
+
+        //<= 1.13
+        int dimensionId = receiver.getWorld().getEnvironment().getId();
+        respawn.getIntegers().writeSafely(0, dimensionId);
+
+        //> 1.13
+        if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.AQUATIC_UPDATE) > 0) {
+            try {
+                Class<?> dimensionManagerClass = MinecraftReflection.getMinecraftClass("DimensionManager");
+
+                //find dimension manager
+                Method method = dimensionManagerClass.getDeclaredMethod("a", Integer.TYPE);
+                Object dimensionManger = method.invoke(null, dimensionId);
+                respawn.getSpecificModifier(dimensionManagerClass).withType(Object.class).write(0, dimensionManger);
+            } catch (ReflectiveOperationException reflectiveEx) {
+                throw new ReflectiveOperationException("Failed to find dimension manager", reflectiveEx);
+            }
+        }
+
+        respawn.getDifficulties().write(0, difficulty);
+        respawn.getGameModes().write(0, gamemode);
+        respawn.getWorldTypeModifier().write(0, receiver.getWorld().getWorldType());
+        return respawn;
+    }
+
+    private PacketContainer createTeleportPacket(Location location) {
+        PacketContainer teleport = new PacketContainer(POSITION);
+
+        teleport.getDoubles().write(0, location.getX());
+        teleport.getDoubles().write(1, location.getY());
+        teleport.getDoubles().write(2, location.getZ());
+        teleport.getFloat().write(0, location.getYaw());
+        teleport.getFloat().write(1, location.getPitch());
+
+        //send an invalid teleport id in order to let Bukkit ignore the incoming confirm packet
+        teleport.getIntegers().writeSafely(0, -1337);
+        return teleport;
     }
 }
