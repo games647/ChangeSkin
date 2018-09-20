@@ -4,7 +4,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
-import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
@@ -20,7 +19,6 @@ import com.github.games647.changeskin.core.shared.task.SharedApplier;
 import com.nametagedit.plugin.NametagEdit;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -205,21 +203,19 @@ public class SkinApplier extends SharedApplier {
 
         Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
 
-        //<= 1.13
+        //<= 1.13.1
         int dimensionId = receiver.getWorld().getEnvironment().getId();
         respawn.getIntegers().writeSafely(0, dimensionId);
 
-        //> 1.13
+        //> 1.13.1
         if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.AQUATIC_UPDATE) > 0) {
             try {
-                Class<?> dimensionManagerClass = MinecraftReflection.getMinecraftClass("DimensionManager");
-
-                //find dimension manager
-                Method method = dimensionManagerClass.getDeclaredMethod("a", Integer.TYPE);
-                Object dimensionManger = method.invoke(null, dimensionId);
-                respawn.getSpecificModifier(dimensionManagerClass).withType(Object.class).write(0, dimensionManger);
-            } catch (ReflectiveOperationException reflectiveEx) {
-                throw new ReflectiveOperationException("Failed to find dimension manager", reflectiveEx);
+                respawn.getDimensions().writeSafely(0, dimensionId);
+            } catch (NoSuchMethodError noSuchMethodError) {
+                throw new ReflectiveOperationException("Unable to find dimension setter. " +
+                        "Your ProtocolLib version is incompatible with this plugin version in combination with " +
+                        "Minecraft 1.13.1. " +
+                        "Try to download an update of ProtocolLib.", noSuchMethodError);
             }
         }
 
