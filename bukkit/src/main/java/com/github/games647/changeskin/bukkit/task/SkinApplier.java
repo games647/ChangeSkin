@@ -219,7 +219,7 @@ public class SkinApplier extends SharedApplier {
             }
         }
 
-        respawn.getDifficulties().write(0, difficulty);
+        respawn.getDifficulties().writeSafely(0, difficulty);
         respawn.getGameModes().write(0, gamemode);
         respawn.getWorldTypeModifier().write(0, receiver.getWorld().getWorldType());
         return respawn;
