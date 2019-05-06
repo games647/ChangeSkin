@@ -72,8 +72,8 @@
 
         <!--NameTagEdit-->
         <repository>
-            <id>upstream</id>
-            <url>https://ci.nametagedit.com/plugin/repository/everything/</url>
+            <id>nametagedit-repo</id>
+            <url>http://ci.nametagedit.com:8080/plugin/repository/everything/</url>
         </repository>
     </repositories>
 
