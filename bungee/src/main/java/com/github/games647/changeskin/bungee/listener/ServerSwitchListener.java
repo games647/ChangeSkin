@@ -25,14 +25,14 @@ public class ServerSwitchListener extends AbstractSkinListener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerConnect(ServerConnectEvent connectEvent) {
         ServerInfo targetServer = connectEvent.getTarget();
-
         Server fromServer = connectEvent.getPlayer().getServer();
+        
         if (fromServer != null && Objects.equals(targetServer, fromServer.getInfo())) {
             //check if we are switching to the same server
             return;
         }
 
-        if (!isBlacklistEnabled()) {
+        if (connectEvent.isCancelled() || !isBlacklistEnabled()) {
             return;
         }
 
