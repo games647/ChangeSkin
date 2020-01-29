@@ -76,7 +76,15 @@ Blacklist
 * Minecraft server software
     * Spigot 1.8.8+ or any fork of it (ex: Paper)
     * Sponge 7+
-    * BungeeCord 1.12+ (Keep in mind that BungeeCord is backwards compatible)
+    * BungeeCord 1.13+ (Keep in mind that BungeeCord is backwards compatible)
+
+## Network requests
+
+This plugin performs network requests to:
+
+* https://api.mojang.com - retrieving skin reference and uuid data
+* https://sessionserver.mojang.com - downloading skin data
+* https://authserver.mojang.com - uploading skins
 
 ## Development builds
 
