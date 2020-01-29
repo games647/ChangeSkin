@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +69,9 @@ public class SkullCommand implements CommandExecutor {
             try {
                 Player player = (Player) sender;
                 int targetId = Integer.parseInt(targetName);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                    applySkin(player, plugin.getStorage().getSkin(targetId));
-                });
+
+                BukkitScheduler scheduler = Bukkit.getScheduler();
+                scheduler.runTaskAsynchronously(plugin, () -> applySkin(player, plugin.getStorage().getSkin(targetId)));
             } catch (NumberFormatException numberFormatException) {
                 plugin.sendMessage(sender, "invalid-skin-name");
             }

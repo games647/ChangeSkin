@@ -205,7 +205,7 @@ public class ChangeSkinCore {
             Path configFile = dataFolder.resolve(fileName);
             if (Files.notExists(configFile)) {
                 try (InputStream defaultStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
-                    Files.copy(defaultStream, configFile);
+                    Files.copy(Objects.requireNonNull(defaultStream), configFile);
                 }
             }
         } catch (IOException ioExc) {

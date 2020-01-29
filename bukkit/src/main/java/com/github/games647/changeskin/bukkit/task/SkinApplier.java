@@ -37,6 +37,20 @@ import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
 
 public class SkinApplier extends SharedApplier {
 
+    private static final boolean NEW_HIDE_METHOD_AVAILABLE;
+
+    static {
+        boolean methodAvailable;
+        try {
+            Player.class.getDeclaredMethod("hidePlayer", Plugin.class, Player.class);
+            methodAvailable = true;
+        } catch (NoSuchMethodException noSuchMethodEx) {
+            methodAvailable = false;
+        }
+
+        NEW_HIDE_METHOD_AVAILABLE = methodAvailable;
+    }
+
     protected final ChangeSkinBukkit plugin;
     private final CommandSender invoker;
     private final Player receiver;
@@ -106,6 +120,7 @@ public class SkinApplier extends SharedApplier {
     private void sendUpdateOthers() throws FieldAccessException {
         //triggers an update for others player to see the new skin
         Bukkit.getOnlinePlayers().stream()
+                .filter(onlinePlayer -> !onlinePlayer.equals(receiver))
                 .filter(onlinePlayer -> onlinePlayer.canSee(receiver))
                 .forEach(this::hideAndShow);
     }
@@ -166,7 +181,7 @@ public class SkinApplier extends SharedApplier {
             //prevent the moved too quickly message
             teleport = createTeleportPacket(receiver.getLocation().clone());
         } catch (ReflectiveOperationException reflectiveEx) {
-            plugin.getLog().error("Error occured preparing packets. Cancelling self update", reflectiveEx);
+            plugin.getLog().error("Error occurred preparing packets. Cancelling self update", reflectiveEx);
             return;
         }
 
@@ -176,12 +191,10 @@ public class SkinApplier extends SharedApplier {
     @SuppressWarnings("deprecation")
     private void hideAndShow(Player other) {
         //removes the entity and display the new skin
-        try {
-            other.getClass().getDeclaredMethod("hidePlayer", Plugin.class, Player.class);
-
+        if (NEW_HIDE_METHOD_AVAILABLE) {
             other.hidePlayer(plugin, receiver);
             other.showPlayer(plugin, receiver);
-        } catch (NoSuchMethodException noSuckMethodEx) {
+        } else {
             other.hidePlayer(receiver);
             other.showPlayer(receiver);
         }
@@ -229,11 +242,12 @@ public class SkinApplier extends SharedApplier {
         PacketContainer teleport = new PacketContainer(POSITION);
         teleport.getModifier().writeDefaults();
 
-        teleport.getDoubles().write(0, location.getX());
-        teleport.getDoubles().write(1, location.getY());
-        teleport.getDoubles().write(2, location.getZ());
-        teleport.getFloat().write(0, location.getYaw());
-        teleport.getFloat().write(1, location.getPitch());
+        teleport.getDoubles().write(0, location.getX())
+                .write(1, location.getY())
+                .write(2, location.getZ());
+
+        teleport.getFloat().write(0, location.getYaw())
+                .write(1, location.getPitch());
 
         //send an invalid teleport id in order to let Bukkit ignore the incoming confirm packet
         teleport.getIntegers().writeSafely(0, -1337);

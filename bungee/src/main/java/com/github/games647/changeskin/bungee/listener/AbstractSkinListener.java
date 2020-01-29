@@ -38,6 +38,6 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
 
     protected boolean isBlacklistEnabled() {
         List<String> blacklist = core.getConfig().getStringList("server-blacklist");
-        return blacklist != null && !blacklist.isEmpty();
+        return !blacklist.isEmpty();
     }
 }

@@ -107,7 +107,7 @@ public class ChangeSkinSponge implements PlatformPlugin<CommandSource> {
 
     @Override
     public boolean hasSkinPermission(CommandSource invoker, UUID uuid, boolean sendMessage) {
-        if (invoker.hasPermission(ARTIFACT_ID + ".skin.whitelist." + uuid)) {
+        if (invoker.hasPermission(PomData.ARTIFACT_ID + ".skin.whitelist." + uuid)) {
             return true;
         }
 
