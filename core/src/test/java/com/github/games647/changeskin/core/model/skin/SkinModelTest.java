@@ -9,8 +9,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SkinModelTest {
 
@@ -130,7 +129,8 @@ public class SkinModelTest {
         SkinModel capeModel = new SkinModel(-1, 1520277572322L,
                 UUIDTypeAdapter.parseId("61699b2ed3274a019f1e0ea8c3f06bc6"),
                 "Dinnerbone", false, "cd6be915b261643fd13621ee4e99c9e541a551d80272687a3b56183b981fb9a",
-                "eec3cabfaeed5dafe61c6546297e853a547c39ec238d7c44bf4eb4a49dc1f2c0", Base64.getDecoder().decode(CAPE_SIGNATURE));
+                "eec3cabfaeed5dafe61c6546297e853a547c39ec238d7c44bf4eb4a49dc1f2c0",
+                Base64.getDecoder().decode(CAPE_SIGNATURE));
 
         assertThat(VerifyUtil.isValid(capeModel.getEncodedValue(), capeModel.getSignature()), is(true));
     }

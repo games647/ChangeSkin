@@ -17,7 +17,7 @@
 ### Environment description
 [//]: # (Standalone server/Bungeecord network with version and build number, SQLite/MySQL, ...)
 
-### Plugin version or build number:
+### Plugin version:
 [//]: # (Don't write latest or the build number with #. #Number is used to reference to other tickets.)
 [//]: # (This can be found by running `/version plugin-name`.)
 
