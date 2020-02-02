@@ -55,7 +55,7 @@ public class MojangAuthApi {
         return Optional.empty();
     }
 
-    public void changeSkin(UUID ownerId, UUID accessToken, String sourceUrl, boolean slimModel) {
+    public void changeSkin(UUID ownerId, String accessToken, String sourceUrl, boolean slimModel) {
         String url = CHANGE_SKIN_URL.replace("<uuid>", UUIDTypeAdapter.toMojangId(ownerId));
 
         try {
@@ -63,7 +63,7 @@ public class MojangAuthApi {
             httpConnection.setRequestMethod("POST");
             httpConnection.setDoOutput(true);
 
-            httpConnection.addRequestProperty("Authorization", "Bearer " + UUIDTypeAdapter.toMojangId(accessToken));
+            httpConnection.addRequestProperty("Authorization", "Bearer " + accessToken);
             try (BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(httpConnection.getOutputStream(), StandardCharsets.UTF_8))) {
                 writer.write("model=");

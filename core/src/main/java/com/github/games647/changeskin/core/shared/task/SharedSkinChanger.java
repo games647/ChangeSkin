@@ -1,7 +1,6 @@
 package com.github.games647.changeskin.core.shared.task;
 
 import com.github.games647.changeskin.core.ChangeSkinCore;
-import com.github.games647.changeskin.core.model.UUIDTypeAdapter;
 import com.github.games647.changeskin.core.model.auth.Account;
 
 import java.util.UUID;
@@ -23,8 +22,7 @@ public abstract class SharedSkinChanger implements Runnable {
     @Override
     public void run() {
         UUID uuid = owner.getProfile().getId();
-        UUID accessToken = UUIDTypeAdapter.parseId(owner.getAccessToken());
-
+        String accessToken = owner.getAccessToken();
         core.getAuthApi().changeSkin(uuid, accessToken, url, false);
 
         //this could properly cause issues for uuid resolving to this database entry
