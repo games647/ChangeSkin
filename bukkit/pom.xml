@@ -67,13 +67,13 @@
         <!--ProtocolLib-->
         <repository>
             <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/public//</url>
+            <url>https://repo.dmulloy2.net/nexus/repository/public//</url>
         </repository>
 
         <!--NameTagEdit-->
         <repository>
             <id>nametagedit-repo</id>
-            <url>http://ci.nametagedit.com:8080/plugin/repository/everything/</url>
+            <url>https://ci.nametagedit.com/plugin/repository/everything/</url>
         </repository>
     </repositories>
 
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>com.nametagedit</groupId>
             <artifactId>nametagedit</artifactId>
-            <version>4.1.0</version>
+            <version>4.4.6</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
