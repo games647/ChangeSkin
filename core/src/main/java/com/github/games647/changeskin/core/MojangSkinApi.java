@@ -197,15 +197,21 @@ public class MojangSkinApi {
         TexturesModel texturesModel = gson.fromJson(reader, TexturesModel.class);
 
         SkinProperty[] properties = texturesModel.getProperties();
-        if (properties != null && properties.length > 0) {
-            SkinProperty propertiesModel = properties[0];
+        try {
+            if (properties != null && properties.length > 0) {
+                SkinProperty propertiesModel = properties[0];
 
-            //base64 encoded skin data
-            String encodedSkin = propertiesModel.getValue();
-            String signature = propertiesModel.getSignature();
+                //base64 encoded skin data
+                String encodedSkin = propertiesModel.getValue();
+                String signature = propertiesModel.getSignature();
 
-            return Optional.of(SkinModel.createSkinFromEncoded(encodedSkin, signature));
+                return Optional.of(SkinModel.createSkinFromEncoded(encodedSkin, signature));
+            }
+        } catch (Exception ex) {
+            logger.error("Failed to parse skin model", ex);
+            logger.error(texturesModel.toString());
         }
+
 
         return Optional.empty();
     }

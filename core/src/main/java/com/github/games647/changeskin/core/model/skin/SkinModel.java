@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -47,7 +48,7 @@ public class SkinModel {
         this.rowId = rowId;
 
         this.timestamp = timestamp;
-        this.profileId = uuid;
+        this.profileId = Objects.requireNonNull(uuid);
         this.profileName = name;
         
         if (skinURL != null && !skinURL.isEmpty()) {
@@ -70,6 +71,7 @@ public class SkinModel {
         skinModel.setRowId(-1);
         skinModel.encodedSignature = signature;
         skinModel.encodedValue = encodedData;
+        Objects.requireNonNull(skinModel.getProfileId());
         return skinModel;
     }
 
