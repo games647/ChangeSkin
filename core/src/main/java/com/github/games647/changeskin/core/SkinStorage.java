@@ -68,6 +68,13 @@ public class SkinStorage {
         } else {
             jdbcUrl += "mysql://" + host + ':' + port + '/' + database;
             properties.setProperty("useSSL", String.valueOf(useSSL));
+            // enable MySQL specific optimizations
+            // default prepStmtCacheSize 25 - amount of cached statements - enough for us
+            // default prepStmtCacheSqlLimit 256 - length of SQL - our queries are not longer
+            // disabled by default - will return the same prepared statement instance
+            config.addDataSourceProperty("cachePrepStmts", true);
+            // default false - available in newer versions caches the statements server-side
+            config.addDataSourceProperty("useServerPrepStmts", true);
         }
 
         config.setJdbcUrl(jdbcUrl);
@@ -76,29 +83,34 @@ public class SkinStorage {
     }
 
     public void createTables() throws SQLException {
-        try (InputStream in = getClass().getResourceAsStream("/create.sql");
-             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-             Connection con = dataSource.getConnection();
-             Statement stmt = con.createStatement()) {
-            StringBuilder builder = new StringBuilder();
+        try (
+                InputStream in = getClass().getResourceAsStream("/create.sql");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
+        ) {
+            try (
+                    Connection con = dataSource.getConnection();
+                    Statement stmt = con.createStatement()
+            ) {
+                StringBuilder builder = new StringBuilder();
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("#")) continue;
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.startsWith("#")) continue;
 
-                builder.append(line);
-                if (line.endsWith(";")) {
-                    String sql = builder.toString();
-                    if (dataSource.getJdbcUrl().contains("sqlite")) {
-                        sql = sql.replace("AUTO_INCREMENT", "AUTOINCREMENT");
+                    builder.append(line);
+                    if (line.endsWith(";")) {
+                        String sql = builder.toString();
+                        if (dataSource.getJdbcUrl().contains("sqlite")) {
+                            sql = sql.replace("AUTO_INCREMENT", "AUTOINCREMENT");
+                        }
+
+                        stmt.addBatch(sql);
+                        builder = new StringBuilder();
                     }
-
-                    stmt.addBatch(sql);
-                    builder = new StringBuilder();
                 }
-            }
 
-            stmt.executeBatch();
+                stmt.executeBatch();
+            }
         } catch (IOException ioEx) {
             logger.error("Failed to load migration file", ioEx);
         }
@@ -106,8 +118,8 @@ public class SkinStorage {
 
     public UserPreference getPreferences(UUID uuid) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, "
-                     + DATA_TABLE + ".UUID, Name, SlimModel, SkinUrl, CapeUrl, Signature, " + USER_TABLE + ".*"
+             PreparedStatement stmt = con.prepareStatement("SELECT `SkinId`, `Timestamp`, "
+                     + DATA_TABLE + ".UUID, `Name`, `SlimModel`, `SkinUrl`, `CapeUrl`, `Signature`, " + USER_TABLE + ".*"
                      + " FROM " + USER_TABLE
                      + " LEFT JOIN " + DATA_TABLE + " ON " + USER_TABLE + ".TargetSkin=" + DATA_TABLE + ".SkinID"
                      + " WHERE " + USER_TABLE + ".UUID=? LIMIT 1")) {
@@ -138,7 +150,7 @@ public class SkinStorage {
     public SkinModel getSkin(int targetSkinId) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("SELECT SkinId, Timestamp, UUID, Name, " +
-                     "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE + " WHERE SkinID=? LIMIT 1")) {
+                     "SlimModel, SkinUrl, CapeUrl, Signature FROM " + DATA_TABLE + " WHERE SkinID=?")) {
             stmt.setInt(1, targetSkinId);
 
             try (ResultSet resultSet = stmt.executeQuery()) {
@@ -253,7 +265,7 @@ public class SkinStorage {
 
             try (Connection con = dataSource.getConnection();
                  PreparedStatement stmt = con.prepareStatement("INSERT INTO " + DATA_TABLE
-                         + " (Timestamp, UUID, Name, SlimModel, SkinURL, CapeURL, Signature) VALUES"
+                         + " (`Timestamp`, `UUID`, `Name`, `SlimModel`, `SkinURL`, `CapeURL`, `Signature`) VALUES"
                          + " (?, ?, ?, ?, ?, ?, ?)", RETURN_GENERATED_KEYS)) {
 
                 stmt.setLong(1, skinData.getTimestamp());

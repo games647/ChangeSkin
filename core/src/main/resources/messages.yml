@@ -75,7 +75,7 @@ upload-noargs: '&4The skin URL and optional a name is missing'
 no-accounts: '&4There are no configured accounts to upload skins'
 
 # User entered an invalid URL for upload a skin
-no-valid-url: '&4The URL has to start with http:// or https://'
+no-valid-url: '&4The URL has to start with https://'
 
 # We can only access the skin of the same owner (UUID) only with a time interval of one minute. Otherwise we
 # we get a 429 rate limit error.
