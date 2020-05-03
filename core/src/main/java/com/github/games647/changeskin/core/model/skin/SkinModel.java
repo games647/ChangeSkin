@@ -22,11 +22,17 @@ public class SkinModel {
             .registerTypeAdapter(UUID.class, new UUIDTypeAdapter())
             .create();
 
+    private static final Gson prettyGson = new GsonBuilder()
+            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter())
+            .setPrettyPrinting()
+            .create();
+
     private static final Gson legacyGson = new GsonBuilder()
             .registerTypeAdapter(UUID.class, new UUIDTypeAdapter())
             .registerTypeAdapter(TextureModel.class, new LegacyTextureAdapter())
             .create();
     private static final long LEGACY_TIMESTAMP = 1516492800000L;
+    private static final long PRETTY_TIMESTAMP = 1587933311016L;
 
     private transient int rowId;
     private transient String encodedValue;
@@ -148,7 +154,10 @@ public class SkinModel {
 
         //at ~21 january 2018 Mojang changed the encoding format from metadata + url to url + metadata. This means
         //the signature is no longer valid
-        if (timestamp <= LEGACY_TIMESTAMP) {
+        if (timestamp > PRETTY_TIMESTAMP) {
+            // added spaces before colon - Idk why they added it
+            json = prettyGson.toJson(this).replace("\":", "\" :");
+        } else if (timestamp <= LEGACY_TIMESTAMP) {
             json = legacyGson.toJson(this);
         } else {
             json = gson.toJson(this);
