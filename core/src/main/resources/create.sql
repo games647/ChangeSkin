@@ -1,4 +1,4 @@
-# SkinID is the only lightweight unique key for being used in foreign keys
+-- SkinID is the only lightweight unique key for being used in foreign keys
 CREATE TABLE IF NOT EXISTS `skinData`
 (
     `SkinID`      INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS `skinData`
     `Signature`   BLOB          NOT NULL
 );
 
-# UUID could be primary key, but it's easier readable for database administrators in char than binary
-# therefore is not really optimized for storage as t
+-- UUID could be primary key, but it's easier readable for database administrators in char than binary
+-- therefore is not really optimized for storage
 CREATE TABLE IF NOT EXISTS `preferences`
 (
     `UserID`     INTEGER PRIMARY KEY AUTO_INCREMENT,
