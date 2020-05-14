@@ -217,6 +217,7 @@ public class ChangeSkinCore {
         for (String id : defaults) {
             Integer rowId = Ints.tryParse(id);
             if (rowId != null) {
+                // TODO: use batched loads and saves
                 Optional.ofNullable(storage.getSkin(rowId)).ifPresent(defaultSkins::add);
             }
 

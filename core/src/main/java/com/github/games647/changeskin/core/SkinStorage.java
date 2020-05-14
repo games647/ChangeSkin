@@ -83,6 +83,7 @@ public class SkinStorage {
     }
 
     public void createTables() throws SQLException {
+        // TODO: Add transaction mode to prevent half table setup
         try (
                 InputStream in = getClass().getResourceAsStream("/create.sql");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
