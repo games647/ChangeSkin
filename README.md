@@ -85,6 +85,7 @@ This plugin performs network requests to:
 * https://api.mojang.com - retrieving skin reference and uuid data
 * https://sessionserver.mojang.com - downloading skin data
 * https://authserver.mojang.com - uploading skins
+* https://api.ashcon.app - service for skin donwloads if rate limited
 
 ## Development builds
 

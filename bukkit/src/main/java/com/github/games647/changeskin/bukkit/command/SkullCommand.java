@@ -7,10 +7,12 @@ import com.github.games647.changeskin.core.model.skin.SkinModel;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,8 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SkullCommand implements CommandExecutor {
 
-    //speed by letting the JVM optimize this
-    //MethodHandle is only faster for static final fields
+    //MethodHandle is only faster for static final fields and invokeExact
     private static final MethodHandle skullProfileSetter;
 
     static {
@@ -40,10 +41,11 @@ public class SkullCommand implements CommandExecutor {
             Field profileField = clazz.getDeclaredField("profile");
             profileField.setAccessible(true);
 
-            methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
+            methodHandle = MethodHandles.lookup().unreflectSetter(profileField)
+                    .asType(MethodType.methodType(Void.class, SkullMeta.class, Object.class));
         } catch (ReflectiveOperationException ex) {
             Logger logger = LoggerFactory.getLogger(SkullCommand.class);
-            logger.info("Cannot find loginProfile field for setting skin in offline mode", ex);
+            logger.info("Cannot find profile field for setting skulls", ex);
         }
 
         skullProfileSetter = methodHandle;
@@ -82,22 +84,31 @@ public class SkullCommand implements CommandExecutor {
 
     private void applySkin(Player player, SkinModel skinData) {
         Bukkit.getScheduler().runTask(plugin, () -> {
-            setSkullSkin(player.getInventory().getItem(player.getInventory().getHeldItemSlot()), skinData);
+            if (skinData == null) {
+                player.sendMessage(ChatColor.DARK_RED + "Skin not found");
+                return;
+            }
+
+            ItemStack itemInHand = player.getInventory().getItem(player.getInventory().getHeldItemSlot());
+            if (itemInHand == null || itemInHand.getType() != Material.PLAYER_HEAD) {
+                player.sendMessage(ChatColor.DARK_RED + "Player head item not in hand");
+                return;
+            }
+
+            setSkullSkin(itemInHand, skinData);
             player.updateInventory();
+            player.sendMessage(ChatColor.DARK_RED + "Skin updated");
         });
     }
 
     private void setSkullSkin(ItemStack itemStack, SkinModel skinData) {
-        if (itemStack == null || skinData == null || itemStack.getType() != Material.SKULL_ITEM)
-            return;
-
         try {
             SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
 
             WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.randomUUID(), null);
             plugin.getApi().applyProperties(gameProfile, skinData);
 
-            skullProfileSetter.invoke(skullMeta, gameProfile.getHandle());
+            skullProfileSetter.invokeExact(skullMeta, gameProfile.getHandle());
             itemStack.setItemMeta(skullMeta);
         } catch (Exception ex) {
             plugin.getLog().info("Failed to set skull item {} to {}", itemStack, skinData, ex);

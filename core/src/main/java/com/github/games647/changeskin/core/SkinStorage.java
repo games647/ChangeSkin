@@ -96,7 +96,7 @@ public class SkinStorage {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (line.startsWith("#")) continue;
+                    if (line.startsWith("#") || line.startsWith("-- ")) continue;
 
                     builder.append(line);
                     if (line.endsWith(";")) {
