@@ -9,7 +9,7 @@ import com.github.games647.changeskin.core.shared.ChangeSkinAPI;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,8 +31,10 @@ public class BungeeSkinAPI implements ChangeSkinAPI<ProxiedPlayer, LoginResult> 
     static {
         MethodHandle methodHandle = null;
         try {
-            Lookup lookup = MethodHandles.lookup();
-            methodHandle = lookup.findSetter(InitialHandler.class, "loginProfile", LoginResult.class);
+            Field profileField = InitialHandler.class.getDeclaredField("loginProfile");
+            profileField.setAccessible(true);
+
+            methodHandle = MethodHandles.lookup().unreflectSetter(profileField);
         } catch (Exception ex) {
             Logger logger = LoggerFactory.getLogger("ChangeSkin");
             logger.info("Cannot find loginProfile field for setting skin in offline mode", ex);
