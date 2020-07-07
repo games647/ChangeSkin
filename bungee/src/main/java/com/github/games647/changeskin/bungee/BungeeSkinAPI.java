@@ -56,7 +56,7 @@ public class BungeeSkinAPI implements ChangeSkinAPI<ProxiedPlayer, LoginResult> 
         InitialHandler initialHandler = (InitialHandler) player.getPendingConnection();
         LoginResult loginProfile = initialHandler.getLoginProfile();
 
-        //this is null in offline mode
+        // this is null in offline mode
         if (loginProfile == null) {
             String mojangUUID = UUIDTypeAdapter.toMojangId(player.getUniqueId());
 

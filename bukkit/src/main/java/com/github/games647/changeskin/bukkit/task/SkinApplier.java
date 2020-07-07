@@ -16,6 +16,7 @@ import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.task.SharedApplier;
+import com.google.common.hash.Hashing;
 import com.nametagedit.plugin.NametagEdit;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +26,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -214,10 +216,11 @@ public class SkinApplier extends SharedApplier {
     private PacketContainer createRespawnPacket(NativeGameMode gamemode) throws ReflectiveOperationException {
         PacketContainer respawn = new PacketContainer(RESPAWN);
 
-        Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
+        World world = receiver.getWorld();
+        Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(world.getDifficulty());
 
         //<= 1.13.1
-        int dimensionId = receiver.getWorld().getEnvironment().getId();
+        int dimensionId = world.getEnvironment().getId();
         respawn.getIntegers().writeSafely(0, dimensionId);
 
         //> 1.13.1
@@ -230,6 +233,15 @@ public class SkinApplier extends SharedApplier {
                         "Minecraft 1.13.1. " +
                         "Try to download an update of ProtocolLib.", noSuchMethodError);
             }
+        }
+
+
+
+        // 1.14 dropped difficulty and 1.15 added hashed seed
+        respawn.getDifficulties().writeSafely(0, difficulty);
+        if (MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion("1.15")) > 0) {
+            long seed = world.getSeed();
+            respawn.getLongs().write(0, Hashing.sha256().hashLong(seed).asLong());
         }
 
         respawn.getDifficulties().writeSafely(0, difficulty);
