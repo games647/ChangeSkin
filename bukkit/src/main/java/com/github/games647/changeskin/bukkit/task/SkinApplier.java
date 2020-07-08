@@ -4,9 +4,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
-import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
+import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
@@ -21,16 +21,11 @@ import com.github.games647.changeskin.core.shared.task.SharedApplier;
 import com.google.common.hash.Hashing;
 import com.nametagedit.plugin.NametagEdit;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -42,6 +37,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
 
 import static com.comphenix.protocol.PacketType.Play.Server.PLAYER_INFO;
 import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
@@ -50,9 +46,10 @@ import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
 public class SkinApplier extends SharedApplier {
 
     private static final boolean NEW_HIDE_METHOD_AVAILABLE;
-    private static final MethodHandle DEBUG_WORLD_GETTER;
-    private static final MethodHandle WORLD_GETTER;
-    private static final MethodHandle WORLD_KEY_GETTER;
+
+    // static final methods are faster, because JVM can inline them and make them accessible
+    private static final Field WORLD_KEY_FIELD;
+    private static final Field DEBUG_WORLD_FIELD;
 
     static {
         boolean methodAvailable;
@@ -63,29 +60,28 @@ public class SkinApplier extends SharedApplier {
             methodAvailable = false;
         }
 
-        MethodHandle localWorldGetter = null;
-        MethodHandle localKeyGetter = null;
-        MethodHandle localDebugGetter = null;
+        // use standard reflection, because we cannot use the performance benefits of MethodHandles
+        // MethodHandles are only clearly faster with invokeExact
+        // we can use for a nested call of debug world: getDebugField(getNMSWorldFromBukkit) in a single handle
+        // But for the resourceKey the return type is not known at compile time - it's an NMS class
+        Field localWorldKey = null;
+        Field localDebugWorld = null;
+
+        Logger logger = JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLog();
         try {
-            Lookup lookup = MethodHandles.publicLookup();
             Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
-            localWorldGetter = lookup.findVirtual(MinecraftReflection.getCraftWorldClass(), "getHandle", MethodType.methodType(nmsWorldClass))
-                    // allow invokeExact although this is an interface
-                    .asType(MethodType.methodType(World.class));
+            localWorldKey = nmsWorldClass.getDeclaredField("dimensionKey");
+            localWorldKey.setAccessible(true);
+            logger.info("Dimension generics: {}", localWorldKey.getGenericType());
 
-            Class<?> resourceKey = MinecraftReflection.getMinecraftClass("ResourceKey");
-            localKeyGetter = lookup.findGetter(nmsWorldClass, "dimensionKey", resourceKey);
-
-            localDebugGetter = lookup.findGetter(nmsWorldClass, "debugWorld", Integer.TYPE);
-        } catch (NoSuchMethodException | IllegalAccessException | NoSuchFieldException reflectiveEx) {
-            Logger logger = JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLogger();
-            logger.log(Level.WARNING, "Cannot find debug field", reflectiveEx);
+            localDebugWorld = nmsWorldClass.getDeclaredField("debugWorld");
+            localDebugWorld.setAccessible(true);
+        } catch (NoSuchFieldException reflectiveEx) {
+            logger.warn("Cannot find respawn fields", reflectiveEx);
         }
 
-        WORLD_GETTER = localWorldGetter;
-        WORLD_KEY_GETTER = localKeyGetter;
-        DEBUG_WORLD_GETTER = localDebugGetter;
-
+        WORLD_KEY_FIELD = localWorldKey;
+        DEBUG_WORLD_FIELD = localDebugWorld;
         NEW_HIDE_METHOD_AVAILABLE = methodAvailable;
     }
 
@@ -271,8 +267,6 @@ public class SkinApplier extends SharedApplier {
             }
         }
 
-
-
         // 1.14 dropped difficulty and 1.15 added hashed seed
         respawn.getDifficulties().writeSafely(0, difficulty);
         if (MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion("1.15")) > 0) {
@@ -284,15 +278,14 @@ public class SkinApplier extends SharedApplier {
         if (MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion("1.16")) > 0) {
             // a = dimension (as resource key) -> dim type, b = world (resource key) -> world name, c = "hashed" seed
             // dimension and seed covered above - we have to start with 1 because dimensions already uses the first idx
-            WORLD_GETTER.invoke()
+            Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
 
-            Class<?> resourceKey = MinecraftReflection.getMinecraftClass("ResourceKey");
-            StructureModifier<?> resourceMod = respawn.getSpecificModifier(resourceKey);
+            Object resourceKey = WORLD_KEY_FIELD.get(nmsWorld);
             plugin.getLog().info("World name {}", world.getName());
-            plugin.getLog().info("World name MC-KEY: {}", world.getName());
+            plugin.getLog().info("World name MC-KEY: {}", resourceKey);
 
-            resourceMod.write(1, WORLD_KEY_GETTER.invoke(n));
-            //TODO:
+            Class<Object> resourceKeyClass = (Class<Object>) MinecraftReflection.getMinecraftClass("ResourceKey");
+            respawn.getSpecificModifier(resourceKeyClass).write(1, resourceKey);
 
             // d = gamemode, e = gamemode (previous)
             respawn.getGameModes().write(0, gamemode);
@@ -301,7 +294,7 @@ public class SkinApplier extends SharedApplier {
             // f = debug world, g = flat world, h = flag (copy metadata)
             // get the NMS world
             try {
-                respawn.getBooleans().write(0, (boolean) DEBUG_WORLD_GETTER.invokeExact(world));
+                respawn.getBooleans().write(0, DEBUG_WORLD_FIELD.getBoolean(nmsWorld));
             } catch (Exception ex) {
                 plugin.getLog().error("Cannot fetch debug state of world {}. Assuming false", world, ex);
                 respawn.getBooleans().write(0, false);
@@ -318,9 +311,6 @@ public class SkinApplier extends SharedApplier {
             respawn.getGameModes().write(0, gamemode);
         }
 
-        respawn.getDifficulties().writeSafely(0, difficulty);
-        respawn.getGameModes().write(0, gamemode);
-        respawn.getWorldTypeModifier().write(0, receiver.getWorld().getWorldType());
         return respawn;
     }
 
