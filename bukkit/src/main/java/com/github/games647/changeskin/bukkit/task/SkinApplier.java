@@ -4,7 +4,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
+import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
+import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
@@ -16,20 +18,27 @@ import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
 import com.github.games647.changeskin.core.shared.task.SharedApplier;
+import com.google.common.hash.Hashing;
 import com.nametagedit.plugin.NametagEdit;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.WorldType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
 
 import static com.comphenix.protocol.PacketType.Play.Server.PLAYER_INFO;
 import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
@@ -38,6 +47,17 @@ import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
 public class SkinApplier extends SharedApplier {
 
     private static final boolean NEW_HIDE_METHOD_AVAILABLE;
+
+    // static final methods are faster, because JVM can inline them and make them accessible
+    private static final Class<Object> RESOURCE_KEY_CLASS = (Class<Object>) MinecraftReflection.getMinecraftClass("ResourceKey");
+    private static final Field WORLD_KEY_FIELD;
+    private static final Field DEBUG_WORLD_FIELD;
+
+    private static final Method PLAYER_HANDLE_METHOD;
+    private static final Field INTERACTION_MANAGER;
+    private static final Field GAMEMODE_FIELD;
+
+    private static final boolean DISABLED_PACKETS;
 
     static {
         boolean methodAvailable;
@@ -48,7 +68,51 @@ public class SkinApplier extends SharedApplier {
             methodAvailable = false;
         }
 
+        boolean localDisable = false;
+        Field localWorldKey = null;
+        Field localDebugWorld = null;
+
+        Method localHandleMethod = null;
+        Field localInteractionField = null;
+        Field localGamemode = null;
+
+        // use standard reflection, because we cannot use the performance benefits of MethodHandles
+        // MethodHandles are only clearly faster with invokeExact
+        // we can use for a nested call of debug world: getDebugField(getNMSWorldFromBukkit) in a single handle
+        // But for the resourceKey the return type is not known at compile time - it's an NMS class
+        Logger logger = JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLog();
+        if (isAtOrAbove("1.16")) {
+            try {
+                Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
+                localWorldKey = nmsWorldClass.getDeclaredField("dimensionKey");
+                localWorldKey.setAccessible(true);
+
+                localDebugWorld = nmsWorldClass.getDeclaredField("debugWorld");
+                localDebugWorld.setAccessible(true);
+
+                localHandleMethod = MinecraftReflection.getCraftPlayerClass().getDeclaredMethod("getHandle");
+
+                Class<?> entityPlayerClass = MinecraftReflection.getEntityPlayerClass();
+                localInteractionField = entityPlayerClass.getDeclaredField("playerInteractManager");
+                localInteractionField.setAccessible(true);
+
+                Class<?> playerInteractManager = MinecraftReflection.getMinecraftClass("PlayerInteractManager");
+                localGamemode = playerInteractManager.getDeclaredField("e");
+                localGamemode.setAccessible(true);
+            } catch (NoSuchFieldException | NoSuchMethodException reflectiveEx) {
+                logger.warn("Cannot find 1.16x fields", reflectiveEx);
+                localDisable = true;
+            }
+        }
+
         NEW_HIDE_METHOD_AVAILABLE = methodAvailable;
+        WORLD_KEY_FIELD = localWorldKey;
+        DEBUG_WORLD_FIELD = localDebugWorld;
+
+        PLAYER_HANDLE_METHOD = localHandleMethod;
+        INTERACTION_MANAGER = localInteractionField;
+        GAMEMODE_FIELD = localGamemode;
+        DISABLED_PACKETS = localDisable;
     }
 
     protected final ChangeSkinBukkit plugin;
@@ -97,7 +161,10 @@ public class SkinApplier extends SharedApplier {
     protected void applyInstantUpdate() {
         plugin.getApi().applySkin(receiver, targetSkin);
 
-        sendUpdateSelf(WrappedGameProfile.fromPlayer(receiver));
+        if (!DISABLED_PACKETS) {
+            sendUpdateSelf(WrappedGameProfile.fromPlayer(receiver));
+        }
+
         sendUpdateOthers();
 
         if (receiver.equals(invoker)) {
@@ -123,6 +190,11 @@ public class SkinApplier extends SharedApplier {
                 .filter(onlinePlayer -> !onlinePlayer.equals(receiver))
                 .filter(onlinePlayer -> onlinePlayer.canSee(receiver))
                 .forEach(this::hideAndShow);
+
+        //tell NameTagEdit to refresh the scoreboard
+        if (Bukkit.getPluginManager().isPluginEnabled("NametagEdit")) {
+            NametagEdit.getApi().reloadNametag(receiver);
+        }
     }
 
     private void sendUpdateSelf(WrappedGameProfile gameProfile) throws FieldAccessException {
@@ -147,11 +219,6 @@ public class SkinApplier extends SharedApplier {
             receiver.getClass().getDeclaredMethod("updateScaledHealth").invoke(receiver);
         } catch (ReflectiveOperationException reflectiveEx) {
             plugin.getLog().error("Failed to invoke updateScaledHealth for attributes", reflectiveEx);
-        }
-
-        //tell NameTagEdit to refresh the scoreboard
-        if (Bukkit.getPluginManager().isPluginEnabled("NametagEdit")) {
-            NametagEdit.getApi().reloadNametag(receiver);
         }
     }
 
@@ -214,10 +281,11 @@ public class SkinApplier extends SharedApplier {
     private PacketContainer createRespawnPacket(NativeGameMode gamemode) throws ReflectiveOperationException {
         PacketContainer respawn = new PacketContainer(RESPAWN);
 
-        Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(receiver.getWorld().getDifficulty());
+        World world = receiver.getWorld();
+        Difficulty difficulty = EnumWrappers.getDifficultyConverter().getSpecific(world.getDifficulty());
 
         //<= 1.13.1
-        int dimensionId = receiver.getWorld().getEnvironment().getId();
+        int dimensionId = world.getEnvironment().getId();
         respawn.getIntegers().writeSafely(0, dimensionId);
 
         //> 1.13.1
@@ -232,10 +300,49 @@ public class SkinApplier extends SharedApplier {
             }
         }
 
+        // 1.14 dropped difficulty and 1.15 added hashed seed
         respawn.getDifficulties().writeSafely(0, difficulty);
-        respawn.getGameModes().write(0, gamemode);
-        respawn.getWorldTypeModifier().write(0, receiver.getWorld().getWorldType());
+        if (isAtOrAbove("1.15")) {
+            long seed = world.getSeed();
+            respawn.getLongs().write(0, Hashing.sha256().hashLong(seed).asLong());
+        }
+
+        if (isAtOrAbove("1.16")) {
+            // a = dimension (as resource key) -> dim type, b = world (resource key) -> world name, c = "hashed" seed
+            // dimension and seed covered above - we have to start with 1 because dimensions already uses the first idx
+            Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
+            Object resourceKey = WORLD_KEY_FIELD.get(nmsWorld);
+
+            respawn.getSpecificModifier(RESOURCE_KEY_CLASS).write(1, resourceKey);
+
+            // d = gamemode, e = gamemode (previous)
+            respawn.getGameModes().write(0, gamemode);
+            respawn.getGameModes().write(1, getPreviousGamemode(receiver));
+            // f = debug world, g = flat world, h = flag (copy metadata)
+            // get the NMS world
+            try {
+                respawn.getBooleans().write(0, DEBUG_WORLD_FIELD.getBoolean(nmsWorld));
+            } catch (Exception ex) {
+                plugin.getLog().error("Cannot fetch debug state of world {}. Assuming false", world, ex);
+                respawn.getBooleans().write(0, false);
+            } catch (Throwable throwable) {
+                throw (Error) throwable;
+            }
+
+            respawn.getBooleans().write(1, world.getWorldType() == WorldType.FLAT);
+            // flag: true = teleport like, false = player actually died - uses respawn anchor in nether
+            respawn.getBooleans().write(2, true);
+        } else {
+            // world type field replaced with a boolean
+            respawn.getWorldTypeModifier().write(0, world.getWorldType());
+            respawn.getGameModes().write(0, gamemode);
+        }
+
         return respawn;
+    }
+
+    private static boolean isAtOrAbove(String s) {
+        return MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion(s)) > 0;
     }
 
     private PacketContainer createTeleportPacket(Location location) {
@@ -252,5 +359,18 @@ public class SkinApplier extends SharedApplier {
         //send an invalid teleport id in order to let Bukkit ignore the incoming confirm packet
         teleport.getIntegers().writeSafely(0, -1337);
         return teleport;
+    }
+
+    private NativeGameMode getPreviousGamemode(Player receiver) {
+        try {
+            Object nmsPlayer = PLAYER_HANDLE_METHOD.invoke(receiver);
+            Object interactionManager = INTERACTION_MANAGER.get(nmsPlayer);
+            Enum<?> gamemode = (Enum<?>) GAMEMODE_FIELD.get(interactionManager);
+            return NativeGameMode.valueOf(gamemode.name());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        return NativeGameMode.fromBukkit(receiver.getGameMode());
     }
 }
