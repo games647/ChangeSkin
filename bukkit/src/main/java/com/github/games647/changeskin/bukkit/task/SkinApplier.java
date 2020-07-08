@@ -51,6 +51,8 @@ public class SkinApplier extends SharedApplier {
     private static final Field WORLD_KEY_FIELD;
     private static final Field DEBUG_WORLD_FIELD;
 
+    private static final boolean DISABLED_PACKETS;
+
     static {
         boolean methodAvailable;
         try {
@@ -60,6 +62,8 @@ public class SkinApplier extends SharedApplier {
             methodAvailable = false;
         }
 
+        boolean localDisable = false;
+
         // use standard reflection, because we cannot use the performance benefits of MethodHandles
         // MethodHandles are only clearly faster with invokeExact
         // we can use for a nested call of debug world: getDebugField(getNMSWorldFromBukkit) in a single handle
@@ -68,21 +72,24 @@ public class SkinApplier extends SharedApplier {
         Field localDebugWorld = null;
 
         Logger logger = JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLog();
-        try {
-            Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
-            localWorldKey = nmsWorldClass.getDeclaredField("dimensionKey");
-            localWorldKey.setAccessible(true);
-            logger.info("Dimension generics: {}", localWorldKey.getGenericType());
+        if (isAtOrAbove("1.16")) {
+            try {
+                Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
+                localWorldKey = nmsWorldClass.getDeclaredField("dimensionKey");
+                localWorldKey.setAccessible(true);
 
-            localDebugWorld = nmsWorldClass.getDeclaredField("debugWorld");
-            localDebugWorld.setAccessible(true);
-        } catch (NoSuchFieldException reflectiveEx) {
-            logger.warn("Cannot find respawn fields", reflectiveEx);
+                localDebugWorld = nmsWorldClass.getDeclaredField("debugWorld");
+                localDebugWorld.setAccessible(true);
+            } catch (NoSuchFieldException reflectiveEx) {
+                logger.warn("Cannot find respawn fields", reflectiveEx);
+                localDisable = true;
+            }
         }
 
         WORLD_KEY_FIELD = localWorldKey;
         DEBUG_WORLD_FIELD = localDebugWorld;
         NEW_HIDE_METHOD_AVAILABLE = methodAvailable;
+        DISABLED_PACKETS = localDisable;
     }
 
     protected final ChangeSkinBukkit plugin;
@@ -131,7 +138,10 @@ public class SkinApplier extends SharedApplier {
     protected void applyInstantUpdate() {
         plugin.getApi().applySkin(receiver, targetSkin);
 
-        sendUpdateSelf(WrappedGameProfile.fromPlayer(receiver));
+        if (!DISABLED_PACKETS) {
+            sendUpdateSelf(WrappedGameProfile.fromPlayer(receiver));
+        }
+
         sendUpdateOthers();
 
         if (receiver.equals(invoker)) {
@@ -157,6 +167,11 @@ public class SkinApplier extends SharedApplier {
                 .filter(onlinePlayer -> !onlinePlayer.equals(receiver))
                 .filter(onlinePlayer -> onlinePlayer.canSee(receiver))
                 .forEach(this::hideAndShow);
+
+        //tell NameTagEdit to refresh the scoreboard
+        if (Bukkit.getPluginManager().isPluginEnabled("NametagEdit")) {
+            NametagEdit.getApi().reloadNametag(receiver);
+        }
     }
 
     private void sendUpdateSelf(WrappedGameProfile gameProfile) throws FieldAccessException {
@@ -181,11 +196,6 @@ public class SkinApplier extends SharedApplier {
             receiver.getClass().getDeclaredMethod("updateScaledHealth").invoke(receiver);
         } catch (ReflectiveOperationException reflectiveEx) {
             plugin.getLog().error("Failed to invoke updateScaledHealth for attributes", reflectiveEx);
-        }
-
-        //tell NameTagEdit to refresh the scoreboard
-        if (Bukkit.getPluginManager().isPluginEnabled("NametagEdit")) {
-            NametagEdit.getApi().reloadNametag(receiver);
         }
     }
 
@@ -269,20 +279,16 @@ public class SkinApplier extends SharedApplier {
 
         // 1.14 dropped difficulty and 1.15 added hashed seed
         respawn.getDifficulties().writeSafely(0, difficulty);
-        if (MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion("1.15")) > 0) {
+        if (isAtOrAbove("1.15")) {
             long seed = world.getSeed();
             respawn.getLongs().write(0, Hashing.sha256().hashLong(seed).asLong());
         }
 
-        // > 1.16
-        if (MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion("1.16")) > 0) {
+        if (isAtOrAbove("1.16")) {
             // a = dimension (as resource key) -> dim type, b = world (resource key) -> world name, c = "hashed" seed
             // dimension and seed covered above - we have to start with 1 because dimensions already uses the first idx
             Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
-
             Object resourceKey = WORLD_KEY_FIELD.get(nmsWorld);
-            plugin.getLog().info("World name {}", world.getName());
-            plugin.getLog().info("World name MC-KEY: {}", resourceKey);
 
             Class<Object> resourceKeyClass = (Class<Object>) MinecraftReflection.getMinecraftClass("ResourceKey");
             respawn.getSpecificModifier(resourceKeyClass).write(1, resourceKey);
@@ -312,6 +318,10 @@ public class SkinApplier extends SharedApplier {
         }
 
         return respawn;
+    }
+
+    private static boolean isAtOrAbove(String s) {
+        return MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion(s)) > 0;
     }
 
     private PacketContainer createTeleportPacket(Location location) {
