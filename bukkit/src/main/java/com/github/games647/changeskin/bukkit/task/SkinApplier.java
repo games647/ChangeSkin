@@ -4,6 +4,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
+import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
@@ -19,19 +21,27 @@ import com.github.games647.changeskin.core.shared.task.SharedApplier;
 import com.google.common.hash.Hashing;
 import com.nametagedit.plugin.NametagEdit;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.WorldType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import static com.comphenix.protocol.PacketType.Play.Server.PLAYER_INFO;
 import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
@@ -40,6 +50,9 @@ import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
 public class SkinApplier extends SharedApplier {
 
     private static final boolean NEW_HIDE_METHOD_AVAILABLE;
+    private static final MethodHandle DEBUG_WORLD_GETTER;
+    private static final MethodHandle WORLD_GETTER;
+    private static final MethodHandle WORLD_KEY_GETTER;
 
     static {
         boolean methodAvailable;
@@ -49,6 +62,29 @@ public class SkinApplier extends SharedApplier {
         } catch (NoSuchMethodException noSuchMethodEx) {
             methodAvailable = false;
         }
+
+        MethodHandle localWorldGetter = null;
+        MethodHandle localKeyGetter = null;
+        MethodHandle localDebugGetter = null;
+        try {
+            Lookup lookup = MethodHandles.publicLookup();
+            Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
+            localWorldGetter = lookup.findVirtual(MinecraftReflection.getCraftWorldClass(), "getHandle", MethodType.methodType(nmsWorldClass))
+                    // allow invokeExact although this is an interface
+                    .asType(MethodType.methodType(World.class));
+
+            Class<?> resourceKey = MinecraftReflection.getMinecraftClass("ResourceKey");
+            localKeyGetter = lookup.findGetter(nmsWorldClass, "dimensionKey", resourceKey);
+
+            localDebugGetter = lookup.findGetter(nmsWorldClass, "debugWorld", Integer.TYPE);
+        } catch (NoSuchMethodException | IllegalAccessException | NoSuchFieldException reflectiveEx) {
+            Logger logger = JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLogger();
+            logger.log(Level.WARNING, "Cannot find debug field", reflectiveEx);
+        }
+
+        WORLD_GETTER = localWorldGetter;
+        WORLD_KEY_GETTER = localKeyGetter;
+        DEBUG_WORLD_GETTER = localDebugGetter;
 
         NEW_HIDE_METHOD_AVAILABLE = methodAvailable;
     }
@@ -242,6 +278,44 @@ public class SkinApplier extends SharedApplier {
         if (MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion("1.15")) > 0) {
             long seed = world.getSeed();
             respawn.getLongs().write(0, Hashing.sha256().hashLong(seed).asLong());
+        }
+
+        // > 1.16
+        if (MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion("1.16")) > 0) {
+            // a = dimension (as resource key) -> dim type, b = world (resource key) -> world name, c = "hashed" seed
+            // dimension and seed covered above - we have to start with 1 because dimensions already uses the first idx
+            WORLD_GETTER.invoke()
+
+            Class<?> resourceKey = MinecraftReflection.getMinecraftClass("ResourceKey");
+            StructureModifier<?> resourceMod = respawn.getSpecificModifier(resourceKey);
+            plugin.getLog().info("World name {}", world.getName());
+            plugin.getLog().info("World name MC-KEY: {}", world.getName());
+
+            resourceMod.write(1, WORLD_KEY_GETTER.invoke(n));
+            //TODO:
+
+            // d = gamemode, e = gamemode (previous)
+            respawn.getGameModes().write(0, gamemode);
+            // TODO: previous
+            respawn.getGameModes().write(1, gamemode);
+            // f = debug world, g = flat world, h = flag (copy metadata)
+            // get the NMS world
+            try {
+                respawn.getBooleans().write(0, (boolean) DEBUG_WORLD_GETTER.invokeExact(world));
+            } catch (Exception ex) {
+                plugin.getLog().error("Cannot fetch debug state of world {}. Assuming false", world, ex);
+                respawn.getBooleans().write(0, false);
+            } catch (Throwable throwable) {
+                throw (Error) throwable;
+            }
+
+            respawn.getBooleans().write(1, world.getWorldType() == WorldType.FLAT);
+            // flag: true = teleport like, false = player actually died - uses respawn anchor in nether
+            respawn.getBooleans().write(2, true);
+        } else {
+            // world type field replaced with a boolean
+            respawn.getWorldTypeModifier().write(0, world.getWorldType());
+            respawn.getGameModes().write(0, gamemode);
         }
 
         respawn.getDifficulties().writeSafely(0, difficulty);
