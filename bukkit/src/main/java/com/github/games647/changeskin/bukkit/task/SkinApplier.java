@@ -76,6 +76,8 @@ public class SkinApplier extends SharedApplier {
         Field localInteractionField = null;
         Field localGamemode = null;
 
+        // TODO: In ProtocolLib4.6 We could use a specific modifier for the world key
+
         // use standard reflection, because we cannot use the performance benefits of MethodHandles
         // MethodHandles are only clearly faster with invokeExact
         // we can use for a nested call of debug world: getDebugField(getNMSWorldFromBukkit) in a single handle
