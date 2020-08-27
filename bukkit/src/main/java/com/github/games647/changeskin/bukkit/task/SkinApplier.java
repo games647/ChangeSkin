@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
+import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
@@ -315,7 +316,9 @@ public class SkinApplier extends SharedApplier {
             Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
             Object resourceKey = WORLD_KEY_FIELD.get(nmsWorld);
 
-            respawn.getSpecificModifier(RESOURCE_KEY_CLASS).write(1, resourceKey);
+            // 1.16.2 dropped the first resourcekey usage
+            StructureModifier<Object> resourceMod = respawn.getSpecificModifier(RESOURCE_KEY_CLASS);
+            resourceMod.write(resourceMod.size() - 1, resourceKey);
 
             // d = gamemode, e = gamemode (previous)
             respawn.getGameModes().write(0, gamemode);
