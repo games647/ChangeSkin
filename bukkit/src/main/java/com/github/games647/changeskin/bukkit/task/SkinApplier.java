@@ -50,7 +50,7 @@ public class SkinApplier extends SharedApplier {
     private static final boolean NEW_HIDE_METHOD_AVAILABLE;
 
     // static final methods are faster, because JVM can inline them and make them accessible
-    private static final Class<Object> RESOURCE_KEY_CLASS = (Class<Object>) MinecraftReflection.getMinecraftClass("ResourceKey");
+    private static final Class<Object> RESOURCE_KEY_CLASS;
     private static final Field WORLD_KEY_FIELD;
     private static final Field DEBUG_WORLD_FIELD;
 
@@ -85,6 +85,7 @@ public class SkinApplier extends SharedApplier {
         // But for the resourceKey the return type is not known at compile time - it's an NMS class
         Logger logger = JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLog();
         if (isAtOrAbove("1.16")) {
+            RESOURCE_KEY_CLASS = (Class<Object>) MinecraftReflection.getMinecraftClass("ResourceKey");
             try {
                 Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
                 localWorldKey = nmsWorldClass.getDeclaredField("dimensionKey");
@@ -106,6 +107,8 @@ public class SkinApplier extends SharedApplier {
                 logger.warn("Cannot find 1.16x fields", reflectiveEx);
                 localDisable = true;
             }
+        } else {
+            RESOURCE_KEY_CLASS = null;
         }
 
         NEW_HIDE_METHOD_AVAILABLE = methodAvailable;
