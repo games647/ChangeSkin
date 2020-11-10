@@ -1,6 +1,7 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
+import com.github.games647.changeskin.bungee.command.ChangeSkinCommand;
 import com.github.games647.changeskin.core.message.ForwardMessage;
 import com.github.games647.changeskin.core.message.NamespaceKey;
 import com.github.games647.changeskin.core.message.PermResultMessage;
@@ -16,6 +17,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
+import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.event.EventHandler;
 
 import static com.github.games647.changeskin.core.message.ForwardMessage.FORWARD_COMMAND_CHANNEL;
@@ -99,18 +101,35 @@ public class PluginMessageListener extends AbstractSkinListener {
         ForwardMessage message = new ForwardMessage();
         message.readFrom(dataInput);
 
+        String commandName = message.getCommandName();
+
+        PluginManager pluginManager = ProxyServer.getInstance().getPluginManager();
+        if (isOwnedCommand(commandName, pluginManager)) {
+            String pluginName = plugin.getName();
+            throw new IllegalStateException("Forward command " + message + " of a command not owned by " + pluginName);
+        }
+
         if (message.isOP() && message.isSource()) {
             //bukkit op and it won't run as bungee console
             invoker.addGroups(plugin.getName() + "-OP");
         }
 
-        String line = message.getCommandName() + ' ' + message.getArgs();
+        String line = commandName + ' ' + message.getArgs();
         if (message.isSource()) {
             //the player is the actual invoker other it's the console
-            ProxyServer.getInstance().getPluginManager().dispatchCommand(invoker, line);
+            pluginManager.dispatchCommand(invoker, line);
         } else {
             CommandSender console = ProxyServer.getInstance().getConsole();
-            ProxyServer.getInstance().getPluginManager().dispatchCommand(console, line);
+            pluginManager.dispatchCommand(console, line);
         }
+    }
+
+    private boolean isOwnedCommand(String commandName, PluginManager pluginManager) {
+        return pluginManager.getCommands().stream()
+                // check if it's a subclass of ours
+                .filter(c -> c.getValue().getClass().isAssignableFrom(ChangeSkinCommand.class))
+                // find the correct command
+                .filter(c -> c.getKey().equalsIgnoreCase(commandName))
+                .findAny().isPresent();
     }
 }

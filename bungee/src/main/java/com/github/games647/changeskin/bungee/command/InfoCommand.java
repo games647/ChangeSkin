@@ -10,9 +10,8 @@ import java.util.Optional;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
-public class InfoCommand extends Command {
+public class InfoCommand extends ChangeSkinCommand {
 
     private final ChangeSkinBungee plugin;
     private final SkinFormatter formatter = new SkinFormatter();
