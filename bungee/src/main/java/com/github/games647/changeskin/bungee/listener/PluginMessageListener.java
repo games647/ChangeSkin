@@ -1,8 +1,8 @@
 package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
-import com.github.games647.changeskin.core.message.NamespaceKey;
 import com.github.games647.changeskin.core.message.ForwardMessage;
+import com.github.games647.changeskin.core.message.NamespaceKey;
 import com.github.games647.changeskin.core.message.PermResultMessage;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
@@ -14,6 +14,7 @@ import java.util.UUID;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.event.EventHandler;
 
@@ -40,6 +41,11 @@ public class PluginMessageListener extends AbstractSkinListener {
         }
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(messageEvent.getData());
+
+        if (!(messageEvent.getSender() instanceof Server)) {
+            //check if the message is sent from the server
+            return;
+        }
 
         ProxiedPlayer invoker = (ProxiedPlayer) messageEvent.getReceiver();
         if (channel.equals(permissionResultChannel)) {
