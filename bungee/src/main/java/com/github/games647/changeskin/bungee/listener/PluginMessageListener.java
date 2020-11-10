@@ -42,6 +42,10 @@ public class PluginMessageListener extends AbstractSkinListener {
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(messageEvent.getData());
 
+        //the client shouldn't be able to read the messages in order to know something about server internal states
+        //moreover the client shouldn't be able fake a running premium check by sending the result message
+        messageEvent.setCancelled(true);
+
         if (!(messageEvent.getSender() instanceof Server)) {
             //check if the message is sent from the server
             return;
