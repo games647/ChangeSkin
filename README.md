@@ -2,9 +2,21 @@
 
 ## Description
 
-This plugin allows your players to change their skins with a simple command. You can choose every skin that another
+This plugin allows your players to change their skins with a simple command. You can choose every skin another
 Minecraft user currently has. It is also possible to set a custom standard skin. If you want to, this plugin can set
 this standard skin for all players who still have the default Steve or Alex skin.
+
+## Security
+
+Software security is important. In order to inform people quickly and get patches deployed promptly, this projects
+discloses issues transparently and detailed.
+
+|Issue| Severity | Affected | Patched | Impact
+|---|---|---|---|---|
+|[#205](https://github.com/games647/ChangeSkin/issues/205)|Moderate|Bungee Module after [92ed029](https://github.com/games647/ChangeSkin/commit/92ed0296e6fcbd0acf04f4f06e417403d5b22ccd) - (2.3.2+) |[ba1957a](https://github.com/games647/ChangeSkin/commit/ba1957ac5eff29652f8161c72ff60f765a97453e)| DOS (Denial-of-Service) Modified Minecraft clients could send malicious plugin messages. This causes an exception. Exceptions are CPU intensive if they are spammed |
+
+If you have any questions, please open a new issue or send a private message on Spigot. Later should be also used
+for reporting in order to work on fix before publicly disclosing it.
 
 ## Features
 
