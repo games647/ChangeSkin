@@ -13,7 +13,7 @@ discloses issues transparently and detailed.
 
 |Issue| Severity | Affected | Patched | Impact
 |---|---|---|---|---|
-|[#205](https://github.com/games647/ChangeSkin/issues/205)|Moderate|Bungee Module after [92ed029](https://github.com/games647/ChangeSkin/commit/92ed0296e6fcbd0acf04f4f06e417403d5b22ccd) - (2.3.2+) |[ba1957a](https://github.com/games647/ChangeSkin/commit/ba1957ac5eff29652f8161c72ff60f765a97453e)| DOS (Denial-of-Service) Modified Minecraft clients could send malicious plugin messages. This causes an exception. Exceptions are CPU intensive if they are spammed |
+|[#205](https://github.com/games647/ChangeSkin/issues/205)|Moderate|Bungee Module after [92ed029](https://github.com/games647/ChangeSkin/commit/92ed0296e6fcbd0acf04f4f06e417403d5b22ccd) - (2.3.2+) |[ba1957a](https://github.com/games647/ChangeSkin/commit/ba1957ac5eff29652f8161c72ff60f765a97453e)| DOS (Denial-of-Service) Modified Minecraft clients could send malicious plugin messages (internal not chat). This causes an exception. Exceptions are CPU intensive if they are spammed a lot! | 
 
 If you have any questions, please open a new issue or send a private message on Spigot. Later should be also used
 for reporting in order to work on fix before publicly disclosing it.
@@ -34,7 +34,7 @@ for reporting in order to work on fix before publicly disclosing it.
 
 ## Commands
 
-    /setskin <uuid> [keep] - Sets your skin to be the same as the player with the selected uuid. 
+    /setskin <uuid> [keep] - Sets your skin to be the same as the player with the selected uuid.
     /setskin <username> [keep] - Sets the skin equal to the owner of that Mojang account with the given username.
     /setskin reset - Resets the skin of the invoker to his one.
     /setskin <onlinePlayer> <newSkinUUID|newSkinPlayerName> [keep]
@@ -53,8 +53,8 @@ Keep prevents the skin from auto updating. See the config for more information a
 For Sponge users:
 
     Sponge uses a different permissions model. This means changeskin.command.setskin includes all child permissions.
-    (Including changeskin.command.setskin.other). To workaround this please use changeskin.command.<command>.base 
-    instead of changeskin.command.<command> to give the permission only to modify their own skin. 
+    (Including changeskin.command.setskin.other). To workaround this please use changeskin.command.<command>.base
+    instead of changeskin.command.<command> to give the permission only to modify their own skin.
     **This workaround will be removed in the next major version 4.0. Then the Bukkit and BungeeCord will have the same logic.
 
 * changeskin.command.skinupdate - Command to refresh a player's own skin
