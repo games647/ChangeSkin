@@ -10,15 +10,16 @@ import com.github.games647.changeskin.bukkit.command.SkullCommand;
 import com.github.games647.changeskin.bukkit.command.UploadCommand;
 import com.github.games647.changeskin.core.ChangeSkinCore;
 import com.github.games647.changeskin.core.CommonUtil;
-import com.github.games647.changeskin.core.message.NamespaceKey;
 import com.github.games647.changeskin.core.PlatformPlugin;
 import com.github.games647.changeskin.core.SkinStorage;
 import com.github.games647.changeskin.core.message.ChannelMessage;
+import com.github.games647.changeskin.core.message.NamespaceKey;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 
@@ -125,12 +126,12 @@ public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<Comma
     }
 
     private void registerCommands() {
-        getCommand("setskin").setExecutor(new SetCommand(this));
-        getCommand("skinupdate").setExecutor(new InvalidateCommand(this));
-        getCommand("skinselect").setExecutor(new SelectCommand(this));
-        getCommand("skinupload").setExecutor(new UploadCommand(this));
-        getCommand("skinskull").setExecutor(new SkullCommand(this));
-        getCommand("skin-info").setExecutor(new InfoCommand(this));
+        Optional.ofNullable(getCommand("setskin")).ifPresent(c -> c.setExecutor(new SetCommand(this)));
+        Optional.ofNullable(getCommand("skinupdate")).ifPresent(c -> c.setExecutor(new InvalidateCommand(this)));
+        Optional.ofNullable(getCommand("skinselect")).ifPresent(c -> c.setExecutor(new SelectCommand(this)));
+        Optional.ofNullable(getCommand("skinupload")).ifPresent(c -> c.setExecutor(new UploadCommand(this)));
+        Optional.ofNullable(getCommand("skinskull")).ifPresent(c -> c.setExecutor(new SkullCommand(this)));
+        Optional.ofNullable(getCommand("skin-info")).ifPresent(c -> c.setExecutor(new InfoCommand(this)));
     }
 
     public boolean isBungeeCord() {
