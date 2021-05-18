@@ -7,6 +7,7 @@ import com.github.games647.changeskin.core.shared.SharedListener;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
@@ -34,6 +35,28 @@ public abstract class AbstractSkinListener extends SharedListener implements Lis
                 core.getStorage().save(preferences);
             }
         });
+    }
+
+    protected UserPreference initializeProfile(UUID uniqueId, String playerName) {
+        UserPreference preferences = plugin.getStorage().getPreferences(uniqueId);
+
+        Optional<SkinModel> optSkin = preferences.getTargetSkin();
+        if (optSkin.isPresent()) {
+            SkinModel targetSkin = optSkin.get();
+            if (!preferences.isKeepSkin()) {
+                targetSkin = core.checkAutoUpdate(targetSkin);
+            }
+
+            preferences.setTargetSkin(targetSkin);
+        } else if (core.getConfig().getBoolean("restoreSkins")) {
+            refetchSkin(playerName, preferences);
+            if (!preferences.getTargetSkin().isPresent()) {
+                //still no skin
+                getRandomSkin().ifPresent(preferences::setTargetSkin);
+            }
+        }
+
+        return preferences;
     }
 
     protected boolean isBlacklistEnabled() {

@@ -2,9 +2,6 @@ package com.github.games647.changeskin.bungee.listener;
 
 import com.github.games647.changeskin.bungee.ChangeSkinBungee;
 import com.github.games647.changeskin.core.model.UserPreference;
-import com.github.games647.changeskin.core.model.skin.SkinModel;
-
-import java.util.Optional;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -45,10 +42,6 @@ public class ConnectListener extends AbstractSkinListener {
             return;
         }
 
-        if (!preferences.getTargetSkin().isPresent()) {
-            getRandomSkin().ifPresent(preferences::setTargetSkin);
-        }
-
         preferences.getTargetSkin().ifPresent(skin -> plugin.getApi().applySkin(player, skin));
     }
 
@@ -64,20 +57,8 @@ public class ConnectListener extends AbstractSkinListener {
 
     private void loadProfile(AsyncEvent<?> loginEvent, PendingConnection conn, String playerName) {
         try {
-            UserPreference preferences = plugin.getStorage().getPreferences(conn.getUniqueId());
+            UserPreference preferences = initializeProfile(conn.getUniqueId(), playerName);
             plugin.startSession(conn, preferences);
-
-            Optional<SkinModel> optSkin = preferences.getTargetSkin();
-            if (optSkin.isPresent()) {
-                SkinModel targetSkin = optSkin.get();
-                if (!preferences.isKeepSkin()) {
-                    targetSkin = core.checkAutoUpdate(targetSkin);
-                }
-
-                preferences.setTargetSkin(targetSkin);
-            } else if (core.getConfig().getBoolean("restoreSkins")) {
-                refetchSkin(playerName, preferences);
-            }
         } finally {
             loginEvent.completeIntent(plugin);
         }
