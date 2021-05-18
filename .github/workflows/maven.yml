@@ -7,10 +7,13 @@ name: Java CI
 # Wiki: https://help.github.com/en/actions/reference/events-that-trigger-workflows
 on:
     push:
-        branches-ignore:
-            - 'dependabot/**'
-    pull-reqest:
-
+      branches:
+        # Check only the main branch in order to ignore dependabot double action runs
+        - main
+    pull_request:
+      branches:
+        # If larger changes are integrated, then check all branches
+        - '**'
 jobs:
   # job id
   build_and_test:
