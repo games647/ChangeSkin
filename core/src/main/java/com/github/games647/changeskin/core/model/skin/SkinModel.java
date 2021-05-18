@@ -82,33 +82,36 @@ public class SkinModel {
     }
 
     public int getRowId() {
-        getLazyLock().readLock().lock();
+        Lock lock = getLazyLock().readLock();
+        lock.lock();
         try {
             return rowId;
         } finally {
-            getLazyLock().readLock().unlock();
+            lock.unlock();
         }
     }
 
     public boolean isSaved() {
-        getLazyLock().readLock().lock();
+        Lock lock = getLazyLock().readLock();
+        lock.lock();
         try {
             return rowId >= 0;
         } finally {
-            getLazyLock().readLock().unlock();
+            lock.unlock();
         }
     }
 
     public void setRowId(int rowId) {
-        getLazyLock().writeLock().lock();
+        Lock lock = getLazyLock().writeLock();
+        lock.lock();
         try {
             this.rowId = rowId;
         } finally {
-            getLazyLock().writeLock().unlock();
+            lock.unlock();
         }
     }
 
-    private ReadWriteLock getLazyLock() {
+    private synchronized ReadWriteLock getLazyLock() {
         if (lock == null) {
             lock = new ReentrantReadWriteLock();
         }
