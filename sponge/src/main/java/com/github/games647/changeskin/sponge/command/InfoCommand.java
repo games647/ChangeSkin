@@ -46,7 +46,7 @@ public class InfoCommand implements CommandExecutor, ChangeSkinCommand {
                 })
                 .submit(plugin);
 
-        return null;
+        return CommandResult.success();
     }
 
     @Override
