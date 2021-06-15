@@ -70,10 +70,10 @@
             <url>https://repo.dmulloy2.net/nexus/repository/public//</url>
         </repository>
 
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
+        <repository>
+            <id>nametagedit-repo</id>
+            <url>https://ci.nametagedit.com/plugin/repository/everything/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -110,9 +110,9 @@
 
         <!-- Trigger nametag refresh, because this plugin works with packets -->
         <dependency>
-	        <groupId>com.github.sgtcaze</groupId>
-	        <artifactId>NametagEdit</artifactId>
-	        <version>dddfd61c0b</version>
+            <groupId>com.nametagedit</groupId>
+            <artifactId>nametagedit</artifactId>
+            <version>4.4.16</version>
             <scope>provided</scope>
             <optional>true</optional>
             <exclusions>
