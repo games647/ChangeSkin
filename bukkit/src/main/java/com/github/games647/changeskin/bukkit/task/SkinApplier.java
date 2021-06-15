@@ -4,7 +4,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
-import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
@@ -50,8 +49,6 @@ public class SkinApplier extends SharedApplier {
     private static final boolean NEW_HIDE_METHOD_AVAILABLE;
 
     // static final methods are faster, because JVM can inline them and make them accessible
-    private static final Class<Object> RESOURCE_KEY_CLASS;
-    private static final Field WORLD_KEY_FIELD;
     private static final Field DEBUG_WORLD_FIELD;
 
     private static final Method PLAYER_HANDLE_METHOD;
@@ -85,7 +82,6 @@ public class SkinApplier extends SharedApplier {
         // But for the resourceKey the return type is not known at compile time - it's an NMS class
         Logger logger = JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLog();
         if (isAtOrAbove("1.16")) {
-            RESOURCE_KEY_CLASS = (Class<Object>) MinecraftReflection.getMinecraftClass("ResourceKey");
             try {
                 Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
                 localWorldKey = nmsWorldClass.getDeclaredField("dimensionKey");
@@ -107,12 +103,9 @@ public class SkinApplier extends SharedApplier {
                 logger.warn("Cannot find 1.16x fields", reflectiveEx);
                 localDisable = true;
             }
-        } else {
-            RESOURCE_KEY_CLASS = null;
         }
 
         NEW_HIDE_METHOD_AVAILABLE = methodAvailable;
-        WORLD_KEY_FIELD = localWorldKey;
         DEBUG_WORLD_FIELD = localDebugWorld;
 
         PLAYER_HANDLE_METHOD = localHandleMethod;
@@ -317,11 +310,9 @@ public class SkinApplier extends SharedApplier {
             // a = dimension (as resource key) -> dim type, b = world (resource key) -> world name, c = "hashed" seed
             // dimension and seed covered above - we have to start with 1 because dimensions already uses the first idx
             Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
-            Object resourceKey = WORLD_KEY_FIELD.get(nmsWorld);
 
             // 1.16.2 dropped the first resourcekey usage
-            StructureModifier<Object> resourceMod = respawn.getSpecificModifier(RESOURCE_KEY_CLASS);
-            resourceMod.write(resourceMod.size() - 1, resourceKey);
+            respawn.getWorldKeys().write(0, world);
 
             // d = gamemode, e = gamemode (previous)
             respawn.getGameModes().write(0, gamemode);
