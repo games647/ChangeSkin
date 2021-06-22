@@ -328,7 +328,12 @@ public class SkinApplier extends SharedApplier {
 
             // d = gamemode, e = gamemode (previous)
             respawn.getGameModes().write(0, gamemode);
-            respawn.getGameModes().write(1, getPreviousGamemode(receiver));
+
+            NativeGameMode previousGamemode = getPreviousGamemode(receiver);
+            if (previousGamemode != null) {
+                respawn.getGameModes().write(1, previousGamemode);
+            }
+
             // f = debug world, g = flat world, h = flag (copy metadata)
             // get the NMS world
             try {
@@ -377,6 +382,10 @@ public class SkinApplier extends SharedApplier {
             Object nmsPlayer = PLAYER_HANDLE_METHOD.invoke(receiver);
             Object interactionManager = INTERACTION_MANAGER.get(nmsPlayer);
             Enum<?> gamemode = (Enum<?>) GAMEMODE_FIELD.get(interactionManager);
+            if (gamemode == null) {
+                return null;
+            }
+
             return NativeGameMode.valueOf(gamemode.name());
         } catch (IllegalAccessException | InvocationTargetException e) {
             plugin.getLog().error("Failed to fetch previous gamemode of player {}", receiver, e);
