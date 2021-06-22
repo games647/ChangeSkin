@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
+import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
@@ -25,6 +26,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,7 +51,7 @@ public class SkinApplier extends SharedApplier {
     private static final boolean NEW_HIDE_METHOD_AVAILABLE;
 
     // static final methods are faster, because JVM can inline them and make them accessible
-    private static final Field DEBUG_WORLD_FIELD;
+    private static final Method DEBUG_WORLD_METHOD;
 
     private static final Method PLAYER_HANDLE_METHOD;
     private static final Field INTERACTION_MANAGER;
@@ -67,37 +69,36 @@ public class SkinApplier extends SharedApplier {
         }
 
         boolean localDisable = false;
-        Field localWorldKey = null;
-        Field localDebugWorld = null;
+        Method localDebugWorld = null;
 
         Method localHandleMethod = null;
         Field localInteractionField = null;
         Field localGamemode = null;
 
-        // TODO: In ProtocolLib 4.6 We could use a specific modifier for the world key
-
-        // use standard reflection, because we cannot use the performance benefits of MethodHandles
-        // MethodHandles are only clearly faster with invokeExact
-        // we can use for a nested call of debug world: getDebugField(getNMSWorldFromBukkit) in a single handle
+        // use standard reflection if possible, MethodHandles are only clearly faster with invokeExact
+        // we can use for a nested call of debug world: getDebugField(getNMSWorldFromBukkit) in a single call
         // But for the resourceKey the return type is not known at compile time - it's an NMS class
         Logger logger = JavaPlugin.getPlugin(ChangeSkinBukkit.class).getLog();
         if (isAtOrAbove("1.16")) {
             try {
                 Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
-                localWorldKey = nmsWorldClass.getDeclaredField("dimensionKey");
-                localWorldKey.setAccessible(true);
 
-                localDebugWorld = nmsWorldClass.getDeclaredField("debugWorld");
-                localDebugWorld.setAccessible(true);
+                // in comparison to the field values is this not obfuscated in 1.16 and 1.17
+                localDebugWorld = nmsWorldClass.getDeclaredMethod("isDebugWorld");
 
                 localHandleMethod = MinecraftReflection.getCraftPlayerClass().getDeclaredMethod("getHandle");
 
+                String INTERACTION_CLASS = "PlayerInteractManager";
+                Class<?> interactionManager = MinecraftReflection.getMinecraftClass(
+                        "server.level." + INTERACTION_CLASS, INTERACTION_CLASS
+                );
+
                 Class<?> entityPlayerClass = MinecraftReflection.getEntityPlayerClass();
-                localInteractionField = entityPlayerClass.getDeclaredField("playerInteractManager");
+                localInteractionField = FuzzyReflection.fromClass(entityPlayerClass)
+                        .getFieldByType("playerInteractManager", interactionManager);
                 localInteractionField.setAccessible(true);
 
-                Class<?> playerInteractManager = MinecraftReflection.getMinecraftClass("PlayerInteractManager");
-                localGamemode = playerInteractManager.getDeclaredField("e");
+                localGamemode = getPreviousGamemodeField(interactionManager);
                 localGamemode.setAccessible(true);
             } catch (NoSuchFieldException | NoSuchMethodException reflectiveEx) {
                 logger.warn("Cannot find 1.16x fields", reflectiveEx);
@@ -106,12 +107,23 @@ public class SkinApplier extends SharedApplier {
         }
 
         NEW_HIDE_METHOD_AVAILABLE = methodAvailable;
-        DEBUG_WORLD_FIELD = localDebugWorld;
 
+        DEBUG_WORLD_METHOD = localDebugWorld;
         PLAYER_HANDLE_METHOD = localHandleMethod;
         INTERACTION_MANAGER = localInteractionField;
         GAMEMODE_FIELD = localGamemode;
         DISABLED_PACKETS = localDisable;
+    }
+
+    private static Field getPreviousGamemodeField(Class<?> interactionManager) throws NoSuchFieldException {
+        List<Field> gamemodes = FuzzyReflection.fromClass(interactionManager, true)
+                .getFieldListByType(EnumWrappers.getGameModeClass());
+        if (gamemodes.size() < 2) {
+            throw new NoSuchFieldException("Cannot find previous gamemode field");
+        }
+
+        // skip the first field that is the current field
+        return gamemodes.get(1);
     }
 
     protected final ChangeSkinBukkit plugin;
@@ -320,7 +332,7 @@ public class SkinApplier extends SharedApplier {
             // f = debug world, g = flat world, h = flag (copy metadata)
             // get the NMS world
             try {
-                respawn.getBooleans().write(0, DEBUG_WORLD_FIELD.getBoolean(nmsWorld));
+                respawn.getBooleans().write(0, (boolean) DEBUG_WORLD_METHOD.invoke(nmsWorld));
             } catch (Exception ex) {
                 plugin.getLog().error("Cannot fetch debug state of world {}. Assuming false", world, ex);
                 respawn.getBooleans().write(0, false);
@@ -367,7 +379,7 @@ public class SkinApplier extends SharedApplier {
             Enum<?> gamemode = (Enum<?>) GAMEMODE_FIELD.get(interactionManager);
             return NativeGameMode.valueOf(gamemode.name());
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            plugin.getLog().error("Failed to fetch previous gamemode of player {}", receiver, e);
         }
 
         return NativeGameMode.fromBukkit(receiver.getGameMode());
