@@ -25,7 +25,7 @@ import com.nametagedit.plugin.NametagEdit;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -247,7 +247,7 @@ public class SkinApplier extends SharedApplier {
             //remove the old skin - client updates it only on a complete remove and add
             removeInfo = new PacketContainer(PLAYER_INFO);
             removeInfo.getPlayerInfoAction().write(0, PlayerInfoAction.REMOVE_PLAYER);
-            removeInfo.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
+            removeInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
 
             //add info containing the skin data
             addInfo = removeInfo.deepClone();
