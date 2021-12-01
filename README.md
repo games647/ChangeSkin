@@ -13,7 +13,7 @@ discloses issues transparently and detailed.
 
 |Issue| Severity | Affected | Patched | Impact
 |---|---|---|---|---|
-|[#205](https://github.com/games647/ChangeSkin/issues/205)|Moderate|Bungee Module after [92ed029](https://github.com/games647/ChangeSkin/commit/92ed0296e6fcbd0acf04f4f06e417403d5b22ccd) - (2.3.2+) |[ba1957a](https://github.com/games647/ChangeSkin/commit/ba1957ac5eff29652f8161c72ff60f765a97453e)| DOS (Denial-of-Service) Modified Minecraft clients could send malicious plugin messages (internal not chat). This causes an exception. Exceptions are CPU intensive if they are spammed a lot! | 
+|[#205](https://github.com/games647/ChangeSkin/issues/205)|Moderate|Bungee Module after [92ed029](https://github.com/games647/ChangeSkin/commit/92ed0296e6fcbd0acf04f4f06e417403d5b22ccd) - (2.3.2+) |[ba1957a](https://github.com/games647/ChangeSkin/commit/ba1957ac5eff29652f8161c72ff60f765a97453e)| DOS (Denial-of-Service) Modified Minecraft clients could send malicious plugin messages (internal not chat). This causes an exception. Exceptions are CPU intensive if they are spammed a lot! |
 
 If you have any questions, please open a new issue or send a private message on Spigot. Later should be also used
 for reporting in order to work on fix before publicly disclosing it.
@@ -88,7 +88,7 @@ Blacklist
 * Minecraft server software
     * Spigot 1.8.8+ or any fork of it (ex: Paper)
     * Sponge 7+
-    * BungeeCord 1.13+ (Keep in mind that BungeeCord is backwards compatible)
+    * Latest BungeeCord (Keep in mind that BungeeCord is backwards compatible)
 
 ## Network requests
 

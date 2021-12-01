@@ -21,7 +21,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.2.4</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
@@ -29,6 +29,8 @@
                         <excludes>
                             <!--Those classes are already present in BungeeCord version-->
                             <exclude>net.md-5:bungeecord-config</exclude>
+                            <!-- Though BungeeCord ships a newer version -->
+                            <exclude>com.google.guava:guava</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>
@@ -74,7 +76,7 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
-            <version>1.14-SNAPSHOT</version>
+            <version>1.18-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
