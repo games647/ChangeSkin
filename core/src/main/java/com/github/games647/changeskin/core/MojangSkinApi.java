@@ -64,7 +64,7 @@ public class MojangSkinApi {
         this.rateLimiter = new RateLimiter(Duration.ofMinutes(10), Math.max(rateLimit, 600));
 
         Set<Proxy> proxyBuilder = proxies.stream()
-                .map(proxy -> new InetSocketAddress(proxy.getHostText(), proxy.getPort()))
+                .map(proxy -> new InetSocketAddress(proxy.getHost(), proxy.getPort()))
                 .map(sa -> new Proxy(Type.HTTP, sa))
                 .collect(toSet());
 
