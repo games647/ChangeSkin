@@ -51,6 +51,7 @@
                             <!--Those classes are already present in the Sponge version-->
                             <exclude>org.slf4j:*</exclude>
                             <exclude>com.zaxxer:HikariCP</exclude>
+                            <exclude>com.google.guava:guava</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>

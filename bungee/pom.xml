@@ -29,6 +29,8 @@
                         <excludes>
                             <!--Those classes are already present in BungeeCord version-->
                             <exclude>net.md-5:bungeecord-config</exclude>
+                            <!-- Though BungeeCord ships a newer version -->
+                            <exclude>com.google.guava:guava</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>
