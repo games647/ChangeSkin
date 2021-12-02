@@ -51,7 +51,7 @@ public class ChangeSkinBungee extends Plugin implements PlatformPlugin<CommandSe
 
     @Override
     public void onEnable() {
-        logger = CommonUtil.createLoggerFromJDK(getLogger());
+        logger = CommonUtil.initializeLoggerService(getLogger());
 
         core = new ChangeSkinCore(this);
         try {

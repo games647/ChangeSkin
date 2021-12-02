@@ -37,7 +37,7 @@ import static com.github.games647.changeskin.core.message.SkinUpdateMessage.UPDA
 public class ChangeSkinBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
     private final ConcurrentMap<UUID, UserPreference> loginSessions = CommonUtil.buildCache(2 * 60, -1);
-    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
+    private final Logger logger = CommonUtil.initializeLoggerService(getLogger());
     private final ChangeSkinCore core = new ChangeSkinCore(this);
 
     private boolean bungeeCord;

@@ -43,6 +43,11 @@
                             <shadedPattern>changeskin.slf4j</shadedPattern>
                         </relocation>
                     </relocations>
+                    <!-- Rename the service file too to let SLF4J api find our own relocated jdk logger -->
+                    <!-- Located in META-INF/services -->
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    </transformers>
                 </configuration>
                 <executions>
                     <execution>
