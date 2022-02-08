@@ -84,7 +84,11 @@ public class SkinApplier extends SharedApplier {
                 Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
 
                 // in comparison to the field values is this not obfuscated in 1.16 and 1.17
-                localDebugWorld = nmsWorldClass.getDeclaredMethod("isDebugWorld");
+                if (isAtOrAbove("1.18")) {
+                    localDebugWorld = nmsWorldClass.getDeclaredMethod("ad");
+                } else {
+                    localDebugWorld = nmsWorldClass.getDeclaredMethod("isDebugWorld");
+                }
 
                 localHandleMethod = MinecraftReflection.getCraftPlayerClass().getDeclaredMethod("getHandle");
 
