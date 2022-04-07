@@ -105,7 +105,7 @@ public class SkinApplier extends SharedApplier {
                 localGamemode = getPreviousGamemodeField(interactionManager);
                 localGamemode.setAccessible(true);
             } catch (NoSuchFieldException | NoSuchMethodException reflectiveEx) {
-                logger.warn("Cannot find 1.16x fields", reflectiveEx);
+                logger.warn("Cannot find packet fields", reflectiveEx);
                 localDisable = true;
             }
         }
@@ -153,7 +153,7 @@ public class SkinApplier extends SharedApplier {
             return;
         }
 
-        //uuid was successful resolved, we could now make a cooldown check
+        //uuid was successfully resolved, we could now make a cooldown check
         if (invoker instanceof Player && core != null) {
             UUID uniqueId = ((Player) invoker).getUniqueId();
             core.getCooldownService().trackPlayer(uniqueId);
@@ -283,13 +283,9 @@ public class SkinApplier extends SharedApplier {
     }
 
     private void sendPackets(PacketContainer... packets) {
-        try {
-            ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-            for (PacketContainer packet : packets) {
-                protocolManager.sendServerPacket(receiver, packet);
-            }
-        } catch (InvocationTargetException ex) {
-            plugin.getLog().error("Exception sending instant skin change packet for: {}", receiver, ex);
+        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+        for (PacketContainer packet : packets) {
+            protocolManager.sendServerPacket(receiver, packet);
         }
     }
 
@@ -306,7 +302,11 @@ public class SkinApplier extends SharedApplier {
         //> 1.13.1
         if (MinecraftVersion.getCurrentVersion().compareTo(MinecraftVersion.AQUATIC_UPDATE) > 0) {
             try {
-                respawn.getDimensions().writeSafely(0, dimensionId);
+                respawn.getDimensionTypes().writeSafely(0, world);
+                if (isAtOrAbove("1.18.2")) {
+                    Object dimensionTypeHolder = getDimensionType(world);
+                    respawn.getModifier().write(0, dimensionTypeHolder);
+                }
             } catch (NoSuchMethodError noSuchMethodError) {
                 throw new ReflectiveOperationException("Unable to find dimension setter. " +
                         "Your ProtocolLib version is incompatible with this plugin version in combination with " +
@@ -362,7 +362,7 @@ public class SkinApplier extends SharedApplier {
     }
 
     private static boolean isAtOrAbove(String s) {
-        return MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion(s)) > 0;
+        return MinecraftVersion.getCurrentVersion().compareTo(new MinecraftVersion(s)) >= 0;
     }
 
     private PacketContainer createTeleportPacket(Location location) {
@@ -396,5 +396,20 @@ public class SkinApplier extends SharedApplier {
         }
 
         return NativeGameMode.fromBukkit(receiver.getGameMode());
+    }
+
+    private Object getDimensionType(World world) {
+        try {
+            System.out.println(MinecraftReflection.getMinecraftClass("core.Holder"));
+
+            Method dimensionTypeGetter = FuzzyReflection.fromClass(MinecraftReflection.getNmsWorldClass())
+                .getMethodByParameters("dimensionTypeRegistration", MinecraftReflection.getMinecraftClass("core.Holder"), new Class[]{});
+
+            Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
+            return dimensionTypeGetter.invoke(nmsWorld);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
