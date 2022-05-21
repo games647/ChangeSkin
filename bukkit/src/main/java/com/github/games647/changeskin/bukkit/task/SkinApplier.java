@@ -400,16 +400,20 @@ public class SkinApplier extends SharedApplier {
 
     private Object getDimensionType(World world) {
         try {
-            System.out.println(MinecraftReflection.getMinecraftClass("core.Holder"));
+            Class<?> holderClass = MinecraftReflection.getMinecraftClass("core.Holder");
+            Class<?> nmsWorldClass = MinecraftReflection.getNmsWorldClass();
 
-            Method dimensionTypeGetter = FuzzyReflection.fromClass(MinecraftReflection.getNmsWorldClass())
-                .getMethodByParameters("dimensionTypeRegistration", MinecraftReflection.getMinecraftClass("core.Holder"), new Class[]{});
+            // get method by return type, but without any arguments
+            // explicitly use new Class[]{} in order to get the correct method without varargs method arguments
+            Method dimensionTypeGetter = FuzzyReflection.fromClass(nmsWorldClass)
+                .getMethodByParameters("dimensionTypeRegistration", holderClass, new Class[]{});
 
             Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
             return dimensionTypeGetter.invoke(nmsWorld);
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
+        } catch (ReflectiveOperationException reflectiveEx) {
+            plugin.getLog().error("Failed to get dimension type for skin refresh", reflectiveEx);
         }
+
         return null;
     }
 }
