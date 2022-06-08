@@ -16,7 +16,7 @@ import java.util.UUID;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
-import net.md_5.bungee.connection.LoginResult.Property;
+import net.md_5.bungee.protocol.Property;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
