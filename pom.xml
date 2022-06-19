@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.games647</groupId>
-    <!--This have to be in lowercase because it's used by plugin.yml-->
+    <!--This has to be in lowercase because it's used by plugin.yml-->
     <artifactId>changeskin</artifactId>
     <packaging>pom</packaging>
 

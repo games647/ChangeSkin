@@ -8,6 +8,7 @@ import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
+import com.comphenix.protocol.wrappers.Converters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
@@ -325,7 +326,6 @@ public class SkinApplier extends SharedApplier {
         if (isAtOrAbove("1.16")) {
             // a = dimension (as resource key) -> dim type, b = world (resource key) -> world name, c = "hashed" seed
             // dimension and seed covered above - we have to start with 1 because dimensions already uses the first idx
-            Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
 
             // 1.16.2 dropped the first resourcekey usage
             respawn.getWorldKeys().write(0, world);
@@ -341,9 +341,10 @@ public class SkinApplier extends SharedApplier {
             // f = debug world, g = flat world, h = flag (copy metadata)
             // get the NMS world
             try {
+                Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
                 respawn.getBooleans().write(0, (boolean) DEBUG_WORLD_METHOD.invoke(nmsWorld));
             } catch (Exception ex) {
-                plugin.getLog().error("Cannot fetch debug state of world {}. Assuming false", world, ex);
+                plugin.getLog().error("Cannot fetch debug state of world {}. Assuming false", world);
                 respawn.getBooleans().write(0, false);
             } catch (Throwable throwable) {
                 throw (Error) throwable;
@@ -356,6 +357,11 @@ public class SkinApplier extends SharedApplier {
             // world type field replaced with a boolean
             respawn.getWorldTypeModifier().write(0, world.getWorldType());
             respawn.getGameModes().write(0, gamemode);
+        }
+
+        if (isAtOrAbove("1.19")) {
+            // set last death location
+            respawn.getOptionals(Converters.passthrough(Object.class)).write(0, Optional.empty());
         }
 
         return respawn;
@@ -409,7 +415,12 @@ public class SkinApplier extends SharedApplier {
                 .getMethodByParameters("dimensionTypeRegistration", holderClass, new Class[]{});
 
             Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
-            return dimensionTypeGetter.invoke(nmsWorld);
+
+            Object holder = dimensionTypeGetter.invoke(nmsWorld);
+            Class<?> resourceKey = MinecraftReflection.getMinecraftClass("resources.ResourceKey");
+            Field field = FuzzyReflection.fromClass(holder.getClass(), true).getFieldByType("key", resourceKey);
+            field.setAccessible(true);
+            return field.get(holder);
         } catch (ReflectiveOperationException reflectiveEx) {
             plugin.getLog().error("Failed to get dimension type for skin refresh", reflectiveEx);
         }
