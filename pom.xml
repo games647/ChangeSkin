@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <name>ChangeSkin</name>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1</version>
 
     <url>https://dev.bukkit.org/bukkit-plugins/changeskin/</url>
     <description>
