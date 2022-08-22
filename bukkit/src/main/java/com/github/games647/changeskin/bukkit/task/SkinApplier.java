@@ -412,12 +412,12 @@ public class SkinApplier extends SharedApplier {
             // get method by return type, but without any arguments
             // explicitly use new Class[]{} in order to get the correct method without varargs method arguments
             Method dimensionTypeGetter = FuzzyReflection.fromClass(nmsWorldClass)
-                .getMethodByParameters("dimensionTypeRegistration", holderClass, new Class[]{});
+                .getMethodByReturnTypeAndParameters("dimensionTypeRegistration", holderClass, new Class[]{});
 
             Object nmsWorld = BukkitConverters.getWorldConverter().getGeneric(world);
 
             Object holder = dimensionTypeGetter.invoke(nmsWorld);
-            Class<?> resourceKey = MinecraftReflection.getMinecraftClass("resources.ResourceKey");
+            Class<?> resourceKey = MinecraftReflection.getResourceKey();
             Field field = FuzzyReflection.fromClass(holder.getClass(), true).getFieldByType("key", resourceKey);
             field.setAccessible(true);
             return field.get(holder);
