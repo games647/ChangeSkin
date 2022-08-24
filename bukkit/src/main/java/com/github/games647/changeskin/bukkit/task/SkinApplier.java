@@ -16,6 +16,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedProfilePublicKey;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
@@ -247,6 +248,7 @@ public class SkinApplier extends SharedApplier {
         try {
             NativeGameMode gamemode = NativeGameMode.fromBukkit(receiver.getGameMode());
             WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
+
             PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
 
             //remove the old skin - client updates it only on a complete remove and add
@@ -256,6 +258,14 @@ public class SkinApplier extends SharedApplier {
 
             //add info containing the skin data
             addInfo = removeInfo.deepClone();
+            if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
+                WrappedProfilePublicKey profileKey = WrappedProfilePublicKey.ofPlayer(receiver);
+                playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName, profileKey.getKeyData());
+
+                addInfo = new PacketContainer(PLAYER_INFO);
+                addInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
+            }
+
             addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
 
             // Respawn packet - notify the client that it should update the own skin
