@@ -16,7 +16,6 @@ import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedProfilePublicKey;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.model.UserPreference;
 import com.github.games647.changeskin.core.model.skin.SkinModel;
@@ -28,6 +27,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,6 +46,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 
 import static com.comphenix.protocol.PacketType.Play.Server.PLAYER_INFO;
+import static com.comphenix.protocol.PacketType.Play.Server.PLAYER_INFO_REMOVE;
 import static com.comphenix.protocol.PacketType.Play.Server.POSITION;
 import static com.comphenix.protocol.PacketType.Play.Server.RESPAWN;
 
@@ -249,24 +251,13 @@ public class SkinApplier extends SharedApplier {
             NativeGameMode gamemode = NativeGameMode.fromBukkit(receiver.getGameMode());
             WrappedChatComponent displayName = WrappedChatComponent.fromText(receiver.getPlayerListName());
 
-            PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
+            PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName, null);
 
             //remove the old skin - client updates it only on a complete remove and add
-            removeInfo = new PacketContainer(PLAYER_INFO);
-            removeInfo.getPlayerInfoAction().write(0, PlayerInfoAction.REMOVE_PLAYER);
-            removeInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
+            removeInfo = createRemovePacket(playerInfoData);
 
             //add info containing the skin data
-            addInfo = removeInfo.deepClone();
-            if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
-                WrappedProfilePublicKey profileKey = WrappedProfilePublicKey.ofPlayer(receiver);
-                playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName, profileKey.getKeyData());
-
-                addInfo = new PacketContainer(PLAYER_INFO);
-                addInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
-            }
-
-            addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
+            addInfo = createAddPacket(playerInfoData);
 
             // Respawn packet - notify the client that it should update the own skin
             respawn = createRespawnPacket(gamemode);
@@ -279,6 +270,39 @@ public class SkinApplier extends SharedApplier {
         }
 
         sendPackets(removeInfo, addInfo, respawn, teleport);
+    }
+
+    private PacketContainer createAddPacket(PlayerInfoData playerInfoData) {
+        PacketContainer addInfo = new PacketContainer(PLAYER_INFO);
+        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
+            addInfo.getPlayerInfoDataLists().write(1, Collections.singletonList(playerInfoData));
+        } else {
+            addInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
+        }
+
+        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 3))) {
+            addInfo.getPlayerInfoActions().write(0, EnumSet.of(PlayerInfoAction.ADD_PLAYER));
+        } else {
+            addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
+        }
+
+        return addInfo;
+    }
+
+    private PacketContainer createRemovePacket(PlayerInfoData playerInfoData) {
+        PacketContainer removeInfo;
+        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 3))) {
+            removeInfo = new PacketContainer(PLAYER_INFO_REMOVE);
+
+            List<UUID> removedPlayers = Collections.singletonList(receiver.getUniqueId());
+            removeInfo.getLists(Converters.passthrough(UUID.class)).write(0, removedPlayers);
+        } else {
+            removeInfo = new PacketContainer(PLAYER_INFO);
+            removeInfo.getPlayerInfoAction().write(0, PlayerInfoAction.REMOVE_PLAYER);
+            removeInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
+        }
+
+        return removeInfo;
     }
 
     @SuppressWarnings("deprecation")
@@ -362,7 +386,7 @@ public class SkinApplier extends SharedApplier {
 
             respawn.getBooleans().write(1, world.getWorldType() == WorldType.FLAT);
             // flag: true = teleport like, false = player actually died - uses respawn anchor in nether
-            respawn.getBooleans().write(2, true);
+            respawn.getBooleans().writeSafely(2, true);
         } else {
             // world type field replaced with a boolean
             respawn.getWorldTypeModifier().write(0, world.getWorldType());
