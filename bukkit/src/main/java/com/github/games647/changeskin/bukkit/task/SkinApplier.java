@@ -274,13 +274,13 @@ public class SkinApplier extends SharedApplier {
 
     private PacketContainer createAddPacket(PlayerInfoData playerInfoData) {
         PacketContainer addInfo = new PacketContainer(PLAYER_INFO);
-        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
+        if (new MinecraftVersion(1, 19, 0).atOrAbove()) {
             addInfo.getPlayerInfoDataLists().write(1, Collections.singletonList(playerInfoData));
         } else {
             addInfo.getPlayerInfoDataLists().write(0, Arrays.asList(playerInfoData));
         }
 
-        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 3))) {
+        if (new MinecraftVersion(1, 19, 3).atOrAbove()) {
             addInfo.getPlayerInfoActions().write(0, EnumSet.of(PlayerInfoAction.ADD_PLAYER));
         } else {
             addInfo.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
@@ -291,7 +291,7 @@ public class SkinApplier extends SharedApplier {
 
     private PacketContainer createRemovePacket(PlayerInfoData playerInfoData) {
         PacketContainer removeInfo;
-        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 3))) {
+        if (new MinecraftVersion(1, 19, 3).atOrAbove()) {
             removeInfo = new PacketContainer(PLAYER_INFO_REMOVE);
 
             List<UUID> removedPlayers = Collections.singletonList(receiver.getUniqueId());

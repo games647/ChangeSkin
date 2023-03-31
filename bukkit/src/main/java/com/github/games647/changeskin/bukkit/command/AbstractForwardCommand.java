@@ -3,7 +3,6 @@ package com.github.games647.changeskin.bukkit.command;
 import com.github.games647.changeskin.bukkit.ChangeSkinBukkit;
 import com.github.games647.changeskin.core.message.ChannelMessage;
 import com.github.games647.changeskin.core.message.ForwardMessage;
-import com.google.common.base.Joiner;
 
 import java.util.Optional;
 
@@ -36,7 +35,7 @@ public abstract class AbstractForwardCommand implements CommandExecutor {
             proxy = optPlayer.get();
         }
 
-        ChannelMessage message = new ForwardMessage(commandName, Joiner.on(' ').join(args), isPlayer, sender.isOp());
+        ChannelMessage message = new ForwardMessage(commandName, String.join(" ",args), isPlayer, sender.isOp());
         plugin.sendPluginMessage(proxy, message);
     }
 }
