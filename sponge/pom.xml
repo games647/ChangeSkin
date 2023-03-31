@@ -85,7 +85,7 @@
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>7.4.0</version>
+            <version>9.0.0</version>
 <!--            <version>9.0.0</version>-->
             <scope>provided</scope>
         </dependency>
